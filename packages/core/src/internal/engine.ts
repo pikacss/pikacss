@@ -330,6 +330,9 @@ export async function _renderPreflight({
 	blocks?: CSSStyleBlocks
 }) {
 	for (const [selector, propertiesOrDefinition] of Object.entries(preflightDefinition)) {
+		if (propertiesOrDefinition == null)
+			continue
+
 		const selectors = normalizeSelectors({
 			selectors: await hooks.transformSelectors(engine.config.plugins, [selector]),
 			defaultSelector: '',
@@ -356,6 +359,7 @@ export async function _renderPreflight({
 			}
 			else {
 				currentBlockBody.children ||= new Map()
+				currentBlockBody.children.set(k, currentBlockBody.children.get(k) || { properties: [] })
 				_renderPreflight({
 					engine,
 					preflightDefinition: v as PreflightDefinition,

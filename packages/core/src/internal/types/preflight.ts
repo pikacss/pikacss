@@ -3,8 +3,8 @@ import type { ResolvedProperties, ResolvedSelector } from './shared'
 import type { UnionString } from './utils'
 
 // #region Preflight
-export interface PreflightDefinition {
-	[selector: UnionString | ResolvedSelector]: ResolvedProperties | PreflightDefinition
+export type PreflightDefinition = {
+	[selector in UnionString | ResolvedSelector]?: ResolvedProperties | PreflightDefinition
 }
 
 export type PreflightFn = (engine: Engine, isFormatted: boolean) => string | PreflightDefinition
