@@ -362,7 +362,7 @@ export async function _renderPreflight({
 				currentBlockBody.children.set(k, currentBlockBody.children.get(k) || { properties: [] })
 				_renderPreflight({
 					engine,
-					preflightDefinition: v as PreflightDefinition,
+					preflightDefinition: { [k]: v } as PreflightDefinition,
 					blocks: currentBlockBody.children,
 				})
 			}
