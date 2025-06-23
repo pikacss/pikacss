@@ -19,7 +19,6 @@ function replaceBySplitAndJoin(
 }
 
 const RE_SPLIT = /\s*,\s*/g
-const DEFAULT_SELECTOR_PLACEHOLDER = '$'
 const DEFAULT_SELECTOR_PLACEHOLDER_RE_GLOBAL = /\$/g
 const ATTRIBUTE_SUFFIX_MATCH = '$='
 const ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL = /\$=/g
@@ -30,21 +29,9 @@ export function normalizeSelectors({
 	selectors: string[]
 	defaultSelector: string
 }) {
-	if (selectors.length === 0)
-		return [defaultSelector]
-
-	const normalized = selectors.map(s => s.replace(RE_SPLIT, ','))
-	const lastSelector = selectors[selectors.length - 1]
-	if (
-		lastSelector!.includes(ATOMIC_STYLE_ID_PLACEHOLDER) === false
-		&& lastSelector!.includes(DEFAULT_SELECTOR_PLACEHOLDER) === false
-	) {
-		normalized.push(DEFAULT_SELECTOR_PLACEHOLDER)
-	}
-
-	return normalized.map(s =>
+	const normalized = selectors.map(s =>
 		replaceBySplitAndJoin(
-			s,
+			s.replace(RE_SPLIT, ','),
 			ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
 			a => replaceBySplitAndJoin(
 				a,
@@ -60,6 +47,8 @@ export function normalizeSelectors({
 			ATOMIC_STYLE_ID_PLACEHOLDER,
 		),
 	)
+
+	return normalized
 }
 
 export function normalizeValue(value: PropertyValue): ExtractedAtomicStyleContent['value'] {
@@ -86,20 +75,21 @@ export async function extract({
 	transformStyleItems: (styleItems: StyleItem[]) => Promise<StyleItem[]>
 	transformStyleDefinitions: (styleDefinitions: StyleDefinition[]) => Promise<StyleDefinition[]>
 }): Promise<ExtractedAtomicStyleContent[]> {
-	const selector = normalizeSelectors({
-		selectors: await transformSelectors(levels),
-		defaultSelector,
-	})
 	for (const definition of await transformStyleDefinitions([styleDefinition])) {
 		for (const [k, v] of Object.entries(definition)) {
 			if (isPropertyValue(v)) {
-				const property = toKebab(k)
-				const value = normalizeValue(v)
+				const selector = normalizeSelectors({
+					selectors: await transformSelectors(levels),
+					defaultSelector,
+				})
+
+				if (selector.length === 0 || selector.every(s => s.includes(ATOMIC_STYLE_ID_PLACEHOLDER) === false))
+					selector.push(defaultSelector)
 
 				result.push({
 					selector,
-					property,
-					value,
+					property: toKebab(k),
+					value: normalizeValue(v),
 				})
 			}
 			else if (Array.isArray(v)) {
