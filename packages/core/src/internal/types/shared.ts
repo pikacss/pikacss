@@ -12,13 +12,13 @@ export interface StyleDefinition {
 
 export type StyleItem = string | StyleDefinition
 
-export interface ExtractedAtomicStyleContent {
+export interface ExtractedStyleContent {
 	selector: string[]
 	property: string
 	value: string[] | Nullish
 }
 
-export interface AtomicStyleContent {
+export interface StyleContent {
 	selector: string[]
 	property: string
 	value: string[]
@@ -26,7 +26,7 @@ export interface AtomicStyleContent {
 
 export interface AtomicStyle {
 	id: string
-	content: AtomicStyleContent
+	content: StyleContent
 }
 
 export interface CSSStyleBlockBody {

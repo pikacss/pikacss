@@ -1,4 +1,4 @@
-import type { ExtractedAtomicStyleContent, Nullish, PropertyValue, StyleDefinition, StyleItem } from './types'
+import type { ExtractedStyleContent, Nullish, PropertyValue, StyleDefinition, StyleItem } from './types'
 import {
 	ATOMIC_STYLE_ID_PLACEHOLDER,
 	ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
@@ -51,7 +51,7 @@ export function normalizeSelectors({
 	return normalized
 }
 
-export function normalizeValue(value: PropertyValue): ExtractedAtomicStyleContent['value'] {
+export function normalizeValue(value: PropertyValue): ExtractedStyleContent['value'] {
 	if (value == null)
 		return value
 
@@ -69,12 +69,12 @@ export async function extract({
 }: {
 	styleDefinition: StyleDefinition
 	levels?: string[]
-	result?: ExtractedAtomicStyleContent[]
+	result?: ExtractedStyleContent[]
 	defaultSelector: string
 	transformSelectors: (selectors: string[]) => Promise<string[]>
 	transformStyleItems: (styleItems: StyleItem[]) => Promise<StyleItem[]>
 	transformStyleDefinitions: (styleDefinitions: StyleDefinition[]) => Promise<StyleDefinition[]>
-}): Promise<ExtractedAtomicStyleContent[]> {
+}): Promise<ExtractedStyleContent[]> {
 	for (const definition of await transformStyleDefinitions([styleDefinition])) {
 		for (const [k, v] of Object.entries(definition)) {
 			if (isPropertyValue(v)) {
@@ -124,7 +124,7 @@ export async function extract({
 	return result
 }
 
-export type ExtractFn = (styleDefinition: StyleDefinition) => Promise<ExtractedAtomicStyleContent[]>
+export type ExtractFn = (styleDefinition: StyleDefinition) => Promise<ExtractedStyleContent[]>
 
 export function createExtractFn(options: {
 	defaultSelector: string

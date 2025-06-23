@@ -1,13 +1,13 @@
-import type { AtomicStyle, AtomicStyleContent, CSSStyleBlocks, EngineConfig, ExtractedAtomicStyleContent, Preflight, PreflightFn, ResolvedEngineConfig, StyleDefinition, StyleItem } from './types'
+import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, StyleContent, StyleDefinition, StyleItem } from './types'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL } from './constants'
-import { createExtractFn, type ExtractFn } from './extractor'
+import { createExtractFn, type ExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
 import { keyframes } from './plugins/keyframes'
 import { selectors } from './plugins/selectors'
 import { shortcuts } from './plugins/shortcuts'
 import { variables } from './plugins/variables'
-import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	numberToChars,	renderCSSStyleBlocks,	serialize } from './utils'
+import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	isPropertyValue,	numberToChars,	renderCSSStyleBlocks,	serialize, toKebab } from './utils'
 
 // Only for type inference without runtime effect
 /* c8 ignore start */
@@ -147,12 +147,22 @@ export class Engine {
 		return [...unknown, ...resolvedIds]
 	}
 
-	renderPreflights(isFormatted: boolean) {
+	async renderPreflights(isFormatted: boolean) {
 		const lineEnd = isFormatted ? '\n' : ''
-		return this.config.preflights.map<string>(p => p(this, isFormatted)).join(lineEnd)
+		return (await Promise.all(this.config.preflights.map((p) => {
+			const result = p(this, isFormatted)
+			if (typeof result === 'string')
+				return result
+
+			return renderPreflight({
+				engine: this,
+				preflight: result,
+				isFormatted,
+			})
+		}))).join(lineEnd)
 	}
 
-	renderAtomicStyles(isFormatted: boolean, options: { atomicStyleIds?: string[], isPreview?: boolean } = {}) {
+	async renderAtomicStyles(isFormatted: boolean, options: { atomicStyleIds?: string[], isPreview?: boolean } = {}) {
 		const { atomicStyleIds = null, isPreview = false } = options
 
 		const atomicStyles = atomicStyleIds == null ? [...this.store.atomicStyles.values()] : atomicStyleIds.map(id => this.store.atomicStyles.get(id)).filter(isNotNullish)
@@ -211,7 +221,7 @@ export function getAtomicStyleId({
 	prefix,
 	stored,
 }: {
-	content: AtomicStyleContent
+	content: StyleContent
 	prefix: string
 	stored: Map<string, string>
 }) {
@@ -226,8 +236,8 @@ export function getAtomicStyleId({
 	return id
 }
 
-export function optimizeAtomicStyleContents(list: ExtractedAtomicStyleContent[]) {
-	const map = new Map<string, AtomicStyleContent>()
+export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
+	const map = new Map<string, StyleContent>()
 	list.forEach((content) => {
 		const key = serialize([content.selector, content.property])
 
@@ -236,7 +246,7 @@ export function optimizeAtomicStyleContents(list: ExtractedAtomicStyleContent[])
 		if (content.value == null)
 			return
 
-		map.set(key, content as AtomicStyleContent)
+		map.set(key, content as StyleContent)
 	})
 	return [...map.values()]
 }
@@ -248,10 +258,10 @@ export async function resolveStyleItemList({
 }: {
 	itemList: StyleItem[]
 	transformStyleItems: (styleItems: StyleItem[]) => Promise<StyleItem[]>
-	extractStyleDefinition: (styleObj: StyleDefinition) => Promise<ExtractedAtomicStyleContent[]>
+	extractStyleDefinition: (styleObj: StyleDefinition) => Promise<ExtractedStyleContent[]>
 }) {
 	const unknown = new Set<string>()
-	const list: ExtractedAtomicStyleContent[] = []
+	const list: ExtractedStyleContent[] = []
 	for (const styleItem of await transformStyleItems(itemList)) {
 		if (typeof styleItem === 'string')
 			unknown.add(styleItem)
@@ -307,5 +317,65 @@ export function renderAtomicStyles(payload: { atomicStyles: AtomicStyle[], isPre
 					currentBlocks = blockBody.children!
 			}
 		})
+	return renderCSSStyleBlocks(blocks, isFormatted)
+}
+
+export async function _renderPreflight({
+	engine,
+	preflightDefinition,
+	blocks = new Map(),
+}: {
+	engine: Engine
+	preflightDefinition: PreflightDefinition
+	blocks?: CSSStyleBlocks
+}) {
+	for (const [selector, propertiesOrDefinition] of Object.entries(preflightDefinition)) {
+		const selectors = normalizeSelectors({
+			selectors: await hooks.transformSelectors(engine.config.plugins, [selector]),
+			defaultSelector: '',
+		}).filter(Boolean)
+		let currentBlocks = blocks
+		let currentBlockBody: CSSStyleBlockBody = null!
+		selectors.forEach((s, i) => {
+			const isLast = i === selectors.length - 1
+			currentBlocks.set(s, currentBlocks.get(s) || { properties: [] })
+			if (isLast) {
+				currentBlockBody = currentBlocks.get(s)!
+				return
+			}
+			currentBlocks = currentBlocks.get(s)!.children ||= new Map()
+		})
+
+		for (const [k, v] of Object.entries(propertiesOrDefinition)) {
+			if (isPropertyValue(v)) {
+				const property = toKebab(k)
+				const normalizedValue = normalizeValue(v)
+				if (normalizedValue != null) {
+					normalizedValue.forEach(value => currentBlockBody.properties.push({ property, value }))
+				}
+			}
+			else {
+				currentBlockBody.children ||= new Map()
+				_renderPreflight({
+					engine,
+					preflightDefinition: v as PreflightDefinition,
+					blocks: currentBlockBody.children,
+				})
+			}
+		}
+	}
+	return blocks
+}
+
+export async function renderPreflight(payload: {
+	engine: Engine
+	preflight: PreflightDefinition
+	isFormatted: boolean
+}): Promise<string> {
+	const { engine, preflight, isFormatted } = payload
+	const blocks = await _renderPreflight({
+		engine,
+		preflightDefinition: preflight,
+	})
 	return renderCSSStyleBlocks(blocks, isFormatted)
 }
