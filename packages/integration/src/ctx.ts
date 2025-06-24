@@ -140,7 +140,7 @@ export async function createCtx(options: IntegrationContextOptions) {
 					`import { defineEngineConfig } from '${currentPackageName}'`,
 					...relativeTsCodegenFilepath == null
 						? []
-						: [`import '${relativeTsCodegenFilepath}'`],
+						: [`/** @type {import('${relativeTsCodegenFilepath}')} */`],
 					'',
 					'export default defineEngineConfig({',
 					'  // Add your PikaCSS engine config here',
