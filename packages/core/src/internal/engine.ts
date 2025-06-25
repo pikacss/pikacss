@@ -55,6 +55,7 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 
 export class Engine {
 	config: ResolvedEngineConfig
+	pluginHooks = hooks
 
 	extract: ExtractFn
 
@@ -149,14 +150,14 @@ export class Engine {
 
 	async renderPreflights(isFormatted: boolean) {
 		const lineEnd = isFormatted ? '\n' : ''
-		return (await Promise.all(this.config.preflights.map((p) => {
-			const result = p(this, isFormatted)
+		return (await Promise.all(this.config.preflights.map(async (p) => {
+			const result = await p(this, isFormatted)
 			if (typeof result === 'string')
 				return result
 
-			return renderPreflight({
+			return renderPreflightDefinition({
 				engine: this,
-				preflight: result,
+				preflightDefinition: result,
 				isFormatted,
 			})
 		}))).join(lineEnd)
@@ -320,7 +321,7 @@ export function renderAtomicStyles(payload: { atomicStyles: AtomicStyle[], isPre
 	return renderCSSStyleBlocks(blocks, isFormatted)
 }
 
-export async function _renderPreflight({
+export async function _renderPreflightDefinition({
 	engine,
 	preflightDefinition,
 	blocks = new Map(),
@@ -360,7 +361,7 @@ export async function _renderPreflight({
 			else {
 				currentBlockBody.children ||= new Map()
 				currentBlockBody.children.set(k, currentBlockBody.children.get(k) || { properties: [] })
-				_renderPreflight({
+				_renderPreflightDefinition({
 					engine,
 					preflightDefinition: { [k]: v } as PreflightDefinition,
 					blocks: currentBlockBody.children,
@@ -371,15 +372,15 @@ export async function _renderPreflight({
 	return blocks
 }
 
-export async function renderPreflight(payload: {
+export async function renderPreflightDefinition(payload: {
 	engine: Engine
-	preflight: PreflightDefinition
+	preflightDefinition: PreflightDefinition
 	isFormatted: boolean
 }): Promise<string> {
-	const { engine, preflight, isFormatted } = payload
-	const blocks = await _renderPreflight({
+	const { engine, preflightDefinition, isFormatted } = payload
+	const blocks = await _renderPreflightDefinition({
 		engine,
-		preflightDefinition: preflight,
+		preflightDefinition,
 	})
 	return renderCSSStyleBlocks(blocks, isFormatted)
 }

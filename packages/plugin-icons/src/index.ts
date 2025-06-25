@@ -151,7 +151,14 @@ function createIconsPlugin(lookupIconLoader: (config: IconsConfig) => Promise<Un
 					const url = `url("data:image/svg+xml;utf8,${encodeSvgForCss(parsed.svg)}")`
 					const varName = `--${engine.config.prefix}svg-icon-${body.replace(globalColonRE, '-')}`
 					if (engine.variables.store.has(varName) === false) {
-						engine.variables.add([varName, url, { asValueOf: '-', asProperty: false }])
+						engine.variables.add([
+							varName,
+							url,
+							{
+								autocomplete: { asValueOf: '-', asProperty: false },
+								pruneUnused: true,
+							},
+						])
 					}
 
 					if (_mode === 'auto')

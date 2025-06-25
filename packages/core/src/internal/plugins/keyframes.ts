@@ -1,6 +1,6 @@
-import type { Nullish, ResolvedProperties } from '../types'
+import type { Nullish, PreflightDefinition, ResolvedProperties } from '../types'
 import { defineEnginePlugin } from '../plugin'
-import { addToSet, isNotNullish, renderCSSStyleBlocks } from '../utils'
+import { addToSet } from '../utils'
 
 // #region KeyframesConfig
 export interface Progress {
@@ -98,7 +98,7 @@ export function keyframes() {
 			engine.keyframes.add(...configList)
 
 			// Add preflight
-			engine.addPreflight((engine, isFormatted) => {
+			engine.addPreflight((engine) => {
 				const maybeUsedName = new Set<string>()
 				engine.store.atomicStyles.forEach(({ content: { property, value } }) => {
 					if (property === 'animationName') {
@@ -115,31 +115,20 @@ export function keyframes() {
 						})
 					}
 				})
+				const maybeUsedKeyframes = Array.from(engine.keyframes.store.values())
+					.filter(({ name, frames, pruneUnused }) => ((pruneUnused === false) || maybeUsedName.has(name)) && frames != null)
+				const preflightDefinition: PreflightDefinition = {}
+				maybeUsedKeyframes.forEach(({ name, frames }) => {
+					preflightDefinition[`@keyframes ${name}`] = Object.fromEntries(
+						Object.entries(frames!)
+							.map(([frame, properties]) => [
+								frame,
+								properties,
+							]),
+					)
+				})
 
-				return renderCSSStyleBlocks(
-					new Map(Array.from(engine.keyframes.store.entries())
-						.filter(([name, { pruneUnused }]) => (pruneUnused === false) || maybeUsedName.has(name))
-						.map(([name, { frames }]) => [
-							`@keyframes ${name}`,
-							{
-								properties: [],
-								children: new Map(Object.entries(frames!)
-									.map(([frame, properties]) => [
-										frame,
-										{
-											properties: Object.entries(properties)
-												.filter(([_, value]) => isNotNullish(value))
-												.flatMap(([property, value]) => {
-													if (Array.isArray(value))
-														return value.map(v => ({ property, value: String(v) }))
-													return { property, value: String(value) }
-												}),
-										},
-									])),
-							},
-						])),
-					isFormatted,
-				)
+				return preflightDefinition
 			})
 		},
 	})

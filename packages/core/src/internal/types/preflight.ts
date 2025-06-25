@@ -1,13 +1,13 @@
 import type { Engine } from '../engine'
-import type { ResolvedProperties, ResolvedSelector } from './shared'
-import type { UnionString } from './utils'
+import type { ResolvedCSSProperties, ResolvedSelector } from './resolved'
+import type { Awaitable, UnionString } from './utils'
 
 // #region Preflight
 export type PreflightDefinition = {
-	[selector in UnionString | ResolvedSelector]?: ResolvedProperties | PreflightDefinition
+	[selector in UnionString | ResolvedSelector]?: ResolvedCSSProperties | PreflightDefinition
 }
 
-export type PreflightFn = (engine: Engine, isFormatted: boolean) => string | PreflightDefinition
+export type PreflightFn = (engine: Engine, isFormatted: boolean) => Awaitable<string | PreflightDefinition>
 
 /**
  * PreflightConfig can be a string or a function that returns a string.

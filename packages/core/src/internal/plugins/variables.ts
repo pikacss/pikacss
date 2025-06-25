@@ -1,6 +1,7 @@
-import type { Arrayable, Nullish, ResolvedCSSProperty, UnionString } from '../types'
+import type { Arrayable, PreflightDefinition, PropertyValue, ResolvedCSSProperties, ResolvedSelector, Simplify, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
-import { renderCSSStyleBlocks } from '../utils'
+
+type CSSProperty = keyof ResolvedCSSProperties
 
 export interface VariableAutocomplete {
 	/**
@@ -8,7 +9,7 @@ export interface VariableAutocomplete {
 	 *
 	 * @default ['*']
 	 */
-	asValueOf?: Arrayable<UnionString | '*' | '-' | ResolvedCSSProperty>
+	asValueOf?: Arrayable<UnionString | '*' | '-' | CSSProperty>
 	/**
 	 * Whether to add the variable as a CSS property.
 	 *
@@ -17,10 +18,16 @@ export interface VariableAutocomplete {
 	asProperty?: boolean
 }
 
+interface VariableOptions {
+	selector?: Arrayable<UnionString | ResolvedSelector>
+	autocomplete?: VariableAutocomplete
+	pruneUnused?: boolean
+}
+
 export type Variable =
 	| string
-	| [name: string, value?: string, autocomplete?: VariableAutocomplete, pruneUnused?: boolean]
-	| { name: string, value?: string, autocomplete?: VariableAutocomplete, pruneUnused?: boolean }
+	| [name: string, value?: ResolvedCSSProperties[`--${string}`], options?: VariableOptions]
+	| Simplify<{ name: string, value?: ResolvedCSSProperties[`--${string}`] } & VariableOptions>
 
 export interface VariablesConfig {
 	/**
@@ -103,23 +110,27 @@ export function variables() {
 
 			engine.variables.add(...configList)
 
-			engine.addPreflight((engine, isFormatted) => {
+			engine.addPreflight(async (engine) => {
 				const used = new Set<string>()
 				engine.store.atomicStyles.forEach(({ content: { value } }) => {
 					value.flatMap(extractUsedVarNames)
 						.forEach(name => used.add(normalizeVariableName(name)))
 				})
-				return renderCSSStyleBlocks(
-					new Map([[
-						':root',
-						{
-							properties: Array.from(engine.variables.store.entries())
-								.filter(([name, { pruneUnused, value }]) => ((pruneUnused === false) || used.has(name)) && value != null)
-								.map(([name, { value }]) => ({ property: name, value: value! })),
-						},
-					]]),
-					isFormatted,
-				)
+				const usedVariables = Array.from(engine.variables.store.values())
+					.filter(({ name, pruneUnused, value }) => ((pruneUnused === false) || used.has(name)) && value != null)
+				const preflightDefinition: PreflightDefinition = {}
+
+				await Promise.all(usedVariables.map(async ({ name, value, selector: _selector }) => {
+					const selector = await engine.pluginHooks.transformSelectors(engine.config.plugins, _selector)
+					selector.forEach((s, index) => {
+						preflightDefinition[s] ||= {}
+						const isLast = index === selector.length - 1
+						if (isLast) {
+							preflightDefinition[s][name] = value
+						}
+					})
+				}))
+				return preflightDefinition
 			})
 		},
 	})
@@ -127,7 +138,8 @@ export function variables() {
 
 interface ResolvedVariableConfig {
 	name: string
-	value: string | Nullish
+	value: PropertyValue
+	selector: string[]
 	pruneUnused: boolean
 	autocomplete: {
 		asValueOf: string[]
@@ -142,13 +154,13 @@ function createResolveConfigFn({
 } = {}) {
 	return function resolveVariableConfig(config: Variable): ResolvedVariableConfig {
 		if (typeof config === 'string')
-			return { name: config, value: null, autocomplete: { asValueOf: ['*'], asProperty: true }, pruneUnused: defaultPruneUnused }
+			return { name: config, value: null, selector: [':root'], autocomplete: { asValueOf: ['*'], asProperty: true }, pruneUnused: defaultPruneUnused }
 		if (Array.isArray(config)) {
-			const [name, value, { asValueOf = '*', asProperty = true } = {}, pruneUnused = defaultPruneUnused] = config
-			return { name, value, autocomplete: { asValueOf: [asValueOf].flat(), asProperty }, pruneUnused }
+			const [name, value, { selector = ':root', autocomplete: { asValueOf = '*', asProperty = true } = {}, pruneUnused = defaultPruneUnused } = {}] = config
+			return { name, value, selector: [selector].flat(), autocomplete: { asValueOf: [asValueOf].flat(), asProperty }, pruneUnused }
 		}
-		const { name, value, autocomplete: { asValueOf = '*', asProperty = true } = {}, pruneUnused = defaultPruneUnused } = config
-		return { name, value, autocomplete: { asValueOf: [asValueOf].flat(), asProperty }, pruneUnused }
+		const { name, value, selector = ':root', autocomplete: { asValueOf = '*', asProperty = true } = {}, pruneUnused = defaultPruneUnused } = config
+		return { name, value, selector: [selector].flat(), autocomplete: { asValueOf: [asValueOf].flat(), asProperty }, pruneUnused }
 	}
 }
 

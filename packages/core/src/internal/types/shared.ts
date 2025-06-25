@@ -1,4 +1,4 @@
-import type { Nullish, ResolveFrom } from './utils'
+import type { Nullish } from './utils'
 
 export interface PikaAugment {}
 
@@ -35,9 +35,3 @@ export interface CSSStyleBlockBody {
 }
 
 export type CSSStyleBlocks = Map<string, CSSStyleBlockBody>
-
-export type ResolvedSelector = ResolveFrom<PikaAugment, 'Selector', string, string>
-export type ResolvedCSSProperty = ResolveFrom<PikaAugment, 'CSSProperty', string, string>
-export type ResolvedProperties = ResolveFrom<PikaAugment, 'Properties', any, Properties>
-export type ResolvedStyleDefinition = ResolveFrom<PikaAugment, 'StyleDefinition', any, StyleDefinition>
-export type ResolvedStyleItem = ResolveFrom<PikaAugment, 'StyleItem', any, StyleItem>

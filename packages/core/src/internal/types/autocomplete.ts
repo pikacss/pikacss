@@ -1,5 +1,4 @@
-import type { PikaAugment } from './shared'
-import type { Arrayable, ResolveFrom, UnionNumber, UnionString } from './utils'
+import type { Arrayable, UnionNumber, UnionString } from './utils'
 
 export interface AutocompleteConfig {
 	selectors?: string[]
@@ -19,7 +18,7 @@ export interface ResolvedAutocompleteConfig {
 	cssProperties: Map<string, (string | number)[]>
 }
 
-interface _Autocomplete {
+export interface _Autocomplete {
 	Selector: UnionString
 	StyleItemString: UnionString
 	ExtraProperty: UnionString
@@ -38,5 +37,3 @@ export type EmptyAutocomplete = DefineAutocomplete<{
 	PropertiesValue: never
 	CssPropertiesValue: never
 }>
-
-export type ResolvedAutocomplete = ResolveFrom<PikaAugment, 'Autocomplete', _Autocomplete, EmptyAutocomplete>
