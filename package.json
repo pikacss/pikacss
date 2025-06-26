@@ -40,6 +40,7 @@
 		"happy-dom": "catalog:",
 		"lint-staged": "catalog:",
 		"pathe": "catalog:",
+		"pkg-pr-new": "^0.0.53",
 		"pkg-size": "catalog:",
 		"publint": "catalog:",
 		"rimraf": "catalog:",
