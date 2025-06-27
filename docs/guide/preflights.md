@@ -59,7 +59,7 @@ export default defineEngineConfig({
 
 ## Types of Preflights
 
-PikaCSS supports two types of preflight configurations:
+PikaCSS supports three types of preflight configurations:
 
 ### 1. Static CSS Strings
 
@@ -75,23 +75,66 @@ preflights: [
 ]
 ```
 
-### 2. Dynamic Functions
+### 2. Object-based Preflight (PreflightDefinition)
+
+You can also use a plain object to describe selectors and properties. This is useful for nested selectors or when you prefer a JS object style:
+
+```ts
+preflights: [
+	{
+		':root': {
+			'--brand-color': '#ff007f',
+			'--font-size-base': '16px',
+		},
+		'body': {
+			'font-family': 'var(--font-sans)',
+			'color': '#222',
+			'a': {
+				'color': 'var(--brand-color)',
+				'text-decoration': 'none',
+				'&:hover': {
+					'text-decoration': 'underline',
+				},
+			},
+		},
+		'@media (max-width: 600px)': {
+			body: {
+				'font-size': '14px',
+			},
+		},
+	}
+]
+```
+
+When using object-based preflights, you can use your custom selectors and get autocompletion in your IDE!
+
+### 3. Dynamic Functions
 
 Use a function to generate CSS dynamically. This function receives the PikaCSS engine instance and a formatting boolean:
 
 ```ts
 preflights: [
 	(engine, isFormatted) => {
-		// Generate CSS dynamically
+		// Generate CSS string dynamically
 		return `/* Custom preflight generated for ${process.env.NODE_ENV} */
 		:root {
 			--app-version: '1.0.0';
 		}`
+	},
+	(engine, isFormatted) => {
+		// Generate CSS object dynamically
+		return {
+			':root': {
+				'--app-version': '1.0.0',
+			}
+		}
 	}
 ]
 ```
 
 The `isFormatted` parameter indicates whether the CSS should be formatted for development (with indentation) or minified for production.
+
+You can mix all three types in the same array. For simple global styles, string is recommended; for complex or nested selectors, use the object form.
 
 ## Common Use Cases
 
