@@ -1,4 +1,4 @@
-/// <reference path="./src/pika.gen.ts" />
+/** @type import('./src/pika.gen.ts') */
 import { icons } from '@pikacss/plugin-icons'
 import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
 
@@ -7,9 +7,9 @@ export default defineEngineConfig({
 		icons(),
 	],
 	variables: {
-		variables: [
-			['color-primary', '#ff007f'],
-		],
+		variables: {
+			'color-primary': '#ff007f',
+		},
 	},
 	selectors: {
 		selectors: [
