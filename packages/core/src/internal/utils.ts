@@ -100,13 +100,13 @@ export function renderCSSStyleBlocks(blocks: CSSStyleBlocks, isFormatted: boolea
 	const lineEnd = isFormatted ? '\n' : ''
 	const lines: string[] = []
 	blocks.forEach(({ properties, children }, selector) => {
-		if (properties.length === 0 && children == null)
+		if (properties.length === 0 && (children == null || children.size === 0))
 			return
 
 		lines.push(...[
 			`${blockIndent}${selector}${selectorEnd}{`,
 			...properties.map(({ property, value }) => `${blockBodyIndent}${property}:${propertySpace}${value};`),
-			...children != null
+			...(children != null && children.size > 0)
 				? [renderCSSStyleBlocks(children, isFormatted, depth + 1)]
 				: [],
 			`${blockIndent}}`,
