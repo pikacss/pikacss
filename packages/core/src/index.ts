@@ -1,3 +1,4 @@
+/* c8 ignore start */
 export {
 	createEngine,
 	defineEngineConfig,
@@ -38,3 +39,4 @@ export type {
 	StyleDefinition,
 	StyleItem,
 } from './types'
+/* c8 ignore end */
