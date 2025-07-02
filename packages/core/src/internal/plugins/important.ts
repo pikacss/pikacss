@@ -1,4 +1,4 @@
-import type { Nullish, StyleDefinition } from '../types'
+import type { Nullish, PropertyValue, StyleDefinition } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { isPropertyValue } from '../utils'
 
@@ -12,6 +12,17 @@ declare module '@pikacss/core' {
 	interface EngineConfig {
 		important?: ImportantConfig
 	}
+}
+
+function modifyPropertyValue(value: PropertyValue): PropertyValue {
+	if (value == null)
+		return null
+
+	if (Array.isArray(value)) {
+		return [`${value[0]} !important`, value[1].map(i => `${i} !important`)]
+	}
+
+	return `${value} !important`
 }
 
 export function important() {
@@ -38,12 +49,11 @@ export function important() {
 				return Object.fromEntries(
 					Object.entries(rest)
 						.map(([k, v]) => {
-							if (isPropertyValue(v) === false || v == null)
-								return [k, v]
+							if (isPropertyValue(v)) {
+								return [k, modifyPropertyValue(v)]
+							}
 
-							const modified = [v].flat(2).map(v => `${v} !important`)
-
-							return [k, modified]
+							return [k, v]
 						}),
 				)
 			})
