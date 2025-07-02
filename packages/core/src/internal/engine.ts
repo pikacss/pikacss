@@ -361,7 +361,7 @@ export async function _renderPreflightDefinition({
 			else {
 				currentBlockBody.children ||= new Map()
 				currentBlockBody.children.set(k, currentBlockBody.children.get(k) || { properties: [] })
-				_renderPreflightDefinition({
+				await _renderPreflightDefinition({
 					engine,
 					preflightDefinition: { [k]: v } as PreflightDefinition,
 					blocks: currentBlockBody.children,
