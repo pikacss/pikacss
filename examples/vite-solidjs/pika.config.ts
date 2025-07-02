@@ -8,7 +8,7 @@ export default defineEngineConfig({
 	],
 	variables: {
 		variables: {
-			'color-primary': '#ff007f',
+			'--color-primary': '#ff007f',
 		},
 	},
 	selectors: {
