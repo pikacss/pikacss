@@ -4,9 +4,17 @@ permissions:
   contents: write
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: Type of version bump
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   release:
@@ -24,6 +32,11 @@ jobs:
         with:
           node-version: lts/*
           registry-url: 'https://registry.npmjs.org'
+
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          pnpm dlx bumpp ${{ github.event.inputs.bump_type }} -y
 
       - run: pnpm install --frozen-lockfile && pnpm build && pnpm publish:packages
         env:
