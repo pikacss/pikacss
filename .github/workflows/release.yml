@@ -36,7 +36,7 @@ jobs:
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          pnpm dlx bumpp ${{ github.event.inputs.bump_type }} -y
+          pnpm dlx bumpp -r ${{ github.event.inputs.bump_type }} -y
 
       - run: pnpm install --frozen-lockfile && pnpm build && pnpm publish:packages
         env:
