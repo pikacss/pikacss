@@ -31,8 +31,8 @@ catalogs:
       specifier: ^20.17.30
       version: 20.17.30
     '@unocss/preset-icons':
-      specifier: ^65.4.3
-      version: 65.4.3
+      specifier: ^65.5.0
+      version: 65.5.0
     '@vitest/coverage-v8':
       specifier: ^3.2.4
       version: 3.2.4
@@ -427,7 +427,7 @@ importers:
         version: link:../core
       '@unocss/preset-icons':
         specifier: 'catalog:'
-        version: 65.4.3
+        version: 65.5.0
       ofetch:
         specifier: 'catalog:'
         version: 1.5.1
@@ -2834,8 +2834,14 @@ packages:
   '@unocss/core@65.4.3':
     resolution: {integrity: sha512-luFgdcchSlNrYSaDvU2176T2PPQZdxqfREVbxEXNXlFEgyEFrx5hOSUXoJtJSZjRhAcE6zkWyLDf/JkQJ5Eeyw==}
 
+  '@unocss/core@65.5.0':
+    resolution: {integrity: sha512-XYWdS09M2XOjZNDotGhI2TIW/6duLNiyssopwjCbv4AlPklF0bZI86SKI55syYDBt6GRadoQbuvUkhSiTV/hzQ==}
+
   '@unocss/preset-icons@65.4.3':
     resolution: {integrity: sha512-g1WNamvYOIdD8YAOvZ5h4g3peel3rLTtKvB0wX4pVL5exsYsoyc0tmiGm57k+ZmnIucqSzxoUZ/vjHDLAViahw==}
+
+  '@unocss/preset-icons@65.5.0':
+    resolution: {integrity: sha512-lSwMNtj4nufpQDBFoioAM9S6hP8028lA9fLFM3Vw+KmI10/3TaZyOaCXJVH5UdsfNWexGGo/Qo+K1YFWfXLZ8A==}
 
   '@vercel/nft@0.27.7':
     resolution: {integrity: sha512-FG6H5YkP4bdw9Ll1qhmbxuE8KwW2E/g8fJpM183fWQLeVDGqzeywMIeJ9h2txdWZ03psgWMn6QymTxaDLmdwUg==}
@@ -10552,10 +10558,20 @@ snapshots:
 
   '@unocss/core@65.4.3': {}
 
+  '@unocss/core@65.5.0': {}
+
   '@unocss/preset-icons@65.4.3':
     dependencies:
       '@iconify/utils': 2.3.0
       '@unocss/core': 65.4.3
+      ofetch: 1.5.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@unocss/preset-icons@65.5.0':
+    dependencies:
+      '@iconify/utils': 2.3.0
+      '@unocss/core': 65.5.0
       ofetch: 1.5.1
     transitivePeerDependencies:
       - supports-color
