@@ -4,33 +4,146 @@
 		"config:recommended",
 		":semanticCommits",
 		":enableVulnerabilityAlertsWithLabel('security')",
-		":maintainLockFilesWeekly"
+		":maintainLockFilesWeekly",
+		":rebaseStalePrs",
+		":prHourlyLimitNone"
 	],
-	"rangeStrategy": "auto",
-	"packageRules": [
-		{
-			"matchDepTypes": ["devDependencies"],
-			"matchUpdateTypes": ["patch", "minor"],
-			"groupName": "dev dependencies (non-major)",
-			"automerge": true
-		},
-		{
-			"matchDepTypes": ["dependencies"],
-			"matchUpdateTypes": ["patch"],
-			"groupName": "production dependencies (patch)",
-			"automerge": true
-		},
-		{
-			"matchDepTypes": ["dependencies"],
-			"matchUpdateTypes": ["minor"],
-			"groupName": "production dependencies (minor)",
-			"automerge": false
-		}
-	],
+	"labels": ["dependencies"],
+	"rangeStrategy": "bump",
 	"schedule": ["every weekend"],
+	"timezone": "Asia/Taipei",
+	"prConcurrentLimit": 5,
 	"ignorePaths": ["**/node_modules/**"],
 	"lockFileMaintenance": {
 		"enabled": true,
 		"schedule": ["before 5am on monday"]
-	}
+	},
+	"packageRules": [
+		{
+			"description": "安全性更新：最高優先級，立即建立 PR",
+			"matchDepTypes": ["dependencies", "devDependencies"],
+			"matchUpdateTypes": ["patch", "minor", "major"],
+			"matchCategories": ["security"],
+			"groupName": "security updates",
+			"labels": ["dependencies", "security"],
+			"schedule": ["at any time"],
+			"automerge": false,
+			"prPriority": 10
+		},
+		{
+			"description": "核心建構工具：TypeScript, ESLint, Vitest, unbuild",
+			"matchPackageNames": ["typescript", "eslint", "vitest", "unbuild", "@vitest/*"],
+			"matchPackagePatterns": ["^@deviltea/eslint-config$", "^@deviltea/tsconfig$"],
+			"groupName": "core build tools",
+			"automerge": false,
+			"prPriority": 5
+		},
+		{
+			"description": "Vue 生態系：Vue, VitePress",
+			"matchPackageNames": ["vue", "vitepress", "vue-tsc"],
+			"matchPackagePatterns": ["^@vue/"],
+			"groupName": "vue ecosystem",
+			"automerge": false,
+			"prPriority": 4
+		},
+		{
+			"description": "Vite 生態系",
+			"matchPackageNames": ["vite"],
+			"matchPackagePatterns": ["^@vitejs/", "^vite-"],
+			"groupName": "vite ecosystem",
+			"automerge": false,
+			"prPriority": 4
+		},
+		{
+			"description": "Nuxt 生態系",
+			"matchPackagePatterns": ["^@nuxt/"],
+			"groupName": "nuxt ecosystem",
+			"automerge": false,
+			"prPriority": 4
+		},
+		{
+			"description": "Iconify 相關套件",
+			"matchPackagePatterns": ["^@iconify/", "^@iconify-json/"],
+			"groupName": "iconify packages",
+			"automerge": true,
+			"prPriority": 2
+		},
+		{
+			"description": "UnoCSS 相關套件",
+			"matchPackagePatterns": ["^@unocss/"],
+			"groupName": "unocss packages",
+			"automerge": false,
+			"prPriority": 3
+		},
+		{
+			"description": "文件站相關套件 (docs/)",
+			"matchFileNames": ["docs/package.json"],
+			"groupName": "documentation dependencies",
+			"automerge": true,
+			"prPriority": 1
+		},
+		{
+			"description": "範例專案套件 (examples/)",
+			"matchFileNames": ["examples/**/package.json"],
+			"groupName": "example dependencies",
+			"automerge": true,
+			"prPriority": 0
+		},
+		{
+			"description": "開發依賴 (patch & minor)：自動合併",
+			"matchDepTypes": ["devDependencies"],
+			"matchUpdateTypes": ["patch", "minor"],
+			"excludePackageNames": ["typescript", "eslint", "vitest", "unbuild"],
+			"excludePackagePatterns": ["^@deviltea/", "^@nuxt/", "^@vue/", "^@vitejs/"],
+			"groupName": "dev dependencies (non-major)",
+			"automerge": true,
+			"prPriority": 1
+		},
+		{
+			"description": "生產依賴 (patch)：自動合併",
+			"matchDepTypes": ["dependencies"],
+			"matchUpdateTypes": ["patch"],
+			"excludePackagePatterns": ["^@nuxt/", "^@vue/", "^@vitejs/", "^@iconify/", "^@unocss/"],
+			"groupName": "production dependencies (patch)",
+			"automerge": true,
+			"prPriority": 2
+		},
+		{
+			"description": "生產依賴 (minor)：需要審查",
+			"matchDepTypes": ["dependencies"],
+			"matchUpdateTypes": ["minor"],
+			"excludePackagePatterns": ["^@nuxt/", "^@vue/", "^@vitejs/", "^@iconify/", "^@unocss/"],
+			"groupName": "production dependencies (minor)",
+			"automerge": false,
+			"prPriority": 2
+		},
+		{
+			"description": "主要版本更新：需要審查",
+			"matchUpdateTypes": ["major"],
+			"groupName": "major updates",
+			"automerge": false,
+			"prPriority": 3
+		},
+		{
+			"description": "pnpm 套件管理器更新",
+			"matchPackageNames": ["pnpm"],
+			"matchManagers": ["npm"],
+			"groupName": "pnpm",
+			"automerge": false,
+			"prPriority": 5
+		},
+		{
+			"description": "Node.js 版本更新",
+			"matchPackageNames": ["node"],
+			"matchManagers": ["nvm", "nodenv", "node-version"],
+			"enabled": false
+		},
+		{
+			"description": "GitHub Actions",
+			"matchManagers": ["github-actions"],
+			"groupName": "github actions",
+			"automerge": true,
+			"prPriority": 1
+		}
+	]
 }
