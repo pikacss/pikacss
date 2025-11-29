@@ -1,10 +1,19 @@
 import type { IconifyLoaderOptions, UniversalIconLoader } from '@iconify/utils'
 import type { Engine, EnginePlugin, Simplify, StyleItem } from '@pikacss/core'
 import type { IconsOptions as UnoIconsOptions } from '@unocss/preset-icons'
+import process from 'node:process'
 import { encodeSvgForCss, loadIcon } from '@iconify/utils'
 import { defineEnginePlugin, warn } from '@pikacss/core'
-import { combineLoaders, createCDNFetchLoader, createNodeLoader, getEnvFlags, parseIconWithLoader } from '@unocss/preset-icons'
+import { combineLoaders, createCDNFetchLoader, createNodeLoader, parseIconWithLoader } from '@unocss/preset-icons'
 import { $fetch } from 'ofetch'
+
+// Environment flags helper (replaces removed getEnvFlags from @unocss/preset-icons)
+function getEnvFlags() {
+	const isNode = typeof process !== 'undefined' && typeof process.versions?.node !== 'undefined'
+	const isVSCode = isNode && !!process.env.VSCODE_PID
+	const isESLint = isNode && !!process.env.ESLINT
+	return { isNode, isVSCode, isESLint }
+}
 
 interface IconMeta {
 	collection: string

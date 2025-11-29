@@ -9,17 +9,17 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"modern-normalize": "^3.0.1",
-		"solid-js": "^1.9.10"
+		"modern-normalize": "catalog:",
+		"solid-js": "catalog:"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "latest",
-		"@pikacss/plugin-icons": "latest",
-		"@pikacss/vite-plugin-pikacss": "latest",
-		"@types/node": "latest",
-		"typescript": "~5.8.3",
-		"vite": "^6.3.2",
-		"vite-plugin-solid": "^2.11.6"
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/vite-plugin-pikacss": "workspace:*",
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:",
+		"vite-plugin-solid": "catalog:"
 	},
 	"stackblitz": {
 		"installDependencies": true,
