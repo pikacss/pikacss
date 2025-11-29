@@ -24,7 +24,7 @@ catalog:
   local-pkg: ^1.1.1
   magic-string: ^0.30.12
   micromatch: ^4.0.8
-  ofetch: ^1.4.1
+  ofetch: ^1.5.1
   pathe: ^2.0.3
   perfect-debounce: ^1.0.0
   pkg-size: ^2.4.0
