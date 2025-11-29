@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -31,25 +31,6 @@ jobs:
 
       - name: lint files
         run: pnpm lint
-
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: setup node
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: build
-        run: pnpm build && pnpm docs:build
 
       - name: typecheck
         run: pnpm typecheck
