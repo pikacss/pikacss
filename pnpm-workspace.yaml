@@ -11,15 +11,15 @@ catalog:
   '@iconify-json/line-md': ^1.2.11
   '@iconify-json/mdi': ^1.2.3
   '@iconify/types': ^2.0.0
-  '@iconify/utils': ^2.3.0
-  '@nuxt/kit': ^3.13.2
-  '@nuxt/schema': ^3.13.2
+  '@iconify/utils': ^3.1.0
+  '@nuxt/kit': ^4.2.1
+  '@nuxt/schema': ^4.2.1
   '@shikijs/vitepress-twoslash': ^3.0.0
   '@types/micromatch': ^4.0.9
   '@types/node': ^24.10.1
-  '@unocss/preset-icons': ^65.4.3
-  '@vitejs/plugin-react': ^4.4.1
-  '@vitejs/plugin-vue': ^5.2.1
+  '@unocss/preset-icons': ^66.5.9
+  '@vitejs/plugin-react': ^5.1.1
+  '@vitejs/plugin-vue': ^6.0.2
   '@vitest/coverage-v8': ^4.0.14
   '@vue/tsconfig': ^0.7.0
   bumpp: ^10.3.2
@@ -43,7 +43,7 @@ catalog:
   nuxt: ^3.13.2
   ofetch: ^1.5.1
   pathe: ^2.0.3
-  perfect-debounce: ^1.0.0
+  perfect-debounce: ^2.0.0
   pkg-pr-new: ^0.0.61
   pkg-size: ^2.4.0
   publint: ^0.3.15
