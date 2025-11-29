@@ -7,7 +7,15 @@ import { defineEnginePlugin, warn } from '@pikacss/core'
 import { combineLoaders, createCDNFetchLoader, createNodeLoader, parseIconWithLoader } from '@unocss/preset-icons'
 import { $fetch } from 'ofetch'
 
-// Environment flags helper (replaces removed getEnvFlags from @unocss/preset-icons)
+/**
+ * Environment flags helper function to detect the current runtime environment.
+ * This replaces the removed `getEnvFlags` export from `@unocss/preset-icons` v66+.
+ *
+ * @returns An object containing:
+ *  - `isNode`: Whether the code is running in a Node.js environment
+ *  - `isVSCode`: Whether the code is running within VS Code (extension host)
+ *  - `isESLint`: Whether the code is running within ESLint
+ */
 function getEnvFlags() {
 	const isNode = typeof process !== 'undefined' && typeof process.versions?.node !== 'undefined'
 	const isVSCode = isNode && !!process.env.VSCODE_PID
