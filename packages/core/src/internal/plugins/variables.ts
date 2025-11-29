@@ -217,7 +217,8 @@ export function extractUsedVarNames(input: string): string[] {
 	return matched.map((match) => {
 		const varNameMatch = match.match(/--[^,)]+/)
 		return varNameMatch ? varNameMatch[0] : ''
-	}).filter(Boolean)
+	})
+		.filter(Boolean)
 }
 
 export function normalizeVariableName(name: string) {

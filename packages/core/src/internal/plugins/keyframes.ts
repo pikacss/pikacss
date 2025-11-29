@@ -9,10 +9,10 @@ export interface Progress {
 	[K: `${number}%`]: ResolvedProperties
 }
 
-export type Keyframes =
-	| string
-	| [name: string, frames?: Progress, autocomplete?: string[], pruneUnused?: boolean]
-	| { name: string, frames?: Progress, autocomplete?: string[], pruneUnused?: boolean }
+export type Keyframes
+	= | string
+		| [name: string, frames?: Progress, autocomplete?: string[], pruneUnused?: boolean]
+		| { name: string, frames?: Progress, autocomplete?: string[], pruneUnused?: boolean }
 
 export interface KeyframesConfig {
 	/**
@@ -108,7 +108,8 @@ export function keyframes() {
 
 					if (property === 'animation') {
 						value.forEach((value) => {
-							const animations = value.split(',').map(v => v.trim())
+							const animations = value.split(',')
+								.map(v => v.trim())
 							animations.forEach((animation) => {
 								addToSet(maybeUsedName, ...animation.split(' '))
 							})

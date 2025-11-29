@@ -12,7 +12,8 @@ describe('plugin-keyframes', () => {
 		})
 		await engine.use({ animation: 'fade 1s' })
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain('@keyframes fade{from{opacity:0;}to{opacity:1;}}')
+		expect(css)
+			.toContain('@keyframes fade{from{opacity:0;}to{opacity:1;}}')
 	})
 
 	it('should add keyframes dynamically and render them as preflights', async () => {
@@ -20,7 +21,8 @@ describe('plugin-keyframes', () => {
 		engine.keyframes.add(['slide', { from: { transform: 'translateX(-100%)' }, to: { transform: 'translateX(0)' } }])
 		await engine.use({ animation: 'slide 1s' })
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain('@keyframes slide{from{transform:translateX(-100%);}to{transform:translateX(0);}}')
+		expect(css)
+			.toContain('@keyframes slide{from{transform:translateX(-100%);}to{transform:translateX(0);}}')
 	})
 
 	it('should handle string keyframe definition', async () => {
@@ -54,6 +56,7 @@ describe('plugin-keyframes', () => {
 		})
 		await engine.use({ animation: 'always-there 1s' })
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain('@keyframes always-there{from{opacity:0;}to{opacity:1;}}')
+		expect(css)
+			.toContain('@keyframes always-there{from{opacity:0;}to{opacity:1;}}')
 	})
 })

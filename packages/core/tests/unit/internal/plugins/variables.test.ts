@@ -13,7 +13,8 @@ describe('plugin-variables', () => {
 		})
 		await engine.use({ color: 'var(--color-primary)', fontSize: 'var(--font-size)' })
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain(':root{--color-primary:blue;--font-size:16px;}')
+		expect(css)
+			.toContain(':root{--color-primary:blue;--font-size:16px;}')
 	})
 
 	it('should handle nested variable definitions', async () => {
@@ -31,8 +32,10 @@ describe('plugin-variables', () => {
 		})
 		await engine.use({ dark: { backgroundColor: 'var(--color-bg)' } })
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain('.dark{--color-bg:black;}')
-		expect(css).toContain('.light{--color-bg:white;}')
+		expect(css)
+			.toContain('.dark{--color-bg:black;}')
+		expect(css)
+			.toContain('.light{--color-bg:white;}')
 	})
 
 	it('should prune unused variables by default', async () => {
@@ -57,7 +60,8 @@ describe('plugin-variables', () => {
 			},
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain('--safe-var:safe-value')
+		expect(css)
+			.toContain('--safe-var:safe-value')
 	})
 
 	it('should not prune variables when pruneUnused is false', async () => {
@@ -70,7 +74,8 @@ describe('plugin-variables', () => {
 			},
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css).toContain('--unpruned-var:unpruned-value')
+		expect(css)
+			.toContain('--unpruned-var:unpruned-value')
 	})
 
 	it('should add autocomplete suggestions for variables', async () => {
@@ -87,8 +92,11 @@ describe('plugin-variables', () => {
 				},
 			},
 		})
-		expect(engine.config.autocomplete.cssProperties.get('padding')).toContain('var(--my-var)')
-		expect(engine.config.autocomplete.cssProperties.get('margin')).toContain('var(--my-var)')
-		expect(engine.config.autocomplete.extraCssProperties).toContain('--my-var')
+		expect(engine.config.autocomplete.cssProperties.get('padding'))
+			.toContain('var(--my-var)')
+		expect(engine.config.autocomplete.cssProperties.get('margin'))
+			.toContain('var(--my-var)')
+		expect(engine.config.autocomplete.extraCssProperties)
+			.toContain('--my-var')
 	})
 })

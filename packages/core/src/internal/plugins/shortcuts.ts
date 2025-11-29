@@ -1,23 +1,24 @@
 import type { Engine } from '../engine'
+import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, Nullish, ResolvedStyleItem, StyleDefinition, StyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
-import { AbstractResolver, type DynamicRule, type StaticRule } from '../resolver'
+import { AbstractResolver } from '../resolver'
 import { isNotString, warn } from '../utils'
 
 // #region ShortcutConfig
-export type Shortcut =
-	| string
-	| [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>, autocomplete?: Arrayable<string>]
-	| {
-		shortcut: RegExp
-		value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>
-		autocomplete?: Arrayable<string>
-	}
-	| [shortcut: string, value: Arrayable<ResolvedStyleItem>]
-	| {
-		shortcut: string
-		value: Arrayable<ResolvedStyleItem>
-	}
+export type Shortcut
+	= | string
+		| [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>, autocomplete?: Arrayable<string>]
+		| {
+			shortcut: RegExp
+			value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>
+			autocomplete?: Arrayable<string>
+		}
+		| [shortcut: string, value: Arrayable<ResolvedStyleItem>]
+		| {
+			shortcut: string
+			value: Arrayable<ResolvedStyleItem>
+		}
 
 export interface ShortcutsConfig {
 	/**
@@ -164,8 +165,8 @@ class ShortcutResolver extends AbstractResolver<StyleItem[]> {
 	}
 }
 
-type ResolvedShortcutConfig =
-	| {
+type ResolvedShortcutConfig
+	= | {
 		type: 'static'
 		rule: StaticShortcutRule
 		autocomplete: string[]

@@ -32,7 +32,7 @@ type MakeStyleDefinition<MaxDepth extends number, Tuple extends any[] = []> = Tu
 
 export type StyleDefinition = MakeStyleDefinition<5>
 
-export type StyleItem =
-	| UnionString
-	| ResolvedAutocomplete['StyleItemString']
-	| StyleDefinition
+export type StyleItem
+	= | UnionString
+		| ResolvedAutocomplete['StyleItemString']
+		| StyleDefinition

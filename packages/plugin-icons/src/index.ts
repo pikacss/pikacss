@@ -1,6 +1,9 @@
-import { encodeSvgForCss, type IconifyLoaderOptions, loadIcon, type UniversalIconLoader } from '@iconify/utils'
-import { defineEnginePlugin, type Engine, type EnginePlugin, type Simplify, type StyleItem, warn } from '@pikacss/core'
-import { combineLoaders, createCDNFetchLoader, createNodeLoader, getEnvFlags, parseIconWithLoader, type IconsOptions as UnoIconsOptions } from '@unocss/preset-icons'
+import type { IconifyLoaderOptions, UniversalIconLoader } from '@iconify/utils'
+import type { Engine, EnginePlugin, Simplify, StyleItem } from '@pikacss/core'
+import type { IconsOptions as UnoIconsOptions } from '@unocss/preset-icons'
+import { encodeSvgForCss, loadIcon } from '@iconify/utils'
+import { defineEnginePlugin, warn } from '@pikacss/core'
+import { combineLoaders, createCDNFetchLoader, createNodeLoader, getEnvFlags, parseIconWithLoader } from '@unocss/preset-icons'
 import { $fetch } from 'ofetch'
 
 interface IconMeta {
@@ -119,7 +122,8 @@ function createIconsPlugin(lookupIconLoader: (config: IconsConfig) => Promise<Un
 				},
 			}
 
-			const prefixRE = new RegExp(`^(${[prefix].flat().join('|')})`)
+			const prefixRE = new RegExp(`^(${[prefix].flat()
+				.join('|')})`)
 			const autocompletePrefix = [prefix].flat()
 			const autocomplete: string[] = [
 				...autocompletePrefix,
@@ -129,7 +133,8 @@ function createIconsPlugin(lookupIconLoader: (config: IconsConfig) => Promise<Un
 			let iconLoader: UniversalIconLoader
 
 			engine.shortcuts.add({
-				shortcut: new RegExp(`^(?:${[prefix].flat().join('|')})([\\w:-]+)(?:\\?(mask|bg|auto))?$`),
+				shortcut: new RegExp(`^(?:${[prefix].flat()
+					.join('|')})([\\w:-]+)(?:\\?(mask|bg|auto))?$`),
 				value: async (match) => {
 					let [full, body, _mode = mode] = match as [string, string, IconsConfig['mode']]
 

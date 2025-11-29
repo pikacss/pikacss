@@ -1,6 +1,8 @@
+import type { IntegrationContext } from '@pikacss/integration'
+import type { Plugin as VitePlugin } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
-import { createCtx, type IntegrationContext } from '@pikacss/integration'
-import { transformWithEsbuild, type Plugin as VitePlugin } from 'vite'
+import { createCtx } from '@pikacss/integration'
+import { transformWithEsbuild } from 'vite'
 import { build } from './build'
 import { SHARED_PLUGIN_NAME } from './constants'
 import { dev } from './dev'
@@ -33,7 +35,8 @@ export default function PikaCSSPlugin({
 		target,
 		fnName,
 		transformedFormat,
-		transformTsToJs: code => transformWithEsbuild(code, 'pikacss.ts').then(result => result.code),
+		transformTsToJs: code => transformWithEsbuild(code, 'pikacss.ts')
+			.then(result => result.code),
 		autoCreateConfig,
 	}
 

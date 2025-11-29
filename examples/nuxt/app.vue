@@ -2,10 +2,11 @@
 import 'modern-normalize'
 
 function toggleDarkMode() {
-	document.documentElement.querySelector('link[rel="icon"]')?.setAttribute(
-		'href',
-		document.documentElement.classList.contains('dark') ? '/logo-black.svg' : '/logo-white.svg',
-	)
+	document.documentElement.querySelector('link[rel="icon"]')
+		?.setAttribute(
+			'href',
+			document.documentElement.classList.contains('dark') ? '/logo-black.svg' : '/logo-white.svg',
+		)
 	document.documentElement.classList.toggle('dark')
 }
 

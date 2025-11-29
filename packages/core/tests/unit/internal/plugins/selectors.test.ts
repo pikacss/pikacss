@@ -12,7 +12,8 @@ describe('plugin-selectors', () => {
 		})
 		await engine.use({ hover: { color: 'blue' } })
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a:hover{color:blue;}')
+		expect(css)
+			.toBe('.a:hover{color:blue;}')
 	})
 
 	it('should handle static selectors (object format)', async () => {
@@ -25,7 +26,8 @@ describe('plugin-selectors', () => {
 		})
 		await engine.use({ focus: { outline: 'none' } })
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a:focus{outline:none;}')
+		expect(css)
+			.toBe('.a:focus{outline:none;}')
 	})
 
 	it('should handle dynamic selectors (array format)', async () => {
@@ -38,7 +40,8 @@ describe('plugin-selectors', () => {
 		})
 		await engine.use({ 'screen-768': { width: '100%' } })
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('@media (min-width: 768px){.a{width:100%;}}')
+		expect(css)
+			.toBe('@media (min-width: 768px){.a{width:100%;}}')
 	})
 
 	it('should handle dynamic selectors (object format)', async () => {
@@ -51,7 +54,8 @@ describe('plugin-selectors', () => {
 		})
 		await engine.use({ dark: { color: 'black' } })
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.dark .a{color:black;}')
+		expect(css)
+			.toBe('.dark .a{color:black;}')
 	})
 
 	it('should resolve nested selectors', async () => {
@@ -64,6 +68,7 @@ describe('plugin-selectors', () => {
 		})
 		await engine.use({ 'group-hover': { color: 'red' } })
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.group:hover &{.a{color:red;}}')
+		expect(css)
+			.toBe('.group:hover &{.a{color:red;}}')
 	})
 })

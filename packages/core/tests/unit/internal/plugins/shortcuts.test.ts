@@ -12,7 +12,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('flex-center')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{display:flex;}.b{align-items:center;}.c{justify-content:center;}')
+		expect(css)
+			.toBe('.a{display:flex;}.b{align-items:center;}.c{justify-content:center;}')
 	})
 
 	it('should handle static shortcuts (object format)', async () => {
@@ -25,7 +26,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('btn')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{padding:10px;}.b{border-radius:5px;}')
+		expect(css)
+			.toBe('.a{padding:10px;}.b{border-radius:5px;}')
 	})
 
 	it('should handle dynamic shortcuts (array format)', async () => {
@@ -38,7 +40,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('m-10')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{margin:10px;}')
+		expect(css)
+			.toBe('.a{margin:10px;}')
 	})
 
 	it('should handle dynamic shortcuts (object format)', async () => {
@@ -51,7 +54,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('p-20')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{padding:20px;}')
+		expect(css)
+			.toBe('.a{padding:20px;}')
 	})
 
 	it('should resolve nested shortcuts', async () => {
@@ -65,7 +69,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('card-primary')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{padding:1rem;}.b{border-radius:8px;}.c{background-color:blue;}')
+		expect(css)
+			.toBe('.a{padding:1rem;}.b{border-radius:8px;}.c{background-color:blue;}')
 	})
 
 	it('should handle __shortcut property', async () => {
@@ -78,7 +83,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use({ __shortcut: 'flex-center' })
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{display:flex;}.b{align-items:center;}.c{justify-content:center;}')
+		expect(css)
+			.toBe('.a{display:flex;}.b{align-items:center;}.c{justify-content:center;}')
 	})
 
 	it('should ignore invalid shortcuts', async () => {
@@ -92,7 +98,8 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('123')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('')
+		expect(css)
+			.toBe('')
 	})
 
 	it('should handle autocomplete', async () => {
@@ -105,9 +112,12 @@ describe('plugin-shortcuts', () => {
 		})
 		await engine.use('m-4')
 		const css = await engine.renderAtomicStyles(false)
-		expect(css).toBe('.a{margin:4px;}')
+		expect(css)
+			.toBe('.a{margin:4px;}')
 		const autocomplete = engine.config.autocomplete
-		expect(autocomplete.styleItemStrings).toContain('m-4')
-		expect(autocomplete.styleItemStrings).toContain('m-8')
+		expect(autocomplete.styleItemStrings)
+			.toContain('m-4')
+		expect(autocomplete.styleItemStrings)
+			.toContain('m-8')
 	})
 })

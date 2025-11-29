@@ -1,23 +1,24 @@
 import type { Engine } from '../engine'
+import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, Nullish, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
-import { AbstractResolver, type DynamicRule, type StaticRule } from '../resolver'
+import { AbstractResolver } from '../resolver'
 import { warn } from '../utils'
 
 // #region SelectorConfig
-export type Selector =
-	| string
-	| [selector: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>, autocomplete?: Arrayable<string>]
-	| [selector: string, value: Arrayable<UnionString | ResolvedSelector>]
-	| {
-		selector: RegExp
-		value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>
-		autocomplete?: Arrayable<string>
-	}
-	| {
-		selector: string
-		value: Arrayable<UnionString | ResolvedSelector>
-	}
+export type Selector
+	= | string
+		| [selector: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>, autocomplete?: Arrayable<string>]
+		| [selector: string, value: Arrayable<UnionString | ResolvedSelector>]
+		| {
+			selector: RegExp
+			value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>
+			autocomplete?: Arrayable<string>
+		}
+		| {
+			selector: string
+			value: Arrayable<UnionString | ResolvedSelector>
+		}
 
 export interface SelectorsConfig {
 	/**
@@ -129,8 +130,8 @@ class SelectorResolver extends AbstractResolver<string[]> {
 	}
 }
 
-type ResolvedSelectorConfig =
-	| {
+type ResolvedSelectorConfig
+	= | {
 		type: 'static'
 		rule: StaticSelectorRule
 		autocomplete: string[]

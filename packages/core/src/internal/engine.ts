@@ -1,6 +1,7 @@
+import type { ExtractFn } from './extractor'
 import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, StyleContent, StyleDefinition, StyleItem } from './types'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL } from './constants'
-import { createExtractFn, type ExtractFn, normalizeSelectors, normalizeValue } from './extractor'
+import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
 import { keyframes } from './plugins/keyframes'
@@ -166,7 +167,10 @@ export class Engine {
 	async renderAtomicStyles(isFormatted: boolean, options: { atomicStyleIds?: string[], isPreview?: boolean } = {}) {
 		const { atomicStyleIds = null, isPreview = false } = options
 
-		const atomicStyles = atomicStyleIds == null ? [...this.store.atomicStyles.values()] : atomicStyleIds.map(id => this.store.atomicStyles.get(id)).filter(isNotNullish)
+		const atomicStyles = atomicStyleIds == null
+			? [...this.store.atomicStyles.values()]
+			: atomicStyleIds.map(id => this.store.atomicStyles.get(id))
+					.filter(isNotNullish)
 		return renderAtomicStyles({
 			atomicStyles,
 			isPreview,
@@ -337,7 +341,8 @@ export async function _renderPreflightDefinition({
 		const selectors = normalizeSelectors({
 			selectors: await hooks.transformSelectors(engine.config.plugins, [selector]),
 			defaultSelector: '',
-		}).filter(Boolean)
+		})
+			.filter(Boolean)
 		let currentBlocks = blocks
 		let currentBlockBody: CSSStyleBlockBody = null!
 		selectors.forEach((s, i) => {

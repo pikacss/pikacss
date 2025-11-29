@@ -51,7 +51,8 @@ export default defineEngineConfig({
 
 		// Dynamic preflight with engine access
 		(engine) => {
-			return `/* Generated at: ${new Date().toISOString()} */`
+			return `/* Generated at: ${new Date()
+				.toISOString()} */`
 		}
 	]
 })

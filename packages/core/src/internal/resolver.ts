@@ -67,7 +67,8 @@ export abstract class AbstractResolver<T> {
 		if (existedResult != null)
 			return existedResult
 
-		const staticRule = Array.from(this.staticRulesMap.values()).find(rule => rule.string === string)
+		const staticRule = Array.from(this.staticRulesMap.values())
+			.find(rule => rule.string === string)
 		if (staticRule != null) {
 			const resolvedResult = { value: staticRule.resolved }
 			this._resolvedResultsMap.set(string, resolvedResult)

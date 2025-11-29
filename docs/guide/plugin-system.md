@@ -70,7 +70,8 @@ sequenceDiagram
 Here's the anatomy of a PikaCSS plugin:
 
 ```typescript
-import { defineEnginePlugin, type EnginePlugin } from '@pikacss/core'
+import type { EnginePlugin } from '@pikacss/core'
+import { defineEnginePlugin } from '@pikacss/core'
 
 export function myPlugin(): EnginePlugin {
 	return defineEnginePlugin({
@@ -278,9 +279,9 @@ The engine instance also provides access to the following data:
 ```ts
 store = {
 	// Map of all generated atomic style IDs
-	atomicStyleIds: Map</* style */ string, /* id */ string>,
+	atomicStyleIds: Map<string, /* id */ string>,
 	// Map of all generated atomic styles
-	atomicStyles: Map</* id */ string, AtomicStyle>,
+	atomicStyles: Map<string, AtomicStyle>,
 }
 ```
 

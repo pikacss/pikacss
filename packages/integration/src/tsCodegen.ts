@@ -1,7 +1,10 @@
 import type { IntegrationContext } from './types'
 
 function formatUnionStringType(list: (string | number)[]) {
-	return list.length > 0 ? list.map(i => typeof i === 'number' ? i : `'${i}'`).join(' | ') : 'never'
+	return list.length > 0
+		? list.map(i => typeof i === 'number' ? i : `'${i}'`)
+				.join(' | ')
+		: 'never'
 }
 
 function generateAutocomplete(ctx: IntegrationContext) {
@@ -12,8 +15,10 @@ function generateAutocomplete(ctx: IntegrationContext) {
 		`  StyleItemString: ${formatUnionStringType([...autocomplete.styleItemStrings])}`,
 		`  ExtraProperty: ${formatUnionStringType([...autocomplete.extraProperties])}`,
 		`  ExtraCssProperty: ${formatUnionStringType([...autocomplete.extraCssProperties])}`,
-		`  PropertiesValue: { ${Array.from(autocomplete.properties.entries(), ([k, v]) => `'${k}': ${v.join(' | ')}`).join(',')} }`,
-		`  CssPropertiesValue: { ${Array.from(autocomplete.cssProperties.entries(), ([k, v]) => `'${k}': ${formatUnionStringType(v)}`).join(',')} }`,
+		`  PropertiesValue: { ${Array.from(autocomplete.properties.entries(), ([k, v]) => `'${k}': ${v.join(' | ')}`)
+			.join(',')} }`,
+		`  CssPropertiesValue: { ${Array.from(autocomplete.cssProperties.entries(), ([k, v]) => `'${k}': ${formatUnionStringType(v)}`)
+			.join(',')} }`,
 		'}>',
 		'',
 	]
@@ -113,7 +118,8 @@ async function generateOverloadContent(ctx: IntegrationContext) {
 					.map(line => `   * ‎${line.replace(/^(\s*)/, '$1‎')}`),
 				'   * ```',
 				'   */',
-				`  fn(...params: [${usage.params.map((_, index) => `p${index}: P${i}_${index}`).join(', ')}]): ReturnType<StyleFn>`,
+				`  fn(...params: [${usage.params.map((_, index) => `p${index}: P${i}_${index}`)
+					.join(', ')}]): ReturnType<StyleFn>`,
 			]
 
 			paramsLines.push(...addedParamsLines)

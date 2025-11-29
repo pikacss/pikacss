@@ -55,7 +55,9 @@ export function normalizeValue(value: PropertyValue): ExtractedStyleContent['val
 	if (value == null)
 		return value
 
-	return [...new Set([value].flat(2).map(v => String(v).trim()))]
+	return [...new Set([value].flat(2)
+		.map(v => String(v)
+			.trim()))]
 }
 
 export async function extract({
