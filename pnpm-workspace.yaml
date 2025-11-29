@@ -35,10 +35,10 @@ catalog:
   typescript: ^5.9.3
   unbuild: ^3.6.1
   vite: ^6.1.1
-  vitepress: ^2.0.0-alpha.2
+  vitepress: ^2.0.0-alpha.15
   vitest: ^3.2.4
-  vue: ^3.5.13
-  vue-tsc: ^2.2.10
+  vue: ^3.5.25
+  vue-tsc: ^2.2.12
   zx: ^8.5.3
 onlyBuiltDependencies:
   - simple-git-hooks
