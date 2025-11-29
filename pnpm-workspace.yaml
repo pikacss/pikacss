@@ -31,7 +31,7 @@ catalog:
   publint: ^0.3.12
   rimraf: ^6.0.1
   simple-git-hooks: ^2.13.0
-  tsx: ^4.19.3
+  tsx: ^4.20.6
   typescript: ^5.9.3
   unbuild: ^3.6.1
   vite: ^6.1.1
