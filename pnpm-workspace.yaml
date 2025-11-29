@@ -3,7 +3,7 @@ packages:
   - packages/*
   - examples/*
 catalog:
-  '@clack/prompts': ^0.10.1
+  '@clack/prompts': ^0.11.0
   '@deviltea/eslint-config': 4.0.0
   '@deviltea/tsconfig': 0.0.8
   '@iconify/utils': ^2.3.0
