@@ -16,11 +16,11 @@
 		"@iconify-json/line-md": "latest",
 		"@pikacss/plugin-icons": "latest",
 		"@pikacss/vite-plugin-pikacss": "latest",
-		"@vitejs/plugin-vue": "^5.2.1",
+		"@vitejs/plugin-vue": "^6.0.2",
 		"@vue/tsconfig": "^0.7.0",
 		"typescript": "~5.8.3",
 		"vite": "^6.3.2",
-		"vue-tsc": "^2.2.0"
+		"vue-tsc": "^3.1.5"
 	},
 	"stackblitz": {
 		"installDependencies": true,
