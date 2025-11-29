@@ -20,7 +20,7 @@
 	},
 	"packageRules": [
 		{
-			"description": "安全性更新：最高優先級，立即建立 PR",
+			"description": "Security updates: highest priority, create PR immediately",
 			"matchDepTypes": ["dependencies", "devDependencies"],
 			"matchUpdateTypes": ["patch", "minor", "major"],
 			"matchCategories": ["security"],
@@ -31,7 +31,7 @@
 			"prPriority": 10
 		},
 		{
-			"description": "核心建構工具：TypeScript, ESLint, Vitest, unbuild",
+			"description": "Core build tools: TypeScript, ESLint, Vitest, unbuild",
 			"matchPackageNames": ["typescript", "eslint", "vitest", "unbuild"],
 			"matchPackagePatterns": ["^@deviltea/eslint-config$", "^@deviltea/tsconfig$", "^@vitest/"],
 			"groupName": "core build tools",
@@ -39,7 +39,7 @@
 			"prPriority": 5
 		},
 		{
-			"description": "Vue 生態系：Vue, VitePress",
+			"description": "Vue ecosystem: Vue, VitePress",
 			"matchPackageNames": ["vue", "vitepress", "vue-tsc"],
 			"matchPackagePatterns": ["^@vue/"],
 			"groupName": "vue ecosystem",
@@ -47,7 +47,7 @@
 			"prPriority": 4
 		},
 		{
-			"description": "Vite 生態系",
+			"description": "Vite ecosystem",
 			"matchPackageNames": ["vite"],
 			"matchPackagePatterns": ["^@vitejs/", "^vite-"],
 			"groupName": "vite ecosystem",
@@ -55,42 +55,42 @@
 			"prPriority": 4
 		},
 		{
-			"description": "Nuxt 生態系",
+			"description": "Nuxt ecosystem",
 			"matchPackagePatterns": ["^@nuxt/"],
 			"groupName": "nuxt ecosystem",
 			"automerge": false,
 			"prPriority": 4
 		},
 		{
-			"description": "Iconify 相關套件",
+			"description": "Iconify related packages",
 			"matchPackagePatterns": ["^@iconify/", "^@iconify-json/"],
 			"groupName": "iconify packages",
 			"automerge": true,
 			"prPriority": 2
 		},
 		{
-			"description": "UnoCSS 相關套件",
+			"description": "UnoCSS related packages",
 			"matchPackagePatterns": ["^@unocss/"],
 			"groupName": "unocss packages",
 			"automerge": false,
 			"prPriority": 3
 		},
 		{
-			"description": "文件站相關套件 (docs/)",
+			"description": "Documentation site packages (docs/)",
 			"matchFileNames": ["docs/package.json"],
 			"groupName": "documentation dependencies",
 			"automerge": true,
 			"prPriority": 1
 		},
 		{
-			"description": "範例專案套件 (examples/)",
+			"description": "Example project packages (examples/)",
 			"matchFileNames": ["examples/**/package.json"],
 			"groupName": "example dependencies",
 			"automerge": true,
 			"prPriority": 0
 		},
 		{
-			"description": "開發依賴 (patch & minor)：自動合併",
+			"description": "Dev dependencies (patch & minor): automerge",
 			"matchDepTypes": ["devDependencies"],
 			"matchUpdateTypes": ["patch", "minor"],
 			"excludePackageNames": ["typescript", "eslint", "vitest", "unbuild"],
@@ -100,7 +100,7 @@
 			"prPriority": 1
 		},
 		{
-			"description": "生產依賴 (patch)：自動合併",
+			"description": "Production dependencies (patch): automerge",
 			"matchDepTypes": ["dependencies"],
 			"matchUpdateTypes": ["patch"],
 			"excludePackagePatterns": ["^@nuxt/", "^@vue/", "^@vitejs/", "^@iconify/", "^@unocss/"],
@@ -109,7 +109,7 @@
 			"prPriority": 2
 		},
 		{
-			"description": "生產依賴 (minor)：需要審查",
+			"description": "Production dependencies (minor): requires review",
 			"matchDepTypes": ["dependencies"],
 			"matchUpdateTypes": ["minor"],
 			"excludePackagePatterns": ["^@nuxt/", "^@vue/", "^@vitejs/", "^@iconify/", "^@unocss/"],
@@ -118,21 +118,21 @@
 			"prPriority": 2
 		},
 		{
-			"description": "主要版本更新：需要審查",
+			"description": "Major version updates: requires review",
 			"matchUpdateTypes": ["major"],
 			"groupName": "major updates",
 			"automerge": false,
 			"prPriority": 3
 		},
 		{
-			"description": "pnpm 套件管理器更新",
+			"description": "pnpm package manager updates",
 			"matchManagers": ["pnpm"],
 			"groupName": "pnpm",
 			"automerge": false,
 			"prPriority": 5
 		},
 		{
-			"description": "Node.js 版本更新",
+			"description": "Node.js version updates",
 			"matchPackageNames": ["node"],
 			"matchManagers": ["nvm", "nodenv", "node-version"],
 			"enabled": false
