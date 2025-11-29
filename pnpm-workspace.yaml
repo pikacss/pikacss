@@ -2,43 +2,68 @@ packages:
   - docs
   - packages/*
   - examples/*
+
 catalog:
-  '@clack/prompts': ^0.10.1
-  '@deviltea/eslint-config': 4.0.0
+  '@braintree/sanitize-url': ^7.1.1
+  '@clack/prompts': ^0.11.0
+  '@deviltea/eslint-config': 6.0.1
   '@deviltea/tsconfig': 0.0.8
-  '@iconify/utils': ^2.3.0
+  '@iconify-json/line-md': ^1.2.11
+  '@iconify-json/mdi': ^1.2.3
   '@iconify/types': ^2.0.0
+  '@iconify/utils': ^2.3.0
   '@nuxt/kit': ^3.13.2
   '@nuxt/schema': ^3.13.2
-  '@types/node': ^20.17.30
+  '@shikijs/vitepress-twoslash': ^3.0.0
   '@types/micromatch': ^4.0.9
+  '@types/node': ^24.10.1
   '@unocss/preset-icons': ^65.4.3
-  '@vitest/coverage-v8': ^3.2.4
-  bumpp: ^10.0.3
+  '@vitejs/plugin-react': ^4.4.1
+  '@vitejs/plugin-vue': ^5.2.1
+  '@vitest/coverage-v8': ^4.0.14
+  '@vue/tsconfig': ^0.7.0
+  bumpp: ^10.3.2
   csstype: ^3.1.3
+  cytoscape: ^3.32.0
+  cytoscape-cose-bilkent: ^4.1.0
+  dayjs: ^1.11.13
+  debug: ^4.4.0
   eslint: ^9.39.1
   fast-glob: ^3.3.2
-  happy-dom: ^20.0.0
+  globals: ^16.0.0
+  happy-dom: ^20.0.11
   jiti: ^2.4.2
-  lint-staged: ^15.5.2
+  klona: ^2.0.6
+  lint-staged: ^16.2.7
   local-pkg: ^1.1.1
   magic-string: ^0.30.12
+  mermaid: ^11.6.0
   micromatch: ^4.0.8
+  modern-normalize: ^3.0.1
+  nuxt: ^3.13.2
   ofetch: ^1.5.1
   pathe: ^2.0.3
   perfect-debounce: ^1.0.0
+  pkg-pr-new: ^0.0.61
   pkg-size: ^2.4.0
-  publint: ^0.3.12
-  rimraf: ^6.0.1
-  simple-git-hooks: ^2.13.0
-  tsx: ^4.19.3
+  publint: ^0.3.15
+  react: ^19.1.0
+  react-dom: ^19.1.0
+  rimraf: ^6.1.2
+  simple-git-hooks: ^2.13.1
+  solid-js: ^1.9.10
+  tsx: ^4.20.6
   typescript: ^5.9.3
   unbuild: ^3.6.1
-  vite: ^6.1.1
+  vite: ^6.3.2
+  vite-plugin-solid: ^2.11.6
+
   vitepress: ^2.0.0-alpha.2
-  vitest: ^3.2.4
-  vue: ^3.5.13
-  vue-tsc: ^2.2.10
-  zx: ^8.5.3
+  vitepress-plugin-group-icons: ^1.3.6
+  vitepress-plugin-mermaid: ^2.0.17
+  vitest: ^4.0.14
+  vue: ^3.5.25
+  vue-tsc: ^3.1.5
+  zx: ^8.8.5
 onlyBuiltDependencies:
   - simple-git-hooks
