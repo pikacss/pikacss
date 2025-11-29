@@ -32,8 +32,8 @@
 		},
 		{
 			"description": "核心建構工具：TypeScript, ESLint, Vitest, unbuild",
-			"matchPackageNames": ["typescript", "eslint", "vitest", "unbuild", "@vitest/*"],
-			"matchPackagePatterns": ["^@deviltea/eslint-config$", "^@deviltea/tsconfig$"],
+			"matchPackageNames": ["typescript", "eslint", "vitest", "unbuild"],
+			"matchPackagePatterns": ["^@deviltea/eslint-config$", "^@deviltea/tsconfig$", "^@vitest/"],
 			"groupName": "core build tools",
 			"automerge": false,
 			"prPriority": 5
@@ -126,8 +126,7 @@
 		},
 		{
 			"description": "pnpm 套件管理器更新",
-			"matchPackageNames": ["pnpm"],
-			"matchManagers": ["npm"],
+			"matchManagers": ["pnpm"],
 			"groupName": "pnpm",
 			"automerge": false,
 			"prPriority": 5
