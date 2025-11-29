@@ -61,8 +61,8 @@ catalogs:
       specifier: ^1.1.1
       version: 1.1.1
     magic-string:
-      specifier: ^0.30.12
-      version: 0.30.17
+      specifier: ^0.30.21
+      version: 0.30.21
     micromatch:
       specifier: ^4.0.8
       version: 4.0.8
@@ -386,7 +386,7 @@ importers:
         version: 1.1.1
       magic-string:
         specifier: 'catalog:'
-        version: 0.30.17
+        version: 0.30.21
       micromatch:
         specifier: 'catalog:'
         version: 4.0.8

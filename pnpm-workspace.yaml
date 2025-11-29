@@ -22,7 +22,7 @@ catalog:
   jiti: ^2.4.2
   lint-staged: ^15.5.2
   local-pkg: ^1.1.1
-  magic-string: ^0.30.12
+  magic-string: ^0.30.21
   micromatch: ^4.0.8
   ofetch: ^1.5.1
   pathe: ^2.0.3
