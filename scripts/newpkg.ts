@@ -85,35 +85,29 @@ const templates = {
 	},
 	"main": "dist/index.cjs",
 	"module": "dist/index.mjs",
-	"types": "dist/index.d.ts",
+	"types": "dist/index.d.mts",
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"build": "unbuild",
+		"build": "tsdown",
 		"build:pack": "pnpm build && pnpm pack",
-		"stub": "unbuild --stub",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit"
 	}
 }
 	`.trim(),
-	'build.config.ts': `
-import { defineBuildConfig } from 'unbuild'
+	'tsdown.config.ts': `
+import { defineConfig } from 'tsdown'
 
-export default defineBuildConfig({
-	entries: ['src/index.ts'],
-	declaration: true,
-	rollup: {
-		dts: {
-			tsconfig: './tsconfig.package.json',
-			compilerOptions: {
-				composite: false,
-			},
-		},
-		emitCJS: true,
+export default defineConfig({
+	entry: ['src/index.ts'],
+	format: ['esm', 'cjs'],
+	dts: {
+		tsconfig: './tsconfig.package.json',
 	},
+	clean: true,
 })
 	`.trim(),
 	'src/index.ts': `

@@ -15,7 +15,6 @@
 	],
 	"scripts": {
 		"build": "pnpm -r --filter=./packages/* build",
-		"stub": "pnpm -r --filter=./packages/* stub",
 		"newpkg": "tsx ./scripts/newpkg.ts",
 		"prepare:local": "pnpm build && tsx ./scripts/prepareLocalInstall.ts",
 		"publint": "pnpm -r --filter=./packages/* exec publint",
@@ -45,9 +44,9 @@
 		"publint": "catalog:",
 		"rimraf": "catalog:",
 		"simple-git-hooks": "catalog:",
+		"tsdown": "catalog:",
 		"tsx": "catalog:",
 		"typescript": "catalog:",
-		"unbuild": "catalog:",
 		"vitest": "catalog:",
 		"vue-tsc": "catalog:",
 		"zx": "catalog:"
