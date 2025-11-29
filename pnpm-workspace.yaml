@@ -20,7 +20,7 @@ catalog:
   fast-glob: ^3.3.2
   happy-dom: ^17.4.4
   jiti: ^2.4.2
-  lint-staged: ^15.5.1
+  lint-staged: ^15.5.2
   local-pkg: ^1.1.1
   magic-string: ^0.30.12
   micromatch: ^4.0.8
