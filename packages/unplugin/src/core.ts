@@ -1,7 +1,7 @@
 import type { IntegrationContext } from '@pikacss/integration'
-import type { UnpluginFactory, UnpluginInstance } from 'unplugin'
+import type { OnLoadArgs, PluginBuild } from 'esbuild'
+import type { UnpluginFactory, UnpluginInstance, WebpackCompiler } from 'unplugin'
 import type { ResolvedConfig, ViteDevServer } from 'vite'
-import type { Compiler as WebpackCompiler } from 'webpack'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -126,8 +126,8 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 		// esbuild-specific hooks
 		esbuild: {
 			// Register onLoad for our namespace to handle the virtual CSS module
-			setup(build) {
-				build.onLoad({ filter: /\.css$/, namespace: PLUGIN_NAME }, async (args) => {
+			setup(build: PluginBuild) {
+				build.onLoad({ filter: /\.css$/, namespace: PLUGIN_NAME }, async (args: OnLoadArgs) => {
 					try {
 						const contents = readFileSync(args.path, 'utf-8')
 						return { contents, loader: 'css' }
