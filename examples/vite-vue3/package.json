@@ -9,18 +9,18 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"modern-normalize": "catalog:",
-		"vue": "catalog:"
+		"modern-normalize": "^3.0.1",
+		"vue": "^3.5.25"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "catalog:",
-		"@pikacss/plugin-icons": "workspace:*",
-		"@pikacss/vite-plugin-pikacss": "workspace:*",
-		"@vitejs/plugin-vue": "catalog:",
-		"@vue/tsconfig": "catalog:",
-		"typescript": "catalog:",
-		"vite": "catalog:",
-		"vue-tsc": "catalog:"
+		"@iconify-json/line-md": "latest",
+		"@pikacss/plugin-icons": "latest",
+		"@pikacss/vite-plugin-pikacss": "latest",
+		"@vitejs/plugin-vue": "^6.0.2",
+		"@vue/tsconfig": "^0.8.1",
+		"typescript": "^5.9.3",
+		"vite": "^6.3.5",
+		"vue-tsc": "^3.1.5"
 	},
 	"stackblitz": {
 		"installDependencies": true,
