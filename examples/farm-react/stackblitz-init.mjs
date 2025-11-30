@@ -8,6 +8,9 @@ import fs from 'node:fs'
 
 // Version mappings from catalog (pnpm-workspace.yaml)
 const catalogVersions = {
+	'@farmfe/cli': '^1.0.5',
+	'@farmfe/core': '^1.7.11',
+	'@farmfe/plugin-react': '^1.2.4',
 	'@iconify-json/line-md': '^1.2.11',
 	'@types/react': '^19.2.7',
 	'@types/react-dom': '^19.2.3',

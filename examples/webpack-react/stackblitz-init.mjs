@@ -11,10 +11,18 @@ const catalogVersions = {
 	'@iconify-json/line-md': '^1.2.11',
 	'@types/react': '^19.2.7',
 	'@types/react-dom': '^19.2.3',
+	'copy-webpack-plugin': '^12.0.2',
+	'css-loader': '^7.1.2',
+	'html-webpack-plugin': '^5.6.3',
 	'modern-normalize': '^3.0.1',
 	'react': '^19.2.0',
 	'react-dom': '^19.2.0',
+	'style-loader': '^4.0.0',
+	'ts-loader': '^9.5.2',
 	'typescript': '^5.9.3',
+	'webpack': '^5.103.0',
+	'webpack-cli': '^6.0.1',
+	'webpack-dev-server': '^5.2.1',
 }
 
 // Workspace packages use 'latest' in StackBlitz

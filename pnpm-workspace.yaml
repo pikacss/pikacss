@@ -8,12 +8,21 @@ catalog:
   '@clack/prompts': ^0.11.0
   '@deviltea/eslint-config': 6.0.1
   '@deviltea/tsconfig': 0.0.8
+  '@farmfe/cli': ^1.0.5
+  '@farmfe/core': ^1.7.11
+  '@farmfe/plugin-react': ^1.2.4
   '@iconify-json/line-md': ^1.2.11
   '@iconify-json/mdi': ^1.2.3
   '@iconify/types': ^2.0.0
   '@iconify/utils': ^3.1.0
   '@nuxt/kit': ^4.2.1
   '@nuxt/schema': ^4.2.1
+  '@rollup/plugin-commonjs': ^28.0.3
+  '@rollup/plugin-node-resolve': ^16.0.1
+  '@rollup/plugin-replace': ^6.0.2
+  '@rollup/plugin-typescript': ^12.1.2
+  '@rspack/cli': ^1.6.5
+  '@rspack/core': ^1.6.5
   '@shikijs/vitepress-twoslash': ^3.17.0
   '@types/micromatch': ^4.0.10
   '@types/node': ^24.10.1
@@ -25,15 +34,20 @@ catalog:
   '@vitest/coverage-v8': ^4.0.14
   '@vue/tsconfig': ^0.8.1
   bumpp: ^10.3.2
+  copy-webpack-plugin: ^12.0.2
+  css-loader: ^7.1.2
   csstype: ^3.2.3
   cytoscape: ^3.33.1
   cytoscape-cose-bilkent: ^4.1.0
   dayjs: ^1.11.19
   debug: ^4.4.0
+  esbuild: ^0.27.0
+  esbuild-css-modules-plugin: ^3.1.4
   eslint: ^9.39.1
   fast-glob: ^3.3.2
   globals: ^16.5.0
   happy-dom: ^20.0.11
+  html-webpack-plugin: ^5.6.3
   jiti: ^2.6.1
   klona: ^2.0.6
   lint-staged: ^16.2.7
@@ -52,20 +66,28 @@ catalog:
   react: ^19.2.0
   react-dom: ^19.2.0
   rimraf: ^6.1.2
+  rolldown: ^1.0.0-beta.52
+  rollup: ^4.53.3
+  rollup-plugin-copy: ^3.5.0
   simple-git-hooks: ^2.13.1
   solid-js: ^1.9.10
+  style-loader: ^4.0.0
+  ts-loader: ^9.5.2
   tsdown: ^0.16.8
   tsx: ^4.20.6
   typescript: ^5.9.3
   vite: ^6.3.5
   vite-plugin-solid: ^2.11.10
-
   vitepress: ^2.0.0-alpha.2
   vitepress-plugin-group-icons: ^1.6.5
   vitepress-plugin-mermaid: ^2.0.17
   vitest: ^4.0.14
   vue: ^3.5.25
   vue-tsc: ^3.1.5
+  webpack: ^5.103.0
+  webpack-cli: ^6.0.1
+  webpack-dev-server: ^5.2.1
+
   zx: ^8.8.5
 onlyBuiltDependencies:
   - simple-git-hooks

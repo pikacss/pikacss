@@ -9,6 +9,8 @@ import fs from 'node:fs'
 // Version mappings from catalog (pnpm-workspace.yaml)
 const catalogVersions = {
 	'@iconify-json/line-md': '^1.2.11',
+	'@rspack/cli': '^1.6.5',
+	'@rspack/core': '^1.6.5',
 	'@types/react': '^19.2.7',
 	'@types/react-dom': '^19.2.3',
 	'modern-normalize': '^3.0.1',

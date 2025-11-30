@@ -11,6 +11,8 @@ const catalogVersions = {
 	'@iconify-json/line-md': '^1.2.11',
 	'@types/react': '^19.2.7',
 	'@types/react-dom': '^19.2.3',
+	'esbuild': '^0.27.0',
+	'esbuild-css-modules-plugin': '^3.1.4',
 	'modern-normalize': '^3.0.1',
 	'react': '^19.2.0',
 	'react-dom': '^19.2.0',

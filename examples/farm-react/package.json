@@ -14,9 +14,9 @@
 		"react-dom": "catalog:"
 	},
 	"devDependencies": {
-		"@farmfe/cli": "^1.0.5",
-		"@farmfe/core": "^1.7.11",
-		"@farmfe/plugin-react": "^1.2.4",
+		"@farmfe/cli": "catalog:",
+		"@farmfe/core": "catalog:",
+		"@farmfe/plugin-react": "catalog:",
 		"@iconify-json/line-md": "catalog:",
 		"@pikacss/plugin-icons": "workspace:*",
 		"@pikacss/unplugin-pikacss": "workspace:*",

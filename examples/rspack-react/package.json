@@ -17,8 +17,8 @@
 		"@iconify-json/line-md": "catalog:",
 		"@pikacss/plugin-icons": "workspace:*",
 		"@pikacss/unplugin-pikacss": "workspace:*",
-		"@rspack/cli": "^1.6.5",
-		"@rspack/core": "^1.6.5",
+		"@rspack/cli": "catalog:",
+		"@rspack/core": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"typescript": "catalog:"

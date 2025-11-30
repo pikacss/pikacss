@@ -18,8 +18,8 @@
 		"@pikacss/unplugin-pikacss": "workspace:*",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
-		"esbuild": "^0.27.0",
-		"esbuild-css-modules-plugin": "^3.1.4",
+		"esbuild": "catalog:",
+		"esbuild-css-modules-plugin": "catalog:",
 		"typescript": "catalog:"
 	},
 	"stackblitz": {

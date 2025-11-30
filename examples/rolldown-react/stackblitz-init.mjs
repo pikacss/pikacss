@@ -14,6 +14,7 @@ const catalogVersions = {
 	'modern-normalize': '^3.0.1',
 	'react': '^19.2.0',
 	'react-dom': '^19.2.0',
+	'rolldown': '^1.0.0-beta.52',
 	'typescript': '^5.9.3',
 }
 

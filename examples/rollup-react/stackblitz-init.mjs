@@ -9,11 +9,17 @@ import fs from 'node:fs'
 // Version mappings from catalog (pnpm-workspace.yaml)
 const catalogVersions = {
 	'@iconify-json/line-md': '^1.2.11',
+	'@rollup/plugin-commonjs': '^28.0.3',
+	'@rollup/plugin-node-resolve': '^16.0.1',
+	'@rollup/plugin-replace': '^6.0.2',
+	'@rollup/plugin-typescript': '^12.1.2',
 	'@types/react': '^19.2.7',
 	'@types/react-dom': '^19.2.3',
 	'modern-normalize': '^3.0.1',
 	'react': '^19.2.0',
 	'react-dom': '^19.2.0',
+	'rollup': '^4.53.3',
+	'rollup-plugin-copy': '^3.5.0',
 	'typescript': '^5.9.3',
 }
 
