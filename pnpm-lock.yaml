@@ -481,9 +481,9 @@ importers:
       '@nuxt/kit':
         specifier: 'catalog:'
         version: 4.2.1(magicast@0.5.1)
-      '@pikacss/vite-plugin-pikacss':
+      '@pikacss/unplugin-pikacss':
         specifier: workspace:*
-        version: link:../vite
+        version: link:../unplugin
       pathe:
         specifier: 'catalog:'
         version: 2.0.3
@@ -507,7 +507,7 @@ importers:
         specifier: 'catalog:'
         version: 1.5.1
 
-  packages/vite:
+  packages/unplugin:
     dependencies:
       '@pikacss/integration':
         specifier: workspace:*
@@ -515,6 +515,19 @@ importers:
       pathe:
         specifier: 'catalog:'
         version: 2.0.3
+      unplugin:
+        specifier: ^2.3.11
+        version: 2.3.11
+    devDependencies:
+      vite:
+        specifier: 'catalog:'
+        version: 6.4.1(@types/node@24.10.1)(jiti@2.6.1)(terser@5.36.0)(tsx@4.20.6)(yaml@2.8.1)
+
+  packages/vite:
+    dependencies:
+      '@pikacss/unplugin-pikacss':
+        specifier: workspace:*
+        version: link:../unplugin
     devDependencies:
       vite:
         specifier: 'catalog:'
