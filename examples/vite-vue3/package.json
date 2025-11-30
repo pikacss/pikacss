@@ -5,9 +5,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
+		"build": "vite build && vue-tsc -b",
 		"preview": "vite preview",
-		"typecheck": "vue-tsc -b",
 		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
@@ -17,6 +16,7 @@
 	"devDependencies": {
 		"@iconify-json/line-md": "catalog:",
 		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
 		"@pikacss/vite-plugin-pikacss": "workspace:*",
 		"@vitejs/plugin-vue": "catalog:",
 		"@vue/tsconfig": "catalog:",
