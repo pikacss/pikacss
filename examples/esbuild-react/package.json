@@ -1,0 +1,29 @@
+{
+	"name": "esbuild-react",
+	"type": "module",
+	"version": "0.0.32",
+	"private": true,
+	"scripts": {
+		"build": "node build.mjs",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
+	},
+	"dependencies": {
+		"modern-normalize": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"devDependencies": {
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"esbuild": "^0.27.0",
+		"esbuild-css-modules-plugin": "^3.1.4",
+		"typescript": "catalog:"
+	},
+	"stackblitz": {
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run build"
+	}
+}

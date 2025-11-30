@@ -1,0 +1,33 @@
+{
+	"name": "rollup-react",
+	"type": "module",
+	"version": "0.0.32",
+	"private": true,
+	"scripts": {
+		"build": "rollup -c",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
+	},
+	"dependencies": {
+		"modern-normalize": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"devDependencies": {
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
+		"@rollup/plugin-commonjs": "^28.0.3",
+		"@rollup/plugin-node-resolve": "^16.0.1",
+		"@rollup/plugin-replace": "^6.0.2",
+		"@rollup/plugin-typescript": "^12.1.2",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"rollup": "^4.53.3",
+		"rollup-plugin-copy": "^3.5.0",
+		"typescript": "catalog:"
+	},
+	"stackblitz": {
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run build"
+	}
+}
