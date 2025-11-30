@@ -7,9 +7,13 @@ import copy from 'rollup-plugin-copy'
 
 // Simple CSS plugin that emits CSS as a separate file
 function css() {
-	const cssContents = []
+	let cssContents = []
 	return {
 		name: 'css',
+		buildStart() {
+			// Clear CSS contents at the start of each build to avoid duplicates in watch mode
+			cssContents = []
+		},
 		transform(code, id) {
 			if (id.endsWith('.css')) {
 				cssContents.push(code)

@@ -24,6 +24,25 @@ function createPromise<T = void>() {
 	return { promise, resolve: resolve!, reject: reject! }
 }
 
+/**
+ * Shared helper for webpack and rspack to setup NormalModuleReplacementPlugin
+ */
+function setupNormalModuleReplacement(
+	compiler: WebpackCompiler,
+	devCss: string,
+	bundler: 'webpack' | '@rspack/core',
+) {
+	const compilerCwd = compiler.options.context || process.cwd()
+	const devCssPath = join(compilerCwd, devCss)
+	// eslint-disable-next-line ts/no-require-imports
+	const { NormalModuleReplacementPlugin } = compiler.webpack || require(bundler)
+	new NormalModuleReplacementPlugin(
+		/^virtual:pika\.css$/,
+		devCssPath,
+	)
+		.apply(compiler)
+}
+
 export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> = (options, _meta) => {
 	const {
 		currentPackageName = '@pikacss/unplugin-pikacss',
@@ -168,32 +187,12 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 
 		// Webpack-specific hooks
 		webpack(compiler: WebpackCompiler) {
-			// Get cwd from webpack compiler context
-			const webpackCwd = compiler.options.context || process.cwd()
-			// Use NormalModuleReplacementPlugin to replace virtual:pika.css with the actual file
-			const devCssPath = join(webpackCwd, resolvedOptions.devCss)
-			// eslint-disable-next-line ts/no-require-imports
-			const { NormalModuleReplacementPlugin } = compiler.webpack || require('webpack')
-			new NormalModuleReplacementPlugin(
-				/^virtual:pika\.css$/,
-				devCssPath,
-			)
-				.apply(compiler)
+			setupNormalModuleReplacement(compiler, resolvedOptions.devCss, 'webpack')
 		},
 
 		// Rspack-specific hooks - same as webpack
 		rspack(compiler: WebpackCompiler) {
-			// Get cwd from rspack compiler context
-			const rspackCwd = compiler.options.context || process.cwd()
-			// Use NormalModuleReplacementPlugin to replace virtual:pika.css with the actual file
-			const devCssPath = join(rspackCwd, resolvedOptions.devCss)
-			// eslint-disable-next-line ts/no-require-imports
-			const { NormalModuleReplacementPlugin } = compiler.webpack || require('@rspack/core')
-			new NormalModuleReplacementPlugin(
-				/^virtual:pika\.css$/,
-				devCssPath,
-			)
-				.apply(compiler)
+			setupNormalModuleReplacement(compiler, resolvedOptions.devCss, '@rspack/core')
 		},
 
 		// Additional getCtx function exposed for consumers
