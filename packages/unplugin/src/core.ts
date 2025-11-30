@@ -120,6 +120,9 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 							}
 						}
 					})
+					.catch((error) => {
+						console.error('[pikacss] Failed to initialize plugin:', error)
+					})
 			},
 		},
 

@@ -124,7 +124,7 @@ export default {
 interface PluginOptions {
 	/**
 	 * Patterns of files to be transformed if they are matched.
-	 * @default ['**\/*.vue', '**\/*.tsx', '**\/*.jsx']
+	 * @default `['**\/*.vue', '**\/*.tsx', '**\/*.jsx']`
 	 */
 	target?: string[]
 
@@ -153,7 +153,7 @@ interface PluginOptions {
 	/**
 	 * Enable/disable the generation of d.ts files.
 	 * If a string is provided, it will be used as the path to the d.ts file.
-	 * @default false
+	 * @default true
 	 */
 	tsCodegen?: boolean | string
 
