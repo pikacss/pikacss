@@ -125,6 +125,7 @@
 		"unplugin": "^2.3.11"
 	},
 	"devDependencies": {
+		"@farmfe/core": "catalog:",
 		"vite": "catalog:"
 	}
 }

@@ -1,0 +1,28 @@
+{
+	"name": "rolldown-react",
+	"type": "module",
+	"version": "0.0.32",
+	"private": true,
+	"scripts": {
+		"build": "rolldown -c",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
+	},
+	"dependencies": {
+		"modern-normalize": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"devDependencies": {
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"rolldown": "catalog:",
+		"typescript": "catalog:"
+	},
+	"stackblitz": {
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run build"
+	}
+}

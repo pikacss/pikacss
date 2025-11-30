@@ -1,0 +1,31 @@
+{
+	"name": "farm-react",
+	"type": "module",
+	"version": "0.0.32",
+	"private": true,
+	"scripts": {
+		"build": "farm build",
+		"dev": "farm start",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
+	},
+	"dependencies": {
+		"modern-normalize": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"devDependencies": {
+		"@farmfe/cli": "catalog:",
+		"@farmfe/core": "catalog:",
+		"@farmfe/plugin-react": "catalog:",
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"typescript": "catalog:"
+	},
+	"stackblitz": {
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run dev"
+	}
+}
