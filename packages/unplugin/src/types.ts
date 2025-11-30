@@ -32,7 +32,7 @@ export interface PluginOptions {
 	/**
 	 * Enable/disable the generation of d.ts files.
 	 * If a string is provided, it will be used as the path to the d.ts file.
-	 * Default path is `<path to vite config>/pika.d.ts`.
+	 * Default path is `<path to config>/pika.d.ts`.
 	 * @default false
 	 */
 	tsCodegen?: boolean | string
@@ -62,6 +62,5 @@ export interface ResolvedPluginOptions {
 	target: string[]
 	fnName: string
 	transformedFormat: 'string' | 'array' | 'inline'
-	transformTsToJs: (tsCode: string) => Promise<string> | string
 	autoCreateConfig: boolean
 }

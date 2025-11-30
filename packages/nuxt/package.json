@@ -43,7 +43,7 @@
 	},
 	"dependencies": {
 		"@nuxt/kit": "catalog:",
-		"@pikacss/vite-plugin-pikacss": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
 		"pathe": "catalog:"
 	},
 	"devDependencies": {

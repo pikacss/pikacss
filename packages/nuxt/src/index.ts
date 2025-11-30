@@ -1,9 +1,9 @@
 import type { NuxtModule } from '@nuxt/schema'
-import type { PluginOptions as VitePikaCSSPluginOptions } from '@pikacss/vite-plugin-pikacss'
+import type { PluginOptions as UnpluginPikaCSSPluginOptions } from '@pikacss/unplugin-pikacss/vite'
 import { addPluginTemplate, addVitePlugin, defineNuxtModule } from '@nuxt/kit'
-import VitePikaCSSPlugin from '@pikacss/vite-plugin-pikacss'
+import PikaCSSVitePlugin from '@pikacss/unplugin-pikacss/vite'
 
-export type ModuleOptions = Omit<VitePikaCSSPluginOptions, 'currentPackageName'>
+export type ModuleOptions = Omit<UnpluginPikaCSSPluginOptions, 'currentPackageName'>
 
 export default (defineNuxtModule<ModuleOptions>({
 	meta: {
@@ -18,7 +18,7 @@ export default (defineNuxtModule<ModuleOptions>({
 			},
 		})
 
-		const vitePlugin = VitePikaCSSPlugin({
+		const vitePlugin = PikaCSSVitePlugin({
 			currentPackageName: '@pikacss/nuxt-pikacss',
 			...(nuxt.options.pikacss || {}),
 		})
@@ -35,7 +35,7 @@ export default (defineNuxtModule<ModuleOptions>({
 	},
 }) as NuxtModule<ModuleOptions>)
 
-export * from '@pikacss/vite-plugin-pikacss'
+export * from '@pikacss/unplugin-pikacss/vite'
 
 declare module '@nuxt/schema' {
 	interface NuxtConfig {

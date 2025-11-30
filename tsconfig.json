@@ -6,7 +6,8 @@
 		"./packages/integration/tsconfig.json",
 		"./packages/vite/tsconfig.json",
 		"./packages/nuxt/tsconfig.json",
-		"./packages/plugin-icons/tsconfig.json"
+		"./packages/plugin-icons/tsconfig.json",
+		"./packages/unplugin/tsconfig.json"
 	],
 	"references": [
 		{

@@ -45,8 +45,7 @@
 		"vite": "^5.0.0 || ^6.0.0"
 	},
 	"dependencies": {
-		"@pikacss/integration": "workspace:*",
-		"pathe": "catalog:"
+		"@pikacss/unplugin-pikacss": "workspace:*"
 	},
 	"devDependencies": {
 		"vite": "catalog:"
