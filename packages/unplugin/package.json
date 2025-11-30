@@ -126,6 +126,7 @@
 	},
 	"devDependencies": {
 		"@farmfe/core": "catalog:",
+		"esbuild": "catalog:",
 		"vite": "catalog:"
 	}
 }
