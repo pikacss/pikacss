@@ -6,24 +6,25 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vue-tsc -b && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
-		"modern-normalize": "^3.0.1",
-		"vue": "^3.5.25"
+		"modern-normalize": "catalog:",
+		"vue": "catalog:"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "latest",
-		"@pikacss/plugin-icons": "latest",
-		"@pikacss/vite-plugin-pikacss": "latest",
-		"@vitejs/plugin-vue": "^6.0.2",
-		"@vue/tsconfig": "^0.8.1",
-		"typescript": "^5.9.3",
-		"vite": "^6.3.5",
-		"vue-tsc": "^3.1.5"
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/vite-plugin-pikacss": "workspace:*",
+		"@vitejs/plugin-vue": "catalog:",
+		"@vue/tsconfig": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:",
+		"vue-tsc": "catalog:"
 	},
 	"stackblitz": {
-		"installDependencies": true,
-		"startCommand": "npm run dev"
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run dev"
 	}
 }

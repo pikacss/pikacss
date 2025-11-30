@@ -6,26 +6,27 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
-		"modern-normalize": "^3.0.1",
-		"react": "^19.2.0",
-		"react-dom": "^19.2.0"
+		"modern-normalize": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "latest",
-		"@pikacss/plugin-icons": "latest",
-		"@pikacss/vite-plugin-pikacss": "latest",
-		"@types/react": "^19.2.7",
-		"@types/react-dom": "^19.2.3",
-		"@vitejs/plugin-react": "^5.1.1",
-		"globals": "^16.5.0",
-		"typescript": "^5.9.3",
-		"vite": "^6.3.5"
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/vite-plugin-pikacss": "workspace:*",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@vitejs/plugin-react": "catalog:",
+		"globals": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:"
 	},
 	"stackblitz": {
-		"installDependencies": true,
-		"startCommand": "npm run dev"
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run dev"
 	}
 }

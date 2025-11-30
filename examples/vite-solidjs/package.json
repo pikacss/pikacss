@@ -6,23 +6,24 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
-		"modern-normalize": "^3.0.1",
-		"solid-js": "^1.9.10"
+		"modern-normalize": "catalog:",
+		"solid-js": "catalog:"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "latest",
-		"@pikacss/plugin-icons": "latest",
-		"@pikacss/vite-plugin-pikacss": "latest",
-		"@types/node": "latest",
-		"typescript": "^5.9.3",
-		"vite": "^6.3.5",
-		"vite-plugin-solid": "^2.11.10"
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/plugin-icons": "workspace:*",
+		"@pikacss/vite-plugin-pikacss": "workspace:*",
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:",
+		"vite-plugin-solid": "catalog:"
 	},
 	"stackblitz": {
-		"installDependencies": true,
-		"startCommand": "npm run dev"
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run dev"
 	}
 }
