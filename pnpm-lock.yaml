@@ -771,6 +771,9 @@ importers:
         specifier: ^2.3.11
         version: 2.3.11
     devDependencies:
+      '@farmfe/core':
+        specifier: ^1.7.11
+        version: 1.7.11(@types/node@24.10.1)
       vite:
         specifier: 'catalog:'
         version: 6.4.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.36.0)(tsx@4.20.6)(yaml@2.8.1)
@@ -14490,7 +14493,7 @@ snapshots:
       escape-html: 1.0.3
       fresh: 0.5.2
       http-assert: 1.5.0
-      http-errors: 1.8.1
+      http-errors: 1.6.3
       is-generator-function: 1.1.2
       koa-compose: 4.1.0
       koa-convert: 2.0.0
