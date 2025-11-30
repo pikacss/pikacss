@@ -7,21 +7,22 @@
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
-		"postinstall": "nuxt prepare"
+		"postinstall": "nuxt prepare || true",
+		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
-		"modern-normalize": "^3.0.1",
-		"nuxt": "^3.13.2",
-		"vue": "^3.5.25"
+		"modern-normalize": "catalog:",
+		"nuxt": "catalog:",
+		"vue": "catalog:"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "latest",
-		"@pikacss/nuxt-pikacss": "latest",
-		"@pikacss/plugin-icons": "latest",
-		"typescript": "~5.8.3"
+		"@iconify-json/line-md": "catalog:",
+		"@pikacss/nuxt-pikacss": "workspace:*",
+		"@pikacss/plugin-icons": "workspace:*",
+		"typescript": "catalog:"
 	},
 	"stackblitz": {
-		"installDependencies": true,
-		"startCommand": "npm run dev"
+		"installDependencies": false,
+		"startCommand": "npm run stackblitz:init && npm install && npm run dev"
 	}
 }
