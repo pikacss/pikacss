@@ -97,6 +97,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 					return readFileSync(id, 'utf-8')
 				}
 				catch {
+					// File doesn't exist yet, this is expected on first build
 					return ''
 				}
 			}
@@ -113,6 +114,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 						return { contents, loader: 'css' }
 					}
 					catch {
+						// File doesn't exist yet, this is expected on first build
 						return { contents: '', loader: 'css' }
 					}
 				})
@@ -166,8 +168,10 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 
 		// Webpack-specific hooks
 		webpack(compiler: WebpackCompiler) {
+			// Get cwd from webpack compiler context
+			const webpackCwd = compiler.options.context || process.cwd()
 			// Use NormalModuleReplacementPlugin to replace virtual:pika.css with the actual file
-			const devCssPath = join(cwd, resolvedOptions.devCss)
+			const devCssPath = join(webpackCwd, resolvedOptions.devCss)
 			// eslint-disable-next-line ts/no-require-imports
 			const { NormalModuleReplacementPlugin } = compiler.webpack || require('webpack')
 			new NormalModuleReplacementPlugin(
@@ -179,8 +183,10 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 
 		// Rspack-specific hooks - same as webpack
 		rspack(compiler: WebpackCompiler) {
+			// Get cwd from rspack compiler context
+			const rspackCwd = compiler.options.context || process.cwd()
 			// Use NormalModuleReplacementPlugin to replace virtual:pika.css with the actual file
-			const devCssPath = join(cwd, resolvedOptions.devCss)
+			const devCssPath = join(rspackCwd, resolvedOptions.devCss)
 			// eslint-disable-next-line ts/no-require-imports
 			const { NormalModuleReplacementPlugin } = compiler.webpack || require('@rspack/core')
 			new NormalModuleReplacementPlugin(
