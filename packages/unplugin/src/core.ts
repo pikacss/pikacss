@@ -1,7 +1,10 @@
 import type { IntegrationContext } from '@pikacss/integration'
 import type { UnpluginFactory, UnpluginInstance } from 'unplugin'
 import type { ResolvedConfig, ViteDevServer } from 'vite'
+import type { Compiler as WebpackCompiler } from 'webpack'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import process from 'node:process'
 import { createCtx } from '@pikacss/integration'
 import { createUnplugin } from 'unplugin'
@@ -69,8 +72,8 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 
 		resolveId(id: string) {
 			if (id === VIRTUAL_PIKA_CSS_ID) {
-				// In dev mode, resolve to the actual file
-				// In build mode, return a virtual module
+				// Return the devCssFilepath - esbuild will put this in plugin namespace
+				// The esbuild.setup hook handles loading from this namespace
 				if (ctx?.devCssFilepath) {
 					return ctx.devCssFilepath
 				}
@@ -79,11 +82,46 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 			return null
 		},
 
+		loadInclude(id: string) {
+			// Only handle the virtual pika CSS module and the dev CSS filepath
+			return id === VIRTUAL_PIKA_CSS_ID || (ctx?.devCssFilepath && id === ctx.devCssFilepath)
+		},
+
 		load(id: string) {
 			if (id === VIRTUAL_PIKA_CSS_ID) {
 				return ''
 			}
+			// For non-esbuild bundlers, handle the devCssFilepath
+			if (ctx?.devCssFilepath && id === ctx.devCssFilepath) {
+				try {
+					return readFileSync(id, 'utf-8')
+				}
+				catch {
+					return ''
+				}
+			}
 			return null
+		},
+
+		// esbuild-specific hooks
+		esbuild: {
+			// Register onLoad for our namespace to handle the virtual CSS module
+			setup(build) {
+				build.onLoad({ filter: /\.css$/, namespace: PLUGIN_NAME }, async (args) => {
+					try {
+						const contents = readFileSync(args.path, 'utf-8')
+						return { contents, loader: 'css' }
+					}
+					catch {
+						return { contents: '', loader: 'css' }
+					}
+				})
+			},
+		},
+
+		transformInclude(id: string) {
+			// Only transform JavaScript/TypeScript files
+			return /\.(?:vue|[jt]sx?)$/.test(id)
 		},
 
 		transform(code: string, id: string) {
@@ -124,6 +162,32 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined, false> 
 						console.error('[pikacss] Failed to initialize plugin:', error)
 					})
 			},
+		},
+
+		// Webpack-specific hooks
+		webpack(compiler: WebpackCompiler) {
+			// Use NormalModuleReplacementPlugin to replace virtual:pika.css with the actual file
+			const devCssPath = join(cwd, resolvedOptions.devCss)
+			// eslint-disable-next-line ts/no-require-imports
+			const { NormalModuleReplacementPlugin } = compiler.webpack || require('webpack')
+			new NormalModuleReplacementPlugin(
+				/^virtual:pika\.css$/,
+				devCssPath,
+			)
+				.apply(compiler)
+		},
+
+		// Rspack-specific hooks - same as webpack
+		rspack(compiler: WebpackCompiler) {
+			// Use NormalModuleReplacementPlugin to replace virtual:pika.css with the actual file
+			const devCssPath = join(cwd, resolvedOptions.devCss)
+			// eslint-disable-next-line ts/no-require-imports
+			const { NormalModuleReplacementPlugin } = compiler.webpack || require('@rspack/core')
+			new NormalModuleReplacementPlugin(
+				/^virtual:pika\.css$/,
+				devCssPath,
+			)
+				.apply(compiler)
 		},
 
 		// Additional getCtx function exposed for consumers

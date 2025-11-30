@@ -12,6 +12,9 @@ export default {
 		filename: 'bundle.js',
 		clean: true,
 	},
+	experiments: {
+		css: true,
+	},
 	resolve: {
 		extensions: ['.tsx', '.ts', '.js', '.jsx'],
 	},
