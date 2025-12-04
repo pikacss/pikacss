@@ -1,7 +1,3 @@
-import { defineConfig } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
-export default defineConfig({
-	test: {
-		name: '@pikacss/unplugin-pikacss',
-	},
-})
+export default defineProject({})
