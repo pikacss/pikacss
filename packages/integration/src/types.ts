@@ -22,7 +22,7 @@ export interface IntegrationContext {
 	fnName: string
 	fnUtils: FnUtils
 	transformedFormat: 'string' | 'array' | 'inline'
-	devCssFilepath: string
+	cssCodegenFilepath: string
 	tsCodegenFilepath: string | Nullish
 	hasVue: boolean
 	usages: Map<string, UsageRecord[]>
@@ -41,9 +41,9 @@ export interface IntegrationContext {
 	resolvedConfigPath: string | Nullish
 	engine: Engine
 	transform: (code: string, id: string) => Promise<{ code: string, map: SourceMap } | Nullish>
-	getCssContent: (isDev: boolean) => Promise<string | Nullish>
+	getCssCodegenContent: (isDev: boolean) => Promise<string | Nullish>
 	getTsCodegenContent: () => Promise<string | Nullish>
-	writeDevCssFile: () => Promise<void>
+	writeCssCodegenFile: () => Promise<void>
 	writeTsCodegenFile: () => Promise<void>
 }
 
@@ -55,6 +55,6 @@ export interface IntegrationContextOptions {
 	fnName: string
 	transformedFormat: 'string' | 'array' | 'inline'
 	tsCodegen: false | string
-	devCss: string
+	cssCodegen: string
 	autoCreateConfig: boolean
 }

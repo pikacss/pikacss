@@ -30,20 +30,18 @@ export interface PluginOptions {
 	transformedFormat?: 'string' | 'array' | 'inline'
 
 	/**
-	 * Enable/disable the ts codegen.
-	 * If a string is provided, it will be used as the path to the generated ts file.
-	 * Default path is `<path to config>/pika.gen.ts`.
-	 * @default true
+	 * Enable/disable the generation of d.ts files.
+	 * If a string is provided, it will be used as the path to the d.ts file.
+	 * Default path is `<path to config>/pika.d.ts`.
+	 * @default false
 	 */
 	tsCodegen?: boolean | string
 
 	/**
-	 * Enable the css codegen.
-	 * If a string is provided, it will be used as the path to the generated css file.
-	 * Default path is `<path to config>/pika.gen.css`.
-	 * @default true
+	 * Path to the dev css file.
+	 * @default 'pika.dev.css'
 	 */
-	cssCodegen?: true | string
+	devCss?: string
 
 	/**
 	 * Automatically create a pika config file if it doesn't exist and without inline config.
@@ -60,7 +58,7 @@ export interface ResolvedPluginOptions {
 	currentPackageName: string
 	configOrPath: EngineConfig | string | Nullish
 	tsCodegen: false | string
-	cssCodegen: string
+	devCss: string
 	target: string[]
 	fnName: string
 	transformedFormat: 'string' | 'array' | 'inline'

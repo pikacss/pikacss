@@ -78,7 +78,7 @@ export async function createCtx(options: IntegrationContextOptions) {
 		fnName,
 		transformedFormat,
 		tsCodegen,
-		devCss,
+		cssCodegen,
 		autoCreateConfig,
 	} = options
 
@@ -86,7 +86,7 @@ export async function createCtx(options: IntegrationContextOptions) {
 		console.warn(`[${currentPackageName}]`, ...args)
 	})
 
-	const devCssFilepath = isAbsolute(devCss) ? resolve(devCss) : join(cwd, devCss)
+	const cssCodegenFilepath = isAbsolute(cssCodegen) ? resolve(cssCodegen) : join(cwd, cssCodegen)
 	const tsCodegenFilepath = tsCodegen === false ? null : (isAbsolute(tsCodegen) ? resolve(tsCodegen) : join(cwd, tsCodegen))
 
 	const inlineConfig = typeof configOrPath === 'object' ? configOrPath : null
@@ -110,7 +110,7 @@ export async function createCtx(options: IntegrationContextOptions) {
 		fnName,
 		fnUtils: createFnUtils(fnName),
 		transformedFormat,
-		devCssFilepath,
+		cssCodegenFilepath,
 		tsCodegenFilepath,
 		hasVue: isPackageExists('vue', { paths: [cwd] }),
 		usages: new Map(),
@@ -184,9 +184,9 @@ export async function createCtx(options: IntegrationContextOptions) {
 			}
 
 			// prepare files
-			await mkdir(dirname(devCssFilepath), { recursive: true })
+			await mkdir(dirname(cssCodegenFilepath), { recursive: true })
 				.catch(() => {})
-			await writeFile(devCssFilepath, '')
+			await writeFile(cssCodegenFilepath, '')
 
 			if (tsCodegenFilepath != null) {
 				await mkdir(dirname(tsCodegenFilepath), { recursive: true })
@@ -273,7 +273,7 @@ export async function createCtx(options: IntegrationContextOptions) {
 				return void 0
 			}
 		},
-		getCssContent: async (isDev) => {
+		getCssCodegenContent: async (isDev) => {
 			if (ctx.isReady === false)
 				return null
 
@@ -294,12 +294,12 @@ export async function createCtx(options: IntegrationContextOptions) {
 			const content = await generateTsCodegenContent(ctx)
 			return content
 		},
-		writeDevCssFile: debounce(async () => {
-			const content = await ctx.getCssContent(true)
+		writeCssCodegenFile: debounce(async () => {
+			const content = await ctx.getCssCodegenContent(true)
 			if (content == null)
 				return
 
-			await writeFile(ctx.devCssFilepath, content)
+			await writeFile(ctx.cssCodegenFilepath, content)
 		}, 300),
 		writeTsCodegenFile: debounce(async () => {
 			const content = await ctx.getTsCodegenContent()
