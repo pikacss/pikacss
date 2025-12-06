@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference path="./pika.gen.ts" />
 
 // CSS modules
 declare module '*.css' {

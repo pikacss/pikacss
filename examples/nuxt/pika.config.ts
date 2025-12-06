@@ -1,6 +1,6 @@
+import { defineEngineConfig } from '@pikacss/nuxt-pikacss'
 /// <reference path="./src/pika.gen.ts" />
 import { icons } from '@pikacss/plugin-icons'
-import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
 
 export default defineEngineConfig({
 	plugins: [
