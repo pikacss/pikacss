@@ -1,4 +1,4 @@
-import type { EngineConfig, Nullish } from '@pikacss/integration'
+import type { EngineConfig, IntegrationContext, IntegrationContextOptions, Nullish } from '@pikacss/integration'
 
 export interface PluginOptions {
 	/**
@@ -6,6 +6,15 @@ export interface PluginOptions {
 	 * @default ['**‎/*.vue', '**‎/*.tsx', '**‎/*.jsx']
 	 */
 	target?: string[]
+
+	/**
+	 * Scan patterns for usage collection.
+	 * @default { patterns: ['**‎/*.vue', '**‎/*.tsx', '**‎/*.jsx'] }
+	 */
+	scan?: {
+		patterns?: string[]
+		options?: IntegrationContextOptions['scan']['options']
+	}
 
 	/**
 	 * Configure the pika engine.
@@ -30,18 +39,20 @@ export interface PluginOptions {
 	transformedFormat?: 'string' | 'array' | 'inline'
 
 	/**
-	 * Enable/disable the generation of d.ts files.
-	 * If a string is provided, it will be used as the path to the d.ts file.
-	 * Default path is `<path to config>/pika.d.ts`.
-	 * @default false
+	 * Enable/disable the ts codegen.
+	 * If a string is provided, it will be used as the path to the generated ts file.
+	 * Default path is `<path to config>/pika.gen.ts`.
+	 * @default true
 	 */
 	tsCodegen?: boolean | string
 
 	/**
-	 * Path to the dev css file.
-	 * @default 'pika.dev.css'
+	 * Enable the css codegen.
+	 * If a string is provided, it will be used as the path to the generated css file.
+	 * Default path is `<path to config>/pika.gen.css`.
+	 * @default true
 	 */
-	devCss?: string
+	cssCodegen?: true | string
 
 	/**
 	 * Automatically create a pika config file if it doesn't exist and without inline config.
@@ -52,14 +63,16 @@ export interface PluginOptions {
 
 	/** @internal */
 	currentPackageName?: string
+
+	onContextCreated?: (ctx: IntegrationContext) => void
 }
 
 export interface ResolvedPluginOptions {
 	currentPackageName: string
 	configOrPath: EngineConfig | string | Nullish
 	tsCodegen: false | string
-	devCss: string
-	target: string[]
+	cssCodegen: string
+	scan: IntegrationContextOptions['scan']
 	fnName: string
 	transformedFormat: 'string' | 'array' | 'inline'
 	autoCreateConfig: boolean

@@ -18,7 +18,7 @@
 		"@braintree/sanitize-url": "catalog:",
 		"@iconify-json/mdi": "catalog:",
 		"@pikacss/plugin-icons": "workspace:*",
-		"@pikacss/vite-plugin-pikacss": "workspace:*",
+		"@pikacss/unplugin-pikacss": "workspace:*",
 		"@shikijs/vitepress-twoslash": "catalog:",
 		"cytoscape": "catalog:",
 		"cytoscape-cose-bilkent": "catalog:",

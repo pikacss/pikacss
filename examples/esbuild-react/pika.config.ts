@@ -1,4 +1,4 @@
-/// <reference path="./src/pika.gen.ts" />
+/** @type import('./src/pika.gen.ts') */
 import { icons } from '@pikacss/plugin-icons'
 import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
@@ -43,8 +43,5 @@ export default defineEngineConfig({
 				},
 			}],
 		],
-	},
-	icons: {
-		autoInstall: true,
 	},
 })

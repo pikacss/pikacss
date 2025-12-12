@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js'
 import 'modern-normalize/modern-normalize.css'
-import 'virtual:pika.css'
+import 'pika.css'
 
 const App: Component = () => {
 	const toggleDarkMode = () => {
@@ -56,17 +56,19 @@ const App: Component = () => {
 					gap: '12px',
 				})}
 			>
-				<img
-					class={pika({ '@light': { display: 'none' } })}
-					src="/logo-white.svg"
-					alt="Logo"
-				/>
-				<img
-					class={pika({ '@dark': { display: 'none' } })}
-					src="/logo-black.svg"
-					alt="Logo"
-				/>
-				<h1 class={styles.title}>PikaCSS</h1>
+				<h1 class={styles.title}>PikaCSS + Vite + SolidJS</h1>
+				<div class={pika({ width: '50%' })}>
+					<img
+						class={pika({ '@light': { display: 'none' } })}
+						src="/logo-white.svg"
+						alt="Logo"
+					/>
+					<img
+						class={pika({ '@dark': { display: 'none' } })}
+						src="/logo-black.svg"
+						alt="Logo"
+					/>
+				</div>
 				<button class={styles.button} onClick={toggleDarkMode}>
 					<div class={styles.buttonIcon} />
 					Toggle

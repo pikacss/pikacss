@@ -14,7 +14,7 @@ const styles = {
 	title: pika({
 		'margin': 0,
 		'@screen-xs': {
-			fontSize: '2rem',
+			fontSize: '3rem',
 		},
 		'@screen-sm': {
 			fontSize: '4rem',
@@ -72,20 +72,22 @@ const styles = {
 				gap: '12px',
 			})"
 		>
-			<img
-				:class="pika({ '@light': { display: 'none' } })"
-				src="/logo-white.svg"
-				alt="Logo"
-			>
-			<img
-				:class="pika({ '@dark': { display: 'none' } })"
-				src="/logo-black.svg"
-				alt="Logo"
-			>
-
 			<h1 :class="styles.title">
-				PikaCSS
+				PikaCSS + Nuxt
 			</h1>
+
+			<div :class="pika({ width: '50%' })">
+				<img
+					:class="pika({ '@light': { display: 'none' } })"
+					src="/logo-white.svg"
+					alt="Logo"
+				>
+				<img
+					:class="pika({ '@dark': { display: 'none' } })"
+					src="/logo-black.svg"
+					alt="Logo"
+				>
+			</div>
 
 			<button
 				:class="styles.button"

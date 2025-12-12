@@ -43,7 +43,7 @@
 	},
 	"dependencies": {
 		"@pikacss/core": "workspace:*",
-		"fast-glob": "catalog:",
+		"globby": "^16.0.0",
 		"jiti": "catalog:",
 		"klona": "catalog:",
 		"local-pkg": "catalog:",

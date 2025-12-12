@@ -89,6 +89,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
+.output
 dist
 
 # Gatsby files
@@ -111,7 +112,7 @@ docs/public/diagrams
 examples/*/package-lock.json
 
 pika.gen.ts
-pika.dev.css
+pika.gen.css
 
 # Docusaurus cache and generated files
 .docusaurus

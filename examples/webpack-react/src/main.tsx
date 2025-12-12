@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import 'modern-normalize/modern-normalize.css'
-import 'virtual:pika.css'
+import './pika.gen.css'
 
 createRoot(document.getElementById('root')!)
 	.render(

@@ -1,10 +1,6 @@
-import unplugin from './core'
+import { createRspackPlugin } from 'unplugin'
+import { unpluginFactory } from '.'
 
-/**
- * Rspack plugin for PikaCSS
- */
-export default unplugin.rspack
-
-export { VIRTUAL_PIKA_CSS_ID } from './constants'
-export type { PluginOptions } from './types'
+export * from './types'
+export default createRspackPlugin(unpluginFactory)
 export * from '@pikacss/integration'

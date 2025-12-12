@@ -6,7 +6,7 @@ export default defineConfig({
 		'@farmfe/plugin-react',
 		PikaCSS({
 			tsCodegen: './src/pika.gen.ts',
-			devCss: './src/pika.dev.css',
+			cssCodegen: './src/pika.gen.css',
 		}),
 	],
 	compilation: {

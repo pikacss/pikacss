@@ -40,7 +40,7 @@ export default defineConfig({
 
 3. ### Import the virtual module
 ```ts [main.ts]
-import 'virtual:pika.css'
+import 'pika.css'
 ```
 
 ## Nuxt3

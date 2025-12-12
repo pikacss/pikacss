@@ -15,7 +15,7 @@ hero:
       link: /getting-started/what-is-pikacss
     - theme: alt
       text: Guide
-      link: /guide/basic-usage
+      link: /guide/basics
 
 features:
   - icon: ⏱️

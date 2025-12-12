@@ -3,7 +3,7 @@ import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, Nullish, ResolvedStyleItem, StyleDefinition, StyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { AbstractResolver } from '../resolver'
-import { isNotString, warn } from '../utils'
+import { isNotString, log } from '../utils'
 
 // #region ShortcutConfig
 export type Shortcut
@@ -146,7 +146,7 @@ class ShortcutResolver extends AbstractResolver<StyleItem[]> {
 	async resolve(shortcut: string): Promise<StyleItem[]> {
 		const resolved = await this._resolve(shortcut)
 			.catch((error) => {
-				warn(`Failed to resolve shortcut "${shortcut}": ${error.message}`, error)
+				log.warn(`Failed to resolve shortcut "${shortcut}": ${error.message}`, error)
 				return void 0
 			})
 		if (resolved == null)

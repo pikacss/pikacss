@@ -1,4 +1,4 @@
-import PikaCSS from '@pikacss/vite-plugin-pikacss'
+import PikaCSS from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 import Solid from 'vite-plugin-solid'
 
@@ -7,7 +7,7 @@ export default defineConfig({
 	plugins: [
 		PikaCSS({
 			tsCodegen: './src/pika.gen.ts',
-			devCss: './src/pika.dev.css',
+			cssCodegen: './src/pika.gen.css',
 		}),
 		Solid(),
 	],

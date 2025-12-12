@@ -1,10 +1,6 @@
-import unplugin from './core'
+import { createRolldownPlugin } from 'unplugin'
+import { unpluginFactory } from '.'
 
-/**
- * Rolldown plugin for PikaCSS
- */
-export default unplugin.rolldown
-
-export { VIRTUAL_PIKA_CSS_ID } from './constants'
-export type { PluginOptions } from './types'
+export * from './types'
+export default createRolldownPlugin(unpluginFactory)
 export * from '@pikacss/integration'

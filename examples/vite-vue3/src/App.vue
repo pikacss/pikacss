@@ -70,20 +70,22 @@ const styles = {
 				gap: '12px',
 			})"
 		>
-			<img
-				:class="pika({ '@light': { display: 'none' } })"
-				src="/logo-white.svg"
-				alt="Logo"
-			>
-			<img
-				:class="pika({ '@dark': { display: 'none' } })"
-				src="/logo-black.svg"
-				alt="Logo"
-			>
-
 			<h1 :class="styles.title">
-				PikaCSS
+				PikaCSS + Vite + Vue 3
 			</h1>
+
+			<div :class="pika({ width: '50%' })">
+				<img
+					:class="pika({ '@light': { display: 'none' } })"
+					src="/logo-white.svg"
+					alt="Logo"
+				>
+				<img
+					:class="pika({ '@dark': { display: 'none' } })"
+					src="/logo-black.svg"
+					alt="Logo"
+				>
+			</div>
 
 			<button
 				:class="styles.button"

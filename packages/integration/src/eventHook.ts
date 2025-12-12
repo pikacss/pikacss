@@ -11,6 +11,8 @@ export function createEventHook<EventPayload>(): EventHook<EventPayload> {
 	const listeners = new Set<EventHookListener<EventPayload>>()
 
 	function trigger(payload: EventPayload) {
+		if (listeners.size === 0)
+			return
 		listeners.forEach(listener => listener(payload))
 	}
 
