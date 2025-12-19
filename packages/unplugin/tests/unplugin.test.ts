@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import unplugin, { unpluginFactory } from '../src/core'
+import unplugin, { unpluginFactory } from '../src'
 
 describe('@pikacss/unplugin-pikacss', () => {
 	it('exports unplugin factory', () => {

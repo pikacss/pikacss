@@ -16,45 +16,52 @@ export interface FnUtils {
 	RE: RegExp
 }
 
+export interface IntegrationContextOptions {
+	cwd: string
+	currentPackageName: string
+	scan: {
+		include: string[]
+		exclude: string[]
+	}
+	configOrPath: EngineConfig | string | Nullish
+	fnName: string
+	transformedFormat: 'string' | 'array' | 'inline'
+	tsCodegen: false | string
+	cssCodegen: string
+	autoCreateConfig: boolean
+}
+
 export interface IntegrationContext {
 	cwd: string
 	currentPackageName: string
 	fnName: string
-	fnUtils: FnUtils
 	transformedFormat: 'string' | 'array' | 'inline'
-	devCssFilepath: string
+	cssCodegenFilepath: string
 	tsCodegenFilepath: string | Nullish
 	hasVue: boolean
-	usages: Map<string, UsageRecord[]>
-	hooks: {
-		styleUpdated: ReturnType<typeof createEventHook<void>>
-		tsCodegenUpdated: ReturnType<typeof createEventHook<void>>
-	}
+	resolvedConfig: EngineConfig | Nullish
+	resolvedConfigPath: string | Nullish
 	loadConfig: () => Promise<
 		| { config: EngineConfig, file: null }
 		| { config: null, file: null }
 		| { config: EngineConfig, file: string }
 	>
-	init: () => Promise<any>
-	isReady: boolean
-	configSources: string[]
-	resolvedConfigPath: string | Nullish
+	usages: Map<string, UsageRecord[]>
+	hooks: {
+		styleUpdated: ReturnType<typeof createEventHook<void>>
+		tsCodegenUpdated: ReturnType<typeof createEventHook<void>>
+	}
 	engine: Engine
+	transformFilter: {
+		include: string[]
+		exclude: string[]
+	}
 	transform: (code: string, id: string) => Promise<{ code: string, map: SourceMap } | Nullish>
-	getCssContent: (isDev: boolean) => Promise<string | Nullish>
+	getCssCodegenContent: () => Promise<string | Nullish>
 	getTsCodegenContent: () => Promise<string | Nullish>
-	writeDevCssFile: () => Promise<void>
+	writeCssCodegenFile: () => Promise<void>
 	writeTsCodegenFile: () => Promise<void>
-}
-
-export interface IntegrationContextOptions {
-	cwd: string
-	currentPackageName: string
-	target: string[]
-	configOrPath: EngineConfig | string | Nullish
-	fnName: string
-	transformedFormat: 'string' | 'array' | 'inline'
-	tsCodegen: false | string
-	devCss: string
-	autoCreateConfig: boolean
+	fullyCssCodegen: () => Promise<void>
+	setupPromise: Promise<void> | null
+	setup: () => Promise<void>
 }

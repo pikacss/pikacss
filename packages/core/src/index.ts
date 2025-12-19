@@ -27,9 +27,9 @@ export {
 	appendAutocompletePropertyValues,
 	appendAutocompleteSelectors,
 	appendAutocompleteStyleItemStrings,
+	createLogger,
+	log,
 	renderCSSStyleBlocks,
-	setWarnFn,
-	warn,
 } from './internal/utils'
 
 export type {

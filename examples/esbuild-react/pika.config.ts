@@ -44,7 +44,4 @@ export default defineEngineConfig({
 			}],
 		],
 	},
-	icons: {
-		autoInstall: true,
-	},
 })

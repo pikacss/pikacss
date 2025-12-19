@@ -1,9 +1,6 @@
 {
 	"name": "@pikacss/integration",
 	"type": "module",
-	"publishConfig": {
-		"access": "public"
-	},
 	"version": "0.0.33",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
@@ -15,6 +12,12 @@
 	"bugs": {
 		"url": "https://github.com/DevilTea/pikacss/issues"
 	},
+	"keywords": [
+		"pikacss",
+		"atomic-css",
+		"css-in-js",
+		"atomic-css-in-js-engine"
+	],
 	"exports": {
 		".": {
 			"import": {
@@ -30,11 +33,14 @@
 	"main": "dist/index.cjs",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.mts",
+	"publishConfig": {
+		"access": "public"
+	},
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"build": "tsdown",
+		"build": "tsdown && pnpm exec publint",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
@@ -43,7 +49,8 @@
 	},
 	"dependencies": {
 		"@pikacss/core": "workspace:*",
-		"fast-glob": "catalog:",
+		"alien-signals": "catalog:",
+		"globby": "catalog:",
 		"jiti": "catalog:",
 		"klona": "catalog:",
 		"local-pkg": "catalog:",

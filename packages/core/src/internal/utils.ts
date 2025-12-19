@@ -1,16 +1,64 @@
 import type { CSSStyleBlocks, PropertyValue, ResolvedEngineConfig, StyleDefinition, StyleItem } from './types'
 
-let _warn = (...args: any[]) => {
-	console.warn('[@pikacss/core]', ...args)
-}
+export function createLogger(prefix: string) {
+	let currentPrefix = prefix
+	let enabledDebug = false
+	// eslint-disable-next-line no-console
+	let _debug: (prefix: string, ...args: any[]) => void = console.log
+	// eslint-disable-next-line no-console
+	let _info: (prefix: string, ...args: any[]) => void = console.log
+	let _warn: (prefix: string, ...args: any[]) => void = console.warn
+	let _error: (prefix: string, ...args: any[]) => void = console.error
 
-export function setWarnFn(fn: (...args: any[]) => void) {
-	_warn = fn
-}
+	const log: {
+		debug: (...args: any[]) => void
+		info: (...args: any[]) => void
+		warn: (...args: any[]) => void
+		error: (...args: any[]) => void
+		toggleDebug: () => void
+		setPrefix: (newPrefix: string) => void
+		setDebugFn: (fn: (prefix: string, ...args: any[]) => void) => void
+		setInfoFn: (fn: (prefix: string, ...args: any[]) => void) => void
+		setWarnFn: (fn: (prefix: string, ...args: any[]) => void) => void
+		setErrorFn: (fn: (prefix: string, ...args: any[]) => void) => void
+	} = {
+		debug: (...args: any[]) => {
+			if (!enabledDebug)
+				return
+			_debug(`${currentPrefix}[DEBUG]`, ...args)
+		},
+		info: (...args: any[]) => {
+			_info(`${currentPrefix}[INFO]`, ...args)
+		},
+		warn: (...args: any[]) => {
+			_warn(`${currentPrefix}[WARN]`, ...args)
+		},
+		error: (...args: any[]) => {
+			_error(`${currentPrefix}[ERROR]`, ...args)
+		},
+		toggleDebug() {
+			enabledDebug = !enabledDebug
+		},
+		setPrefix(newPrefix: string) {
+			currentPrefix = newPrefix
+		},
+		setDebugFn(fn: (prefix: string, ...args: any[]) => void) {
+			_debug = fn
+		},
+		setInfoFn(fn: (prefix: string, ...args: any[]) => void) {
+			_info = fn
+		},
+		setWarnFn(fn: (prefix: string, ...args: any[]) => void) {
+			_warn = fn
+		},
+		setErrorFn(fn: (prefix: string, ...args: any[]) => void) {
+			_error = fn
+		},
+	}
 
-export function warn(...args: any[]) {
-	_warn(...args)
+	return log
 }
+export const log = createLogger('[PikaCSS]')
 
 const chars = [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']
 const numOfChars = chars.length

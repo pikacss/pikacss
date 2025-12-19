@@ -6,4 +6,5 @@ export default await deviltea({
 			'style/no-mixed-spaces-and-tabs': 'warn',
 		},
 	},
+	ignores: ['llm-docs/**'],
 })

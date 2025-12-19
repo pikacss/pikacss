@@ -1,10 +1,6 @@
-import unplugin from './core'
+import { createWebpackPlugin } from 'unplugin'
+import { unpluginFactory } from '.'
 
-/**
- * Webpack plugin for PikaCSS
- */
-export default unplugin.webpack
-
-export { VIRTUAL_PIKA_CSS_ID } from './constants'
-export type { PluginOptions } from './types'
+export * from './types'
+export default createWebpackPlugin(unpluginFactory)
 export * from '@pikacss/integration'

@@ -1,9 +1,6 @@
 {
 	"name": "@pikacss/unplugin-pikacss",
 	"type": "module",
-	"publishConfig": {
-		"access": "public"
-	},
 	"version": "0.0.33",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
@@ -15,6 +12,20 @@
 	"bugs": {
 		"url": "https://github.com/DevilTea/pikacss/issues"
 	},
+	"keywords": [
+		"pikacss",
+		"atomic-css",
+		"css-in-js",
+		"atomic-css-in-js-engine",
+		"unplugin",
+		"vite-plugin",
+		"rollup-plugin",
+		"webpack-plugin",
+		"esbuild-plugin",
+		"rspack-plugin",
+		"farm-plugin",
+		"rolldown-plugin"
+	],
 	"exports": {
 		".": {
 			"import": {
@@ -103,6 +114,9 @@
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"build": "tsdown",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
@@ -122,6 +136,7 @@
 	"dependencies": {
 		"@pikacss/integration": "workspace:*",
 		"pathe": "catalog:",
+		"perfect-debounce": "catalog:",
 		"unplugin": "^2.3.11"
 	},
 	"devDependencies": {

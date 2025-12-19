@@ -17,7 +17,6 @@
 		"@iconify-json/line-md": "catalog:",
 		"@pikacss/plugin-icons": "workspace:*",
 		"@pikacss/unplugin-pikacss": "workspace:*",
-		"@pikacss/vite-plugin-pikacss": "workspace:*",
 		"@vitejs/plugin-vue": "catalog:",
 		"@vue/tsconfig": "catalog:",
 		"typescript": "catalog:",

@@ -1,4 +1,5 @@
 import type { Awaitable, Nullish } from './types'
+import { log } from './utils'
 
 export interface ResolvedResult<T> {
 	value: T
@@ -31,45 +32,57 @@ export abstract class AbstractResolver<T> {
 	}
 
 	addStaticRule(rule: StaticRule<T>) {
+		log.debug(`Adding static rule: ${rule.key}`)
 		this.staticRulesMap.set(rule.key, rule)
 		return this
 	}
 
 	removeStaticRule(key: string) {
 		const rule = this.staticRulesMap.get(key)
-		if (rule == null)
+		if (rule == null) {
+			log.warn(`Static rule not found for removal: ${key}`)
 			return this
+		}
 
+		log.debug(`Removing static rule: ${key}`)
 		this.staticRulesMap.delete(key)
 		this._resolvedResultsMap.delete(rule.string)
 		return this
 	}
 
 	addDynamicRule(rule: DynamicRule<T>) {
+		log.debug(`Adding dynamic rule: ${rule.key}`)
 		this.dynamicRulesMap.set(rule.key, rule)
 		return this
 	}
 
 	removeDynamicRule(key: string) {
 		const rule = this.dynamicRulesMap.get(key)
-		if (rule == null)
+		if (rule == null) {
+			log.warn(`Dynamic rule not found for removal: ${key}`)
 			return this
+		}
 
+		log.debug(`Removing dynamic rule: ${key}`)
 		const matchedResolvedStringList = Array.from(this._resolvedResultsMap.keys())
 			.filter(string => rule.stringPattern.test(string))
 		this.dynamicRulesMap.delete(key)
 		matchedResolvedStringList.forEach(string => this._resolvedResultsMap.delete(string))
+		log.debug(`  - Cleared ${matchedResolvedStringList.length} cached results`)
 		return this
 	}
 
 	async _resolve(string: string): Promise<ResolvedResult<T> | Nullish> {
 		const existedResult = this._resolvedResultsMap.get(string)
-		if (existedResult != null)
+		if (existedResult != null) {
+			log.debug(`Resolved from cache: ${string}`)
 			return existedResult
+		}
 
 		const staticRule = Array.from(this.staticRulesMap.values())
 			.find(rule => rule.string === string)
 		if (staticRule != null) {
+			log.debug(`Resolved by static rule: ${staticRule.key}`)
 			const resolvedResult = { value: staticRule.resolved }
 			this._resolvedResultsMap.set(string, resolvedResult)
 			this.onResolved(string, 'static', resolvedResult)
@@ -86,12 +99,14 @@ export abstract class AbstractResolver<T> {
 			}
 		}
 		if (dynamicRule != null && matched != null) {
+			log.debug(`Resolved by dynamic rule: ${dynamicRule.key}`)
 			const resolvedResult = { value: await dynamicRule.createResolved(matched) }
 			this._resolvedResultsMap.set(string, resolvedResult)
 			this.onResolved(string, 'dynamic', resolvedResult)
 			return resolvedResult
 		}
 
+		log.debug(`Resolution failed for: ${string}`)
 		return void 0
 	}
 

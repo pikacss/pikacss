@@ -1,6 +1,6 @@
-/// <reference path="./src/pika.gen.ts" />
+/// <reference path="./pika.gen.ts" />
+import { defineEngineConfig } from '@pikacss/nuxt-pikacss'
 import { icons } from '@pikacss/plugin-icons'
-import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
 	plugins: [

@@ -22,7 +22,11 @@ async function build() {
 		plugins: [
 			PikaCSS({
 				tsCodegen: './src/pika.gen.ts',
-				devCss: './src/pika.dev.css',
+				cssCodegen: './src/pika.gen.css',
+				scan: {
+					include: ['src/**/*.{ts,tsx,js,jsx,html}'],
+					exclude: ['node_modules', 'dist'],
+				},
 			}),
 		],
 		loader: {
