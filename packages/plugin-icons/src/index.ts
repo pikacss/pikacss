@@ -3,7 +3,7 @@ import type { Engine, EnginePlugin, Simplify, StyleItem } from '@pikacss/core'
 import type { IconsOptions as UnoIconsOptions } from '@unocss/preset-icons'
 import process from 'node:process'
 import { encodeSvgForCss, loadIcon } from '@iconify/utils'
-import { defineEnginePlugin, warn } from '@pikacss/core'
+import { defineEnginePlugin, log } from '@pikacss/core'
 import { combineLoaders, createCDNFetchLoader, createNodeLoader, parseIconWithLoader } from '@unocss/preset-icons'
 import { $fetch } from 'ofetch'
 
@@ -166,7 +166,7 @@ function createIconsPlugin(lookupIconLoader: (config: IconsConfig) => Promise<Un
 					)
 
 					if (parsed == null) {
-						warn(`failed to load icon "${full}"`)
+						log.warn(`failed to load icon "${full}"`)
 						return {}
 					}
 
