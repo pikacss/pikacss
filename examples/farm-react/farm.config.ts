@@ -3,11 +3,15 @@ import PikaCSS from '@pikacss/unplugin-pikacss/farm'
 
 export default defineConfig({
 	plugins: [
-		'@farmfe/plugin-react',
 		PikaCSS({
 			tsCodegen: './src/pika.gen.ts',
-			devCss: './src/pika.dev.css',
+			cssCodegen: './src/pika.gen.css',
+			scan: {
+				include: ['src/**/*.{ts,tsx,js,jsx,html}'],
+				exclude: ['node_modules', 'dist'],
+			},
 		}),
+		'@farmfe/plugin-react',
 	],
 	compilation: {
 		input: {
@@ -16,6 +20,8 @@ export default defineConfig({
 		output: {
 			path: 'dist',
 		},
+		// FIXME: Currently persistent cache causes issues with unplugin-pikacss
+		persistentCache: false,
 	},
 	server: {
 		port: 3000,

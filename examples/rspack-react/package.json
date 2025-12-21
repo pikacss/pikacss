@@ -6,6 +6,7 @@
 	"scripts": {
 		"build": "rspack build",
 		"dev": "rspack serve",
+		"preview": "rspack preview",
 		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {

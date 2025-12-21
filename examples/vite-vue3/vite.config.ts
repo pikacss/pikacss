@@ -1,4 +1,4 @@
-import PikaCSS from '@pikacss/vite-plugin-pikacss'
+import PikaCSS from '@pikacss/unplugin-pikacss/vite'
 import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
@@ -7,7 +7,11 @@ export default defineConfig({
 	plugins: [
 		PikaCSS({
 			tsCodegen: './src/pika.gen.ts',
-			devCss: './src/pika.dev.css',
+			cssCodegen: './src/pika.gen.css',
+			scan: {
+				include: ['src/**/*.{vue,ts,tsx,js,jsx}'],
+				exclude: ['node_modules', 'dist'],
+			},
 		}),
 		Vue(),
 	],

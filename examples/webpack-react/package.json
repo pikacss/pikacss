@@ -5,7 +5,7 @@
 	"private": true,
 	"scripts": {
 		"build": "webpack --mode production",
-		"dev": "webpack serve --mode development --open",
+		"dev": "webpack serve --mode development",
 		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
@@ -22,6 +22,7 @@
 		"copy-webpack-plugin": "catalog:",
 		"css-loader": "catalog:",
 		"html-webpack-plugin": "catalog:",
+		"serve": "catalog:",
 		"style-loader": "catalog:",
 		"ts-loader": "catalog:",
 		"typescript": "catalog:",

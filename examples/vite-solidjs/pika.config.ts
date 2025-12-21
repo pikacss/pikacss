@@ -1,6 +1,6 @@
-/** @type import('./src/pika.gen.ts') */
+/// <reference path="./src/pika.gen.ts" />
 import { icons } from '@pikacss/plugin-icons'
-import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
 	plugins: [

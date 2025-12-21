@@ -49,7 +49,11 @@ export default {
 	plugins: [
 		PikaCSS({
 			tsCodegen: './src/pika.gen.ts',
-			devCss: './src/pika.dev.css',
+			cssCodegen: './src/pika.gen.css',
+			scan: {
+				include: ['src/**/*.{ts,tsx,js,jsx}'],
+				exclude: ['node_modules', 'dist'],
+			},
 		}),
 		new HtmlRspackPlugin({
 			template: './index.html',

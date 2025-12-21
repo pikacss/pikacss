@@ -1,6 +1,4 @@
 import { useCallback } from 'react'
-import 'modern-normalize/modern-normalize.css'
-import 'virtual:pika.css'
 
 function App() {
 	const toggleDarkMode = useCallback(() => {
@@ -56,17 +54,19 @@ function App() {
 					gap: '12px',
 				})}
 			>
-				<img
-					className={pika({ '@light': { display: 'none' } })}
-					src="/logo-white.svg"
-					alt="Logo"
-				/>
-				<img
-					className={pika({ '@dark': { display: 'none' } })}
-					src="/logo-black.svg"
-					alt="Logo"
-				/>
-				<h1 className={styles.title}>PikaCSS</h1>
+				<h1 className={styles.title}>PikaCSS + Webpack + React</h1>
+				<div className={pika({ width: '50%' })}>
+					<img
+						className={pika({ '@light': { display: 'none' } })}
+						src="/logo-white.svg"
+						alt="Logo"
+					/>
+					<img
+						className={pika({ '@dark': { display: 'none' } })}
+						src="/logo-black.svg"
+						alt="Logo"
+					/>
+				</div>
 				<button className={styles.button} onClick={toggleDarkMode}>
 					<div className={styles.buttonIcon} />
 					Toggle

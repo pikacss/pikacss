@@ -5,6 +5,7 @@
 	"private": true,
 	"scripts": {
 		"build": "node build.mjs",
+		"preview": "serve dist",
 		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
@@ -20,6 +21,7 @@
 		"@types/react-dom": "catalog:",
 		"esbuild": "catalog:",
 		"esbuild-css-modules-plugin": "catalog:",
+		"serve": "catalog:",
 		"typescript": "catalog:"
 	},
 	"stackblitz": {
