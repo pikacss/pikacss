@@ -9,16 +9,19 @@ import fs from 'node:fs'
 // Version mappings from catalog (pnpm-workspace.yaml)
 const catalogVersions = {
 	'@iconify-json/line-md': '^1.2.11',
+	'@vitejs/plugin-vue': '^6.0.2',
+	'@vue/tsconfig': '^0.8.1',
 	'modern-normalize': '^3.0.1',
-	'nuxt': '^4.2.1',
 	'typescript': '^5.9.3',
+	'vite': '^6.3.5',
 	'vue': '^3.5.25',
+	'vue-tsc': '^3.1.5',
 }
 
 // Workspace packages use 'latest' in StackBlitz
 const workspacePackages = {
-	'@pikacss/nuxt-pikacss': 'latest',
 	'@pikacss/plugin-icons': 'latest',
+	'@pikacss/vite-plugin-pikacss': 'latest',
 }
 
 const packageJsonPath = './package.json'

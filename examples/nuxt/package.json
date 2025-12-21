@@ -1,25 +1,32 @@
 {
-	"name": "nuxt-app",
+	"name": "nuxt",
 	"type": "module",
+	"version": "0.0.33",
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
-		"postinstall": "nuxt prepare || true",
+		"postinstall": "nuxt prepare",
 		"stackblitz:init": "node ./stackblitz-init.mjs"
 	},
 	"dependencies": {
 		"modern-normalize": "catalog:",
 		"nuxt": "catalog:",
-		"vue": "catalog:"
+		"vue": "catalog:",
+		"vue-router": "^4.6.3"
 	},
 	"devDependencies": {
 		"@iconify-json/line-md": "catalog:",
 		"@pikacss/nuxt-pikacss": "workspace:*",
 		"@pikacss/plugin-icons": "workspace:*",
-		"typescript": "catalog:"
+		"@vitejs/plugin-vue": "catalog:",
+		"@vue/tsconfig": "catalog:",
+		"serve": "catalog:",
+		"typescript": "catalog:",
+		"vite": "catalog:",
+		"vue-tsc": "catalog:"
 	},
 	"stackblitz": {
 		"installDependencies": false,
