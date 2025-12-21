@@ -22,7 +22,7 @@ The shortcuts system works by transforming shortcut strings you use into actual 
 In your `pika.config.ts` file, you can define custom shortcuts:
 
 ```ts
-import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
 	shortcuts: {
@@ -320,7 +320,7 @@ function Component() {
 Here are some common shortcut configuration examples:
 
 ```ts
-import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
 	shortcuts: {

@@ -22,7 +22,7 @@ The selector system works by transforming custom selectors you use in your style
 In your `pika.config.ts` file, you can define custom selectors:
 
 ```ts
-import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
 	selectors: {
@@ -298,7 +298,7 @@ const styles = {
 Here are some common selector configuration examples:
 
 ```ts
-import { defineEngineConfig } from '@pikacss/vite-plugin-pikacss'
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
 	selectors: {

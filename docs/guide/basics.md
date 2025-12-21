@@ -29,6 +29,81 @@ pika({
 })
 ```
 
+## Output Variants
+
+PikaCSS provides variants of the main function to control the output format.
+
+### `pika.str(...)` (Default)
+
+Returns a space-separated string of class names:
+
+```ts
+const classes = pika.str({ color: 'red', fontSize: '16px' })
+// Returns: "a b"
+```
+
+### `pika.arr(...)`
+
+Returns an array of class names. Useful for frameworks that accept class arrays:
+
+```ts
+const classList = pika.arr({ color: 'red', fontSize: '16px' })
+// Returns: ["a", "b"]
+```
+
+### `pika.inl(...)`
+
+Returns a space-separated string of atomic class names, similar to `pika.str()`:
+
+```ts
+const classes = pika.inl({ color: 'red' })
+// Returns: "a" (class name)
+```
+
+::: info Note
+All `pika` variants generate atomic classes. Despite the name, `pika.inl()` does NOT return raw CSS properties.
+:::
+
+## Special Properties
+
+PikaCSS supports special properties (prefixed with `__`) that modify how styles are processed.
+
+### `__important`
+
+Adds `!important` to all CSS properties in the style object:
+
+```ts
+pika({
+	__important: true,
+	color: 'red',
+	fontSize: '16px'
+})
+// Output CSS: color: red !important; font-size: 16px !important;
+```
+
+You can also set `__important: false` to override a global default (when `important.default: true` is set in config).
+
+### `__shortcut`
+
+Applies a shortcut by name within a style object:
+
+```ts
+// If you have a shortcut defined: ['btn', { padding: '10px', borderRadius: '4px' }]
+pika({
+	__shortcut: 'btn',
+	color: 'blue' // Additional styles
+})
+// Equivalent to: pika({ padding: '10px', borderRadius: '4px', color: 'blue' })
+```
+
+You can also use an array to apply multiple shortcuts:
+
+```ts
+pika({
+	__shortcut: ['btn', 'text-center']
+})
+```
+
 ## Selector Syntax
 
 :::tip
