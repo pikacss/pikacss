@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/DevilTea/pikacss.git",
+		"url": "https://github.com/pikacss/pikacss.git",
 		"directory": "packages/vite"
 	},
 	"bugs": {
