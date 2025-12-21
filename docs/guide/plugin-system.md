@@ -99,7 +99,7 @@ See the [Icons Plugin](/plugins/icons) documentation for more details.
 Plugins interact with the engine through hooks at different stages:
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#111', 'secondaryColor': '#eee', 'tertiaryColor': '#111' }}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#aaa', 'secondaryColor': '#eee', 'tertiaryColor': '#eee' }}}%%
 flowchart LR
     A[Configuration] --> B[Setup]
     B --> C[Transform]

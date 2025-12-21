@@ -11,7 +11,7 @@ PikaCSS provides 10 hooks that plugins can use to interact with the engine at di
 ## Hook Lifecycle
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#111', 'secondaryColor': '#eee', 'tertiaryColor': '#111' }}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#aaa', 'secondaryColor': '#eee', 'tertiaryColor': '#eee' }}}%%
 sequenceDiagram
     participant E as Engine
     participant P as Plugin

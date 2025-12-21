@@ -13,7 +13,7 @@ This document details the internal architecture of PikaCSS, explaining how it tr
 PikaCSS is composed of three main layers:
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#111', 'secondaryColor': '#eee', 'tertiaryColor': '#111' }}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#aaa', 'secondaryColor': '#eee', 'tertiaryColor': '#eee' }}}%%
 flowchart TB
     subgraph Unplugin["Unplugin Layer"]
         direction LR
@@ -59,7 +59,7 @@ flowchart TB
 When `pika({ color: 'red' })` is encountered in the source code, the following process occurs:
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#111', 'secondaryColor': '#eee', 'tertiaryColor': '#111' }}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#eee', 'primaryTextColor': '#111', 'lineColor': '#aaa', 'secondaryColor': '#eee', 'tertiaryColor': '#eee' }}}%%
 sequenceDiagram
     participant S as Source Code
     participant I as Integration
