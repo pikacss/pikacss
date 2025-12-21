@@ -1,6 +1,7 @@
 import type { EnginePlugin } from '../../../src/internal/plugin'
 import { describe, expect, it, vi } from 'vitest'
 import { defineEnginePlugin, execAsyncHook, execSyncHook, resolvePlugins } from '../../../src/internal/plugin'
+import { log } from '../../../src/internal/utils'
 
 describe('plugin', () => {
 	describe('execAsyncHook', () => {
@@ -24,17 +25,16 @@ describe('plugin', () => {
 		})
 
 		it('should handle errors and warn', async () => {
-			const warnSpy = vi.spyOn(console, 'warn')
-				.mockImplementation(() => {})
+			const errorFn = vi.fn()
+			log.setErrorFn(errorFn)
 			const plugin1: EnginePlugin = { name: 'plugin1', configureRawConfig: () => Promise.reject(new Error('test error')) }
 			const plugins = [plugin1]
 			const payload = { initial: true }
 			const result = await execAsyncHook(plugins, 'configureRawConfig', payload)
-			expect(warnSpy)
-				.toHaveBeenCalledWith('[@pikacss/core]', 'Plugin "plugin1" failed to execute hook "configureRawConfig": test error', expect.any(Error))
+			expect(errorFn)
+				.toHaveBeenCalledWith('[PikaCSS][ERROR]', 'Plugin "plugin1" failed to execute hook "configureRawConfig": test error', expect.any(Error))
 			expect(result)
 				.toEqual({ initial: true })
-			warnSpy.mockRestore()
 		})
 
 		it('should handle nullish return values', async () => {
@@ -68,18 +68,17 @@ describe('plugin', () => {
 		})
 
 		it('should handle errors and warn', () => {
-			const warnSpy = vi.spyOn(console, 'warn')
-				.mockImplementation(() => {})
+			const errorFn = vi.fn()
+			log.setErrorFn(errorFn)
 			// eslint-disable-next-line style/max-statements-per-line
 			const plugin1: EnginePlugin = { name: 'plugin1', rawConfigConfigured: () => { throw new Error('test error') } }
 			const plugins = [plugin1]
 			const payload = { initial: true }
 			const result = execSyncHook(plugins, 'rawConfigConfigured', payload)
-			expect(warnSpy)
-				.toHaveBeenCalledWith('[@pikacss/core]', 'Plugin "plugin1" failed to execute hook "rawConfigConfigured": test error', expect.any(Error))
+			expect(errorFn)
+				.toHaveBeenCalledWith('[PikaCSS][ERROR]', 'Plugin "plugin1" failed to execute hook "rawConfigConfigured": test error', expect.any(Error))
 			expect(result)
 				.toEqual({ initial: true })
-			warnSpy.mockRestore()
 		})
 
 		it('should handle nullish return values', () => {

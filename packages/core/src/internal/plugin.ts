@@ -1,6 +1,6 @@
 import type { Engine } from './engine'
 import type { AtomicStyle, Awaitable, EngineConfig, ResolvedEngineConfig, ResolvedStyleDefinition, ResolvedStyleItem, StyleDefinition, StyleItem } from './types'
-import { warn } from './utils'
+import { log } from './utils'
 
 type DefineHooks<Hooks extends Record<string, [type: 'sync' | 'async', payload: any, returnValue?: any]>> = Hooks
 
@@ -26,36 +26,44 @@ type SynctHooksNames = GetHooksNames<'sync'>
 type AsyncHooksNames = GetHooksNames<'async'>
 
 export async function execAsyncHook(plugins: any[], hook: AsyncHooksNames, payload: any) {
+	log.debug(`Executing async hook: ${hook}`)
 	for (const plugin of plugins) {
 		if (plugin[hook] == null)
 			continue
 
 		try {
+			log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
 			const newPayload = await plugin[hook](payload)
 			if (newPayload != null)
 				payload = newPayload
+			log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
 		}
 		catch (error: any) {
-			warn(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error.message}`, error)
+			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error.message}`, error)
 		}
 	}
+	log.debug(`Async hook "${hook}" completed`)
 	return payload
 }
 
 export function execSyncHook(plugins: any[], hook: SynctHooksNames, payload: any) {
+	log.debug(`Executing sync hook: ${hook}`)
 	for (const plugin of plugins) {
 		if (plugin[hook] == null)
 			continue
 
 		try {
+			log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
 			const newPayload = plugin[hook](payload)
 			if (newPayload != null)
 				payload = newPayload
+			log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
 		}
 		catch (error: any) {
-			warn(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error.message}`, error)
+			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error.message}`, error)
 		}
 	}
+	log.debug(`Sync hook "${hook}" completed`)
 	return payload
 }
 

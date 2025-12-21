@@ -3,7 +3,7 @@ import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, Nullish, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { AbstractResolver } from '../resolver'
-import { warn } from '../utils'
+import { log } from '../utils'
 
 // #region SelectorConfig
 export type Selector
@@ -114,7 +114,7 @@ class SelectorResolver extends AbstractResolver<string[]> {
 	async resolve(selector: string): Promise<string[]> {
 		const resolved = await this._resolve(selector)
 			.catch((error) => {
-				warn(`Failed to resolve selector "${selector}": ${error.message}`, error)
+				log.warn(`Failed to resolve selector "${selector}": ${error.message}`, error)
 				return void 0
 			})
 		if (resolved == null)

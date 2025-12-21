@@ -1,10 +1,6 @@
-import unplugin from './core'
+import { createEsbuildPlugin } from 'unplugin'
+import { unpluginFactory } from '.'
 
-/**
- * esbuild plugin for PikaCSS
- */
-export default unplugin.esbuild
-
-export { VIRTUAL_PIKA_CSS_ID } from './constants'
-export type { PluginOptions } from './types'
+export * from './types'
+export default createEsbuildPlugin(unpluginFactory)
 export * from '@pikacss/integration'

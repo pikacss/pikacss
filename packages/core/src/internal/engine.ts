@@ -8,7 +8,7 @@ import { keyframes } from './plugins/keyframes'
 import { selectors } from './plugins/selectors'
 import { shortcuts } from './plugins/shortcuts'
 import { variables } from './plugins/variables'
-import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	isPropertyValue,	numberToChars,	renderCSSStyleBlocks,	serialize, toKebab } from './utils'
+import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	isPropertyValue,	log,	numberToChars,	renderCSSStyleBlocks,	serialize, toKebab } from './utils'
 
 // Only for type inference without runtime effect
 /* c8 ignore start */
@@ -18,6 +18,7 @@ export function defineEngineConfig(config: EngineConfig): EngineConfig {
 /* c8 ignore end */
 
 export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
+	log.debug('Creating engine with config:', config)
 	const corePlugins = [
 		important(),
 		variables(),
@@ -25,8 +26,10 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 		selectors(),
 		shortcuts(),
 	]
+	log.debug('Core plugins loaded:', corePlugins.length)
 	const plugins = resolvePlugins([...corePlugins, ...(config.plugins || [])])
 	config.plugins = plugins
+	log.debug(`Total plugins resolved: ${plugins.length}`)
 
 	config = await hooks.configureRawConfig(
 		config.plugins,
@@ -39,6 +42,7 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	)
 
 	let resolvedConfig = await resolveEngineConfig(config)
+	log.debug('Engine config resolved with prefix:', resolvedConfig.prefix)
 
 	resolvedConfig = await hooks.configureResolvedConfig(
 		resolvedConfig.plugins,
@@ -46,10 +50,12 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	)
 
 	let engine = new Engine(resolvedConfig)
+	log.debug('Engine instance created')
 	engine = await hooks.configureEngine(
 		engine.config.plugins,
 		engine,
 	)
+	log.debug('Engine initialized successfully')
 
 	return engine
 }
@@ -119,11 +125,14 @@ export class Engine {
 	}
 
 	addPreflight(preflight: Preflight) {
+		log.debug('Adding preflight')
 		this.config.preflights.push(resolvePreflight(preflight))
+		log.debug(`Total preflights: ${this.config.preflights.length}`)
 		this.notifyPreflightUpdated()
 	}
 
 	async use(...itemList: StyleItem[]): Promise<string[]> {
+		log.debug(`Processing ${itemList.length} style items`)
 		const {
 			unknown,
 			contents,
@@ -143,15 +152,18 @@ export class Engine {
 			if (!this.store.atomicStyles.has(id)) {
 				const atomicStyle: AtomicStyle = { id, content }
 				this.store.atomicStyles.set(id, atomicStyle)
+				log.debug(`Atomic style added: ${id}`)
 				this.notifyAtomicStyleAdded(atomicStyle)
 			}
 		})
+		log.debug(`Resolved ${resolvedIds.length} atomic styles, ${unknown.size} unknown items`)
 		return [...unknown, ...resolvedIds]
 	}
 
 	async renderPreflights(isFormatted: boolean) {
+		log.debug('Rendering preflights...')
 		const lineEnd = isFormatted ? '\n' : ''
-		return (await Promise.all(this.config.preflights.map(async (p) => {
+		const results = await Promise.all(this.config.preflights.map(async (p) => {
 			const result = await p(this, isFormatted)
 			if (typeof result === 'string')
 				return result
@@ -161,16 +173,20 @@ export class Engine {
 				preflightDefinition: result,
 				isFormatted,
 			})
-		}))).join(lineEnd)
+		}))
+		log.debug(`Rendered ${results.length} preflights`)
+		return results.join(lineEnd)
 	}
 
 	async renderAtomicStyles(isFormatted: boolean, options: { atomicStyleIds?: string[], isPreview?: boolean } = {}) {
+		log.debug('Rendering atomic styles...')
 		const { atomicStyleIds = null, isPreview = false } = options
 
 		const atomicStyles = atomicStyleIds == null
 			? [...this.store.atomicStyles.values()]
 			: atomicStyleIds.map(id => this.store.atomicStyles.get(id))
 					.filter(isNotNullish)
+		log.debug(`Rendering ${atomicStyles.length} atomic styles (preview: ${isPreview})`)
 		return renderAtomicStyles({
 			atomicStyles,
 			isPreview,
@@ -197,6 +213,7 @@ export async function resolveEngineConfig(config: EngineConfig): Promise<Resolve
 		plugins = [],
 		preflights = [],
 	} = config
+	log.debug(`Resolving engine config with prefix: "${prefix}", plugins: ${plugins.length}, preflights: ${preflights.length}`)
 
 	const resolvedConfig: ResolvedEngineConfig = {
 		rawConfig: config,
@@ -217,6 +234,7 @@ export async function resolveEngineConfig(config: EngineConfig): Promise<Resolve
 	// process preflights
 	const resolvedPreflights = preflights.map(resolvePreflight)
 	resolvedConfig.preflights.push(...resolvedPreflights)
+	log.debug(`Engine config resolved: ${resolvedPreflights.length} preflights processed`)
 
 	return resolvedConfig
 }
@@ -232,12 +250,15 @@ export function getAtomicStyleId({
 }) {
 	const key = serialize([content.selector, content.property, content.value])
 	const cached = stored.get(key)
-	if (cached != null)
+	if (cached != null) {
+		log.debug(`Atomic style cached: ${cached}`)
 		return cached
+	}
 
 	const num = stored.size
 	const id = `${prefix}${numberToChars(num)}`
 	stored.set(key, id)
+	log.debug(`Generated new atomic style ID: ${id}`)
 	return id
 }
 

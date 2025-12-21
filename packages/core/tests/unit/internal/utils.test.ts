@@ -1,14 +1,14 @@
 import type { ResolvedEngineConfig } from '../../../src/internal/types'
 import { describe, expect, it, vi } from 'vitest'
-import { addToSet, appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties, appendAutocompletePropertyValues, appendAutocompleteSelectors, appendAutocompleteStyleItemStrings, isNotNullish, isNotString, isPropertyValue, isString, numberToChars, renderCSSStyleBlocks, serialize, setWarnFn, toKebab, warn } from '../../../src/internal/utils'
+import { addToSet, appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties, appendAutocompletePropertyValues, appendAutocompleteSelectors, appendAutocompleteStyleItemStrings, isNotNullish, isNotString, isPropertyValue, isString, log, numberToChars, renderCSSStyleBlocks, serialize, toKebab } from '../../../src/internal/utils'
 
 describe('utils', () => {
 	it('should warn', () => {
 		const warnFn = vi.fn()
-		setWarnFn(warnFn)
-		warn('hello')
+		log.setWarnFn(warnFn)
+		log.warn('hello')
 		expect(warnFn)
-			.toHaveBeenCalledWith('hello')
+			.toHaveBeenCalledWith('[PikaCSS][WARN]', 'hello')
 	})
 
 	it('should convert number to chars correctly', () => {
