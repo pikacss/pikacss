@@ -1,4 +1,4 @@
-import type { FarmServer } from '@farmfe/core'
+import type { Server as FarmServer } from '@farmfe/core'
 import type { RspackCompiler, UnpluginFactory } from 'unplugin'
 import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
