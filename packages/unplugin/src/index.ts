@@ -1,6 +1,8 @@
+import type { FarmServer } from '@farmfe/core'
 import type { RspackCompiler, UnpluginFactory } from 'unplugin'
 import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
+import { readFileSync } from 'node:fs'
 import process from 'node:process'
 import { createCtx, log } from '@pikacss/integration'
 import { resolve } from 'pathe'
@@ -47,6 +49,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	let mode: 'build' | 'serve' = 'build'
 	const viteServers = [] as ViteDevServer[]
 	const rspackCompilers = [] as RspackCompiler[]
+	const farmServers = [] as FarmServer[]
 
 	const ctx = createCtx({
 		cwd,
@@ -73,12 +76,17 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	}
 
 	let setupPromise = Promise.resolve()
+	let setupCounter = 0
 	function setup(reload = false) {
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
-
+			const currentSetup = ++setupCounter
 			const moduleIds = Array.from(ctx.usages.keys())
 			await ctx.setup()
+			if (currentSetup !== setupCounter) {
+				log.debug('Setup outdated, skipping...')
+				return
+			}
 			await debouncedWriteCssCodegenFile()
 			await debouncedWriteTsCodegenFile()
 			bindHooks()
@@ -110,6 +118,17 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 						compiler.watching.invalidate()
 					})
 				}
+
+				else if (meta.framework === 'farm') {
+					const promises = [] as Promise<any>[]
+					farmServers.forEach((server) => {
+						if (server.hmrEngine == null)
+							return
+
+						promises.push(server.hmrEngine.recompileAndSendResult())
+					})
+					await Promise.all(promises)
+				}
 			}
 		})
 	}
@@ -135,12 +154,14 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		rspack: (compiler) => {
 			cwd = resolve(compiler.options.context || process.cwd())
 			mode = compiler.options.mode === 'development' ? 'serve' : 'build'
-			rspackCompilers.push(compiler)
 		},
 		farm: {
 			configResolved: (config) => {
 				cwd = resolve(config.root || process.cwd())
 				mode = config.envMode === 'development' ? 'serve' : 'build'
+			},
+			configureDevServer(server) {
+				farmServers.push(server)
 			},
 		},
 		esbuild: {
@@ -198,7 +219,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 				},
 			},
 			handler(code: string, id: string) {
-				if (meta.framework !== 'webpack' && ctx.resolvedConfigPath != null) {
+				if (meta.framework === 'webpack' && ctx.resolvedConfigPath != null) {
 					this.addWatchFile(ctx.resolvedConfigPath)
 					log.debug(`Added watch file: ${ctx.resolvedConfigPath}`)
 				}
@@ -207,7 +228,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		},
 
 		watchChange(id: string) {
-			if (id === ctx.resolvedConfigPath) {
+			if (id === ctx.resolvedConfigPath && readFileSync(id, 'utf-8') !== ctx.resolvedConfigContent) {
 				log.info('Configuration file changed, reloading...')
 				debouncedSetup(true)
 			}

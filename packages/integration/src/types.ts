@@ -41,6 +41,7 @@ export interface IntegrationContext {
 	hasVue: boolean
 	resolvedConfig: EngineConfig | Nullish
 	resolvedConfigPath: string | Nullish
+	resolvedConfigContent: string | Nullish
 	loadConfig: () => Promise<
 		| { config: EngineConfig, file: null }
 		| { config: null, file: null }

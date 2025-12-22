@@ -96,7 +96,7 @@ function useConfig({
 			log.debug('Loading engine config')
 			if (inlineConfig != null) {
 				log.debug('Using inline config')
-				return { config: klona(inlineConfig), file: null }
+				return { config: klona(inlineConfig), file: null, content: null }
 			}
 
 			let resolvedConfigPath = await findFirstExistingConfigPath()
@@ -105,7 +105,7 @@ function useConfig({
 			if (resolvedConfigPath == null) {
 				if (autoCreateConfig === false) {
 					log.warn('Config file not found and autoCreateConfig is false')
-					return { config: null, file: null }
+					return { config: null, file: null, content: null }
 				}
 
 				const _specificConfigPath = specificConfigPath()
@@ -144,33 +144,38 @@ function useConfig({
 					forceTranspile: true,
 				},
 			) as { default: EngineConfig }).default
-			return { config: klona(config), file: resolvedConfigPath }
+			return { config: klona(config), file: resolvedConfigPath, content }
 		}
 		catch (error: any) {
 			log.error(`Failed to load config file: ${error.message}`, error)
-			return { config: null, file: null }
+			return { config: null, file: null, content: null }
 		}
 	}
 
 	// const loadedConfig = signal({ config: inlineConfig, file: null as string | null })
 	const resolvedConfig = signal(inlineConfig)
 	const resolvedConfigPath = signal(null as string | null)
+	const resolvedConfigContent = signal(null as string | null)
 	async function loadConfig() {
 		const result = await _loadConfig()
 		resolvedConfig(result.config)
 		resolvedConfigPath(result.file)
+		resolvedConfigContent(result.content)
 		return result
 	}
 
 	return {
 		resolvedConfig,
 		resolvedConfigPath,
+		resolvedConfigContent,
 		loadConfig,
 	}
 }
 
 function useTransform({
 	cwd,
+	cssCodegenFilepath,
+	tsCodegenFilepath,
 	scan,
 	fnName,
 	usages,
@@ -186,6 +191,8 @@ function useTransform({
 	fnName: string
 	transformedFormat: 'string' | 'array' | 'inline'
 	cwd: Signal<string>
+	cssCodegenFilepath: Signal<string>
+	tsCodegenFilepath: Signal<string | null>
 	usages: Map<string, UsageRecord[]>
 	engine: Signal<Engine | null>
 	triggerStyleUpdated: () => void
@@ -320,7 +327,14 @@ function useTransform({
 	}
 
 	return {
-		transformFilter: scan,
+		transformFilter: {
+			include: scan.include,
+			exclude: [
+				...scan.exclude,
+				cssCodegenFilepath(),
+				...(tsCodegenFilepath() ? [tsCodegenFilepath()!] : []),
+			],
+		},
 		transform,
 	}
 }
@@ -335,6 +349,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	const {
 		resolvedConfig,
 		resolvedConfigPath,
+		resolvedConfigContent,
 		loadConfig,
 	} = useConfig({
 		...options,
@@ -355,6 +370,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	} = useTransform({
 		...options,
 		cwd,
+		cssCodegenFilepath,
+		tsCodegenFilepath,
 		usages,
 		engine,
 		triggerStyleUpdated: () => hooks.styleUpdated.trigger(),
@@ -372,6 +389,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		get hasVue() { return isPackageExists('vue', { paths: [cwd()] }) },
 		get resolvedConfig() { return resolvedConfig() },
 		get resolvedConfigPath() { return resolvedConfigPath() },
+		get resolvedConfigContent() { return resolvedConfigContent() },
 		loadConfig,
 		usages,
 		hooks,
