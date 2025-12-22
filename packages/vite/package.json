@@ -1,7 +1,7 @@
 {
 	"name": "@pikacss/vite-plugin-pikacss",
 	"type": "module",
-	"version": "0.0.34",
+	"version": "0.0.35",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
 	"repository": {
