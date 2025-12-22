@@ -137,7 +137,7 @@
 		"@pikacss/integration": "workspace:*",
 		"pathe": "catalog:",
 		"perfect-debounce": "catalog:",
-		"unplugin": "^2.3.11"
+		"unplugin": "catalog:"
 	},
 	"devDependencies": {
 		"@farmfe/core": "catalog:",

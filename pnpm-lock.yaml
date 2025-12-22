@@ -207,6 +207,9 @@ catalogs:
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
+    unplugin:
+      specifier: ^2.3.11
+      version: 2.3.11
     vite:
       specifier: ^6.3.5
       version: 6.4.1
@@ -219,6 +222,9 @@ catalogs:
     vitepress-plugin-group-icons:
       specifier: ^1.6.5
       version: 1.6.5
+    vitepress-plugin-llms:
+      specifier: ^1.0.8
+      version: 1.9.3
     vitepress-plugin-mermaid:
       specifier: ^2.0.17
       version: 2.0.17
@@ -228,6 +234,9 @@ catalogs:
     vue:
       specifier: ^3.5.25
       version: 3.5.25
+    vue-router:
+      specifier: ^4.6.3
+      version: 4.6.3
     vue-tsc:
       specifier: ^3.1.5
       version: 3.1.5
@@ -354,7 +363,7 @@ importers:
         specifier: 'catalog:'
         version: 1.6.5(vite@6.4.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.36.0)(tsx@4.20.6)(yaml@2.8.2))
       vitepress-plugin-llms:
-        specifier: ^1.0.8
+        specifier: 'catalog:'
         version: 1.9.3
       vitepress-plugin-mermaid:
         specifier: 'catalog:'
@@ -458,7 +467,7 @@ importers:
         specifier: 'catalog:'
         version: 3.5.25(typescript@5.9.3)
       vue-router:
-        specifier: ^4.6.3
+        specifier: 'catalog:'
         version: 4.6.3(vue@3.5.25(typescript@5.9.3))
     devDependencies:
       '@iconify-json/line-md':
@@ -775,7 +784,7 @@ importers:
         specifier: 'catalog:'
         version: 2.0.0
       unplugin:
-        specifier: ^2.3.11
+        specifier: 'catalog:'
         version: 2.3.11
     devDependencies:
       '@farmfe/core':

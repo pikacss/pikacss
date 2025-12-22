@@ -28,7 +28,7 @@
 		"vite": "catalog:",
 		"vitepress": "catalog:",
 		"vitepress-plugin-group-icons": "catalog:",
-		"vitepress-plugin-llms": "^1.0.8",
+		"vitepress-plugin-llms": "catalog:",
 		"vitepress-plugin-mermaid": "catalog:",
 		"vue": "catalog:"
 	}

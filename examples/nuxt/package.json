@@ -15,7 +15,7 @@
 		"modern-normalize": "catalog:",
 		"nuxt": "catalog:",
 		"vue": "catalog:",
-		"vue-router": "^4.6.3"
+		"vue-router": "catalog:"
 	},
 	"devDependencies": {
 		"@iconify-json/line-md": "catalog:",
