@@ -24,7 +24,7 @@ jobs:
           node-version: lts/*
 
       - name: install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: build
         run: pnpm build
