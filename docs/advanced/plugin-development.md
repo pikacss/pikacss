@@ -202,66 +202,98 @@ defineEnginePlugin({
 })
 ```
 
-## Best Practices
+## TypeScript Module Augmentation
 
-1. **Give descriptive names**: Use a name that reflects the plugin's functionality
+When creating plugins that add new configuration options or extend the engine's capabilities, you should use TypeScript module augmentation to provide a better developer experience.
 
-2. **Document configuration options**: Provide JSDoc comments for all options
+### Extending EngineConfig
 
-3. **Handle errors gracefully**: Wrap potentially failing code in try-catch
-
-4. **Use TypeScript**: Leverage type safety for better developer experience
-
-5. **Follow async/sync patterns**: Respect the hook types (async vs sync)
-
-6. **Provide autocomplete hints**: Always register shortcuts/selectors for IDE support
+If your plugin adds new top-level configuration options, extend the `EngineConfig` interface:
 
 ```typescript
-// Good: Descriptive name and documented options
-/**
- * Adds responsive utility shortcuts
- * @param options - Plugin configuration
- * @param options.breakpoints - Custom breakpoint values
- */
-export function responsivePlugin(options?: ResponsiveOptions) {
+import { defineEnginePlugin } from '@pikacss/core'
+
+export type MyPluginOptions = 'option-a' | 'option-b'
+
+declare module '@pikacss/core' {
+	interface EngineConfig {
+		/**
+		 * Description of your custom option.
+		 * @default 'option-a'
+		 */
+		myCustomOption?: MyPluginOptions
+	}
+}
+
+export function myPlugin() {
 	return defineEnginePlugin({
-		name: 'responsive-utilities',
-		// ...
+		name: 'my-plugin',
+		configureRawConfig: (config) => {
+			const value = config.myCustomOption // Now typed!
+			// ...
+		}
 	})
 }
 ```
 
-## Testing Plugins
+### Extending Engine
 
-You can test plugins by creating an engine instance:
+You can also extend the `Engine` interface if your plugin adds methods or properties to the engine instance:
 
 ```typescript
-import { createEngine } from '@pikacss/core'
-import { myPlugin } from './my-plugin'
+declare module '@pikacss/core' {
+	interface Engine {
+		myCustomMethod(): void
+	}
+}
 
-const engine = await createEngine({
-	plugins: [myPlugin()]
-})
-
-// Test that the plugin works
-const classes = await engine.use({ size: '100px' })
-console.log(classes) // ['a', 'b']
+export function myPlugin() {
+	return defineEnginePlugin({
+		name: 'my-plugin',
+		configureEngine: async (engine) => {
+			engine.myCustomMethod = () => {
+				console.log('Custom method called')
+			}
+		}
+	})
+}
 ```
+
+## Best Practices
+
+1. **Give descriptive names**: Use a name that reflects the plugin's functionality.
+
+2. **Document configuration options**: Provide JSDoc comments for all options.
+
+3. **Handle errors gracefully**: Wrap potentially failing code in try-catch.
+
+4. **Use TypeScript**: Leverage type safety for better developer experience.
+
+5. **Follow async/sync patterns**: Respect the hook types (async vs sync).
+
+6. **Provide autocomplete hints**: Always register shortcuts/selectors for IDE support.
+
+7. **Use Peer Dependencies**: Always list `@pikacss/core` as a peer dependency to avoid duplicate instances.
 
 ## Publishing Plugins
 
 When publishing a plugin:
 
-1. Export both the plugin function and TypeScript types
-2. Include `@pikacss/core` as a peer dependency
-3. Document all configuration options in README
-4. Provide usage examples
+1. Export both the plugin function and TypeScript types.
+2. Include `@pikacss/core` as a **peer dependency** and a **dev dependency**.
+3. Document all configuration options in README.
+4. Provide usage examples.
+
+**`package.json` example:**
 
 ```json
 {
 	"name": "@my-org/pikacss-plugin-example",
 	"peerDependencies": {
-		"@pikacss/core": "^0.0.1"
+		"@pikacss/core": "^0.0.37"
+	},
+	"devDependencies": {
+		"@pikacss/core": "^0.0.37"
 	}
 }
 ```

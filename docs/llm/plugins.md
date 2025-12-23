@@ -158,12 +158,13 @@ defineEnginePlugin({
 
 ## TypeScript Module Augmentation
 
-When creating plugins that add new config options, use TypeScript module augmentation:
+When creating plugins that add new configuration options or extend the engine's capabilities, use TypeScript module augmentation:
+
+### Extending EngineConfig
 
 ```typescript
 import { defineEnginePlugin } from '@pikacss/core'
 
-// Extend the EngineConfig interface
 declare module '@pikacss/core' {
 	interface EngineConfig {
 		myPlugin?: {
@@ -183,6 +184,33 @@ export function myPlugin() {
 	})
 }
 ```
+
+### Extending Engine
+
+```typescript
+declare module '@pikacss/core' {
+	interface Engine {
+		myCustomMethod(): void
+	}
+}
+
+export function myPlugin() {
+	return defineEnginePlugin({
+		name: 'my-plugin',
+		configureEngine: async (engine) => {
+			engine.myCustomMethod = () => {
+				// ...
+			}
+		}
+	})
+}
+```
+
+## Best Practices
+
+1. **Use Peer Dependencies**: Always list `@pikacss/core` as a `peerDependency` and `devDependency` in your `package.json` to avoid duplicate instances.
+2. **Descriptive Names**: Use clear names for plugins.
+3. **Autocomplete**: Register shortcuts/selectors for IDE support.
 
 ## Official Plugins
 

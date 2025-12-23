@@ -89,7 +89,10 @@ const templates = {
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},
-	"dependencies": {
+	"peerDependencies": {
+		"@pikacss/core": "workspace:*"
+	},
+	"devDependencies": {
 		"@pikacss/core": "workspace:*"
 	}
 }

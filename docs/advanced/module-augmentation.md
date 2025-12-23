@@ -126,28 +126,24 @@ export function myPlugin() {
 		name: 'my-plugin',
 
 		async configureEngine(engine) {
-			// Initialize the extra property
-			engine.extra.myPlugin = {
+			// Initialize the property
+			engine.myPlugin = {
 				store: new Map(),
 
 				add(...items) {
 					items.forEach((item) => {
-						engine.extra.myPlugin.store.set(item.id, item.data)
+						engine.myPlugin.store.set(item.id, item.data)
 					})
 				},
 
 				get(key) {
-					return engine.extra.myPlugin.store.get(key)
+					return engine.myPlugin.store.get(key)
 				}
 			}
 		}
 	})
 }
 ```
-
-::: info Note
-Extra properties are added to `engine.extra`, but the type declaration uses `Engine` directly for cleaner access syntax.
-:::
 
 ## Complete Example
 
@@ -214,8 +210,8 @@ export function themePlugin(): EnginePlugin {
 					colors.set(name, value)
 				})
 
-			// Set up extra property
-			engine.extra.theme = {
+			// Set up property
+			engine.theme = {
 				colors,
 
 				setColor(name, value) {

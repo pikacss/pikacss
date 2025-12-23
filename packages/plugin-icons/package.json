@@ -50,10 +50,15 @@
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},
+	"peerDependencies": {
+		"@pikacss/core": "workspace:*"
+	},
 	"dependencies": {
 		"@iconify/utils": "catalog:",
-		"@pikacss/core": "workspace:*",
 		"@unocss/preset-icons": "catalog:",
 		"ofetch": "catalog:"
+	},
+	"devDependencies": {
+		"@pikacss/core": "workspace:*"
 	}
 }
