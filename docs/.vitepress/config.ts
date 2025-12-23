@@ -52,6 +52,7 @@ export default withMermaid({
 					text: 'Plugins',
 					items: [
 						{ text: 'Icons', link: '/plugins/icons' },
+						{ text: 'Reset', link: '/plugins/reset' },
 					],
 				},
 				{

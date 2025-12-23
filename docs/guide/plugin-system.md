@@ -72,6 +72,25 @@ export default defineEngineConfig({
 
 ## Official Plugins
 
+### Reset Plugin
+
+The `@pikacss/plugin-reset` package provides a modern CSS reset.
+
+```bash
+npm install -D @pikacss/plugin-reset
+```
+
+```typescript
+import { reset } from '@pikacss/plugin-reset'
+
+export default defineEngineConfig({
+	plugins: [reset()],
+	reset: 'modern-normalize'
+})
+```
+
+See the [Reset Plugin](/plugins/reset) documentation for more details.
+
 ### Icons Plugin
 
 The `@pikacss/plugin-icons` package provides icon support via [Iconify](https://iconify.design/).

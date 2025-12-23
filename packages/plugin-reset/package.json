@@ -1,0 +1,53 @@
+{
+	"name": "@pikacss/plugin-reset",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "0.0.35",
+	"author": "DevilTea <ch19980814@gmail.com>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DevilTea/pikacss.git",
+		"directory": "packages/plugin-reset"
+	},
+	"bugs": {
+		"url": "https://github.com/DevilTea/pikacss/issues"
+	},
+	"keywords": [
+		"pikacss",
+		"pikacss-plugin",
+		"reset"
+	],
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/index.d.mts",
+				"default": "./dist/index.mjs"
+			},
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			}
+		}
+	},
+	"main": "dist/index.cjs",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.mts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"build:pack": "pnpm build && pnpm pack",
+		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
+		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
+		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"@pikacss/core": "workspace:*"
+	}
+}
