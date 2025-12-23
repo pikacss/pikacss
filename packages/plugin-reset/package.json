@@ -40,6 +40,7 @@
 	],
 	"scripts": {
 		"build": "tsdown",
+		"build:watch": "tsdown --watch",
 		"build:pack": "pnpm build && pnpm pack",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",

@@ -41,6 +41,7 @@
 	],
 	"scripts": {
 		"build": "tsdown && pnpm exec publint",
+		"build:watch": "tsdown --watch",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
