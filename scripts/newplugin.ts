@@ -8,18 +8,19 @@ import {
 	writeTemplates,
 } from './utils/newPackage'
 
-intro('Create a new package')
+intro('Create a new plugin package')
 
 const root = resolveWorkspaceRoot(import.meta.url)
 
-const pkgDirname = await promptSegment({
-	message: 'Package directory name (/packages/<pkgDirname>)',
+const pluginNameInput = await promptSegment({
+	message: 'Plugin name (without prefix, e.g. "icons")',
 })
+const pluginSlug = pluginNameInput.replace(/^plugin-/, '')
+const pkgDirname = `plugin-${pluginSlug}`
+const pkgName = pkgDirname
 
-const pkgName = await promptSegment({
-	message: 'Package name (@pikacss/<pkgName>)',
-	initialValue: pkgDirname,
-})
+const pluginPascalName = toPascalCase(pluginSlug) || 'Plugin'
+const pluginFactoryName = `create${pluginPascalName}Plugin`
 
 const pkgJson = await readRootPackageJson(root)
 const packageDir = await preparePackageDir(root, pkgDirname)
@@ -43,7 +44,11 @@ const templates = {
 	"bugs": {
 		"url": "https://github.com/DevilTea/pikacss/issues"
 	},
-	"keywords": [],
+	"keywords": [
+		"pikacss",
+		"pikacss-plugin",
+		"${pluginSlug}"
+	],
 	"exports": {
 		".": {
 			"import": {
@@ -67,7 +72,12 @@ const templates = {
 		"build:pack": "pnpm build && pnpm pack",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
-		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit"
+		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"@pikacss/core": "workspace:*"
 	}
 }
 	`.trim(),
@@ -84,14 +94,30 @@ export default defineConfig({
 })
 	`.trim(),
 	'src/index.ts': `
-export {}
+import type { EnginePlugin } from '@pikacss/core'
+import { defineEnginePlugin } from '@pikacss/core'
+
+export interface ${pluginPascalName}PluginOptions {
+}
+
+export function ${pluginFactoryName}(options: ${pluginPascalName}PluginOptions = {}): EnginePlugin {
+	return defineEnginePlugin({
+		name: '${pluginSlug}',
+		configureEngine: async () => {
+			void options
+		},
+	})
+}
 	`.trim(),
-	'tests/some.test.ts': `
+	[`tests/${pluginSlug}.test.ts`]: `
 import { describe, expect, it } from 'vitest'
 
-describe('test hello', () => {
-	it('is ok', () => {
-		expect(true).toBe(true)
+import { ${pluginFactoryName} } from '../src'
+
+describe('${pkgName}', () => {
+	it('returns plugin definition', () => {
+		const plugin = ${pluginFactoryName}()
+		expect(plugin.name).toBe('${pluginSlug}')
 	})
 })
 	`.trim(),
@@ -133,4 +159,11 @@ await writeTemplates(packageDir, templates)
 
 await ensureRootTsconfigExtends(root, pkgDirname)
 
-outro(`Package "${pkgName}" created.`)
+outro(`Plugin package "@pikacss/${pkgName}" created.`)
+
+function toPascalCase(value: string) {
+	return value.split('-')
+		.filter(Boolean)
+		.map(part => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
+		.join('')
+}

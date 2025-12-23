@@ -5,7 +5,7 @@
 	},
 	"include": [
 		"./package.json",
-		"./scripts/*.js",
-		"./scripts/*.ts"
+		"./scripts/**/*.js",
+		"./scripts/**/*.ts"
 	]
 }
