@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { intro, outro } from '@clack/prompts'
 import {
 	ensureRootTsconfigExtends,
@@ -5,6 +6,7 @@ import {
 	promptSegment,
 	readRootPackageJson,
 	resolveWorkspaceRoot,
+	validatePackageSegment,
 	writeTemplates,
 } from './utils/newPackage'
 
@@ -12,14 +14,37 @@ intro('Create a new package')
 
 const root = resolveWorkspaceRoot(import.meta.url)
 
-const pkgDirname = await promptSegment({
-	message: 'Package directory name (/packages/<pkgDirname>)',
-})
+let pkgDirname = process.argv[2]
+if (pkgDirname) {
+	const error = validatePackageSegment(pkgDirname)
+	if (error) {
+		console.error(`Invalid package directory name: ${error}`)
+		process.exit(1)
+	}
+}
+else {
+	pkgDirname = await promptSegment({
+		message: 'Package directory name (/packages/<pkgDirname>)',
+	})
+}
 
-const pkgName = await promptSegment({
-	message: 'Package name (@pikacss/<pkgName>)',
-	initialValue: pkgDirname,
-})
+let pkgName = process.argv[3]
+if (pkgName) {
+	const error = validatePackageSegment(pkgName)
+	if (error) {
+		console.error(`Invalid package name: ${error}`)
+		process.exit(1)
+	}
+}
+else if (process.argv[2]) {
+	pkgName = pkgDirname
+}
+else {
+	pkgName = await promptSegment({
+		message: 'Package name (@pikacss/<pkgName>)',
+		initialValue: pkgDirname,
+	})
+}
 
 const pkgJson = await readRootPackageJson(root)
 const packageDir = await preparePackageDir(root, pkgDirname)

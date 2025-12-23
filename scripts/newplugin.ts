@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { intro, outro } from '@clack/prompts'
 import {
 	ensureRootTsconfigExtends,
@@ -5,6 +6,7 @@ import {
 	promptSegment,
 	readRootPackageJson,
 	resolveWorkspaceRoot,
+	validatePackageSegment,
 	writeTemplates,
 } from './utils/newPackage'
 
@@ -12,9 +14,20 @@ intro('Create a new plugin package')
 
 const root = resolveWorkspaceRoot(import.meta.url)
 
-const pluginNameInput = await promptSegment({
-	message: 'Plugin name (without prefix, e.g. "icons")',
-})
+let pluginNameInput = process.argv[2]
+if (pluginNameInput) {
+	const error = validatePackageSegment(pluginNameInput)
+	if (error) {
+		console.error(`Invalid plugin name: ${error}`)
+		process.exit(1)
+	}
+}
+else {
+	pluginNameInput = await promptSegment({
+		message: 'Plugin name (without prefix, e.g. "icons")',
+	})
+}
+
 const pluginSlug = pluginNameInput.replace(/^plugin-/, '')
 const pkgDirname = `plugin-${pluginSlug}`
 const pkgName = pkgDirname

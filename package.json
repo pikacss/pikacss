@@ -17,7 +17,6 @@
 		"build": "pnpm -r --filter=./packages/* build",
 		"newpkg": "tsx ./scripts/newpkg.ts",
 		"newplugin": "tsx ./scripts/newplugin.ts",
-		"prepare:local": "pnpm build && tsx ./scripts/prepareLocalInstall.ts",
 		"publint": "pnpm -r --filter=./packages/* exec publint",
 		"publish:packages": "pnpm -r --filter=./packages/* publish --no-git-checks",
 		"release": "pnpm build && pnpm docs:build && pnpm typecheck && pnpm publint && rimraf ./**/dist && bumpp -r",
