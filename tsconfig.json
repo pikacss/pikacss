@@ -8,7 +8,8 @@
 		"./packages/nuxt/tsconfig.json",
 		"./packages/plugin-icons/tsconfig.json",
 		"./packages/unplugin/tsconfig.json",
-		"./packages/plugin-reset/tsconfig.json"
+		"./packages/plugin-reset/tsconfig.json",
+		"./packages/plugin-typography/tsconfig.json"
 	],
 	"references": [
 		{

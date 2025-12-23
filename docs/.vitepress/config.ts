@@ -53,6 +53,7 @@ export default withMermaid({
 					items: [
 						{ text: 'Icons', link: '/plugins/icons' },
 						{ text: 'Reset', link: '/plugins/reset' },
+						{ text: 'Typography', link: '/plugins/typography' },
 					],
 				},
 				{

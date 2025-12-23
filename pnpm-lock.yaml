@@ -762,18 +762,25 @@ importers:
       '@iconify/utils':
         specifier: 'catalog:'
         version: 3.1.0
-      '@pikacss/core':
-        specifier: workspace:*
-        version: link:../core
       '@unocss/preset-icons':
         specifier: 'catalog:'
         version: 66.5.9
       ofetch:
         specifier: 'catalog:'
         version: 1.5.1
+    devDependencies:
+      '@pikacss/core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/plugin-reset:
-    dependencies:
+    devDependencies:
+      '@pikacss/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/plugin-typography:
+    devDependencies:
       '@pikacss/core':
         specifier: workspace:*
         version: link:../core
