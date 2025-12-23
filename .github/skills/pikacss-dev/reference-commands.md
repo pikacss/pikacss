@@ -26,6 +26,7 @@
 
 ## Scaffolding
 - New package generator: pnpm newpkg (interactive; writes under packages/)
+- New plugin generator: pnpm newplugin (interactive; writes under packages/plugin-*)
 
 ## Tips
 - Use pnpm --filter to scope tasks; prefer pnpm -r only when necessary.

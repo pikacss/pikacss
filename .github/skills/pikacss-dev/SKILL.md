@@ -20,6 +20,7 @@ Use this skill to work on PikaCSS internals (not for end-users). It covers build
 ## Core workflows
 - Builds, tests, typecheck, lint, docs, and release guidance are in [reference-commands.md](reference-commands.md).
 - Package map, plugin targets, docs, and examples are in [reference-packages.md](reference-packages.md).
+- Scaffolding: Use `pnpm newpkg` for general packages or `pnpm newplugin` for PikaCSS plugins.
 
 ## Notes and cautions
 - Release pipeline (`pnpm release`) chains build, docs, typecheck, publint, dist cleanup, and version bump; use only when intending to publish.
