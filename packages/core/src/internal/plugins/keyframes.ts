@@ -158,3 +158,10 @@ function createResolveConfigFn({
 		return { name, frames, autocomplete, pruneUnused }
 	}
 }
+
+// Only for type inference without runtime effect
+/* c8 ignore start */
+export function defineKeyframes(keyframes: Keyframes): Keyframes {
+	return keyframes
+}
+/* c8 ignore end */

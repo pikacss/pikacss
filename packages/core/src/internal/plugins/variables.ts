@@ -54,7 +54,7 @@ export interface VariablesConfig {
 	 * }
 	 * ```
 	 */
-	variables: VariablesDefinition
+	variables: Arrayable<VariablesDefinition>
 
 	/**
 	 * Whether to prune unused variables from the final CSS.
@@ -94,7 +94,7 @@ declare module '@pikacss/core' {
 
 export function variables() {
 	let resolveVariables: (variables: VariablesDefinition) => ResolvedVariable[]
-	let rawVariables: VariablesDefinition
+	let rawVariables: VariablesDefinition[]
 	let safeSet: Set<string>
 	return defineEnginePlugin({
 		name: 'core:variables',
@@ -103,7 +103,7 @@ export function variables() {
 			resolveVariables = createResolveVariablesFn({
 				pruneUnused: config.variables?.pruneUnused,
 			})
-			rawVariables = config.variables?.variables ?? {}
+			rawVariables = [config.variables?.variables ?? []].flat()
 			safeSet = new Set(config.variables?.safeList ?? [])
 		},
 		configureEngine(engine) {
@@ -132,7 +132,7 @@ export function variables() {
 				},
 			}
 
-			engine.variables.add(rawVariables)
+			rawVariables.forEach(variables => engine.variables.add(variables))
 
 			engine.addPreflight(async (engine) => {
 				const used = new Set<string>()
@@ -226,3 +226,10 @@ export function normalizeVariableName(name: string) {
 		return name
 	return `--${name}`
 }
+
+// Only for type inference without runtime effect
+/* c8 ignore start */
+export function defineVariables(variables: VariablesDefinition): VariablesDefinition {
+	return variables
+}
+/* c8 ignore end */

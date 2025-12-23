@@ -10,13 +10,6 @@ import { shortcuts } from './plugins/shortcuts'
 import { variables } from './plugins/variables'
 import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	isPropertyValue,	log,	numberToChars,	renderCSSStyleBlocks,	serialize, toKebab } from './utils'
 
-// Only for type inference without runtime effect
-/* c8 ignore start */
-export function defineEngineConfig(config: EngineConfig): EngineConfig {
-	return config as any
-}
-/* c8 ignore end */
-
 export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	log.debug('Creating engine with config:', config)
 	const corePlugins = [

@@ -1,4 +1,4 @@
-import type { CSSStyleBlocks, PropertyValue, ResolvedEngineConfig, StyleDefinition, StyleItem } from './types'
+import type { CSSStyleBlocks, EngineConfig, Preflight, PropertyValue, ResolvedEngineConfig, StyleDefinition, StyleItem } from './types'
 
 export function createLogger(prefix: string) {
 	let currentPrefix = prefix
@@ -162,3 +162,14 @@ export function renderCSSStyleBlocks(blocks: CSSStyleBlocks, isFormatted: boolea
 	})
 	return lines.join(lineEnd)
 }
+
+// Only for type inference without runtime effect
+/* c8 ignore start */
+export function defineEngineConfig(config: EngineConfig): EngineConfig {
+	return config
+}
+
+export function definePreflight(preflight: Preflight): Preflight {
+	return preflight
+}
+/* c8 ignore end */

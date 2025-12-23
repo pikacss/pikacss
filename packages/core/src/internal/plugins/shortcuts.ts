@@ -235,3 +235,10 @@ function resolveShortcutConfig(config: Shortcut): ResolvedShortcutConfig | strin
 
 	return void 0
 }
+
+// Only for type inference without runtime effect
+/* c8 ignore start */
+export function defineShortcut(shortcut: Shortcut): Shortcut {
+	return shortcut
+}
+/* c8 ignore end */

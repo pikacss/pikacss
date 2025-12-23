@@ -201,3 +201,10 @@ export function resolveSelectorConfig(config: Selector): ResolvedSelectorConfig 
 
 	return void 0
 }
+
+// Only for type inference without runtime effect
+/* c8 ignore start */
+export function defineSelector(selector: Selector): Selector {
+	return selector
+}
+/* c8 ignore end */
