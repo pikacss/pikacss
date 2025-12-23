@@ -1,7 +1,7 @@
 {
 	"name": "esbuild-react",
 	"type": "module",
-	"version": "0.0.36",
+	"version": "0.0.37",
 	"private": true,
 	"scripts": {
 		"build": "node build.mjs",
