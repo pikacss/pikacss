@@ -62,11 +62,11 @@ const templates = {
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/DevilTea/pikacss.git",
+		"url": "https://github.com/pikacss/pikacss.git",
 		"directory": "packages/${pkgDirname}"
 	},
 	"bugs": {
-		"url": "https://github.com/DevilTea/pikacss/issues"
+		"url": "https://github.com/pikacss/pikacss/issues"
 	},
 	"keywords": [],
 	"exports": {
