@@ -8,6 +8,24 @@ outline: deep
 
 PikaCSS provides a `pika()` function for writing styles, allowing you to use pure CSS-in-JS syntax without the need to memorize any special class names.
 
+:::warning Zero Runtime Constraint
+PikaCSS transforms styles at **build time**, which means all arguments passed to `pika()` must be **statically analyzable**:
+
+- ✅ **Allowed**: String literals, object literals, static constants
+- ❌ **Not Allowed**: Runtime variables, function calls, dynamic expressions (props, state, etc.)
+- 💡 **Solution**: Use CSS custom properties (CSS variables) for values that need to change at runtime
+
+```ts
+// ❌ This will NOT work - runtime variable
+const userColor = getUserThemeColor()
+pika({ color: userColor })
+
+// ✅ Use CSS variables instead
+pika({ color: 'var(--user-theme-color)' })
+// Then set it at runtime: <div style={{ '--user-theme-color': userColor }}>
+```
+:::
+
 ## Style Object
 
 The most basic usage is to pass in a style object:

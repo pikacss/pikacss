@@ -223,10 +223,58 @@ const color = getThemeColor()
 pika({ color }) // Error: color is undefined at build time
 ```
 
+❌ **Won't work** (dynamic prop):
+```typescript
+function Button({ variant }) {
+  // variant is only known at runtime
+  pika({ backgroundColor: variant === 'primary' ? 'blue' : 'gray' })
+}
+```
+
 ✅ **Use CSS variables instead**:
 ```typescript
-pika({ color: 'var(--theme-color)' })
+// Define styles with CSS variables
+const buttonClass = pika({ 
+  backgroundColor: 'var(--btn-color)' 
+})
+
+// Set the variable at runtime
+function Button({ variant }) {
+  const color = variant === 'primary' ? 'blue' : 'gray'
+  return (
+    <button 
+      className={buttonClass} 
+      style={{ '--btn-color': color }}
+    >
+      Click me
+    </button>
+  )
+}
 ```
+
+✅ **Or use conditional shortcuts**:
+```typescript
+function Button({ variant }) {
+  const classes = variant === 'primary' 
+    ? pika('btn-primary') 
+    : pika('btn-secondary')
+  return <button className={classes}>Click me</button>
+}
+```
+
+:::tip Why This Limitation?
+PikaCSS is a **zero runtime** library. All style transformations happen at **build time**. The bundler plugin analyzes source code during the build process and extracts `pika()` calls to generate atomic CSS. Runtime values don't exist during build, so they cannot be included in the generated CSS.
+
+**Benefits:**
+- Zero JavaScript overhead in the browser
+- Optimal CSS bundle size (only used styles)
+- Better performance (no style computation at runtime)
+
+**For dynamic styling:**
+- Use CSS custom properties (CSS variables)
+- Use conditional class application with pre-defined shortcuts
+- Combine multiple static `pika()` calls conditionally
+:::
 
 ### Forgetting to call plugin functions
 

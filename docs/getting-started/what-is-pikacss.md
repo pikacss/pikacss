@@ -22,6 +22,11 @@ PikaCSS is an Atomic CSS-in-JS engine that allows you to write styles in CSS-in-
 ### Zero Runtime
 - PikaCSS is encapsulated as a vite plugin that transforming your CSS-in-JS code at build time
 - No additional runtime overhead, no extra JavaScript code in your bundle
+- ⚠️ **Important Constraint**: Because styles are processed at build time, all arguments passed to `pika()` functions must be **statically analyzable**. This means:
+  - ❌ Cannot use runtime variables or function return values
+  - ❌ Cannot use dynamic expressions that depend on props or state
+  - ✅ Must use string literals, object literals, or static constants
+  - ✅ For dynamic styling, use CSS custom properties (CSS variables)
 
 ### Framework Agnostic
 - Completely decoupled from any framework, allowing you to use it with any JavaScript framework or library

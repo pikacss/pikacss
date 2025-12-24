@@ -77,6 +77,8 @@
   > It is decoupled from any framework, so you can use it with any framework!
 - 🛠 Zero Runtime
   > It transforms CSS-in-JS to Atomic CSS at build time!
+  >
+  > ⚠️ **Important**: All arguments passed to `pika()` must be statically analyzable at build time. Runtime variables, function calls, or dynamic expressions are not supported.
 - 📖 Zero Learning Curve
   > In the simplest case, you just need to know the css property names!
 - 🤖 TypeScript Auto-Completion

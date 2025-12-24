@@ -18,6 +18,9 @@ PikaCSS is an **Atomic CSS-in-JS engine** that allows developers to write styles
 > **Write in CSS-in-JS, Output in Atomic CSS.**
 
 - **Zero Runtime**: Styles are transformed at build time. No runtime overhead.
+  - ⚠️ **Critical Constraint**: All `pika()` function arguments must be **statically analyzable** at build time
+  - Cannot use runtime variables, dynamic expressions, or function calls
+  - Use CSS custom properties for values that need to change at runtime
 - **Framework Agnostic**: Works with Vite, Webpack, Nuxt, Next.js, etc.
 - **Type-Safe**: Built-in TypeScript support with auto-completion.
 - **No Utility Class Memorization**: Use standard CSS properties.
@@ -113,6 +116,19 @@ pika({
   __shortcut: 'btn',      // Apply shortcut
   color: 'red'
 })
+
+// ⚠️ Zero Runtime Constraint
+// ❌ INVALID - Runtime values
+const dynamicColor = props.color
+pika({ color: dynamicColor })  // ERROR: Not statically analyzable
+
+// ✅ VALID - Static values only
+pika({ color: 'red' })  // OK
+pika({ color: '#3b82f6' })  // OK
+
+// ✅ SOLUTION - Use CSS variables for dynamic values
+pika({ color: 'var(--dynamic-color)' })  // OK
+// Then set at runtime: <div style={{ '--dynamic-color': props.color }}>
 ```
 
 ### Selector Syntax
