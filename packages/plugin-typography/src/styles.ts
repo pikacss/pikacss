@@ -1,46 +1,56 @@
-import type { StyleDefinition } from '@pikacss/core'
-import { defineStyleDefinition, defineVariables } from '@pikacss/core'
+import type { StyleDefinition, VariablesDefinition } from '@pikacss/core'
+import { defineStyleDefinition } from '@pikacss/core'
 
-export const typographyVariables = defineVariables({
-	'--pk-prose-body': 'currentColor',
-	'--pk-prose-headings': 'currentColor',
-	'--pk-prose-links': 'currentColor',
-	'--pk-prose-lists': 'currentColor',
-	'--pk-prose-hr': 'currentColor',
-	'--pk-prose-captions': 'currentColor',
-	'--pk-prose-code': 'currentColor',
-	'--pk-prose-pre-code': 'currentColor',
-	'--pk-prose-pre-bg': 'transparent',
-	'--pk-prose-quotes': 'currentColor',
-	'--pk-prose-bold': 'inherit',
-	'--pk-prose-counters': 'currentColor',
-	'--pk-prose-bullets': 'currentColor',
-	'--pk-prose-th-borders': 'currentColor',
-	'--pk-prose-td-borders': 'currentColor',
-})
+export const typographyVariables = {
+	'--pk-prose-color-body': 'currentColor',
+	'--pk-prose-color-headings': 'currentColor',
+	'--pk-prose-color-lead': 'currentColor',
+	'--pk-prose-color-links': 'currentColor',
+	'--pk-prose-color-bold': 'currentColor',
+	'--pk-prose-color-counters': 'currentColor',
+	'--pk-prose-color-bullets': 'currentColor',
+	'--pk-prose-color-hr': 'currentColor',
+	'--pk-prose-color-quotes': 'currentColor',
+	'--pk-prose-color-quote-borders': 'currentColor',
+	'--pk-prose-color-captions': 'currentColor',
+	'--pk-prose-color-code': 'currentColor',
+	'--pk-prose-color-pre-code': 'currentColor',
+	'--pk-prose-color-pre-bg': 'transparent',
+	'--pk-prose-color-th-borders': 'currentColor',
+	'--pk-prose-color-td-borders': 'currentColor',
+	'--pk-prose-color-kbd': 'currentColor',
+	'--pk-prose-kbd-shadows': 'currentColor',
+} satisfies VariablesDefinition
 
 export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
-	'color': 'var(--pk-prose-body)',
+	'color': 'var(--pk-prose-color-body)',
 	'maxWidth': '65ch',
 	'fontSize': '1rem',
 	'lineHeight': '1.75',
+	'$ > :first-child': {
+		marginTop: '0',
+	},
+	'$ > :last-child': {
+		marginBottom: '0',
+	},
 	'$ p': {
 		marginTop: '1.25em',
 		marginBottom: '1.25em',
 	},
 	'$ [class~="lead"]': {
+		color: 'var(--pk-prose-color-lead)',
 		fontSize: '1.25em',
 		lineHeight: '1.6',
 		marginTop: '1.2em',
 		marginBottom: '1.2em',
 	},
 	'$ a': {
-		color: 'var(--pk-prose-links)',
+		color: 'var(--pk-prose-color-links)',
 		textDecoration: 'underline',
 		fontWeight: '500',
 	},
 	'$ strong': {
-		color: 'var(--pk-prose-bold)',
+		color: 'var(--pk-prose-color-bold)',
 		fontWeight: '600',
 	},
 	'$ a strong': {
@@ -52,17 +62,65 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 	'$ thead th strong': {
 		color: 'inherit',
 	},
+	'$ em': {
+		fontStyle: 'italic',
+	},
+	'$ kbd': {
+		color: 'var(--pk-prose-color-kbd)',
+		fontSize: '0.875em',
+		fontWeight: '500',
+		fontFamily: 'inherit',
+		borderRadius: '0.3125rem',
+		paddingTop: '0.1875em',
+		paddingRight: '0.375em',
+		paddingBottom: '0.1875em',
+		paddingLeft: '0.375em',
+		boxShadow: '0 0 0 1px var(--pk-prose-kbd-shadows), 0 3px 0 var(--pk-prose-kbd-shadows)',
+	},
 	'$ ol': {
 		listStyleType: 'decimal',
 		marginTop: '1.25em',
 		marginBottom: '1.25em',
 		paddingLeft: '1.625em',
 	},
+	'$ ol[type="A"]': {
+		listStyleType: 'upper-alpha',
+	},
+	'$ ol[type="a"]': {
+		listStyleType: 'lower-alpha',
+	},
+	'$ ol[type="A" s]': {
+		listStyleType: 'upper-alpha',
+	},
+	'$ ol[type="a" s]': {
+		listStyleType: 'lower-alpha',
+	},
+	'$ ol[type="I"]': {
+		listStyleType: 'upper-roman',
+	},
+	'$ ol[type="i"]': {
+		listStyleType: 'lower-roman',
+	},
+	'$ ol[type="I" s]': {
+		listStyleType: 'upper-roman',
+	},
+	'$ ol[type="i" s]': {
+		listStyleType: 'lower-roman',
+	},
+	'$ ol[type="1"]': {
+		listStyleType: 'decimal',
+	},
 	'$ ul': {
 		listStyleType: 'disc',
 		marginTop: '1.25em',
 		marginBottom: '1.25em',
 		paddingLeft: '1.625em',
+	},
+	'$ ul ul': {
+		listStyleType: 'circle',
+	},
+	'$ ul ul ul': {
+		listStyleType: 'square',
 	},
 	'$ li': {
 		marginTop: '0.5em',
@@ -94,54 +152,103 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 		marginTop: '0.75em',
 		marginBottom: '0.75em',
 	},
+	'$ dl': {
+		marginTop: '1.25em',
+		marginBottom: '1.25em',
+	},
+	'$ dt': {
+		color: 'var(--pk-prose-color-headings)',
+		fontWeight: '600',
+		marginTop: '1.25em',
+	},
+	'$ dd': {
+		marginTop: '0.5em',
+		paddingLeft: '1.625em',
+	},
 	'$ hr': {
-		borderColor: 'var(--pk-prose-hr)',
+		borderColor: 'var(--pk-prose-color-hr)',
 		borderTopWidth: '1px',
 		marginTop: '3em',
 		marginBottom: '3em',
 	},
+	'$ hr + *': {
+		marginTop: '0',
+	},
+	'$ h2 + *': {
+		marginTop: '0',
+	},
+	'$ h3 + *': {
+		marginTop: '0',
+	},
+	'$ h4 + *': {
+		marginTop: '0',
+	},
 	'$ blockquote': {
 		fontWeight: '500',
 		fontStyle: 'italic',
-		color: 'var(--pk-prose-quotes)',
+		color: 'var(--pk-prose-color-quotes)',
 		borderLeftWidth: '0.25rem',
-		borderLeftColor: 'var(--pk-prose-quotes)',
+		borderLeftColor: 'var(--pk-prose-color-quote-borders)',
+		quotes: '"\\201C""\\201D""\\2018""\\2019"',
 		marginTop: '1.6em',
 		marginBottom: '1.6em',
 		paddingLeft: '1em',
 	},
+	'$ blockquote p:first-of-type::before': {
+		content: 'open-quote',
+	},
+	'$ blockquote p:last-of-type::after': {
+		content: 'close-quote',
+	},
 	'$ h1': {
-		color: 'var(--pk-prose-headings)',
+		color: 'var(--pk-prose-color-headings)',
 		fontWeight: '800',
 		fontSize: '2.25em',
 		marginTop: '0',
 		marginBottom: '0.88em',
 		lineHeight: '1.1',
 	},
+	'$ h1 strong': {
+		fontWeight: '900',
+	},
 	'$ h2': {
-		color: 'var(--pk-prose-headings)',
+		color: 'var(--pk-prose-color-headings)',
 		fontWeight: '700',
 		fontSize: '1.5em',
 		marginTop: '2em',
 		marginBottom: '1em',
 		lineHeight: '1.33',
 	},
+	'$ h2 strong': {
+		fontWeight: '800',
+	},
 	'$ h3': {
-		color: 'var(--pk-prose-headings)',
+		color: 'var(--pk-prose-color-headings)',
 		fontWeight: '600',
 		fontSize: '1.25em',
 		marginTop: '1.6em',
 		marginBottom: '0.6em',
 		lineHeight: '1.6',
 	},
+	'$ h3 strong': {
+		fontWeight: '700',
+	},
 	'$ h4': {
-		color: 'var(--pk-prose-headings)',
+		color: 'var(--pk-prose-color-headings)',
 		fontWeight: '600',
 		marginTop: '1.5em',
 		marginBottom: '0.5em',
 		lineHeight: '1.5',
 	},
+	'$ h4 strong': {
+		fontWeight: '700',
+	},
 	'$ img': {
+		marginTop: '2em',
+		marginBottom: '2em',
+	},
+	'$ picture': {
+		display: 'block',
 		marginTop: '2em',
 		marginBottom: '2em',
 	},
@@ -158,13 +265,13 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 		marginBottom: '0',
 	},
 	'$ figcaption': {
-		color: 'var(--pk-prose-captions)',
+		color: 'var(--pk-prose-color-captions)',
 		fontSize: '0.875em',
 		lineHeight: '1.4',
 		marginTop: '0.85em',
 	},
 	'$ code': {
-		color: 'var(--pk-prose-code)',
+		color: 'var(--pk-prose-color-code)',
 		fontWeight: '600',
 		fontSize: '0.875em',
 	},
@@ -177,10 +284,29 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 	'$ a code': {
 		color: 'inherit',
 	},
+	'$ h1 code': {
+		color: 'inherit',
+	},
+	'$ h2 code': {
+		color: 'inherit',
+	},
+	'$ h3 code': {
+		color: 'inherit',
+	},
+	'$ h4 code': {
+		color: 'inherit',
+	},
+	'$ blockquote code': {
+		color: 'inherit',
+	},
+	'$ thead th code': {
+		color: 'inherit',
+	},
 	'$ pre': {
-		color: 'var(--pk-prose-pre-code)',
-		backgroundColor: 'var(--pk-prose-pre-bg)',
+		color: 'var(--pk-prose-color-pre-code)',
+		backgroundColor: 'var(--pk-prose-color-pre-bg)',
 		overflowX: 'auto',
+		fontWeight: '400',
 		fontSize: '0.875em',
 		lineHeight: '1.7',
 		marginTop: '1.7em',
@@ -219,28 +345,42 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 	},
 	'$ thead': {
 		borderBottomWidth: '1px',
-		borderBottomColor: 'var(--pk-prose-th-borders)',
+		borderBottomColor: 'var(--pk-prose-color-th-borders)',
 	},
 	'$ thead th': {
-		color: 'var(--pk-prose-headings)',
+		color: 'var(--pk-prose-color-headings)',
 		fontWeight: '600',
 		verticalAlign: 'bottom',
 		paddingRight: '0.57em',
 		paddingBottom: '0.57em',
 		paddingLeft: '0.57em',
 	},
+	'$ thead th:first-child': {
+		paddingLeft: '0',
+	},
+	'$ thead th:last-child': {
+		paddingRight: '0',
+	},
 	'$ tbody tr': {
 		borderBottomWidth: '1px',
-		borderBottomColor: 'var(--pk-prose-td-borders)',
+		borderBottomColor: 'var(--pk-prose-color-td-borders)',
 	},
 	'$ tbody tr:last-child': {
 		borderBottomWidth: '0',
 	},
 	'$ tbody td': {
 		verticalAlign: 'baseline',
+	},
+	'$ tbody td, $ tfoot td': {
 		paddingTop: '0.57em',
 		paddingRight: '0.57em',
 		paddingBottom: '0.57em',
 		paddingLeft: '0.57em',
+	},
+	'$ tbody td:first-child, $ tfoot td:first-child': {
+		paddingLeft: '0',
+	},
+	'$ tbody td:last-child, $ tfoot td:last-child': {
+		paddingRight: '0',
 	},
 })

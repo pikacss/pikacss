@@ -19,15 +19,15 @@ describe('plugin-typography', () => {
 		const css = await engine.renderAtomicStyles(true, { atomicStyleIds: ids })
 
 		expect(css)
-			.toContain('color: var(--pk-prose-body)')
+			.toContain('color: var(--pk-prose-color-body)')
 		expect(css)
 			.toContain('max-width: 65ch')
 
 		const preflights = await engine.renderPreflights(true)
 		expect(preflights)
-			.toContain('--pk-prose-body: currentColor')
+			.toContain('--pk-prose-color-body: currentColor')
 		expect(preflights)
-			.toContain('--pk-prose-headings: currentColor')
+			.toContain('--pk-prose-color-headings: currentColor')
 	})
 
 	it('should support size modifiers', async () => {
@@ -48,7 +48,7 @@ describe('plugin-typography', () => {
 		const engine = await createEngine({
 			plugins: [createTypographyPlugin({
 				variables: {
-					'--pk-prose-body': '#333',
+					'--pk-prose-color-body': '#333',
 				},
 			})],
 		})
@@ -56,18 +56,6 @@ describe('plugin-typography', () => {
 		await engine.use('prose')
 		const preflights = await engine.renderPreflights(true)
 		expect(preflights)
-			.toContain('--pk-prose-body: #333')
-	})
-
-	it('should support prose-invert', async () => {
-		const engine = await createEngine({
-			plugins: [createTypographyPlugin()],
-		})
-
-		const ids = await engine.use('prose-invert')
-		const css = await engine.renderAtomicStyles(true, { atomicStyleIds: ids })
-
-		expect(css)
-			.toContain('--pk-prose-body: var(--pk-prose-invert-body, #d1d5db)')
+			.toContain('--pk-prose-color-body: #333')
 	})
 })

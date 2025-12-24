@@ -37,66 +37,95 @@ Now you can use the `prose` class in your HTML:
 
 ## Size Modifiers
 
-The plugin includes five size modifiers:
+The plugin includes four size modifiers that automatically inherit all `prose` styles:
 
-- `prose-sm`
-- `prose-base` (default)
-- `prose-lg`
-- `prose-xl`
-- `prose-2xl`
+- `prose` (default, 1rem / 16px)
+- `prose-sm` (0.875rem / 14px)
+- `prose-lg` (1.125rem / 18px)
+- `prose-xl` (1.25rem / 20px)
+- `prose-2xl` (1.5rem / 24px)
+
+Each size modifier can be used independently without needing to combine with the base `prose` class:
 
 ```html
-<article class="prose prose-xl">
+<!-- ✅ Correct: Use size modifier directly -->
+<article class="prose-xl">
   <!-- ... -->
 </article>
-```
 
-## Dark Mode
-
-Use the `prose-invert` class to swap the colors for dark mode:
-
-```html
-<article class="prose prose-invert">
+<!-- ❌ Not needed: Don't combine with base prose -->
+<article class="prose prose-xl">
   <!-- ... -->
 </article>
 ```
 
 ## Customization
 
-You can customize the typography variables when initializing the plugin:
+You can customize the typography color variables when initializing the plugin:
 
 ```ts
 createTypographyPlugin({
   variables: {
-    '--pk-prose-body': '#374151',
-    '--pk-prose-headings': '#111827',
-    '--pk-prose-links': '#2563eb',
+    '--pk-prose-color-body': '#374151',
+    '--pk-prose-color-headings': '#111827',
+    '--pk-prose-color-links': '#2563eb',
   }
 })
 ```
 
-### Available Variables
+### Available Color Variables
 
-| Variable | Default |
-| --- | --- |
-| `--pk-prose-body` | `currentColor` |
-| `--pk-prose-headings` | `currentColor` |
-| `--pk-prose-links` | `currentColor` |
-| `--pk-prose-lists` | `currentColor` |
-| `--pk-prose-hr` | `currentColor` |
-| `--pk-prose-captions` | `currentColor` |
-| `--pk-prose-code` | `currentColor` |
-| `--pk-prose-pre-code` | `currentColor` |
-| `--pk-prose-pre-bg` | `transparent` |
-| `--pk-prose-quotes` | `currentColor` |
-| `--pk-prose-bold` | `inherit` |
-| `--pk-prose-counters` | `currentColor` |
-| `--pk-prose-bullets` | `currentColor` |
-| `--pk-prose-th-borders` | `currentColor` |
-| `--pk-prose-td-borders` | `currentColor` |
+All color-related variables use the `--pk-prose-color-*` prefix:
 
-For dark mode (`prose-invert`), you can also override the invert variables:
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--pk-prose-color-body` | `currentColor` | Body text color |
+| `--pk-prose-color-headings` | `currentColor` | Heading text color |
+| `--pk-prose-color-lead` | `currentColor` | Lead paragraph color |
+| `--pk-prose-color-links` | `currentColor` | Link color |
+| `--pk-prose-color-bold` | `currentColor` | Bold text color |
+| `--pk-prose-color-counters` | `currentColor` | Ordered list counter color |
+| `--pk-prose-color-bullets` | `currentColor` | Unordered list bullet color |
+| `--pk-prose-color-hr` | `currentColor` | Horizontal rule color |
+| `--pk-prose-color-quotes` | `currentColor` | Blockquote text color |
+| `--pk-prose-color-quote-borders` | `currentColor` | Blockquote border color |
+| `--pk-prose-color-captions` | `currentColor` | Figure caption color |
+| `--pk-prose-color-code` | `currentColor` | Inline code color |
+| `--pk-prose-color-pre-code` | `currentColor` | Code block text color |
+| `--pk-prose-color-pre-bg` | `transparent` | Code block background |
+| `--pk-prose-color-th-borders` | `currentColor` | Table header border color |
+| `--pk-prose-color-td-borders` | `currentColor` | Table cell border color |
+| `--pk-prose-color-kbd` | `currentColor` | Keyboard input color |
 
-- `--pk-prose-invert-body`
-- `--pk-prose-invert-headings`
-- ... and so on.
+### Non-color Variables
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `--pk-prose-kbd-shadows` | `currentColor` | Keyboard input shadow color |
+
+## Dark Mode Support
+
+While this plugin doesn't include a built-in `prose-invert` class, you can easily implement dark mode by overriding the color variables in your CSS:
+
+```css
+@media (prefers-color-scheme: dark) {
+  .prose {
+    --pk-prose-color-body: #d1d5db;
+    --pk-prose-color-headings: #fff;
+    --pk-prose-color-links: #60a5fa;
+    --pk-prose-color-code: #fff;
+    --pk-prose-color-pre-bg: rgba(0, 0, 0, 0.5);
+    /* ... customize other colors as needed */
+  }
+}
+```
+
+Or use a class-based approach:
+
+```css
+.dark .prose {
+  --pk-prose-color-body: #d1d5db;
+  --pk-prose-color-headings: #fff;
+  /* ... */
+}
+```
