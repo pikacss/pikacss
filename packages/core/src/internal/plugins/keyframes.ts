@@ -3,7 +3,7 @@ import { defineEnginePlugin } from '../plugin'
 import { addToSet } from '../utils'
 
 // #region KeyframesConfig
-export interface Progress {
+export interface KeyframesProgress {
 	from?: ResolvedProperties
 	to?: ResolvedProperties
 	[K: `${number}%`]: ResolvedProperties
@@ -11,8 +11,8 @@ export interface Progress {
 
 export type Keyframes
 	= | string
-		| [name: string, frames?: Progress, autocomplete?: string[], pruneUnused?: boolean]
-		| { name: string, frames?: Progress, autocomplete?: string[], pruneUnused?: boolean }
+		| [name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean]
+		| { name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean }
 
 export interface KeyframesConfig {
 	/**
@@ -137,7 +137,7 @@ export function keyframes() {
 
 interface ResolvedKeyframesConfig {
 	name: string
-	frames: Progress | Nullish
+	frames: KeyframesProgress | Nullish
 	pruneUnused: boolean
 	autocomplete: string[]
 }
@@ -158,10 +158,3 @@ function createResolveConfigFn({
 		return { name, frames, autocomplete, pruneUnused }
 	}
 }
-
-// Only for type inference without runtime effect
-/* c8 ignore start */
-export function defineKeyframes(keyframes: Keyframes): Keyframes {
-	return keyframes
-}
-/* c8 ignore end */

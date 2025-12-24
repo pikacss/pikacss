@@ -1,6 +1,6 @@
 import type { Engine } from '../engine'
 import type { DynamicRule, StaticRule } from '../resolver'
-import type { Arrayable, Awaitable, Nullish, ResolvedStyleItem, StyleDefinition, StyleItem } from '../types'
+import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, Nullish, ResolvedStyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { AbstractResolver } from '../resolver'
 import { isNotString, log } from '../utils'
@@ -106,7 +106,7 @@ export function shortcuts() {
 			engine.appendAutocompletePropertyValues('__shortcut', unionType, `(${unionType})[]`)
 		},
 		async transformStyleItems(styleItems) {
-			const result: StyleItem[] = []
+			const result: InternalStyleItem[] = []
 			for (const styleItem of styleItems) {
 				if (typeof styleItem === 'string') {
 					result.push(...await engine.shortcuts.resolver.resolve(styleItem))
@@ -118,13 +118,13 @@ export function shortcuts() {
 			return result
 		},
 		async transformStyleDefinitions(styleDefinitions) {
-			const result: StyleDefinition[] = []
+			const result: InternalStyleDefinition[] = []
 			for (const styleDefinition of styleDefinitions) {
 				if ('__shortcut' in styleDefinition) {
 					const { __shortcut, ...rest } = styleDefinition
-					const applied: StyleDefinition[] = []
+					const applied: InternalStyleDefinition[] = []
 					for (const shortcut of ((__shortcut == null ? [] : [__shortcut].flat(1)) as string[])) {
-						const resolved: StyleDefinition[] = (await engine.shortcuts.resolver.resolve(shortcut)).filter(isNotString)
+						const resolved: InternalStyleDefinition[] = (await engine.shortcuts.resolver.resolve(shortcut)).filter(isNotString)
 						applied.push(...resolved)
 					}
 					result.push(...applied, rest)
@@ -138,12 +138,12 @@ export function shortcuts() {
 	})
 }
 
-type StaticShortcutRule = StaticRule<StyleItem[]>
+type StaticShortcutRule = StaticRule<InternalStyleItem[]>
 
-type DynamicShortcutRule = DynamicRule<StyleItem[]>
+type DynamicShortcutRule = DynamicRule<InternalStyleItem[]>
 
-class ShortcutResolver extends AbstractResolver<StyleItem[]> {
-	async resolve(shortcut: string): Promise<StyleItem[]> {
+class ShortcutResolver extends AbstractResolver<InternalStyleItem[]> {
+	async resolve(shortcut: string): Promise<InternalStyleItem[]> {
 		const resolved = await this._resolve(shortcut)
 			.catch((error) => {
 				log.warn(`Failed to resolve shortcut "${shortcut}": ${error.message}`, error)
@@ -152,7 +152,7 @@ class ShortcutResolver extends AbstractResolver<StyleItem[]> {
 		if (resolved == null)
 			return [shortcut]
 
-		const result: StyleItem[] = []
+		const result: InternalStyleItem[] = []
 		for (const partial of resolved.value) {
 			if (typeof partial === 'string')
 				result.push(...await this.resolve(partial))
@@ -235,10 +235,3 @@ function resolveShortcutConfig(config: Shortcut): ResolvedShortcutConfig | strin
 
 	return void 0
 }
-
-// Only for type inference without runtime effect
-/* c8 ignore start */
-export function defineShortcut(shortcut: Shortcut): Shortcut {
-	return shortcut
-}
-/* c8 ignore end */

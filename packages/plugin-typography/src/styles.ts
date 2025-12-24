@@ -1,3 +1,4 @@
+import type { StyleDefinition } from '@pikacss/core'
 import { defineStyleDefinition, defineVariables } from '@pikacss/core'
 
 export const typographyVariables = defineVariables({
@@ -18,7 +19,7 @@ export const typographyVariables = defineVariables({
 	'--pk-prose-td-borders': 'currentColor',
 })
 
-export const proseBaseStyle = defineStyleDefinition({
+export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 	'color': 'var(--pk-prose-body)',
 	'maxWidth': '65ch',
 	'fontSize': '1rem',

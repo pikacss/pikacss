@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { defineEngineConfig } from '../../src'
 import { createEngine } from '../../src/internal/engine'
-import { defineEngineConfig } from '../../src/internal/utils'
 
 describe('defineEngineConfig', () => {
 	it('should return the same config object', () => {

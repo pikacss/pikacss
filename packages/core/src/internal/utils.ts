@@ -1,4 +1,4 @@
-import type { CSSStyleBlocks, EngineConfig, Preflight, PropertyValue, ResolvedEngineConfig, StyleDefinition, StyleItem } from './types'
+import type { CSSStyleBlocks, InternalPropertyValue, InternalStyleDefinition, InternalStyleItem, ResolvedEngineConfig } from './types'
 
 export function createLogger(prefix: string) {
 	let currentPrefix = prefix
@@ -93,7 +93,7 @@ export function isNotString<V>(value: V): value is Exclude<V, string> {
 	return typeof value !== 'string'
 }
 
-export function isPropertyValue(v: PropertyValue | StyleDefinition | StyleItem[]): v is PropertyValue {
+export function isPropertyValue(v: InternalPropertyValue | InternalStyleDefinition | InternalStyleItem[]): v is InternalPropertyValue {
 	if (Array.isArray(v))
 		return v.length === 2 && isPropertyValue(v[0]) && Array.isArray(v[1]) && v[1].every(isPropertyValue)
 
@@ -162,14 +162,3 @@ export function renderCSSStyleBlocks(blocks: CSSStyleBlocks, isFormatted: boolea
 	})
 	return lines.join(lineEnd)
 }
-
-// Only for type inference without runtime effect
-/* c8 ignore start */
-export function defineEngineConfig(config: EngineConfig): EngineConfig {
-	return config
-}
-
-export function definePreflight(preflight: Preflight): Preflight {
-	return preflight
-}
-/* c8 ignore end */

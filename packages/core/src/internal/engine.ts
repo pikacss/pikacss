@@ -1,5 +1,5 @@
 import type { ExtractFn } from './extractor'
-import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, StyleContent, StyleDefinition, StyleItem } from './types'
+import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, StyleContent } from './types'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
@@ -124,7 +124,7 @@ export class Engine {
 		this.notifyPreflightUpdated()
 	}
 
-	async use(...itemList: StyleItem[]): Promise<string[]> {
+	async use(...itemList: InternalStyleItem[]): Promise<string[]> {
 		log.debug(`Processing ${itemList.length} style items`)
 		const {
 			unknown,
@@ -275,9 +275,9 @@ export async function resolveStyleItemList({
 	transformStyleItems,
 	extractStyleDefinition,
 }: {
-	itemList: StyleItem[]
-	transformStyleItems: (styleItems: StyleItem[]) => Promise<StyleItem[]>
-	extractStyleDefinition: (styleObj: StyleDefinition) => Promise<ExtractedStyleContent[]>
+	itemList: InternalStyleItem[]
+	transformStyleItems: (styleItems: InternalStyleItem[]) => Promise<InternalStyleItem[]>
+	extractStyleDefinition: (styleObj: InternalStyleDefinition) => Promise<ExtractedStyleContent[]>
 }) {
 	const unknown = new Set<string>()
 	const list: ExtractedStyleContent[] = []

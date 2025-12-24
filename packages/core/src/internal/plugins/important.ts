@@ -1,4 +1,4 @@
-import type { Nullish, PropertyValue, StyleDefinition } from '../types'
+import type { InternalPropertyValue, InternalStyleDefinition, Nullish } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { isPropertyValue } from '../utils'
 
@@ -14,7 +14,7 @@ declare module '@pikacss/core' {
 	}
 }
 
-function modifyPropertyValue(value: PropertyValue): PropertyValue {
+function modifyPropertyValue(value: InternalPropertyValue): InternalPropertyValue {
 	if (value == null)
 		return null
 
@@ -38,7 +38,7 @@ export function important() {
 			engine.appendAutocompletePropertyValues('__important', 'boolean')
 		},
 		transformStyleDefinitions(styleDefinitions) {
-			return styleDefinitions.map<StyleDefinition>((styleDefinition) => {
+			return styleDefinitions.map<InternalStyleDefinition>((styleDefinition) => {
 				const { __important, ...rest } = styleDefinition
 				const value = __important as boolean | Nullish
 				const important = value == null ? defaultValue : value

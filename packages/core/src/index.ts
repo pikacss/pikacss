@@ -1,3 +1,10 @@
+import type { Keyframes } from './internal/plugins/keyframes'
+import type { Selector } from './internal/plugins/selectors'
+import type { Shortcut } from './internal/plugins/shortcuts'
+import type { VariablesDefinition } from './internal/plugins/variables'
+import type { Preflight } from './internal/types'
+import type { StyleDefinition } from './types'
+
 /* c8 ignore start */
 export {
 	createEngine,
@@ -9,10 +16,11 @@ export {
 	type EnginePlugin,
 } from './internal/plugin'
 
-export { defineKeyframes } from './internal/plugins/keyframes'
-export { defineSelector } from './internal/plugins/selectors'
-export { defineShortcut } from './internal/plugins/shortcuts'
-export { defineVariables } from './internal/plugins/variables'
+export type * from './internal/plugins/important'
+export type * from './internal/plugins/keyframes'
+export type * from './internal/plugins/selectors'
+export type * from './internal/plugins/shortcuts'
+export type * from './internal/plugins/variables'
 
 export type {
 	CSSStyleBlockBody,
@@ -32,8 +40,6 @@ export {
 	appendAutocompleteSelectors,
 	appendAutocompleteStyleItemStrings,
 	createLogger,
-	defineEngineConfig,
-	definePreflight,
 	log,
 	renderCSSStyleBlocks,
 } from './internal/utils'
@@ -45,4 +51,33 @@ export type {
 	StyleDefinition,
 	StyleItem,
 } from './types'
+
+// define* functions
+export function defineEngineConfig(config: EngineConfig): EngineConfig {
+	return config
+}
+
+export function defineStyleDefinition(styleDefinition: StyleDefinition): StyleDefinition {
+	return styleDefinition
+}
+
+export function definePreflight(preflight: Preflight): Preflight {
+	return preflight
+}
+
+export function defineKeyframes(keyframes: Keyframes): Keyframes {
+	return keyframes
+}
+
+export function defineSelector(selector: Selector): Selector {
+	return selector
+}
+
+export function defineShortcut(shortcut: Shortcut): Shortcut {
+	return shortcut
+}
+
+export function defineVariables(variables: VariablesDefinition): VariablesDefinition {
+	return variables
+}
 /* c8 ignore end */

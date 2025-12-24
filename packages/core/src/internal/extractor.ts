@@ -1,4 +1,4 @@
-import type { ExtractedStyleContent, Nullish, PropertyValue, StyleDefinition, StyleItem } from './types'
+import type { ExtractedStyleContent, InternalPropertyValue, InternalStyleDefinition, InternalStyleItem, Nullish } from './types'
 import {
 	ATOMIC_STYLE_ID_PLACEHOLDER,
 	ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
@@ -51,7 +51,7 @@ export function normalizeSelectors({
 	return normalized
 }
 
-export function normalizeValue(value: PropertyValue): ExtractedStyleContent['value'] {
+export function normalizeValue(value: InternalPropertyValue): ExtractedStyleContent['value'] {
 	if (value == null)
 		return value
 
@@ -69,13 +69,13 @@ export async function extract({
 	transformStyleItems,
 	transformStyleDefinitions,
 }: {
-	styleDefinition: StyleDefinition
+	styleDefinition: InternalStyleDefinition
 	levels?: string[]
 	result?: ExtractedStyleContent[]
 	defaultSelector: string
 	transformSelectors: (selectors: string[]) => Promise<string[]>
-	transformStyleItems: (styleItems: StyleItem[]) => Promise<StyleItem[]>
-	transformStyleDefinitions: (styleDefinitions: StyleDefinition[]) => Promise<StyleDefinition[]>
+	transformStyleItems: (styleItems: InternalStyleItem[]) => Promise<InternalStyleItem[]>
+	transformStyleDefinitions: (styleDefinitions: InternalStyleDefinition[]) => Promise<InternalStyleDefinition[]>
 }): Promise<ExtractedStyleContent[]> {
 	for (const definition of await transformStyleDefinitions([styleDefinition])) {
 		for (const [k, v] of Object.entries(definition)) {
@@ -126,15 +126,15 @@ export async function extract({
 	return result
 }
 
-export type ExtractFn = (styleDefinition: StyleDefinition) => Promise<ExtractedStyleContent[]>
+export type ExtractFn = (styleDefinition: InternalStyleDefinition) => Promise<ExtractedStyleContent[]>
 
 export function createExtractFn(options: {
 	defaultSelector: string
 	transformSelectors: (selectors: string[]) => Promise<string[]>
-	transformStyleItems: (styleItems: StyleItem[]) => Promise<StyleItem[]>
-	transformStyleDefinitions: (styleDefinitions: StyleDefinition[]) => Promise<StyleDefinition[]>
+	transformStyleItems: (styleItems: InternalStyleItem[]) => Promise<InternalStyleItem[]>
+	transformStyleDefinitions: (styleDefinitions: InternalStyleDefinition[]) => Promise<InternalStyleDefinition[]>
 }): ExtractFn {
-	return (styleDefinition: StyleDefinition) => extract({
+	return (styleDefinition: InternalStyleDefinition) => extract({
 		styleDefinition,
 		...options,
 	})

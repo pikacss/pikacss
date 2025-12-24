@@ -1,4 +1,4 @@
-import type { Arrayable, PreflightDefinition, PropertyValue, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
+import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
@@ -19,7 +19,7 @@ export interface VariableAutocomplete {
 	asProperty?: boolean
 }
 
-interface VariableObject {
+export interface VariableObject {
 	value?: ResolvedCSSProperties[`--${string}`]
 	autocomplete?: VariableAutocomplete
 	pruneUnused?: boolean
@@ -162,7 +162,7 @@ export function variables() {
 
 interface ResolvedVariable {
 	name: string
-	value: PropertyValue
+	value: InternalPropertyValue
 	selector: string[]
 	pruneUnused: boolean
 	autocomplete: {
@@ -226,10 +226,3 @@ export function normalizeVariableName(name: string) {
 		return name
 	return `--${name}`
 }
-
-// Only for type inference without runtime effect
-/* c8 ignore start */
-export function defineVariables(variables: VariablesDefinition): VariablesDefinition {
-	return variables
-}
-/* c8 ignore end */

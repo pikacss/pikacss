@@ -1,5 +1,5 @@
 import type { Engine } from './engine'
-import type { AtomicStyle, Awaitable, EngineConfig, ResolvedEngineConfig, ResolvedStyleDefinition, ResolvedStyleItem, StyleDefinition, StyleItem } from './types'
+import type { AtomicStyle, Awaitable, EngineConfig, InternalStyleDefinition, InternalStyleItem, ResolvedEngineConfig, ResolvedStyleDefinition, ResolvedStyleItem } from './types'
 import { log } from './utils'
 
 type DefineHooks<Hooks extends Record<string, [type: 'sync' | 'async', payload: any, returnValue?: any]>> = Hooks
@@ -87,9 +87,9 @@ export const hooks: EngineHooks = {
 		execAsyncHook(plugins, 'configureEngine', engine),
 	transformSelectors: (plugins: EnginePlugin[], selectors: string[]) =>
 		execAsyncHook(plugins, 'transformSelectors', selectors),
-	transformStyleItems: (plugins: EnginePlugin[], styleItems: StyleItem[]) =>
+	transformStyleItems: (plugins: EnginePlugin[], styleItems: InternalStyleItem[]) =>
 		execAsyncHook(plugins, 'transformStyleItems', styleItems),
-	transformStyleDefinitions: (plugins: EnginePlugin[], styleDefinitions: StyleDefinition[]) =>
+	transformStyleDefinitions: (plugins: EnginePlugin[], styleDefinitions: InternalStyleDefinition[]) =>
 		execAsyncHook(plugins, 'transformStyleDefinitions', styleDefinitions),
 	preflightUpdated: (plugins: EnginePlugin[]) =>
 		execSyncHook(plugins, 'preflightUpdated', void 0),

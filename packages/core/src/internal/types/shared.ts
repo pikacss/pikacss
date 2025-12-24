@@ -2,15 +2,15 @@ import type { Nullish } from './utils'
 
 export interface PikaAugment {}
 
-export type PropertyValue = string | number | [value: string | number, fallback: (string | number)[]] | Nullish
+export type InternalPropertyValue = string | number | [value: string | number, fallback: (string | number)[]] | Nullish
 
-export type Properties = Record<string, PropertyValue>
+export type InternalProperties = Record<string, InternalPropertyValue>
 
-export interface StyleDefinition {
-	[K: string]: PropertyValue | StyleDefinition | StyleItem[]
+export interface InternalStyleDefinition {
+	[K: string]: InternalPropertyValue | InternalStyleDefinition | InternalStyleItem[]
 }
 
-export type StyleItem = string | StyleDefinition
+export type InternalStyleItem = string | InternalStyleDefinition
 
 export interface ExtractedStyleContent {
 	selector: string[]
