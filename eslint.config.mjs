@@ -6,5 +6,5 @@ export default await deviltea({
 			'style/no-mixed-spaces-and-tabs': 'warn',
 		},
 	},
-	ignores: ['**/README.md', 'docs/**/*.md', '.github/skills/**/*.md'],
+	ignores: ['**/README.md', 'docs/**/*.md', '.github/skills/**/*.md', 'agent_todos/**/*.md'],
 })
