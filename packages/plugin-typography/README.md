@@ -12,10 +12,10 @@ pnpm add @pikacss/plugin-typography
 
 ```typescript
 import { createEngine } from '@pikacss/core'
-import { createTypographyPlugin } from '@pikacss/plugin-typography'
+import { typography } from '@pikacss/plugin-typography'
 
 const engine = await createEngine({
-  plugins: [createTypographyPlugin()]
+  plugins: [typography()]
 })
 ```
 
@@ -61,7 +61,7 @@ const engine = await createEngine({
 Override color variables when creating the plugin:
 
 ```typescript
-createTypographyPlugin({
+typography({
   variables: {
     '--pk-prose-color-body': '#374151',
     '--pk-prose-color-headings': '#111827',

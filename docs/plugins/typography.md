@@ -14,11 +14,11 @@ Register the plugin in your PikaCSS configuration:
 
 ```ts
 import { createEngine } from '@pikacss/core'
-import { createTypographyPlugin } from '@pikacss/plugin-typography'
+import { typography } from '@pikacss/plugin-typography'
 
 const engine = await createEngine({
   plugins: [
-    createTypographyPlugin()
+    typography()
   ]
 })
 ```
@@ -64,7 +64,7 @@ Each size modifier can be used independently without needing to combine with the
 You can customize the typography color variables when initializing the plugin:
 
 ```ts
-createTypographyPlugin({
+typography({
   variables: {
     '--pk-prose-color-body': '#374151',
     '--pk-prose-color-headings': '#111827',

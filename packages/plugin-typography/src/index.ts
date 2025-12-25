@@ -19,7 +19,7 @@ declare module '@pikacss/core' {
 	}
 }
 
-export function createTypographyPlugin(options: TypographyPluginOptions = {}): EnginePlugin {
+export function typography(options: TypographyPluginOptions = {}): EnginePlugin {
 	return defineEnginePlugin({
 		name: 'typography',
 		configureEngine: async (engine) => {

@@ -1,18 +1,18 @@
 import { createEngine } from '@pikacss/core'
 import { describe, expect, it } from 'vitest'
 
-import { createTypographyPlugin } from '../src'
+import { typography } from '../src'
 
 describe('plugin-typography', () => {
 	it('returns plugin definition', () => {
-		const plugin = createTypographyPlugin()
+		const plugin = typography()
 		expect(plugin.name)
 			.toBe('typography')
 	})
 
 	it('should add prose shortcut and variables', async () => {
 		const engine = await createEngine({
-			plugins: [createTypographyPlugin()],
+			plugins: [typography()],
 		})
 
 		const ids = await engine.use('prose')
@@ -32,7 +32,7 @@ describe('plugin-typography', () => {
 
 	it('should support size modifiers', async () => {
 		const engine = await createEngine({
-			plugins: [createTypographyPlugin()],
+			plugins: [typography()],
 		})
 
 		const ids = await engine.use('prose-lg')
@@ -46,7 +46,7 @@ describe('plugin-typography', () => {
 
 	it('should support custom variables', async () => {
 		const engine = await createEngine({
-			plugins: [createTypographyPlugin({
+			plugins: [typography({
 				variables: {
 					'--pk-prose-color-body': '#333',
 				},
