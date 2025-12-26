@@ -32,11 +32,11 @@ npm install -D @pikacss/unplugin-pikacss
 
 ```javascript
 // rspack.config.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/rspack'
+import pikacss from '@pikacss/unplugin-pikacss/rspack'
 
 export default {
 	plugins: [
-		PikaCSS({
+		pikacss({
 			// options
 		})
 	]
@@ -67,7 +67,7 @@ import 'pika.css'
 ## Plugin Options
 
 ```javascript
-PikaCSS({
+pikacss({
 	// File scanning configuration
 	scan: {
 		include: ['**/*.{js,ts,jsx,tsx}'],
@@ -97,7 +97,7 @@ PikaCSS({
 ## Complete Example
 
 ```javascript
-import PikaCSS from '@pikacss/unplugin-pikacss/rspack'
+import pikacss from '@pikacss/unplugin-pikacss/rspack'
 // rspack.config.mjs
 import { defineConfig } from '@rspack/cli'
 
@@ -133,7 +133,7 @@ export default defineConfig({
 		extensions: ['.tsx', '.ts', '.js']
 	},
 	plugins: [
-		PikaCSS()
+		pikacss()
 	],
 	devServer: {
 		hot: true

@@ -263,11 +263,11 @@ These options are passed to the bundler plugin (not in `pika.config.ts`).
 
 ```typescript
 // vite.config.ts
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 
 export default {
 	plugins: [
-		PikaCSS({
+		pikacss({
 			// File scanning configuration
 			scan: {
 				include: ['**/*.{js,ts,jsx,tsx,vue,svelte}'],

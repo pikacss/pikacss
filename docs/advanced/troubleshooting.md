@@ -168,7 +168,7 @@ export default defineEngineConfig({
 1. Narrow down `scan.include` patterns:
 
 ```typescript
-PikaCSS({
+pikacss({
 	scan: {
 		include: ['src/**/*.{tsx,vue}'], // Be specific
 		exclude: ['**/*.test.*', '**/*.spec.*']

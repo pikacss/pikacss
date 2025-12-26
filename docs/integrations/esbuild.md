@@ -32,7 +32,7 @@ npm install -D @pikacss/unplugin-pikacss esbuild
 
 ```javascript
 // build.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/esbuild'
+import pikacss from '@pikacss/unplugin-pikacss/esbuild'
 import { build } from 'esbuild'
 
 await build({
@@ -40,7 +40,7 @@ await build({
 	bundle: true,
 	outdir: 'dist',
 	plugins: [
-		PikaCSS({
+		pikacss({
 			// options
 		})
 	]
@@ -71,7 +71,7 @@ import 'pika.css'
 ## Plugin Options
 
 ```javascript
-PikaCSS({
+pikacss({
 	// File scanning configuration
 	scan: {
 		include: ['**/*.{js,ts,jsx,tsx}'],
@@ -102,7 +102,7 @@ PikaCSS({
 
 ```javascript
 // build.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/esbuild'
+import pikacss from '@pikacss/unplugin-pikacss/esbuild'
 import { build, context } from 'esbuild'
 
 const isDev = process.argv.includes('--dev')
@@ -118,7 +118,7 @@ const buildOptions = {
 		'.ts': 'ts'
 	},
 	plugins: [
-		PikaCSS()
+		pikacss()
 	],
 	sourcemap: isDev
 }

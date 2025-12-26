@@ -28,12 +28,12 @@ npm install -D @pikacss/unplugin-pikacss
 2. ### Apply the vite plugin (or other supported bundlers)
 
 ```ts [vite.config.ts]
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
 	plugins: [
-		PikaCSS({ /* options */ }),
+		pikacss({ /* options */ }),
 	],
 })
 ```

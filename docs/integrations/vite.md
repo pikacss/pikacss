@@ -32,12 +32,12 @@ npm install -D @pikacss/unplugin-pikacss
 
 ```typescript
 // vite.config.ts
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
 	plugins: [
-		PikaCSS({
+		pikacss({
 			// options
 		})
 	]
@@ -68,7 +68,7 @@ import 'pika.css'
 ## Plugin Options
 
 ```typescript
-PikaCSS({
+pikacss({
 	// File scanning configuration
 	scan: {
 		include: ['**/*.{js,ts,jsx,tsx,vue,svelte}'],
@@ -100,7 +100,7 @@ PikaCSS({
 ### React
 
 ```typescript
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 // vite.config.ts
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -108,7 +108,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
 	plugins: [
 		react(),
-		PikaCSS()
+		pikacss()
 	]
 })
 ```
@@ -137,7 +137,7 @@ function App() {
 ### Vue
 
 ```typescript
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 // vite.config.ts
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
@@ -145,7 +145,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
 	plugins: [
 		vue(),
-		PikaCSS()
+		pikacss()
 	]
 })
 ```
@@ -175,7 +175,7 @@ import 'pika.css'
 ### Solid
 
 ```typescript
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 // vite.config.ts
 import solid from 'vite-plugin-solid'
@@ -183,7 +183,7 @@ import solid from 'vite-plugin-solid'
 export default defineConfig({
 	plugins: [
 		solid(),
-		PikaCSS()
+		pikacss()
 	]
 })
 ```

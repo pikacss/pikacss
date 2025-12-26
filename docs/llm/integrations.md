@@ -15,11 +15,11 @@ PikaCSS supports a wide range of build tools via `unplugin`.
 ## Vite
 ```typescript
 // vite.config.ts
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-	plugins: [PikaCSS()]
+	plugins: [pikacss()]
 })
 ```
 
@@ -43,31 +43,31 @@ export default defineEngineConfig({
 ## Webpack
 ```javascript
 // webpack.config.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/webpack'
+import pikacss from '@pikacss/unplugin-pikacss/webpack'
 
 export default {
-	plugins: [PikaCSS()]
+	plugins: [pikacss()]
 }
 ```
 
 ## Rspack
 ```javascript
 // rspack.config.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/rspack'
+import pikacss from '@pikacss/unplugin-pikacss/rspack'
 
 export default {
-	plugins: [PikaCSS()]
+	plugins: [pikacss()]
 }
 ```
 
 ## Esbuild
 ```javascript
 // build.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/esbuild'
+import pikacss from '@pikacss/unplugin-pikacss/esbuild'
 import { build } from 'esbuild'
 
 build({
-	plugins: [PikaCSS()]
+	plugins: [pikacss()]
 })
 ```
 
@@ -75,20 +75,20 @@ build({
 ```typescript
 import { defineConfig } from '@farmfe/core'
 // farm.config.ts
-import PikaCSS from '@pikacss/unplugin-pikacss/farm'
+import pikacss from '@pikacss/unplugin-pikacss/farm'
 
 export default defineConfig({
-	plugins: [PikaCSS()]
+	plugins: [pikacss()]
 })
 ```
 
 ## Rolldown
 ```javascript
 // rolldown.config.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/rolldown'
+import pikacss from '@pikacss/unplugin-pikacss/rolldown'
 
 export default {
-	plugins: [PikaCSS()]
+	plugins: [pikacss()]
 }
 ```
 
@@ -116,7 +116,7 @@ export default defineEngineConfig({
 Pass options to the bundler plugin:
 
 ```typescript
-PikaCSS({
+pikacss({
 	// File scanning
 	scan: {
 		include: ['**/*.{js,ts,jsx,tsx,vue,svelte}'],

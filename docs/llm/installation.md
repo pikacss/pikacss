@@ -20,12 +20,12 @@ npm install -D @pikacss/unplugin-pikacss
 ### 2. Configure Bundler
 **Vite Example (`vite.config.ts`):**
 ```typescript
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
+import pikacss from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
 	plugins: [
-		PikaCSS({ /* options */ }),
+		pikacss({ /* options */ }),
 	],
 })
 ```

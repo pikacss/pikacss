@@ -33,11 +33,11 @@ npm install -D @pikacss/unplugin-pikacss @farmfe/core @farmfe/cli
 ```typescript
 // farm.config.ts
 import { defineConfig } from '@farmfe/core'
-import PikaCSS from '@pikacss/unplugin-pikacss/farm'
+import pikacss from '@pikacss/unplugin-pikacss/farm'
 
 export default defineConfig({
 	plugins: [
-		PikaCSS({
+		pikacss({
 			// options
 		})
 	]
@@ -68,7 +68,7 @@ import 'pika.css'
 ## Plugin Options
 
 ```typescript
-PikaCSS({
+pikacss({
 	// File scanning configuration
 	scan: {
 		include: ['**/*.{js,ts,jsx,tsx}'],
@@ -100,7 +100,7 @@ PikaCSS({
 ```typescript
 // farm.config.ts
 import { defineConfig } from '@farmfe/core'
-import PikaCSS from '@pikacss/unplugin-pikacss/farm'
+import pikacss from '@pikacss/unplugin-pikacss/farm'
 
 export default defineConfig({
 	compilation: {
@@ -113,7 +113,7 @@ export default defineConfig({
 	},
 	plugins: [
 		'@farmfe/plugin-react',
-		PikaCSS()
+		pikacss()
 	],
 	server: {
 		port: 3000

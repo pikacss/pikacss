@@ -32,11 +32,11 @@ npm install -D @pikacss/unplugin-pikacss
 
 ```javascript
 // webpack.config.mjs
-import PikaCSS from '@pikacss/unplugin-pikacss/webpack'
+import pikacss from '@pikacss/unplugin-pikacss/webpack'
 
 export default {
 	plugins: [
-		PikaCSS({
+		pikacss({
 			// options
 		})
 	]
@@ -67,7 +67,7 @@ import 'pika.css'
 ## Plugin Options
 
 ```javascript
-PikaCSS({
+pikacss({
 	// File scanning configuration
 	scan: {
 		include: ['**/*.{js,ts,jsx,tsx}'],
@@ -99,7 +99,7 @@ PikaCSS({
 ```javascript
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import PikaCSS from '@pikacss/unplugin-pikacss/webpack'
+import pikacss from '@pikacss/unplugin-pikacss/webpack'
 // webpack.config.mjs
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 
@@ -129,7 +129,7 @@ export default {
 		extensions: ['.tsx', '.ts', '.js']
 	},
 	plugins: [
-		PikaCSS(),
+		pikacss(),
 		new HtmlWebpackPlugin({
 			template: './index.html'
 		})
