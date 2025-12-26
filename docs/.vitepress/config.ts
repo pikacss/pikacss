@@ -1,6 +1,5 @@
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { groupIconMdPlugin as MarkdownItGroupIcon } from 'vitepress-plugin-group-icons'
-import llmstxt from 'vitepress-plugin-llms'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // https://vitepress.dev/reference/site-config
@@ -114,12 +113,6 @@ export default withMermaid({
 
 		socialLinks: [
 			{ icon: 'github', link: 'https://github.com/pikacss/pikacss' },
-		],
-	},
-
-	vite: {
-		plugins: [
-			llmstxt(),
 		],
 	},
 

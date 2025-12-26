@@ -1,6 +1,7 @@
 import PikaCSS from '@pikacss/unplugin-pikacss/vite'
 import { defineConfig } from 'vite'
 import { groupIconVitePlugin as VitepressGroupIcon } from 'vitepress-plugin-group-icons'
+import LLMS from 'vitepress-plugin-llms'
 
 export default defineConfig({
 	plugins: [
@@ -11,5 +12,7 @@ export default defineConfig({
 			cssCodegen: '.vitepress/pika.gen.css',
 		}),
 		VitepressGroupIcon(),
+
+		LLMS(),
 	],
 })

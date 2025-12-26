@@ -16,7 +16,7 @@ catalog:
   '@types/micromatch': ^4.0.10
   '@types/node': ^24.10.1
   '@unocss/preset-icons': ^66.5.9
-  '@vitest/coverage-v8': ^4.0.14
+  '@vitest/coverage-v8': ^4.0.16
   alien-signals: ^2.0.0
   bumpp: ^10.3.2
   csstype: ^3.2.3
@@ -25,7 +25,7 @@ catalog:
   dayjs: ^1.11.19
   debug: ^4.4.0
   esbuild: ^0.27.0
-  eslint: ^9.39.1
+  eslint: ^9.39.2
   globby: ^16.0.0
   happy-dom: ^20.0.11
   jiti: ^2.6.1
@@ -38,23 +38,23 @@ catalog:
   ofetch: ^1.5.1
   pathe: ^2.0.3
   perfect-debounce: ^2.0.0
-  pkg-pr-new: ^0.0.61
+  pkg-pr-new: ^0.0.62
   pkg-size: ^2.4.0
-  publint: ^0.3.15
+  publint: ^0.3.16
   rimraf: ^6.1.2
   simple-git-hooks: ^2.13.1
-  tsdown: ^0.16.8
-  tsx: ^4.20.6
+  tsdown: ^0.18.3
+  tsx: ^4.21.0
   typescript: ^5.9.3
   unplugin: ^2.3.11
-  vite: ^6.0.7
-  vitepress: ^2.0.0-alpha.2
+  vite: ^7.3.0
+  vitepress: ^2.0.0-alpha.15
   vitepress-plugin-group-icons: ^1.6.5
   vitepress-plugin-llms: ^1.0.8
   vitepress-plugin-mermaid: ^2.0.17
-  vitest: ^4.0.14
+  vitest: ^4.0.16
   vue: ^3.5.25
-  vue-tsc: ^3.1.5
+  vue-tsc: ^3.2.1
   zx: ^8.8.5
 
 ignoredBuiltDependencies:
