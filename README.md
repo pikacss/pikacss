@@ -84,8 +84,8 @@
 - 🤖 TypeScript Auto-Completion
   > It has built-in TypeScript support, so you can get auto-completion!
 
+<!--
 ---
-
 ## Examples
 
 | Example | | Example | |
@@ -95,6 +95,7 @@
 | Rollup + React + TS | [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/rollup-react?file=src%2FApp.tsx,src%2Fmain.tsx,rollup.config.mjs,pika.config.ts) | Webpack + React + TS | [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/webpack-react?file=src%2FApp.tsx,src%2Fmain.tsx,webpack.config.mjs,pika.config.ts) |
 | esbuild + React + TS | [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/esbuild-react?file=src%2FApp.tsx,src%2Fmain.tsx,build.mjs,pika.config.ts) | Rspack + React + TS | [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/rspack-react?file=src%2FApp.tsx,src%2Fmain.tsx,rspack.config.mjs,pika.config.ts) |
 | Farm + React + TS | [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/farm-react?file=src%2FApp.tsx,src%2Fmain.tsx,farm.config.ts,pika.config.ts) | Rolldown + React + TS | [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/rolldown-react?file=src%2FApp.tsx,src%2Fmain.tsx,rolldown.config.mjs,pika.config.ts) |
+-->
 
 ---
 
