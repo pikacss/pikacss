@@ -174,8 +174,4 @@ Add the generated types to your `tsconfig.json`:
 }
 ```
 
-## Try It Online
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/farm-react?file=src%2FApp.tsx,farm.config.ts,pika.config.ts" target="_blank">
-  Open Farm + React example in StackBlitz →
-</a>
+<!-- Removed legacy online example link -->

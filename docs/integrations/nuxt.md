@@ -200,8 +200,4 @@ pika.gen.ts
 pika.gen.css
 ```
 
-## Try It Online
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/nuxt?file=app.vue,nuxt.config.ts,pika.config.js" target="_blank">
-  Open Nuxt example in StackBlitz →
-</a>
+<!-- Removed legacy online example link -->

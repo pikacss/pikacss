@@ -55,15 +55,6 @@ export default withMermaid({
 						{ text: 'Typography', link: '/plugins/typography' },
 					],
 				},
-				{
-					text: 'Examples',
-					items: [
-						{ text: 'Nuxt', link: 'https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/nuxt?file=app.vue,nuxt.config.ts,pika.config.ts' },
-						{ text: 'Vue', link: 'https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/vite-vue3?file=src%2FApp.vue,src%2Fmain.ts,vite.config.ts,pika.config.ts' },
-						{ text: 'React', link: 'https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/vite-react?file=src%2FApp.tsx,src%2Fmain.tsx,vite.config.ts,pika.config.ts' },
-						{ text: 'SolidJS', link: 'https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/vite-solidjs?file=src%2FApp.tsx,src%2Fmain.tsx,vite.config.ts,pika.config.ts' },
-					],
-				},
 			],
 			'/advanced/': [
 				{
@@ -121,7 +112,6 @@ export default withMermaid({
 			md.use(MarkdownItGroupIcon)
 		},
 		codeTransformers: [
-			// @ts-expect-error according to the official docs, this is the correct way to use the transformer
 			transformerTwoslash({
 				// twoslashOptions: {
 				// 	extraFiles: {

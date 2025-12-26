@@ -183,8 +183,4 @@ Add the generated types to your `tsconfig.json`:
 }
 ```
 
-## Try It Online
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/webpack-react?file=src%2FApp.tsx,webpack.config.mjs,pika.config.ts" target="_blank">
-  Open Webpack + React example in StackBlitz →
-</a>
+<!-- Removed legacy online example link -->

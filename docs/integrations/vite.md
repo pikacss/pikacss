@@ -223,16 +223,4 @@ Or add a reference at the top of your entry file:
 /// <reference path="./pika.gen.ts" />
 ```
 
-## Try It Online
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/vite-react?file=src%2FApp.tsx,vite.config.ts,pika.config.ts" target="_blank">
-  Open React example in StackBlitz →
-</a>
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/vite-vue3?file=src%2FApp.vue,vite.config.ts,pika.config.ts" target="_blank">
-  Open Vue example in StackBlitz →
-</a>
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/vite-solidjs?file=src%2FApp.tsx,vite.config.ts,pika.config.ts" target="_blank">
-  Open Solid example in StackBlitz →
-</a>
+<!-- Removed legacy online examples links -->

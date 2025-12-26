@@ -192,8 +192,4 @@ Add the generated types to your `tsconfig.json`:
 }
 ```
 
-## Try It Online
-
-<a href="https://stackblitz.com/fork/github/pikacss/pikacss/tree/main/examples/esbuild-react?file=src%2FApp.tsx,build.mjs,pika.config.ts" target="_blank">
-  Open Esbuild + React example in StackBlitz →
-</a>
+<!-- Removed legacy online example link -->
