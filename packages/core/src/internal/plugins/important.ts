@@ -39,8 +39,8 @@ export function important() {
 		},
 		transformStyleDefinitions(styleDefinitions) {
 			return styleDefinitions.map<InternalStyleDefinition>((styleDefinition) => {
-				const { __important, ...rest } = styleDefinition
-				const value = __important as boolean | Nullish
+				const { __important, ...rest } = styleDefinition as InternalStyleDefinition & { __important?: boolean | Nullish }
+				const value = __important
 				const important = value == null ? defaultValue : value
 
 				if (important === false)

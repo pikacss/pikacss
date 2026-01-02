@@ -81,7 +81,7 @@ describe('plugin-shortcuts', () => {
 				],
 			},
 		})
-		await engine.use({ __shortcut: 'flex-center' })
+		await engine.use({ __shortcut: 'flex-center' } as any)
 		const css = await engine.renderAtomicStyles(false)
 		expect(css)
 			.toBe('.a{display:flex;}.b{align-items:center;}.c{justify-content:center;}')

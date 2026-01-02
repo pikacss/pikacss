@@ -5,7 +5,7 @@ export interface CSSVariables { [K: (`--${string}` & {})]: UnionString | UnionNu
 export interface CSSProperties extends CSS.Properties, CSS.PropertiesHyphen, CSSVariables {}
 export type CSSProperty = keyof CSSProperties
 
-type PropertyValue<T> = T | [value: T, fallback: T[]] | Nullish
+export type PropertyValue<T> = T | [value: T, fallback: T[]] | Nullish
 type Properties_CSS
 	= {
 		[Key in keyof CSSProperties]?: PropertyValue<
