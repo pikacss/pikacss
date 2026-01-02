@@ -16,5 +16,4 @@ export default defineConfig({
 		tsconfig: './tsconfig.package.json',
 	},
 	clean: true,
-	external: ['vite'],
 })

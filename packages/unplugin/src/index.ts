@@ -144,7 +144,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 				mode = config.command === 'serve' ? 'serve' : 'build'
 			},
 			configureServer(server) {
-				viteServers.push(server)
+				viteServers.push(server as any)
 			},
 		},
 		webpack: (compiler) => {
