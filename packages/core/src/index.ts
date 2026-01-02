@@ -46,7 +46,7 @@ export {
 
 export type {
 	CSSProperty,
-	CSSSelectors,
+	CSSSelector,
 	Properties,
 	StyleDefinition,
 	StyleItem,

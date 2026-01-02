@@ -4,35 +4,51 @@ import type { FromKebab, GetValue, Nullish, ResolvedAutocomplete, ToKebab, Union
 export interface CSSVariables { [K: (`--${string}` & {})]: UnionString | UnionNumber }
 export interface CSSProperties extends CSS.Properties, CSS.PropertiesHyphen, CSSVariables {}
 export type CSSProperty = keyof CSSProperties
-type MakePropertyValue<T> = T | [value: T, fallback: T[]] | Nullish
-export type Properties = {
-	[Key in keyof CSSProperties | ResolvedAutocomplete['ExtraCssProperty'] | ResolvedAutocomplete['ExtraProperty']]?: Key extends ResolvedAutocomplete['ExtraProperty']
-		? GetValue<ResolvedAutocomplete['PropertiesValue'], Key>
-		: MakePropertyValue<Exclude<
+
+type PropertyValue<T> = T | [value: T, fallback: T[]] | Nullish
+type Properties_CSS
+	= {
+		[Key in keyof CSSProperties]?: PropertyValue<
+			Exclude<
+				| UnionString
+				| UnionNumber
+				| GetValue<CSSProperties, Key>
+				| GetValue<ResolvedAutocomplete['CssPropertiesValue'], ToKebab<Key>>
+				| GetValue<ResolvedAutocomplete['CssPropertiesValue'], FromKebab<Key>>
+				| GetValue<ResolvedAutocomplete['CssPropertiesValue'], '*'>,
+				Nullish
+			>
+		>
+	}
+type Properties_ExtraCSS = {
+	[Key in keyof ResolvedAutocomplete['ExtraCssProperty']]?: PropertyValue<
+		Exclude<
 			| UnionString
 			| UnionNumber
-			| GetValue<CSSProperties, Key>
-			| GetValue<ResolvedAutocomplete['CssPropertiesValue'], ToKebab<Key>>
-			| GetValue<ResolvedAutocomplete['CssPropertiesValue'], FromKebab<Key>>
+			| GetValue<CSSProperties, Key & string>
+			| GetValue<ResolvedAutocomplete['CssPropertiesValue'], ToKebab<Key & string>>
+			| GetValue<ResolvedAutocomplete['CssPropertiesValue'], FromKebab<Key & string>>
 			| GetValue<ResolvedAutocomplete['CssPropertiesValue'], '*'>,
 			Nullish
-		>>
+		>
+	>
 }
+type Properties_Extra = {
+	[Key in keyof ResolvedAutocomplete['ExtraProperty']]?: GetValue<ResolvedAutocomplete['PropertiesValue'], Key & string>
+}
+
+export interface Properties extends Properties_CSS, Properties_ExtraCSS, Properties_Extra {}
 
 type CSSPseudos = `${'$'}${CSS.Pseudos}`
 type CSSBlockAtRules = Exclude<CSS.AtRules, '@charset' | 'import' | '@namespace'>
-export type CSSSelectors = CSSBlockAtRules | CSSPseudos
-type WrapWithSelector<T> = { [S in UnionString | ResolvedAutocomplete['Selector'] | CSSSelectors]?: T | StyleItem[] }
+export type CSSSelector = CSSBlockAtRules | CSSPseudos
+export type Selector = UnionString | ResolvedAutocomplete['Selector'] | CSSSelector
 
-type MakeStyleDefinition<MaxDepth extends number, Tuple extends any[] = []> = Tuple['length'] extends MaxDepth
-	? Tuple[number]
-	: Tuple['length'] extends 0
-		? MakeStyleDefinition<MaxDepth, [Properties]>
-		: MakeStyleDefinition<MaxDepth, [...Tuple, WrapWithSelector<[0, ...Tuple][Tuple['length']]>]>
-
-export type StyleDefinition = MakeStyleDefinition<5>
+export type StyleDefinition = Properties | {
+	[K in Selector]?: Properties | StyleDefinition | StyleItem[]
+}
 
 export type StyleItem
-	= | UnionString
+	=	| UnionString
 		| ResolvedAutocomplete['StyleItemString']
 		| StyleDefinition
