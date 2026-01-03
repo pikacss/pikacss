@@ -123,52 +123,106 @@ export default {
 ```ts
 interface PluginOptions {
 	/**
-	 * Patterns of files to be transformed if they are matched.
-	 * @default `['**\/*.vue', '**\/*.tsx', '**\/*.jsx']`
+	 * Specify file patterns to scan for detecting pika() function calls.
+	 *
+	 * @default { include: ['**/*.{js,ts,jsx,tsx,vue}'], exclude: ['node_modules/**'] }
 	 */
-	target?: string[]
+	scan?: {
+		include?: string | string[]
+		exclude?: string | string[]
+	}
 
 	/**
-	 * Configure the pika engine.
+	 * Configuration object or path to a configuration file for the PikaCSS engine.
+	 * Can pass a config object directly or a config file path (e.g., 'pika.config.ts').
 	 */
 	config?: EngineConfig | string
 
 	/**
-	 * Customize the name of the pika function.
+	 * Whether to automatically create a configuration file when needed.
+	 * @default true
+	 */
+	autoCreateConfig?: boolean
+
+	/**
+	 * The name of the PikaCSS function in source code.
 	 * @default 'pika'
 	 */
 	fnName?: string
 
 	/**
-	 * Decide the format of the transformed result.
-	 *
-	 * - `string`: The transformed result will be a js string (e.g. `'a b c'`).
-	 * - `array`: The transformed result will be a js array (e.g. `['a', 'b', 'c']`).
-	 * - `inline`: The transformed result will be directly used in the code (e.g. `a b c`).
-	 *
+	 * The format of the generated atomic style class names.
+	 * - `'string'`: Returns a space-separated string (e.g., "a b c")
+	 * - `'array'`: Returns an array of class names (e.g., ['a', 'b', 'c'])
+	 * - `'inline'`: Returns inline format
 	 * @default 'string'
 	 */
 	transformedFormat?: 'string' | 'array' | 'inline'
 
 	/**
-	 * Enable/disable the generation of d.ts files.
-	 * If a string is provided, it will be used as the path to the d.ts file.
+	 * Configuration for TypeScript code generation.
+	 * - `true`: Auto-generate as 'pika.gen.ts'
+	 * - string: Use the specified file path
+	 * - `false`: Disable TypeScript code generation
 	 * @default true
 	 */
 	tsCodegen?: boolean | string
 
 	/**
-	 * Path to the dev css file.
-	 * @default 'pika.dev.css'
-	 */
-	devCss?: string
-
-	/**
-	 * Automatically create a pika config file if it doesn't exist and without inline config.
+	 * Configuration for CSS code generation.
+	 * - `true`: Auto-generate as 'pika.gen.css'
+	 * - string: Use the specified file path
 	 * @default true
 	 */
-	autoCreateConfig?: boolean
+	cssCodegen?: boolean | string
 }
+```
+
+## Setup Steps
+
+### 1. Install and Configure Plugin
+
+Add the plugin to your build tool configuration (see examples above).
+
+### 2. Create Config File
+
+Create `pika.config.ts` in your project root:
+
+```ts
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
+
+export default defineEngineConfig({
+	// Your PikaCSS configuration
+	plugins: []
+})
+```
+
+### 3. Import Virtual CSS Module
+
+In your application entry file:
+
+```ts
+import 'pika.css'
+```
+
+### 4. Use in Your Code
+
+```ts
+// Direct style object
+const classes = pika({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '1rem'
+})
+
+// Using shortcuts
+const centered = pika('flex-center')
+
+// Combining shortcuts with styles
+const styled = pika('flex-center', { color: 'blue' })
+
+// Multiple shortcuts
+const multi = pika('btn', 'shadow', { margin: '1rem' })
 ```
 
 ## Migration from @pikacss/vite-plugin-pikacss
