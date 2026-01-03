@@ -432,19 +432,3 @@ export const proseTablesStyle: StyleDefinition = defineStyleDefinition({
 		paddingRight: '0',
 	},
 })
-
-// Complete prose style (combination of all shortcut names)
-export const proseStyle: StyleDefinition = [
-	'prose-base',
-	'prose-paragraphs',
-	'prose-links',
-	'prose-emphasis',
-	'prose-kbd',
-	'prose-lists',
-	'prose-hr',
-	'prose-headings',
-	'prose-quotes',
-	'prose-media',
-	'prose-code',
-	'prose-tables',
-]

@@ -12,7 +12,6 @@ import {
 	proseMediaStyle,
 	proseParagraphsStyle,
 	proseQuotesStyle,
-	proseStyle,
 	proseTablesStyle,
 	typographyVariables,
 } from './styles'
@@ -57,7 +56,22 @@ export function typography(options: TypographyPluginOptions = {}): EnginePlugin 
 			engine.shortcuts.add(['prose-media', ['prose-base', proseMediaStyle]])
 			engine.shortcuts.add(['prose-code', ['prose-base', proseCodeStyle]])
 			engine.shortcuts.add(['prose-tables', ['prose-base', proseTablesStyle]])
-			engine.shortcuts.add(['prose', proseStyle])
+			engine.shortcuts.add([
+				'prose',
+				[
+					'prose-paragraphs',
+					'prose-links',
+					'prose-emphasis',
+					'prose-kbd',
+					'prose-lists',
+					'prose-hr',
+					'prose-headings',
+					'prose-quotes',
+					'prose-media',
+					'prose-code',
+					'prose-tables',
+				],
+			])
 			const sizes = {
 				'sm': { fontSize: '0.875rem', lineHeight: '1.71' },
 				'lg': { fontSize: '1.125rem', lineHeight: '1.77' },
