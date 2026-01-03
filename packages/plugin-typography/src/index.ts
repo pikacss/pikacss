@@ -1,6 +1,21 @@
 import type { EnginePlugin } from '@pikacss/core'
 import { defineEnginePlugin } from '@pikacss/core'
-import { proseBaseStyle, typographyVariables } from './styles'
+import {
+	proseBaseStyle,
+	proseCodeStyle,
+	proseEmphasisStyle,
+	proseHeadingsStyle,
+	proseHrStyle,
+	proseKbdStyle,
+	proseLinksStyle,
+	proseListsStyle,
+	proseMediaStyle,
+	proseParagraphsStyle,
+	proseQuotesStyle,
+	proseStyle,
+	proseTablesStyle,
+	typographyVariables,
+} from './styles'
 
 export interface TypographyPluginOptions {
 	/**
@@ -29,13 +44,20 @@ export function typography(options: TypographyPluginOptions = {}): EnginePlugin 
 				...options.variables,
 			})
 
-			// Add shortcuts
-			engine.shortcuts.add([
-				'prose',
-				proseBaseStyle,
-			])
-
-			// Add size modifiers
+			// Add modular shortcuts
+			engine.shortcuts.add(['prose-base', proseBaseStyle])
+			engine.shortcuts.add(['prose-paragraphs', ['prose-base', proseParagraphsStyle]])
+			engine.shortcuts.add(['prose-links', ['prose-base', proseLinksStyle]])
+			engine.shortcuts.add(['prose-emphasis', ['prose-base', proseEmphasisStyle]])
+			engine.shortcuts.add(['prose-kbd', ['prose-base', proseKbdStyle]])
+			engine.shortcuts.add(['prose-lists', ['prose-base', proseListsStyle]])
+			engine.shortcuts.add(['prose-hr', ['prose-base', proseHrStyle]])
+			engine.shortcuts.add(['prose-headings', ['prose-base', proseHeadingsStyle]])
+			engine.shortcuts.add(['prose-quotes', ['prose-base', proseQuotesStyle]])
+			engine.shortcuts.add(['prose-media', ['prose-base', proseMediaStyle]])
+			engine.shortcuts.add(['prose-code', ['prose-base', proseCodeStyle]])
+			engine.shortcuts.add(['prose-tables', ['prose-base', proseTablesStyle]])
+			engine.shortcuts.add(['prose', proseStyle])
 			const sizes = {
 				'sm': { fontSize: '0.875rem', lineHeight: '1.71' },
 				'lg': { fontSize: '1.125rem', lineHeight: '1.77' },

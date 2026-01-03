@@ -215,3 +215,5 @@ export function myPlugin() {
 ## Official Plugins
 
 - **[@pikacss/plugin-icons](./icons-plugin.md)** - Icon support via Iconify
+- **[@pikacss/plugin-typography](../plugins/typography.md)** - Beautiful typographic defaults for prose content with modular shortcuts
+- **[@pikacss/plugin-reset](../plugins/reset.md)** - CSS reset/normalize utilities

@@ -394,16 +394,66 @@ export default defineEngineConfig({
 npm install -D @pikacss/plugin-typography
 ```
 
+**pika.config.ts**:
 ```ts
+import { defineEngineConfig } from '@pikacss/core'
 import { typography } from '@pikacss/plugin-typography'
 
 export default defineEngineConfig({
-  plugins: [typography()],
-  typography: {
-    // Configuration options
-  }
+  plugins: [
+    typography({
+      variables: {
+        '--pk-prose-color-body': '#374151',
+        '--pk-prose-color-headings': '#111827',
+      }
+    })
+  ]
 })
 ```
+
+**Usage:**
+```ts
+// Complete prose (all typography styles)
+pika('prose')
+
+// Modular shortcuts - each automatically includes prose-base
+pika('prose-headings prose-paragraphs')
+pika('prose-headings prose-code prose-lists')
+
+// Common combinations
+pika('prose-headings prose-paragraphs prose-links prose-emphasis prose-lists') // Blog post
+pika('prose-headings prose-paragraphs prose-code prose-lists prose-links') // Technical docs
+pika('prose-headings prose-paragraphs prose-links prose-quotes prose-media') // News article
+pika('prose-headings prose-paragraphs prose-tables') // Data page
+
+// Size modifiers (includes full prose styles)
+pika('prose-sm')  // Small
+pika('prose-lg')  // Large
+pika('prose-xl')  // Extra large
+pika('prose-2xl') // 2X large
+```
+
+**Available modular shortcuts (each includes `prose-base` automatically):**
+- `prose-base` - Base container styles (color, max-width, font-size, line-height)
+- `prose-paragraphs` - Paragraph and lead text styles (includes `prose-base`)
+- `prose-links` - Link styles (includes `prose-base`)
+- `prose-emphasis` - Strong/em styles (includes `prose-base`)
+- `prose-kbd` - Keyboard input styles (includes `prose-base`)
+- `prose-lists` - List styles (ul, ol, li, dl, dt, dd) (includes `prose-base`)
+- `prose-hr` - Horizontal rule (includes `prose-base`)
+- `prose-headings` - h1-h4 styles (includes `prose-base`)
+- `prose-quotes` - Blockquote styles (includes `prose-base`)
+- `prose-media` - Image/video/figure styles (includes `prose-base`)
+- `prose-code` - Code/pre styles (includes `prose-base`)
+- `prose-tables` - Table styles (includes `prose-base`)
+- `prose` - All of the above combined
+
+**Modular benefits:**
+- ✅ Smaller CSS bundle (only load what you need)
+- ✅ Better performance (less CSS to parse)
+- ✅ More flexible (combine exactly what you need)
+- ✅ Easier debugging (know exactly which styles are applied)
+- ✅ Automatic deduplication (engine removes duplicate prose-base)
 
 ### Plugin Configuration Pattern
 ```ts

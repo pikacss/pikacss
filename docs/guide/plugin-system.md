@@ -113,6 +113,40 @@ export default defineEngineConfig({
 
 See the [Icons Plugin](/plugins/icons) documentation for more details.
 
+### Typography Plugin
+
+The `@pikacss/plugin-typography` package provides beautiful typographic defaults for prose content.
+
+```bash
+npm install -D @pikacss/plugin-typography
+```
+
+```typescript
+import { typography } from '@pikacss/plugin-typography'
+
+export default defineEngineConfig({
+	plugins: [typography()],
+	typography: {
+		variables: {
+			'--pk-prose-color-body': '#374151',
+			'--pk-prose-color-headings': '#111827',
+		}
+	}
+})
+```
+
+The plugin provides modular shortcuts like `prose-base`, `prose-headings`, `prose-code`, etc., that you can mix and match:
+
+```html
+<!-- Use all typography styles -->
+<article class="prose">...</article>
+
+<!-- Or compose specific modules -->
+<article class="prose-base prose-headings prose-paragraphs">...</article>
+```
+
+See the [Typography Plugin](/plugins/typography) documentation for more details.
+
 ## Plugin Lifecycle
 
 Plugins interact with the engine through hooks at different stages:

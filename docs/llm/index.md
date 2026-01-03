@@ -69,6 +69,10 @@ This knowledge base is split into modular files for efficient context retrieval.
   - Installation and configuration
   - Usage with Iconify icons
   - Render modes (`auto`, `mask`, `bg`)
+- **[Typography Plugin](../plugins/typography.md)**
+  - Beautiful typographic defaults for prose content
+  - Modular shortcuts for flexible composition
+  - Size modifiers and customization options
 
 ### Reference
 - **[API Reference](./api-reference.md)**
@@ -96,6 +100,8 @@ This knowledge base is split into modular files for efficient context retrieval.
 | `@pikacss/unplugin-pikacss` | Bundler integrations (recommended) |
 | `@pikacss/nuxt-pikacss` | Nuxt module |
 | `@pikacss/plugin-icons` | Icon support via Iconify |
+| `@pikacss/plugin-typography` | Beautiful typographic defaults with modular shortcuts |
+| `@pikacss/plugin-reset` | CSS reset/normalize utilities |
 
 > **Note**: `@pikacss/vite-pikacss` is deprecated. Use `@pikacss/unplugin-pikacss/vite` instead.
 
