@@ -12,6 +12,8 @@ pnpm add @pikacss/plugin-reset
 
 **pika.config.ts**:
 ```typescript
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { reset } from '@pikacss/plugin-reset'
 
@@ -49,6 +51,8 @@ The plugin includes 5 popular CSS reset/normalize styles:
 Apply the default reset (modern-normalize):
 
 ```typescript
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { reset } from '@pikacss/plugin-reset'
 
@@ -64,6 +68,8 @@ export default defineEngineConfig({
 Select your preferred reset style using the `reset` config option:
 
 ```typescript
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { reset } from '@pikacss/plugin-reset'
 

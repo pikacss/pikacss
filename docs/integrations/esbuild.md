@@ -53,6 +53,8 @@ Create `pika.config.ts` in your project root:
 
 ```typescript
 // pika.config.ts
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({

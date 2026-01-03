@@ -14,6 +14,8 @@ Register the plugin in your PikaCSS configuration:
 
 **pika.config.ts**:
 ```ts
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { typography } from '@pikacss/plugin-typography'
 
@@ -177,6 +179,8 @@ You can customize the typography color variables when initializing the plugin:
 
 **pika.config.ts**:
 ```ts
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { typography } from '@pikacss/plugin-typography'
 

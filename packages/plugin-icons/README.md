@@ -12,6 +12,8 @@ pnpm add @pikacss/plugin-icons
 
 **pika.config.ts**:
 ```typescript
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { icons } from '@pikacss/plugin-icons'
 
@@ -172,6 +174,8 @@ pika({
 Configure the icons plugin using the standard plugin pattern:
 
 ```typescript
+/// <reference path="./src/pika.gen.ts" />
+
 import { defineEngineConfig } from '@pikacss/core'
 import { icons } from '@pikacss/plugin-icons'
 

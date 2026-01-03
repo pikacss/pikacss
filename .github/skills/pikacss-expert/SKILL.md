@@ -302,9 +302,12 @@ pika({
 Create `pika.config.ts` in your project root:
 
 ```ts
-import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
-
 /// <reference path="./src/pika.gen.ts" />
+
+import { defineEngineConfig } from '@pikacss/core'
+// Or from integration packages:
+// import { defineEngineConfig } from '@pikacss/vite'
+// import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
   // Register plugins
@@ -446,7 +449,7 @@ pika('prose-2xl') // 2X large
 - `prose-media` - Image/video/figure styles (includes `prose-base`)
 - `prose-code` - Code/pre styles (includes `prose-base`)
 - `prose-tables` - Table styles (includes `prose-base`)
-- `prose` - All of the above combined
+- `prose` - Combines all modular shortcuts (not `prose-base` directly, but includes it through modular shortcuts)
 
 **Modular benefits:**
 - ✅ Smaller CSS bundle (only load what you need)
@@ -492,13 +495,13 @@ export default defineConfig({
 
 ### Nuxt
 ```bash
-npm install -D @pikacss/nuxt
+npm install -D @pikacss/nuxt-pikacss
 ```
 
 ```ts
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@pikacss/nuxt'],
+  modules: ['@pikacss/nuxt-pikacss'],
   pikacss: {
     // options
   }
