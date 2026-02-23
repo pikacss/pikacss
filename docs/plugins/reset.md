@@ -56,8 +56,9 @@ Internally, the plugin:
 
 1. Reads the `config.reset` field during the `configureRawConfig` hook
 2. Falls back to `'modern-normalize'` if no value is set
-3. Loads the corresponding CSS string from bundled preset files
-4. Injects the CSS via `engine.addPreflight()` during the `configureEngine` hook
+3. Defaults `config.layers.reset` to `-1` to ensure the reset layer renders first
+4. Loads the corresponding CSS string from bundled preset files
+5. Injects the CSS via `engine.addPreflight({ layer: 'reset', preflight: resetCss })` during the `configureEngine` hook
 
 ## Using with Other Plugins
 

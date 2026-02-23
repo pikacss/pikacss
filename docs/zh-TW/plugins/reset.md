@@ -56,8 +56,9 @@ yarn add @pikacss/plugin-reset
 
 1. 在 `configureRawConfig` 鉤子期間讀取 `config.reset` 欄位
 2. 若未設定值，則回退至 `'modern-normalize'`
-3. 從內建的預設集檔案載入對應的 CSS 字串
-4. 在 `configureEngine` 鉤子期間透過 `engine.addPreflight()` 注入 CSS
+3. 預設將 `config.layers.reset` 設為 `-1`，確保 reset layer 最先渲染
+4. 從內建的預設集檔案載入對應的 CSS 字串
+5. 在 `configureEngine` 鉤子期間透過 `engine.addPreflight({ layer: 'reset', preflight: resetCss })` 注入 CSS
 
 ## 與其他插件搭配使用
 
