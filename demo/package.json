@@ -13,17 +13,17 @@
 		"type-check": "vue-tsc --build"
 	},
 	"dependencies": {
-		"vue": "^3.5.26"
+		"vue": "catalog:"
 	},
 	"devDependencies": {
-		"@iconify-json/line-md": "^1.2.11",
+		"@iconify-json/line-md": "catalog:",
 		"@pikacss/plugin-icons": "workspace:^",
 		"@pikacss/plugin-reset": "workspace:^",
 		"@pikacss/unplugin-pikacss": "workspace:^",
-		"@vitejs/plugin-vue": "^6.0.3",
+		"@vitejs/plugin-vue": "catalog:",
 		"typescript": "catalog:",
 		"vite": "catalog:",
-		"vite-plugin-vue-devtools": "^8.0.5",
+		"vite-plugin-vue-devtools": "catalog:",
 		"vue-tsc": "catalog:"
 	}
 }

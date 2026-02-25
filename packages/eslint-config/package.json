@@ -54,6 +54,6 @@
 	},
 	"devDependencies": {
 		"eslint": "catalog:",
-		"vue-eslint-parser": "^10.4.0"
+		"vue-eslint-parser": "catalog:"
 	}
 }

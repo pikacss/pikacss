@@ -9,6 +9,7 @@ catalog:
   '@deviltea/eslint-config': 6.0.1
   '@deviltea/tsconfig': 0.0.8
   '@farmfe/core': ^1.7.11
+  '@iconify-json/line-md': ^1.2.11
   '@iconify-json/mdi': ^1.2.3
   '@iconify/utils': ^3.1.0
   '@nuxt/kit': ^4.2.2
@@ -17,6 +18,7 @@ catalog:
   '@types/micromatch': ^4.0.10
   '@types/node': ^24.10.1
   '@unocss/preset-icons': ^66.5.9
+  '@vitejs/plugin-vue': ^6.0.3
   '@vitest/coverage-v8': ^4.0.16
   alien-signals: ^2.0.0
   bumpp: ^10.3.2
@@ -49,12 +51,14 @@ catalog:
   typescript: ^5.9.3
   unplugin: ^2.3.11
   vite: ^7.3.0
+  vite-plugin-vue-devtools: ^8.0.5
   vitepress: ^2.0.0-alpha.15
   vitepress-plugin-group-icons: ^1.6.5
   vitepress-plugin-llms: ^1.0.8
   vitepress-plugin-mermaid: ^2.0.17
   vitest: ^4.0.16
-  vue: ^3.5.25
+  vue: ^3.5.26
+  vue-eslint-parser: ^10.4.0
   vue-tsc: ^3.2.1
   zx: ^8.8.5
 
