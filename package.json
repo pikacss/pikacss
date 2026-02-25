@@ -32,6 +32,7 @@
 		"@clack/prompts": "catalog:",
 		"@deviltea/eslint-config": "catalog:",
 		"@deviltea/tsconfig": "catalog:",
+		"@pikacss/eslint-config": "workspace:*",
 		"@types/node": "catalog:",
 		"@vitest/coverage-v8": "catalog:",
 		"bumpp": "catalog:",

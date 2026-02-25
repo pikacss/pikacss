@@ -204,30 +204,39 @@ const rule: Rule.RuleModule = {
 			})
 		}
 
-		return {
-			CallExpression(node) {
-				const calleeName = getCalleeName(node as any)
-				if (calleeName === null || !allNames.has(calleeName))
-					return
+		function checkCallExpression(node: any): void {
+			const calleeName = getCalleeName(node)
+			if (calleeName === null || !allNames.has(calleeName))
+				return
 
-				// Derive the displayed function name (just the base, e.g. 'pika' or 'pika.str')
-				const displayFnName = calleeName
+			// Derive the displayed function name (just the base, e.g. 'pika' or 'pika.str')
+			const displayFnName = calleeName
 
-				for (const arg of node.arguments) {
-					if (arg.type === 'SpreadElement') {
-						if (!isStaticNode((arg as any).argument)) {
-							context.report({
-								node: arg,
-								messageId: 'noDynamicSpread',
-								data: { fnName: displayFnName },
-							})
-						}
-						continue
+			for (const arg of node.arguments) {
+				if (arg.type === 'SpreadElement') {
+					if (!isStaticNode(arg.argument)) {
+						context.report({
+							node: arg,
+							messageId: 'noDynamicSpread',
+							data: { fnName: displayFnName },
+						})
 					}
-					validateArg(arg, displayFnName)
+					continue
 				}
-			},
+				validateArg(arg, displayFnName)
+			}
 		}
+
+		// If vue-eslint-parser is active, also register the visitor for <template>
+		const parserServices = context.sourceCode.parserServices as any
+		if (parserServices?.defineTemplateBodyVisitor) {
+			return parserServices.defineTemplateBodyVisitor(
+				{ CallExpression: checkCallExpression },
+				{ CallExpression: checkCallExpression },
+			)
+		}
+
+		return { CallExpression: checkCallExpression }
 	},
 }
 
