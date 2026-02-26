@@ -17,11 +17,10 @@ Add the PikaCSS plugin to your Rspack configuration:
 
 ::: code-group
 <<< @/.examples/integrations/rspack.config.mjs [ESM]
-<<< @/.examples/integrations/rspack.config.cjs [CommonJS]
 :::
 
 ::: tip
-Rspack supports both ESM (`.mjs`) and CommonJS (`.cjs`) config files. The plugin works with both module systems.
+Rspack supports ESM (`.mjs`) config files.
 :::
 
 ## Import Generated CSS

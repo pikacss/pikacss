@@ -40,8 +40,8 @@ On first run with default settings (`autoCreateConfig: true`), PikaCSS automatic
 <<< @/.examples/getting-started/pika.config.ts
 
 PikaCSS auto-detects config files matching these patterns:
-- `pika.config.{js,ts,mjs,mts,cjs,cts}`
-- `pikacss.config.{js,ts,mjs,mts,cjs,cts}`
+- `pika.config.{js,ts,mjs,mts}`
+- `pikacss.config.{js,ts,mjs,mts}`
 
 `defineEngineConfig` is re-exported from `@pikacss/unplugin-pikacss` for convenience — no extra imports needed.
 

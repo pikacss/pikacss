@@ -17,11 +17,10 @@ Add the PikaCSS plugin to your webpack configuration:
 
 ::: code-group
 <<< @/.examples/integrations/webpack.config.mjs [ESM]
-<<< @/.examples/integrations/webpack.config.cjs [CommonJS]
 :::
 
-::: tip ESM vs CommonJS
-webpack supports ESM config files via `.mjs` extension or `"type": "module"` in your `package.json`. The plugin works with both module systems.
+::: tip ESM config files
+webpack supports ESM config files via `.mjs` extension or `"type": "module"` in your `package.json`.
 :::
 
 ## Import Generated CSS

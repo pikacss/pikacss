@@ -10,8 +10,8 @@ PikaCSS 透過兩個層次進行設定：
 PikaCSS 會自動偵測符合以下模式的設定檔：
 
 ```text
-**/pika.config.{js,ts,mjs,mts,cjs,cts}
-**/pikacss.config.{js,ts,mjs,mts,cjs,cts}
+**/pika.config.{js,ts,mjs,mts}
+**/pikacss.config.{js,ts,mjs,mts}
 ```
 
 使用 `defineEngineConfig()` 包裝你的設定，以獲得型別安全的 IntelliSense。這是從 `@pikacss/core` 匯出的恆等函式：

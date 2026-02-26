@@ -1,6 +1,6 @@
 import type { DynamicRule, StaticRule } from './resolver'
 import { describe, expect, it, vi } from 'vitest'
-import { AbstractResolver } from './resolver'
+import { AbstractResolver, RecursiveResolver, resolveRuleConfig } from './resolver'
 
 class TestResolver extends AbstractResolver<string> {}
 
@@ -375,5 +375,128 @@ describe('abstractResolver', () => {
 			expect(resolver._resolvedResultsMap.get('new-key'))
 				.toEqual({ value: 'new-value' })
 		})
+	})
+})
+
+class TestRecursiveResolver extends RecursiveResolver<string> {}
+
+describe('recursiveResolver', () => {
+	it('should resolve strings recursively', async () => {
+		const resolver = new TestRecursiveResolver()
+		resolver.addStaticRule({ key: 'a', string: 'foo', resolved: ['bar', 'baz'] })
+		resolver.addStaticRule({ key: 'b', string: 'bar', resolved: ['qux'] })
+
+		const result = await resolver.resolve('foo')
+		expect(result)
+			.toEqual(['qux', 'baz'])
+	})
+
+	it('should return the original string if it cannot be resolved completely', async () => {
+		const resolver = new TestRecursiveResolver()
+		const result = await resolver.resolve('unknown')
+		expect(result)
+			.toEqual(['unknown'])
+	})
+
+	it('should handle errors during resolution gracefully', async () => {
+		const resolver = new TestRecursiveResolver()
+		resolver.addDynamicRule({
+			key: 'err',
+			stringPattern: /^err$/,
+			createResolved: () => { throw new Error('intentional error') },
+		})
+		const result = await resolver.resolve('err')
+		expect(result)
+			.toEqual(['err'])
+	})
+})
+
+describe('resolveRuleConfig', () => {
+	it('should return a string as is', () => {
+		expect(resolveRuleConfig('test', 'testKey'))
+			.toBe('test')
+	})
+
+	it('should handle array static configs', () => {
+		const result = resolveRuleConfig(['my-rule', 'resolved-value'], 'testKey')
+		expect(result)
+			.toEqual({
+				type: 'static',
+				rule: {
+					key: 'my-rule',
+					string: 'my-rule',
+					resolved: ['resolved-value'],
+				},
+				autocomplete: ['my-rule'],
+			})
+	})
+
+	it('should handle array dynamic configs', async () => {
+		const matchFn = vi.fn()
+			.mockResolvedValue('resolved-value')
+		const result = resolveRuleConfig([/^my-(.+)$/, matchFn, 'my-test'], 'testKey')
+
+		expect(typeof result)
+			.toBe('object')
+		if (typeof result === 'object' && result != null && 'type' in result && result.type === 'dynamic') {
+			expect(result.autocomplete)
+				.toEqual(['my-test'])
+			expect(result.rule.key)
+				.toBe('^my-(.+)$')
+			const resolved = await result.rule.createResolved(['', 'test'] as any)
+			expect(resolved)
+				.toEqual(['resolved-value'])
+			expect(matchFn)
+				.toHaveBeenCalled()
+		}
+		else {
+			throw new Error('Expected dynamic rule')
+		}
+	})
+
+	it('should handle object static configs', () => {
+		const result = resolveRuleConfig({ testKey: 'my-rule', value: 'resolved-value' }, 'testKey')
+		expect(result)
+			.toEqual({
+				type: 'static',
+				rule: {
+					key: 'my-rule',
+					string: 'my-rule',
+					resolved: ['resolved-value'],
+				},
+				autocomplete: ['my-rule'],
+			})
+	})
+
+	it('should handle object dynamic configs', async () => {
+		const matchFn = vi.fn()
+			.mockResolvedValue('resolved-value')
+		const result = resolveRuleConfig({ testKey: /^my-(.+)$/, value: matchFn, autocomplete: 'my-test' }, 'testKey')
+
+		expect(typeof result)
+			.toBe('object')
+		if (typeof result === 'object' && result != null && 'type' in result && result.type === 'dynamic') {
+			expect(result.autocomplete)
+				.toEqual(['my-test'])
+			expect(result.rule.key)
+				.toBe('^my-(.+)$')
+			const resolved = await result.rule.createResolved(['', 'test'] as any)
+			expect(resolved)
+				.toEqual(['resolved-value'])
+			expect(matchFn)
+				.toHaveBeenCalled()
+		}
+		else {
+			throw new Error('Expected dynamic rule')
+		}
+	})
+
+	it('should return undefined for invalid configs', () => {
+		expect(resolveRuleConfig(null, 'testKey'))
+			.toBeUndefined()
+		expect(resolveRuleConfig({}, 'testKey'))
+			.toBeUndefined()
+		expect(resolveRuleConfig([123, 'test'] as any, 'testKey'))
+			.toBeUndefined()
 	})
 })

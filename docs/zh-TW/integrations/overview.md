@@ -97,7 +97,6 @@ PikaCSS 提供一個名為 `pika.css` 的虛擬模組，它會解析至產生的
 - `pika.config.ts`
 - `pika.config.mjs`
 - `pika.config.mts`
-- `pika.config.cjs`
 - `pika.config.cts`
 
 插件會監控設定檔的變更，並在修改後自動重新載入。

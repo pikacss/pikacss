@@ -97,7 +97,6 @@ When `autoCreateConfig` is `true` (the default), the plugin will auto-create a `
 - `pika.config.ts`
 - `pika.config.mjs`
 - `pika.config.mts`
-- `pika.config.cjs`
 - `pika.config.cts`
 
 The plugin watches the config file for changes and automatically reloads when it is modified.

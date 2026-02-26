@@ -17,11 +17,10 @@ PikaCSS 透過 `@pikacss/unplugin-pikacss/rspack` 進入點與 [Rspack](https://
 
 ::: code-group
 <<< @/.examples/integrations/rspack.config.mjs [ESM]
-<<< @/.examples/integrations/rspack.config.cjs [CommonJS]
 :::
 
 ::: tip
-Rspack 支援 ESM（`.mjs`）和 CommonJS（`.cjs`）設定檔。插件在兩種模組系統下都能運作。
+Rspack 支援 ESM（`.mjs`）設定檔。
 :::
 
 ## 匯入產生的 CSS

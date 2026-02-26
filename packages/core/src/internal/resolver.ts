@@ -180,6 +180,10 @@ export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRule
 		return void 0
 	}
 
+	if (typeof config !== 'object' || config === null) {
+		return void 0
+	}
+
 	const configKey = config[keyName]
 	if (typeof configKey === 'string' && typeof config.value !== 'function') {
 		return {

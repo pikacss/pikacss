@@ -10,8 +10,8 @@ PikaCSS is configured through two layers:
 PikaCSS auto-detects config files matching the pattern:
 
 ```text
-**/pika.config.{js,ts,mjs,mts,cjs,cts}
-**/pikacss.config.{js,ts,mjs,mts,cjs,cts}
+**/pika.config.{js,ts,mjs,mts}
+**/pikacss.config.{js,ts,mjs,mts}
 ```
 
 Wrap your config with `defineEngineConfig()` for type-safe IntelliSense. This is an identity function exported from `@pikacss/core`:

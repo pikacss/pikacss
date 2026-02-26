@@ -17,7 +17,6 @@ PikaCSS 透過 `@pikacss/unplugin-pikacss/webpack` 進入點與 [webpack](https:
 
 ::: code-group
 <<< @/.examples/integrations/webpack.config.mjs [ESM]
-<<< @/.examples/integrations/webpack.config.cjs [CommonJS]
 :::
 
 ::: tip ESM vs CommonJS

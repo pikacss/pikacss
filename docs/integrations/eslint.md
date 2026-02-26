@@ -19,7 +19,7 @@ This plugin requires ESLint 9.0.0 or higher and uses the flat config format. It 
 
 ## Basic Setup
 
-Add the configuration to your `eslint.config.mjs` (or `.js`, `.ts`, `.cjs`):
+Add the configuration to your `eslint.config.mjs` (or `.js`, `.ts`):
 
 <<< @/.examples/integrations/eslint-basic-config.mjs
 
