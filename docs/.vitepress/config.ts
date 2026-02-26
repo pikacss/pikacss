@@ -185,6 +185,10 @@ export default withMermaid({
 		socialLinks: [
 			{ icon: 'github', link: 'https://github.com/pikacss/pikacss' },
 		],
+
+		search: {
+			provider: 'local',
+		},
 	},
 
 	markdown: {
