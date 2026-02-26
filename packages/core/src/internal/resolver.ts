@@ -120,3 +120,92 @@ export abstract class AbstractResolver<T> {
 		this._resolvedResultsMap.set(string, { value: resolved })
 	}
 }
+
+export abstract class RecursiveResolver<T> extends AbstractResolver<T[]> {
+	async resolve(string: string): Promise<T[]> {
+		const resolved = await this._resolve(string)
+			.catch((error) => {
+				log.warn(`Failed to resolve "${string}": ${error.message}`, error)
+				return void 0
+			})
+		if (resolved == null)
+			return [string as unknown as T]
+
+		const result: T[] = []
+		for (const partial of resolved.value) {
+			if (typeof partial === 'string')
+				result.push(...await this.resolve(partial))
+			else
+				result.push(partial)
+		}
+		this._setResolvedResult(string, result)
+
+		return result
+	}
+}
+
+export type ResolvedRuleConfig<T>
+	= | { type: 'static', rule: StaticRule<T[]>, autocomplete: string[] }
+		| { type: 'dynamic', rule: DynamicRule<T[]>, autocomplete: string[] }
+
+export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRuleConfig<T> | string | Nullish {
+	if (typeof config === 'string') {
+		return config
+	}
+	if (Array.isArray(config)) {
+		if (typeof config[0] === 'string' && typeof config[1] !== 'function') {
+			return {
+				type: 'static',
+				rule: {
+					key: config[0],
+					string: config[0],
+					resolved: [config[1]].flat(1) as T[],
+				},
+				autocomplete: [config[0]],
+			}
+		}
+
+		if (config[0] instanceof RegExp && typeof config[1] === 'function') {
+			const fn = config[1]
+			return {
+				type: 'dynamic',
+				rule: {
+					key: config[0].source,
+					stringPattern: config[0],
+					createResolved: async match => [await fn(match)].flat(1) as T[],
+				},
+				autocomplete: config[2] != null ? [config[2]].flat(1) : [],
+			}
+		}
+		return void 0
+	}
+
+	const configKey = config[keyName]
+	if (typeof configKey === 'string' && typeof config.value !== 'function') {
+		return {
+			type: 'static',
+			rule: {
+				key: configKey,
+				string: configKey,
+				resolved: [config.value].flat(1) as T[],
+			},
+			autocomplete: [configKey],
+		}
+	}
+	if (configKey instanceof RegExp && typeof config.value === 'function') {
+		const fn = config.value
+		return {
+			type: 'dynamic',
+			rule: {
+				key: configKey.source,
+				stringPattern: configKey,
+				createResolved: async match => [await fn(match)].flat(1) as T[],
+			},
+			autocomplete: ('autocomplete' in config && config.autocomplete != null)
+				? [config.autocomplete].flat(1)
+				: [],
+		}
+	}
+
+	return void 0
+}

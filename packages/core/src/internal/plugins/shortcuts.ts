@@ -1,9 +1,8 @@
 import type { Engine } from '../engine'
-import type { DynamicRule, StaticRule } from '../resolver'
-import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, Nullish, ResolvedStyleItem } from '../types'
+import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, ResolvedStyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
-import { AbstractResolver } from '../resolver'
-import { isNotString, log } from '../utils'
+import { RecursiveResolver, resolveRuleConfig } from '../resolver'
+import { isNotString } from '../utils'
 
 // #region ShortcutConfig
 export type Shortcut
@@ -138,100 +137,8 @@ export function shortcuts() {
 	})
 }
 
-type StaticShortcutRule = StaticRule<InternalStyleItem[]>
+class ShortcutResolver extends RecursiveResolver<InternalStyleItem> {}
 
-type DynamicShortcutRule = DynamicRule<InternalStyleItem[]>
-
-class ShortcutResolver extends AbstractResolver<InternalStyleItem[]> {
-	async resolve(shortcut: string): Promise<InternalStyleItem[]> {
-		const resolved = await this._resolve(shortcut)
-			.catch((error) => {
-				log.warn(`Failed to resolve shortcut "${shortcut}": ${error.message}`, error)
-				return void 0
-			})
-		if (resolved == null)
-			return [shortcut]
-
-		const result: InternalStyleItem[] = []
-		for (const partial of resolved.value) {
-			if (typeof partial === 'string')
-				result.push(...await this.resolve(partial))
-			else
-				result.push(partial)
-		}
-		this._setResolvedResult(shortcut, result)
-
-		return result
-	}
-}
-
-type ResolvedShortcutConfig
-	= | {
-		type: 'static'
-		rule: StaticShortcutRule
-		autocomplete: string[]
-	}
-	| {
-		type: 'dynamic'
-		rule: DynamicShortcutRule
-		autocomplete: string[]
-	}
-
-function resolveShortcutConfig(config: Shortcut): ResolvedShortcutConfig | string | Nullish {
-	if (typeof config === 'string') {
-		return config
-	}
-	else if (Array.isArray(config)) {
-		if (typeof config[0] === 'string' && typeof config[1] !== 'function') {
-			return {
-				type: 'static',
-				rule: {
-					key: config[0],
-					string: config[0],
-					resolved: [config[1]].flat(1),
-				},
-				autocomplete: [config[0]],
-			}
-		}
-
-		if (config[0] instanceof RegExp && typeof config[1] === 'function') {
-			const fn = config[1]
-			return {
-				type: 'dynamic',
-				rule: {
-					key: config[0].source,
-					stringPattern: config[0],
-					createResolved: async match => [await fn(match)].flat(1),
-				},
-				autocomplete: config[2] != null ? [config[2]].flat(1) : [],
-			}
-		}
-	}
-	else if (typeof config.shortcut === 'string' && typeof config.value !== 'function') {
-		return {
-			type: 'static',
-			rule: {
-				key: config.shortcut,
-				string: config.shortcut,
-				resolved: [config.value].flat(1),
-			},
-			autocomplete: [config.shortcut],
-		}
-	}
-	else if (config.shortcut instanceof RegExp && typeof config.value === 'function') {
-		const fn = config.value
-		return {
-			type: 'dynamic',
-			rule: {
-				key: config.shortcut.source,
-				stringPattern: config.shortcut,
-				createResolved: async match => [await fn(match)].flat(1),
-			},
-			autocomplete: ('autocomplete' in config && config.autocomplete != null)
-				? [config.autocomplete].flat(1)
-				: [],
-		}
-	}
-
-	return void 0
+function resolveShortcutConfig(config: Shortcut) {
+	return resolveRuleConfig<InternalStyleItem>(config, 'shortcut')
 }
