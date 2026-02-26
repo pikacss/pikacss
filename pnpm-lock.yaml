@@ -133,8 +133,8 @@ catalogs:
       specifier: ^2.13.1
       version: 2.13.1
     tsdown:
-      specifier: 0.21.0-beta.1
-      version: 0.21.0-beta.1
+      specifier: 0.21.0-beta.2
+      version: 0.21.0-beta.2
     tsx:
       specifier: ^4.21.0
       version: 4.21.0
@@ -232,7 +232,7 @@ importers:
         version: 2.13.1
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.0-beta.1(publint@0.3.17)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
+        version: 0.21.0-beta.2(publint@0.3.17)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3))
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -4894,8 +4894,8 @@ packages:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
 
-  tsdown@0.21.0-beta.1:
-    resolution: {integrity: sha512-Vtpymgc3MMJ0CbOgYlk/65xjCdNaCQleKErUsJ3WgnD7O3E6yV4ndrmZlLWj3lTEoELfBuQeWdYsqg/Ad4CqeQ==}
+  tsdown@0.21.0-beta.2:
+    resolution: {integrity: sha512-OKj8mKf0ws1ucxuEi3mO/OGyfRQxO9MY2D6SoIE/7RZcbojsZSBhJr4xC4MNivMqrQvi3Ke2e+aRZDemPBWPCw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -8454,7 +8454,7 @@ snapshots:
       caniuse-lite: 1.0.30001761
       isbot: 3.8.0
       object-path: 0.11.8
-      semver: 7.7.3
+      semver: 7.7.4
       ua-parser-js: 1.0.41
 
   farm-plugin-replace-dirname-darwin-arm64@0.2.1:
@@ -10303,7 +10303,7 @@ snapshots:
 
   ts-dedent@2.2.0: {}
 
-  tsdown@0.21.0-beta.1(publint@0.3.17)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3)):
+  tsdown@0.21.0-beta.2(publint@0.3.17)(synckit@0.11.12)(typescript@5.9.3)(vue-tsc@3.2.5(typescript@5.9.3)):
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
