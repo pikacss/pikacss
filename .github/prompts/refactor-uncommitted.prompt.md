@@ -78,7 +78,7 @@ Based on confirmed issues from Round 1, group them by file and dispatch one #run
 > File: `<file>` (in `/Users/deviltea/Documents/Programming/pikacss`)
 >
 > Issues to fix (from Round 1 analysis):
-> ```
+> ```sh
 > <issue list for this file>
 > ```
 >

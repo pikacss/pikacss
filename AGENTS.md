@@ -14,7 +14,7 @@ PikaCSS is an **instant on-demand Atomic CSS-in-JS engine**. Developers write st
 
 ## Repository Layout
 
-```
+```text
 pikacss/
 ├── packages/
 │   ├── core/              # Core engine: createEngine, plugins, extractors, resolvers
@@ -106,7 +106,7 @@ pnpm docs:build    # production build
 
 ## Package Dependencies (Internal)
 
-```
+```text
 core (no internal deps)
   └── integration (depends on core)
        └── unplugin (depends on integration)
@@ -257,7 +257,7 @@ Certain concepts are emphasized consistently across docs:
 
 Example structure in `.examples/`:
 
-```
+```text
 .examples/
 ├── getting-started/
 │   ├── install-unplugin.sh

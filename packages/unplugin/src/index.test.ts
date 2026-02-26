@@ -1,15 +1,15 @@
 import type { UnpluginOptions } from 'unplugin'
 import { describe, expect, it } from 'vitest'
-import { unplugin, unpluginFactory } from './index'
+import { unpluginPika as plugin, unpluginFactory } from './index'
 
-describe('unplugin', () => {
+describe('unpluginPika', () => {
 	it('should export unpluginFactory as a function', () => {
 		expect(typeof unpluginFactory)
 			.toBe('function')
 	})
 
-	it('should export unplugin as default', () => {
-		expect(unplugin)
+	it('should export plugin as default', () => {
+		expect(plugin)
 			.toBeDefined()
 	})
 

@@ -9,7 +9,7 @@ PikaCSS is configured through two layers:
 
 PikaCSS auto-detects config files matching the pattern:
 
-```
+```text
 **/pika.config.{js,ts,mjs,mts,cjs,cts}
 **/pikacss.config.{js,ts,mjs,mts,cjs,cts}
 ```

@@ -27,7 +27,7 @@ Use #runSubagent to execute the following analysis task (read-only, no modificat
 >
 > Return results as a structured list in the following format:
 >
-> ```
+> ```sh
 > Package: core
 > Changed: packages/core/src/internal/engine.ts
 > Summary: Added resolveXxx function, modified createEngine return type

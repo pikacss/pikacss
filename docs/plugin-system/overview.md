@@ -32,7 +32,7 @@ Within the same priority group, plugins run in the order they are registered. Pi
 
 During `createEngine(config)`, hooks are invoked in this order:
 
-```
+```text
 createEngine(config)
 │
 ├─ 1. configureRawConfig    (async)  — Modify the raw config

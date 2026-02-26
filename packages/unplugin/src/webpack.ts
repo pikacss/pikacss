@@ -1,5 +1,5 @@
 import { createWebpackPlugin } from 'unplugin'
-import { unpluginFactory } from '.'
+import { unpluginFactory } from './index'
 
 export * from './types'
 export default createWebpackPlugin(unpluginFactory)

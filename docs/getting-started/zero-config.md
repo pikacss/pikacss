@@ -18,7 +18,7 @@ All of these steps happen without any manual setup.
 
 PikaCSS searches your project for files matching the glob pattern:
 
-```
+```text
 **/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}
 ```
 

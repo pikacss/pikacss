@@ -32,7 +32,7 @@ PikaCSS 擁有強大的插件系統，讓你能在每個階段擴充引擎行為
 
 在 `createEngine(config)` 期間，鉤子依此順序呼叫：
 
-```
+```text
 createEngine(config)
 │
 ├─ 1. configureRawConfig    (async)  — Modify the raw config

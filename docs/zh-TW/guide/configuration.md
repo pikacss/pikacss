@@ -9,7 +9,7 @@ PikaCSS 透過兩個層次進行設定：
 
 PikaCSS 會自動偵測符合以下模式的設定檔：
 
-```
+```text
 **/pika.config.{js,ts,mjs,mts,cjs,cts}
 **/pikacss.config.{js,ts,mjs,mts,cjs,cts}
 ```

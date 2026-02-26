@@ -1,5 +1,5 @@
 import { createRspackPlugin } from 'unplugin'
-import { unpluginFactory } from '.'
+import { unpluginFactory } from './index'
 
 export * from './types'
 export default createRspackPlugin(unpluginFactory)
