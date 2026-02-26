@@ -72,7 +72,7 @@ Generated CSS output:
 
 <<< @/.examples/guide/built-ins/selectors-output.css
 
-## The `$` Placeholder
+## The `$` Placeholder {#the-placeholder}
 
 In selector values, `$` is replaced with the element's **default selector** (which defaults to `.%`, where `%` is the atomic style ID placeholder). This enables pseudo-classes, ancestor selectors, and more.
 
