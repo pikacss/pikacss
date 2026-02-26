@@ -10,7 +10,7 @@ export default defineConfig({
 		'src/rspack.ts',
 		'src/rolldown.ts',
 	],
-	format: ['esm', 'cjs'],
+	format: ['esm'],
 	dts: {
 		tsconfig: './tsconfig.package.json',
 	},
