@@ -1,4 +1,4 @@
-import type { Arrayable, UnionNumber, UnionString } from './utils'
+import type { Arrayable, UnionString } from './utils'
 
 export interface AutocompleteConfig {
 	selectors?: string[]
@@ -6,7 +6,7 @@ export interface AutocompleteConfig {
 	extraProperties?: string[]
 	extraCssProperties?: string[]
 	properties?: [property: string, tsType: Arrayable<string>][]
-	cssProperties?: [property: string, value: Arrayable<string | number>][]
+	cssProperties?: [property: string, value: Arrayable<string>][]
 }
 
 export interface ResolvedAutocompleteConfig {
@@ -15,7 +15,7 @@ export interface ResolvedAutocompleteConfig {
 	extraProperties: Set<string>
 	extraCssProperties: Set<string>
 	properties: Map<string, string[]>
-	cssProperties: Map<string, (string | number)[]>
+	cssProperties: Map<string, string[]>
 }
 
 export interface _Autocomplete {
@@ -25,7 +25,7 @@ export interface _Autocomplete {
 	ExtraCssProperty: UnionString
 	Layer: UnionString
 	PropertiesValue: Record<string, unknown>
-	CssPropertiesValue: Record<string, UnionString | UnionNumber>
+	CssPropertiesValue: Record<string, UnionString>
 }
 
 export type DefineAutocomplete<A extends _Autocomplete> = A

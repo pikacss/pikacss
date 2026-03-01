@@ -35,6 +35,7 @@
 		"dist"
 	],
 	"scripts": {
+		"generate:csstype": "tsx ./scripts/generate-csstype.ts",
 		"build": "tsdown && pnpm exec publint",
 		"build:watch": "tsdown --watch",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
@@ -42,8 +43,5 @@
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest"
-	},
-	"dependencies": {
-		"csstype": "catalog:"
 	}
 }

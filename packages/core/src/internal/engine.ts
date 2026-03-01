@@ -25,16 +25,16 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	]
 	log.debug('Core plugins loaded:', corePlugins.length)
 	const plugins = resolvePlugins([...corePlugins, ...(config.plugins || [])])
-	config.plugins = plugins
+	config = { ...config, plugins }
 	log.debug(`Total plugins resolved: ${plugins.length}`)
 
 	config = await hooks.configureRawConfig(
-		config.plugins,
+		config.plugins!,
 		config,
 	)
 
 	hooks.rawConfigConfigured(
-		resolvePlugins(config.plugins || []),
+		resolvePlugins(config.plugins ?? []),
 		config,
 	)
 
@@ -120,7 +120,7 @@ export class Engine {
 		this.notifyAutocompleteConfigUpdated()
 	}
 
-	appendAutocompleteCssPropertyValues(property: string, ...values: (string | number)[]) {
+	appendAutocompleteCssPropertyValues(property: string, ...values: string[]) {
 		appendAutocompleteCssPropertyValues(this.config, property, ...values)
 		this.notifyAutocompleteConfigUpdated()
 	}
@@ -256,8 +256,8 @@ export function sortLayerNames(layers: Record<string, number>): string[] {
 function isWithLayer(p: Preflight): p is WithLayer<string | PreflightDefinition | PreflightFn> {
 	if (typeof p !== 'object' || p === null)
 		return false
-	const record = p as Record<string, unknown>
-	return typeof record.layer === 'string' && 'preflight' in record
+	const record = p as { layer?: unknown, preflight?: unknown }
+	return typeof record.layer === 'string' && record.preflight !== undefined
 }
 
 export function resolvePreflight(preflight: Preflight): ResolvedPreflight {
@@ -503,6 +503,8 @@ export async function _renderPreflightDefinition({
 			defaultSelector: '',
 		})
 			.filter(Boolean)
+		if (selectors.length === 0)
+			continue
 		let currentBlocks = blocks
 		let currentBlockBody: CSSStyleBlockBody = null!
 		selectors.forEach((s, i) => {

@@ -1,12 +1,12 @@
-import type { Nullish, PreflightDefinition, ResolvedProperties } from '../types'
+import type { Nullish, PreflightDefinition, ResolvedCSSProperties } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { addToSet } from '../utils'
 
 // #region KeyframesConfig
 export interface KeyframesProgress {
-	from?: ResolvedProperties
-	to?: ResolvedProperties
-	[K: `${number}%`]: ResolvedProperties
+	from?: ResolvedCSSProperties
+	to?: ResolvedCSSProperties
+	[K: `${number}%`]: ResolvedCSSProperties
 }
 
 export type Keyframes
@@ -101,7 +101,7 @@ export function keyframes() {
 			engine.addPreflight((engine) => {
 				const maybeUsedName = new Set<string>()
 				engine.store.atomicStyles.forEach(({ content: { property, value } }) => {
-					if (property === 'animationName') {
+					if (property === 'animation-name') {
 						value.forEach(name => maybeUsedName.add(name))
 						return
 					}
@@ -118,10 +118,10 @@ export function keyframes() {
 				})
 				const maybeUsedKeyframes = Array.from(engine.keyframes.store.values())
 					.filter(({ name, frames, pruneUnused }) => ((pruneUnused === false) || maybeUsedName.has(name)) && frames != null)
-				const preflightDefinition: PreflightDefinition = {}
+				const preflightDefinition: Record<string, unknown> = {}
 				maybeUsedKeyframes.forEach(({ name, frames }) => {
 					preflightDefinition[`@keyframes ${name}`] = Object.fromEntries(
-						Object.entries(frames!)
+						Object.entries(frames! as Record<string, unknown>)
 							.map(([frame, properties]) => [
 								frame,
 								properties,
@@ -129,7 +129,7 @@ export function keyframes() {
 					)
 				})
 
-				return preflightDefinition
+				return preflightDefinition as PreflightDefinition
 			})
 		},
 	})

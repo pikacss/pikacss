@@ -10,6 +10,8 @@ export default await deviltea(
 		},
 		ignores: [
 			'./docs/.examples/**/*',
+			// Ignore the generated files
+			'packages/core/src/csstype.ts',
 		],
 	},
 	pikacss(),

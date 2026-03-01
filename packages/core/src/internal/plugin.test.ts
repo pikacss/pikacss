@@ -68,7 +68,7 @@ describe('execAsyncHook', () => {
 	})
 
 	it('should keep payload when a plugin returns null', async () => {
-		const plugin = { name: 'test', [ASYNC_HOOK]: () => null }
+		const plugin = { name: 'test', [ASYNC_HOOK]: () => null } as unknown as EnginePlugin
 		const result = await execAsyncHook([plugin], ASYNC_HOOK, 'keep')
 		expect(result)
 			.toBe('keep')
@@ -86,7 +86,7 @@ describe('execAsyncHook', () => {
 			name: 'A',
 			[ASYNC_HOOK]: () => { throw new Error('boom') },
 		}
-		const pluginB = { name: 'B', [ASYNC_HOOK]: () => 'from-B' }
+		const pluginB = { name: 'B', [ASYNC_HOOK]: () => 'from-B' } as unknown as EnginePlugin
 		const result = await execAsyncHook([pluginA, pluginB], ASYNC_HOOK, 'init')
 		expect(result)
 			.toBe('from-B')
@@ -102,15 +102,15 @@ describe('execAsyncHook', () => {
 		const plugin = {
 			name: 'async',
 			[ASYNC_HOOK]: async (p: number) => p + 1,
-		}
+		} as unknown as EnginePlugin
 		const result = await execAsyncHook([plugin], ASYNC_HOOK, 1)
 		expect(result)
 			.toBe(2)
 	})
 
 	it('should chain payload through multiple plugins', async () => {
-		const pluginA = { name: 'A', [ASYNC_HOOK]: (p: number) => p + 10 }
-		const pluginB = { name: 'B', [ASYNC_HOOK]: (p: number) => p * 2 }
+		const pluginA = { name: 'A', [ASYNC_HOOK]: (p: number) => p + 10 } as unknown as EnginePlugin
+		const pluginB = { name: 'B', [ASYNC_HOOK]: (p: number) => p * 2 } as unknown as EnginePlugin
 		const result = await execAsyncHook([pluginA, pluginB], ASYNC_HOOK, 5)
 		expect(result)
 			.toBe(30) // (5 + 10) * 2
@@ -170,7 +170,7 @@ describe('execSyncHook', () => {
 	})
 
 	it('should keep payload when a plugin returns null', () => {
-		const plugin = { name: 'test', [SYNC_HOOK]: () => null }
+		const plugin = { name: 'test', [SYNC_HOOK]: () => null } as unknown as EnginePlugin
 		const result = execSyncHook([plugin], SYNC_HOOK, 'keep')
 		expect(result)
 			.toBe('keep')
@@ -188,7 +188,7 @@ describe('execSyncHook', () => {
 			name: 'A',
 			[SYNC_HOOK]: () => { throw new Error('boom') },
 		}
-		const pluginB = { name: 'B', [SYNC_HOOK]: () => 'from-B' }
+		const pluginB = { name: 'B', [SYNC_HOOK]: () => 'from-B' } as unknown as EnginePlugin
 		const result = execSyncHook([pluginA, pluginB], SYNC_HOOK, 'init')
 		expect(result)
 			.toBe('from-B')
@@ -201,8 +201,8 @@ describe('execSyncHook', () => {
 	})
 
 	it('should chain payload through multiple plugins', () => {
-		const pluginA = { name: 'A', [SYNC_HOOK]: (p: number) => p + 10 }
-		const pluginB = { name: 'B', [SYNC_HOOK]: (p: number) => p * 2 }
+		const pluginA = { name: 'A', [SYNC_HOOK]: (p: number) => p + 10 } as unknown as EnginePlugin
+		const pluginB = { name: 'B', [SYNC_HOOK]: (p: number) => p * 2 } as unknown as EnginePlugin
 		const result = execSyncHook([pluginA, pluginB], SYNC_HOOK, 5)
 		expect(result)
 			.toBe(30) // (5 + 10) * 2

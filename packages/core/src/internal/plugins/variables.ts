@@ -2,7 +2,6 @@ import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSS
 import { defineEnginePlugin } from '../plugin'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
-type ResolvedCSSVarProperty = ResolvedCSSProperty extends infer T ? T extends `--${string}` ? T : never : never
 
 export interface VariableAutocomplete {
 	/**
@@ -28,7 +27,7 @@ export interface VariableObject {
 export type Variable = ResolvedCSSProperties[`--${string}`] | VariableObject
 
 export type VariablesDefinition = {
-	[key in UnionString | ResolvedSelector | (`--${string}` & {}) | ResolvedCSSVarProperty]?: Variable | VariablesDefinition
+	[key in UnionString | ResolvedSelector]?: Variable | VariablesDefinition
 }
 
 export interface VariablesConfig {
@@ -76,7 +75,7 @@ export interface VariablesConfig {
 	 * }
 	 * ```
 	 */
-	safeList?: ((`--${string}` & {}) | ResolvedCSSVarProperty)[]
+	safeList?: (`--${string}` & {})[]
 }
 
 declare module '@pikacss/core' {
@@ -190,7 +189,7 @@ function createResolveVariablesFn({
 					value: varValue,
 					selector: levels.length > 0 ? levels : [':root'],
 					autocomplete: {
-						asValueOf: autocomplete.asValueOf ? [autocomplete.asValueOf].flat() : ['*'],
+						asValueOf: (autocomplete.asValueOf ? [autocomplete.asValueOf].flat() : ['*']) as string[],
 						asProperty: autocomplete.asProperty ?? true,
 					},
 					pruneUnused,
@@ -210,15 +209,7 @@ function createResolveVariablesFn({
 const VAR_NAME_RE = /var\((--[\w-]+)/g
 
 export function extractUsedVarNames(input: string): string[] {
-	const matched = input.match(VAR_NAME_RE)
-	if (!matched)
-		return []
-
-	return matched.map((match) => {
-		const varNameMatch = match.match(/--[^,)]+/)
-		return varNameMatch ? varNameMatch[0] : ''
-	})
-		.filter(Boolean)
+	return Array.from(input.matchAll(VAR_NAME_RE), m => m[1]!)
 }
 
 export function normalizeVariableName(name: string) {

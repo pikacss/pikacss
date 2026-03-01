@@ -14,15 +14,19 @@ declare module '@pikacss/core' {
 	}
 }
 
+function appendImportant(v: string): string {
+	return v.endsWith('!important') ? v : `${v} !important`
+}
+
 function modifyPropertyValue(value: InternalPropertyValue): InternalPropertyValue {
 	if (value == null)
 		return null
 
 	if (Array.isArray(value)) {
-		return [`${value[0]} !important`, value[1].map(i => `${i} !important`)]
+		return [appendImportant(value[0]), value[1].map(i => appendImportant(i))]
 	}
 
-	return `${value} !important`
+	return appendImportant(value)
 }
 
 export function important() {
@@ -39,12 +43,12 @@ export function important() {
 		},
 		transformStyleDefinitions(styleDefinitions) {
 			return styleDefinitions.map<InternalStyleDefinition>((styleDefinition) => {
-				const { __important, ...rest } = styleDefinition as InternalStyleDefinition & { __important?: boolean | Nullish }
+				const { __important, ...rest } = styleDefinition as Record<string, unknown> & { __important?: boolean | Nullish }
 				const value = __important
 				const important = value == null ? defaultValue : value
 
 				if (important === false)
-					return rest
+					return rest as InternalStyleDefinition
 
 				return Object.fromEntries(
 					Object.entries(rest)
@@ -54,8 +58,8 @@ export function important() {
 							}
 
 							return [k, v]
-						}),
-				)
+						}) as any,
+				) as InternalStyleDefinition
 			})
 		},
 	})

@@ -2,8 +2,6 @@ export type Nullish = null | undefined
 
 export type UnionString = string & {}
 
-export type UnionNumber = number & {}
-
 export type Arrayable<T> = T | T[]
 
 export type Awaitable<T> = T | Promise<T>
@@ -16,25 +14,28 @@ export type IsNever<T> = [T] extends [never] ? true : false
 
 export type Simplify<T> = { [K in keyof T]: T[K] } & {}
 
-export type ToKebab<T extends string> = T extends `${infer A}${infer B}`
-	? [A extends Uppercase<A> ? 1 : 0, A extends Lowercase<A> ? 1 : 0] extends [1, 0]
-			? `-${Lowercase<A>}${ToKebab<`${B}`>}`
-			: `${A}${ToKebab<`${B}`>}`
-	: T
+export type ToKebab<T extends string> = T extends `${infer A}${infer U}${infer Rest}`
+	? U extends Uppercase<U>
+		? U extends Lowercase<U>
+			? `${Lowercase<A>}${ToKebab<`${U}${Rest}`>}`
+			: `${Lowercase<A>}-${ToKebab<`${Lowercase<U>}${Rest}`>}`
+		: `${Lowercase<A>}${ToKebab<`${U}${Rest}`>}`
+	: Lowercase<T>
 
 export type FromKebab<T extends string> = T extends `--${string}`
 	? T
-	: T extends `-${infer A}${infer B}`
-		? `${Uppercase<A>}${FromKebab<`${B}`>}`
-		: T extends `${infer A}${infer B}`
-			? `${A}${FromKebab<`${B}`>}`
-			: T
+	: T extends `${infer Head}-${infer Tail}`
+		? `${Head}${FromKebab<Capitalize<Tail>>}`
+		: T
 
 export type GetValue<
-	Obj extends Record<string, any>,
+	Obj,
 	K extends string,
-	// eslint-disable-next-line ts/no-empty-object-type
-> = (IsEqual<Obj, object> | IsEqual<Obj, {}> | IsEqual<Obj[K], unknown>) extends false ? Obj[K] : never
+> = [Obj] extends [never]
+	? never
+	: K extends keyof Obj
+		? Obj[K]
+		: never
 
 export type ResolveFrom<T, Key extends string, I, Fallback extends I> = Key extends keyof T
 	? T[Key] extends I

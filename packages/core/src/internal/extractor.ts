@@ -55,9 +55,23 @@ export function normalizeValue(value: InternalPropertyValue): ExtractedStyleCont
 	if (value == null)
 		return value
 
-	return [...new Set([value].flat(2)
-		.map(v => String(v)
-			.trim()))]
+	if (Array.isArray(value)) {
+		const [primary, fallbacks] = value
+		const p = primary.trim()
+		const seen = new Set<string>([p])
+		const result: string[] = []
+		for (const v of fallbacks) {
+			const s = v.trim()
+			if (!seen.has(s)) {
+				seen.add(s)
+				result.push(s)
+			}
+		}
+		result.push(p)
+		return result
+	}
+
+	return [value.trim()]
 }
 
 export async function extract({

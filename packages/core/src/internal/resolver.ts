@@ -1,6 +1,12 @@
 import type { Awaitable, Nullish } from './types'
 import { log } from './utils'
 
+function stripGlobalFlag(re: RegExp): RegExp {
+	if (!re.global)
+		return re
+	return new RegExp(re.source, re.flags.replace('g', ''))
+}
+
 export interface ResolvedResult<T> {
 	value: T
 }
@@ -65,7 +71,10 @@ export abstract class AbstractResolver<T> {
 
 		log.debug(`Removing dynamic rule: ${key}`)
 		const matchedResolvedStringList = Array.from(this._resolvedResultsMap.keys())
-			.filter(string => rule.stringPattern.test(string))
+			.filter((string) => {
+				rule.stringPattern.lastIndex = 0
+				return rule.stringPattern.test(string)
+			})
 		this.dynamicRulesMap.delete(key)
 		matchedResolvedStringList.forEach(string => this._resolvedResultsMap.delete(string))
 		log.debug(`  - Cleared ${matchedResolvedStringList.length} cached results`)
@@ -92,7 +101,8 @@ export abstract class AbstractResolver<T> {
 		let dynamicRule: DynamicRule<T> | Nullish
 		let matched: RegExpMatchArray | Nullish
 		for (const rule of this.dynamicRulesMap.values()) {
-			matched = string.match(rule.stringPattern)
+			rule.stringPattern.lastIndex = 0
+			matched = rule.stringPattern.exec(string)
 			if (matched != null) {
 				dynamicRule = rule
 				break
@@ -122,7 +132,14 @@ export abstract class AbstractResolver<T> {
 }
 
 export abstract class RecursiveResolver<T> extends AbstractResolver<T[]> {
-	async resolve(string: string): Promise<T[]> {
+	async resolve(string: string, _visited?: Set<string>): Promise<T[]> {
+		const visited = _visited ?? new Set<string>()
+		if (visited.has(string)) {
+			log.warn(`Circular reference detected for "${string}", returning as-is`)
+			return [string as unknown as T]
+		}
+		visited.add(string)
+
 		const resolved = await this._resolve(string)
 			.catch((error) => {
 				log.warn(`Failed to resolve "${string}": ${error.message}`, error)
@@ -134,7 +151,7 @@ export abstract class RecursiveResolver<T> extends AbstractResolver<T[]> {
 		const result: T[] = []
 		for (const partial of resolved.value) {
 			if (typeof partial === 'string')
-				result.push(...await this.resolve(partial))
+				result.push(...await this.resolve(partial, new Set(visited)))
 			else
 				result.push(partial)
 		}
@@ -171,7 +188,7 @@ export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRule
 				type: 'dynamic',
 				rule: {
 					key: config[0].source,
-					stringPattern: config[0],
+					stringPattern: stripGlobalFlag(config[0]),
 					createResolved: async match => [await fn(match)].flat(1) as T[],
 				},
 				autocomplete: config[2] != null ? [config[2]].flat(1) : [],
@@ -202,7 +219,7 @@ export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRule
 			type: 'dynamic',
 			rule: {
 				key: configKey.source,
-				stringPattern: configKey,
+				stringPattern: stripGlobalFlag(configKey),
 				createResolved: async match => [await fn(match)].flat(1) as T[],
 			},
 			autocomplete: ('autocomplete' in config && config.autocomplete != null)

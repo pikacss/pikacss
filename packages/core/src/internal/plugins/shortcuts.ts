@@ -120,7 +120,7 @@ export function shortcuts() {
 			const result: InternalStyleDefinition[] = []
 			for (const styleDefinition of styleDefinitions) {
 				if ('__shortcut' in styleDefinition) {
-					const { __shortcut, ...rest } = styleDefinition
+					const { __shortcut, ...rest } = styleDefinition as InternalStyleDefinition & { __shortcut?: unknown }
 					const applied: InternalStyleDefinition[] = []
 					for (const shortcut of ((__shortcut == null ? [] : [__shortcut].flat(1)) as string[])) {
 						const resolved: InternalStyleDefinition[] = (await engine.shortcuts.resolver.resolve(shortcut)).filter(isNotString)

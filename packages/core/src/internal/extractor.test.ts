@@ -101,13 +101,13 @@ describe('normalizeValue', () => {
 			.toEqual(['red'])
 	})
 
-	it('should convert a number to a string in an array', () => {
-		expect(normalizeValue(42))
+	it('should wrap a numeric string in an array', () => {
+		expect(normalizeValue('42'))
 			.toEqual(['42'])
 	})
 
-	it('should convert 0 to string', () => {
-		expect(normalizeValue(0))
+	it('should wrap 0 string in an array', () => {
+		expect(normalizeValue('0'))
 			.toEqual(['0'])
 	})
 
@@ -116,18 +116,18 @@ describe('normalizeValue', () => {
 			.toEqual(['red'])
 	})
 
-	it('should deduplicate array values', () => {
+	it('should place fallback values before primary (CSS correct order)', () => {
 		const input: [string, string[]] = ['red', ['red', 'blue']]
 		const result = normalizeValue(input)
 		expect(result)
-			.toEqual(['red', 'blue'])
+			.toEqual(['blue', 'red'])
 	})
 
-	it('should handle array with unique values', () => {
+	it('should place primary after fallbacks', () => {
 		const input: [string, string[]] = ['1px', ['2px', '3px']]
 		const result = normalizeValue(input)
 		expect(result)
-			.toEqual(['1px', '2px', '3px'])
+			.toEqual(['2px', '3px', '1px'])
 	})
 
 	it('should handle empty string', () => {
@@ -196,9 +196,9 @@ describe('extract', () => {
 			])
 	})
 
-	it('should handle numeric values', async () => {
+	it('should handle numeric string values', async () => {
 		const styleDefinition: InternalStyleDefinition = {
-			opacity: 0.5,
+			opacity: '0.5',
 		}
 		const result = await extract({ styleDefinition, ...passthroughOptions })
 		expect(result)
@@ -317,7 +317,7 @@ describe('extract', () => {
 			defaultSelector,
 			transformSelectors: async s => s,
 			transformStyleItems: async s => s,
-			transformStyleDefinitions: async defs => defs.map(d => ({ ...d, display: 'flex' })),
+			transformStyleDefinitions: async defs => defs.map(d => ({ ...d, display: 'flex' }) as InternalStyleDefinition),
 		})
 		expect(result)
 			.toEqual([
@@ -395,7 +395,7 @@ describe('createExtractFn', () => {
 			defaultSelector: '.x',
 			transformSelectors: async s => s,
 			transformStyleItems: async s => s,
-			transformStyleDefinitions: async defs => defs.map(d => ({ ...d, display: 'none' })),
+			transformStyleDefinitions: async defs => defs.map(d => ({ ...d, display: 'none' }) as InternalStyleDefinition),
 		})
 		const result = await extractFn({ color: 'red' })
 		expect(result)

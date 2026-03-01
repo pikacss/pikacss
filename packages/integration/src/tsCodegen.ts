@@ -1,9 +1,9 @@
 import type { IntegrationContext } from './types'
 import { log, sortLayerNames } from '@pikacss/core'
 
-function formatUnionStringType(list: (string | number)[]) {
+function formatUnionStringType(list: string[]) {
 	return list.length > 0
-		? list.map(i => typeof i === 'number' ? String(i) : JSON.stringify(i))
+		? list.map(i => JSON.stringify(i))
 				.join(' | ')
 		: 'never'
 }
@@ -18,10 +18,10 @@ function generateAutocomplete(ctx: IntegrationContext) {
 		`  StyleItemString: ${formatUnionStringType([...autocomplete.styleItemStrings])}`,
 		`  ExtraProperty: ${formatUnionStringType([...autocomplete.extraProperties])}`,
 		`  ExtraCssProperty: ${formatUnionStringType([...autocomplete.extraCssProperties])}`,
-		`  PropertiesValue: { ${Array.from(autocomplete.properties.entries(), ([k, v]) => `'${k}': ${v.join(' | ')}`)
-			.join(',')} }`,
-		`  CssPropertiesValue: { ${Array.from(autocomplete.cssProperties.entries(), ([k, v]) => `'${k}': ${formatUnionStringType(v)}`)
-			.join(',')} }`,
+		`  PropertiesValue: { ${Array.from(autocomplete.properties.entries(), ([k, v]) => `${JSON.stringify(k)}: ${v.length > 0 ? v.join(' | ') : 'never'}`)
+			.join(', ')} }`,
+		`  CssPropertiesValue: { ${Array.from(autocomplete.cssProperties.entries(), ([k, v]) => `${JSON.stringify(k)}: ${formatUnionStringType(v)}`)
+			.join(', ')} }`,
 		`  Layer: ${formatUnionStringType(layerNames)}`,
 		'}>',
 		'',

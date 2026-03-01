@@ -288,5 +288,29 @@ describe('shortcuts plugin', () => {
 			expect(ids)
 				.toContain('err-test')
 		})
+
+		it('should resolve composite shortcut with shared sub-shortcut dependency', async () => {
+			// Reproduce the pattern: composite → [sub-a, sub-b], both sub-a/sub-b → [base, ...]
+			// where 'base' is shared between siblings. The old visited-set bug would cause
+			// 'base' to be returned as an unresolved string in sibling calls.
+			const engine = await createEngine({
+				shortcuts: {
+					shortcuts: [
+						['base', { color: 'red' }],
+						['sub-a', ['base', { fontSize: '1rem' }]],
+						['sub-b', ['base', { fontWeight: 'bold' }]],
+						['composite', ['sub-a', 'sub-b']],
+					],
+				},
+			})
+
+			const ids = await engine.use('composite')
+			expect(ids.length)
+				.toBeGreaterThan(0)
+			for (const id of ids) {
+				expect(engine.store.atomicStyles.has(id))
+					.toBe(true)
+			}
+		})
 	})
 })

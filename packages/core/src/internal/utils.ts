@@ -1,39 +1,39 @@
-import type { CSSStyleBlocks, InternalPropertyValue, InternalStyleDefinition, InternalStyleItem, ResolvedEngineConfig } from './types'
+import type { CSSStyleBlocks, InternalPropertyValue, ResolvedEngineConfig } from './types'
 
 export function createLogger(prefix: string) {
 	let currentPrefix = prefix
 	let enabledDebug = false
 	// eslint-disable-next-line no-console
-	let _debug: (prefix: string, ...args: any[]) => void = console.log
+	let _debug: (prefix: string, ...args: unknown[]) => void = console.log
 	// eslint-disable-next-line no-console
-	let _info: (prefix: string, ...args: any[]) => void = console.log
-	let _warn: (prefix: string, ...args: any[]) => void = console.warn
-	let _error: (prefix: string, ...args: any[]) => void = console.error
+	let _info: (prefix: string, ...args: unknown[]) => void = console.log
+	let _warn: (prefix: string, ...args: unknown[]) => void = console.warn
+	let _error: (prefix: string, ...args: unknown[]) => void = console.error
 
 	const log: {
-		debug: (...args: any[]) => void
-		info: (...args: any[]) => void
-		warn: (...args: any[]) => void
-		error: (...args: any[]) => void
+		debug: (...args: unknown[]) => void
+		info: (...args: unknown[]) => void
+		warn: (...args: unknown[]) => void
+		error: (...args: unknown[]) => void
 		toggleDebug: () => void
 		setPrefix: (newPrefix: string) => void
-		setDebugFn: (fn: (prefix: string, ...args: any[]) => void) => void
-		setInfoFn: (fn: (prefix: string, ...args: any[]) => void) => void
-		setWarnFn: (fn: (prefix: string, ...args: any[]) => void) => void
-		setErrorFn: (fn: (prefix: string, ...args: any[]) => void) => void
+		setDebugFn: (fn: (prefix: string, ...args: unknown[]) => void) => void
+		setInfoFn: (fn: (prefix: string, ...args: unknown[]) => void) => void
+		setWarnFn: (fn: (prefix: string, ...args: unknown[]) => void) => void
+		setErrorFn: (fn: (prefix: string, ...args: unknown[]) => void) => void
 	} = {
-		debug: (...args: any[]) => {
+		debug: (...args: unknown[]) => {
 			if (!enabledDebug)
 				return
 			_debug(`${currentPrefix}[DEBUG]`, ...args)
 		},
-		info: (...args: any[]) => {
+		info: (...args: unknown[]) => {
 			_info(`${currentPrefix}[INFO]`, ...args)
 		},
-		warn: (...args: any[]) => {
+		warn: (...args: unknown[]) => {
 			_warn(`${currentPrefix}[WARN]`, ...args)
 		},
-		error: (...args: any[]) => {
+		error: (...args: unknown[]) => {
 			_error(`${currentPrefix}[ERROR]`, ...args)
 		},
 		toggleDebug() {
@@ -42,16 +42,16 @@ export function createLogger(prefix: string) {
 		setPrefix(newPrefix: string) {
 			currentPrefix = newPrefix
 		},
-		setDebugFn(fn: (prefix: string, ...args: any[]) => void) {
+		setDebugFn(fn: (prefix: string, ...args: unknown[]) => void) {
 			_debug = fn
 		},
-		setInfoFn(fn: (prefix: string, ...args: any[]) => void) {
+		setInfoFn(fn: (prefix: string, ...args: unknown[]) => void) {
 			_info = fn
 		},
-		setWarnFn(fn: (prefix: string, ...args: any[]) => void) {
+		setWarnFn(fn: (prefix: string, ...args: unknown[]) => void) {
 			_warn = fn
 		},
-		setErrorFn(fn: (prefix: string, ...args: any[]) => void) {
+		setErrorFn(fn: (prefix: string, ...args: unknown[]) => void) {
 			_error = fn
 		},
 	}
@@ -78,6 +78,8 @@ export function numberToChars(num: number) {
 
 const UPPER_CASE = /[A-Z]/g
 export function toKebab(str: string) {
+	if (str.startsWith('--'))
+		return str
 	return str.replace(UPPER_CASE, c => `-${c.toLowerCase()}`)
 }
 
@@ -85,7 +87,7 @@ export function isNotNullish<T>(value: T): value is NonNullable<T> {
 	return value != null
 }
 
-export function isString(value: any): value is string {
+export function isString(value: unknown): value is string {
 	return typeof value === 'string'
 }
 
@@ -93,20 +95,24 @@ export function isNotString<V>(value: V): value is Exclude<V, string> {
 	return typeof value !== 'string'
 }
 
-export function isPropertyValue(v: InternalPropertyValue | InternalStyleDefinition | InternalStyleItem[]): v is InternalPropertyValue {
-	if (Array.isArray(v))
-		return v.length === 2 && isPropertyValue(v[0]) && Array.isArray(v[1]) && v[1].every(isPropertyValue)
+export function isPropertyValue(v: unknown): v is InternalPropertyValue {
+	if (Array.isArray(v)) {
+		return v.length === 2
+			&& typeof v[0] === 'string'
+			&& Array.isArray(v[1])
+			&& v[1].every(i => typeof i === 'string')
+	}
 
 	if (v == null)
 		return true
 
-	if (typeof v === 'string' || typeof v === 'number')
+	if (typeof v === 'string')
 		return true
 
 	return false
 }
 
-export function serialize(value: any) {
+export function serialize(value: unknown): string {
 	return JSON.stringify(value)
 }
 
@@ -135,7 +141,7 @@ export function appendAutocompletePropertyValues(config: Pick<ResolvedEngineConf
 	config.autocomplete.properties.set(property, [...current, ...tsTypes])
 }
 
-export function appendAutocompleteCssPropertyValues(config: Pick<ResolvedEngineConfig, 'autocomplete'>, property: string, ...values: (string | number)[]) {
+export function appendAutocompleteCssPropertyValues(config: Pick<ResolvedEngineConfig, 'autocomplete'>, property: string, ...values: string[]) {
 	const current = config.autocomplete.cssProperties.get(property) || []
 	config.autocomplete.cssProperties.set(property, [...current, ...values])
 }

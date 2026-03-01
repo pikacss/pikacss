@@ -1,8 +1,8 @@
 import type { Engine } from './engine'
-import type { AtomicStyle, Awaitable, EngineConfig, InternalStyleDefinition, InternalStyleItem, ResolvedEngineConfig, ResolvedStyleDefinition, ResolvedStyleItem } from './types'
+import type { AtomicStyle, Awaitable, EngineConfig, ResolvedEngineConfig, ResolvedStyleDefinition, ResolvedStyleItem } from './types'
 import { log } from './utils'
 
-type DefineHooks<Hooks extends Record<string, [type: 'sync' | 'async', payload: any, returnValue?: any]>> = Hooks
+type DefineHooks<Hooks extends Record<string, [type: 'sync' | 'async', payload: unknown, returnValue?: unknown]>> = Hooks
 
 type EngineHooksDefinition = DefineHooks<{
 	configureRawConfig: ['async', config: EngineConfig]
@@ -22,58 +22,70 @@ type GetHooksNames<
 	K extends keyof EngineHooksDefinition = keyof EngineHooksDefinition,
 > = K extends keyof EngineHooksDefinition ? EngineHooksDefinition[K][0] extends T ? K : never : never
 
-type SynctHooksNames = GetHooksNames<'sync'>
+type SyncHooksNames = GetHooksNames<'sync'>
 type AsyncHooksNames = GetHooksNames<'async'>
 
-export async function execAsyncHook(plugins: any[], hook: AsyncHooksNames, payload: any) {
+export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: AsyncHooksNames, payload: P): Promise<P> {
 	log.debug(`Executing async hook: ${hook}`)
+	let current: unknown = payload
 	for (const plugin of plugins) {
-		if (plugin[hook] == null)
+		const pluginRecord = plugin as unknown as Record<string, unknown>
+		if (pluginRecord[hook] == null)
 			continue
 
 		try {
 			log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
-			const newPayload = await plugin[hook](payload)
+			const hookFn = pluginRecord[hook] as (arg: unknown) => unknown
+			const newPayload = await hookFn(current)
 			if (newPayload != null)
-				payload = newPayload
+				current = newPayload
 			log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
 		}
-		catch (error: any) {
-			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error.message}`, error)
+		catch (error: unknown) {
+			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
 		}
 	}
 	log.debug(`Async hook "${hook}" completed`)
-	return payload
+	return current as P
 }
 
-export function execSyncHook(plugins: any[], hook: SynctHooksNames, payload: any) {
+export function execSyncHook<P>(plugins: readonly EnginePlugin[], hook: SyncHooksNames, payload: P): P {
 	log.debug(`Executing sync hook: ${hook}`)
+	let current: unknown = payload
 	for (const plugin of plugins) {
-		if (plugin[hook] == null)
+		const pluginRecord = plugin as unknown as Record<string, unknown>
+		if (pluginRecord[hook] == null)
 			continue
 
 		try {
 			log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
-			const newPayload = plugin[hook](payload)
+			const hookFn = pluginRecord[hook] as (arg: unknown) => unknown
+			const newPayload = hookFn(current)
 			if (newPayload != null)
-				payload = newPayload
+				current = newPayload
 			log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
 		}
-		catch (error: any) {
-			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error.message}`, error)
+		catch (error: unknown) {
+			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
 		}
 	}
 	log.debug(`Sync hook "${hook}" completed`)
-	return payload
+	return current as P
 }
+
+type HookParams<H extends [type: 'sync' | 'async', payload: any, returnValue?: any]>
+	= H[1] extends void ? [] : [payload: H[1]]
+
+type HookReturnType<H extends [type: 'sync' | 'async', payload: any, returnValue?: any]>
+	= H extends [any, any, infer R]
+		? H[0] extends 'async' ? Promise<R> : R
+		: H[0] extends 'async' ? Promise<H[1]> : H[1]
 
 type EngineHooks = {
 	[K in keyof EngineHooksDefinition]: (
 		plugins: EnginePlugin[],
-		...params: EngineHooksDefinition[K][1] extends void ? [] : [payload: EngineHooksDefinition[K][1]]
-	) => EngineHooksDefinition[K] extends [any, any, any]
-		? EngineHooksDefinition[K][0] extends 'async' ? Promise<EngineHooksDefinition[K][2]> : EngineHooksDefinition[K][2]
-		: EngineHooksDefinition[K][0] extends 'async' ? Promise<EngineHooksDefinition[K][1]> : EngineHooksDefinition[K][1]
+		...params: HookParams<EngineHooksDefinition[K]>
+	) => HookReturnType<EngineHooksDefinition[K]>
 }
 
 export const hooks: EngineHooks = {
@@ -87,9 +99,9 @@ export const hooks: EngineHooks = {
 		execAsyncHook(plugins, 'configureEngine', engine),
 	transformSelectors: (plugins: EnginePlugin[], selectors: string[]) =>
 		execAsyncHook(plugins, 'transformSelectors', selectors),
-	transformStyleItems: (plugins: EnginePlugin[], styleItems: InternalStyleItem[]) =>
+	transformStyleItems: (plugins: EnginePlugin[], styleItems: ResolvedStyleItem[]) =>
 		execAsyncHook(plugins, 'transformStyleItems', styleItems),
-	transformStyleDefinitions: (plugins: EnginePlugin[], styleDefinitions: InternalStyleDefinition[]) =>
+	transformStyleDefinitions: (plugins: EnginePlugin[], styleDefinitions: ResolvedStyleDefinition[]) =>
 		execAsyncHook(plugins, 'transformStyleDefinitions', styleDefinitions),
 	preflightUpdated: (plugins: EnginePlugin[]) =>
 		execSyncHook(plugins, 'preflightUpdated', void 0),
@@ -101,8 +113,8 @@ export const hooks: EngineHooks = {
 
 type EnginePluginHooksOptions = {
 	[K in keyof EngineHooksDefinition]?: EngineHooksDefinition[K][0] extends 'async'
-		? (...params: EngineHooksDefinition[K][1] extends void ? [] : [payload: EngineHooksDefinition[K][1]]) => Awaitable<EngineHooksDefinition[K][1] | void>
-		: (...params: EngineHooksDefinition[K][1] extends void ? [] : [payload: EngineHooksDefinition[K][1]]) => EngineHooksDefinition[K][1] | void
+		? (...params: HookParams<EngineHooksDefinition[K]>) => Awaitable<EngineHooksDefinition[K][1] | void>
+		: (...params: HookParams<EngineHooksDefinition[K]>) => EngineHooksDefinition[K][1] | void
 }
 
 export interface EnginePlugin extends EnginePluginHooksOptions {
@@ -117,7 +129,7 @@ const orderMap = new Map([
 ])
 
 export function resolvePlugins(plugins: EnginePlugin[]): EnginePlugin[] {
-	return plugins.sort((a, b) => orderMap.get(a.order)! - orderMap.get(b.order)!)
+	return [...plugins].sort((a, b) => orderMap.get(a.order)! - orderMap.get(b.order)!)
 }
 
 // Only for type inference without runtime effect

@@ -400,9 +400,9 @@ describe('isPropertyValue', () => {
 			.toBe(true)
 	})
 
-	it('should return true for a number', () => {
+	it('should return false for a number', () => {
 		expect(isPropertyValue(42))
-			.toBe(true)
+			.toBe(false)
 	})
 
 	it('should return false for a plain object', () => {
@@ -420,9 +420,9 @@ describe('isPropertyValue', () => {
 			.toBe(true)
 	})
 
-	it('should return true for a tuple with numeric values', () => {
+	it('should return false for a tuple with numeric values', () => {
 		expect(isPropertyValue([10, [20, 30]]))
-			.toBe(true)
+			.toBe(false)
 	})
 
 	it('should return false for an array with wrong structure', () => {
@@ -451,9 +451,9 @@ describe('isPropertyValue', () => {
 			.toBe(false)
 	})
 
-	it('should return true for a tuple with null fallbacks', () => {
+	it('should return false for a tuple with null fallbacks', () => {
 		expect(isPropertyValue(['red', [null]] as any))
-			.toBe(true)
+			.toBe(false)
 	})
 })
 
@@ -549,7 +549,7 @@ function createMockAutocompleteConfig(): Pick<ResolvedEngineConfig, 'autocomplet
 			extraProperties: new Set<string>(),
 			extraCssProperties: new Set<string>(),
 			properties: new Map<string, string[]>(),
-			cssProperties: new Map<string, (string | number)[]>(),
+			cssProperties: new Map<string, string[]>(),
 		},
 	}
 }
@@ -657,18 +657,18 @@ describe('appendAutocompleteCssPropertyValues', () => {
 			.toEqual(['red', 'blue'])
 	})
 
-	it('should handle numeric values', () => {
+	it('should handle numeric string values', () => {
 		const config = createMockAutocompleteConfig()
-		appendAutocompleteCssPropertyValues(config, 'z-index', 1, 10, 100)
+		appendAutocompleteCssPropertyValues(config, 'z-index', '1', '10', '100')
 		expect(config.autocomplete.cssProperties.get('z-index'))
-			.toEqual([1, 10, 100])
+			.toEqual(['1', '10', '100'])
 	})
 
-	it('should handle mixed string and number values', () => {
+	it('should handle mixed string values', () => {
 		const config = createMockAutocompleteConfig()
-		appendAutocompleteCssPropertyValues(config, 'font-weight', 'bold', 400, 700)
+		appendAutocompleteCssPropertyValues(config, 'font-weight', 'bold', '400', '700')
 		expect(config.autocomplete.cssProperties.get('font-weight'))
-			.toEqual(['bold', 400, 700])
+			.toEqual(['bold', '400', '700'])
 	})
 })
 

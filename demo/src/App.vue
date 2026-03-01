@@ -48,7 +48,7 @@ function toggleDarkMode() {
 		>
 			<h1
 				:class="pika({
-					'margin': 0,
+					'margin': '0',
 					'fontSize': '4rem',
 					'@screen-md': {
 						fontSize: '4.5rem',

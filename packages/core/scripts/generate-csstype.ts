@@ -1,0 +1,1215 @@
+/**
+ * CSS TypeScript type definitions generator.
+ *
+ * Reads CSS metadata from `mdn-data` and `@mdn/browser-compat-data` and generates
+ * a self-contained TypeScript file at `packages/core/src/csstype.ts`.
+ *
+ * Usage:
+ *   pnpm tsx packages/core/scripts/generate-csstype.ts
+ */
+
+import type { CSSAtRuleData, CSSPropertyData, CSSSelectorData, CSSSyntaxData } from './mdn-data-types'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import bcd from '@mdn/browser-compat-data'
+// @ts-expect-error - mdn-data doesn't have types, so we import as any and assert types above
+import mdnData from 'mdn-data'
+import { features as webFeatures } from 'web-features'
+
+// ---------------------------------------------------------------------------
+// Paths
+// ---------------------------------------------------------------------------
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const OUTPUT_PATH = path.resolve(__dirname, '..', 'src', 'csstype.ts')
+
+// ---------------------------------------------------------------------------
+// 1. DATA LOADING
+// ---------------------------------------------------------------------------
+
+const mdnProperties = mdnData.css.properties as Record<string, CSSPropertyData>
+const mdnSyntaxes = mdnData.css.syntaxes as Record<string, CSSSyntaxData>
+const mdnAtRules = mdnData.css.atRules as Record<string, CSSAtRuleData>
+const mdnSelectors = mdnData.css.selectors as Record<string, CSSSelectorData>
+
+// Patch syntaxes with missing entries
+const patchedSyntaxes: Record<string, CSSSyntaxData> = {
+	...mdnSyntaxes,
+	'hex-color': { syntax: '<string>' },
+	'reversed-counter-name': { syntax: '<string>' },
+	'dashed-ident': { syntax: '<string>' },
+	'unicode-range-token': { syntax: '<string>' },
+	'declaration-value': { syntax: '<string>' },
+	'autospace': { syntax: 'no-autospace | [ ideograph-alpha || ideograph-numeric || punctuation ] || [ insert | replace ]' },
+	'content-list': { syntax: '[ <string> | <image> | <attr()> | <quote> | <counter> ]+' },
+	// SVG paint
+	'paint': { syntax: 'none | child | child(<integer>) | <color> | <url> [ none | <color> ]? | context-fill | context-stroke' },
+	'dasharray': { syntax: '[ <length> | <percentage> | <number> ]#' },
+}
+
+// SVG properties to merge
+const svgProperties: Record<string, Pick<CSSPropertyData, 'syntax' | 'initial' | 'inherited'>> = {
+	'alignment-baseline': {
+		syntax: 'auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical',
+		initial: 'see property description',
+		inherited: false,
+	},
+	'baseline-shift': {
+		syntax: 'baseline | sub | super | <percentage> | <length>',
+		initial: 'baseline',
+		inherited: false,
+	},
+	'clip-rule': {
+		syntax: 'nonzero | evenodd',
+		initial: 'nonzero',
+		inherited: true,
+	},
+	'color-interpolation': {
+		syntax: 'auto | sRGB | linearRGB',
+		initial: 'sRGB',
+		inherited: true,
+	},
+	'color-rendering': {
+		syntax: 'auto | optimizeSpeed | optimizeQuality',
+		initial: 'auto',
+		inherited: true,
+	},
+	'dominant-baseline': {
+		syntax: 'auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge',
+		initial: 'auto',
+		inherited: false,
+	},
+	'fill': {
+		syntax: '<paint>',
+		initial: 'black',
+		inherited: true,
+	},
+	'fill-opacity': {
+		syntax: '<number>',
+		initial: '1',
+		inherited: true,
+	},
+	'fill-rule': {
+		syntax: 'nonzero | evenodd',
+		initial: 'nonzero',
+		inherited: true,
+	},
+	'flood-color': {
+		syntax: 'currentColor | <color>',
+		initial: 'black',
+		inherited: false,
+	},
+	'flood-opacity': {
+		syntax: '<number>',
+		initial: '1',
+		inherited: false,
+	},
+	'glyph-orientation-vertical': {
+		syntax: 'auto | <angle> | <number>',
+		initial: 'auto',
+		inherited: true,
+	},
+	'lighting-color': {
+		syntax: 'currentColor | <color>',
+		initial: 'white',
+		inherited: false,
+	},
+	'marker': {
+		syntax: 'none | <url>',
+		initial: 'none',
+		inherited: true,
+	},
+	'marker-end': {
+		syntax: 'none | <url>',
+		initial: 'none',
+		inherited: true,
+	},
+	'marker-mid': {
+		syntax: 'none | <url>',
+		initial: 'none',
+		inherited: true,
+	},
+	'marker-start': {
+		syntax: 'none | <url>',
+		initial: 'none',
+		inherited: true,
+	},
+	'shape-rendering': {
+		syntax: 'auto | optimizeSpeed | crispEdges | geometricPrecision',
+		initial: 'auto',
+		inherited: true,
+	},
+	'stop-color': {
+		syntax: 'currentColor | <color>',
+		initial: 'black',
+		inherited: false,
+	},
+	'stop-opacity': {
+		syntax: '<number>',
+		initial: '1',
+		inherited: false,
+	},
+	'stroke': {
+		syntax: '<paint>',
+		initial: 'none',
+		inherited: true,
+	},
+	'stroke-dasharray': {
+		syntax: 'none | <dasharray>',
+		initial: 'none',
+		inherited: true,
+	},
+	'stroke-dashoffset': {
+		syntax: '<percentage> | <length>',
+		initial: '0',
+		inherited: true,
+	},
+	'stroke-linecap': {
+		syntax: 'butt | round | square',
+		initial: 'butt',
+		inherited: true,
+	},
+	'stroke-linejoin': {
+		syntax: 'miter | round | bevel',
+		initial: 'miter',
+		inherited: true,
+	},
+	'stroke-miterlimit': {
+		syntax: '<number>',
+		initial: '4',
+		inherited: true,
+	},
+	'stroke-opacity': {
+		syntax: '<number>',
+		initial: '1',
+		inherited: true,
+	},
+	'stroke-width': {
+		syntax: '<percentage> | <length>',
+		initial: '1',
+		inherited: true,
+	},
+	'text-anchor': {
+		syntax: 'start | middle | end',
+		initial: 'start',
+		inherited: true,
+	},
+	'vector-effect': {
+		syntax: 'non-scaling-stroke | none',
+		initial: 'none',
+		inherited: false,
+	},
+}
+
+// Build merged property map — mdn-data properties + SVG-only properties
+interface PropertyEntry {
+	syntax: string
+	initial: string | string[]
+	inherited: boolean
+	mdn_url?: string
+	status?: string
+	groups?: string[]
+}
+
+const allProperties: Record<string, PropertyEntry> = {}
+
+for (const [name, data] of Object.entries(mdnProperties)) {
+	// Skip custom properties and internal entries
+	if (name === '--*')
+		continue
+	allProperties[name] = {
+		syntax: data.syntax,
+		initial: data.initial,
+		inherited: data.inherited,
+		mdn_url: data.mdn_url,
+		status: data.status,
+		groups: data.groups,
+	}
+}
+
+// Merge SVG properties (only add if not already present)
+for (const [name, data] of Object.entries(svgProperties)) {
+	if (!allProperties[name]) {
+		allProperties[name] = {
+			syntax: data.syntax,
+			initial: typeof data.initial === 'string' ? data.initial : '',
+			inherited: data.inherited,
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------
+// 2. CSS SYNTAX PARSER
+// ---------------------------------------------------------------------------
+
+interface TypeComponent {
+	kind: 'literal' | 'number' | 'string' | 'length' | 'time' | 'datatype' | 'generic'
+	value?: string
+}
+
+/** Well-known data types that resolve to named DataType.X references */
+const KNOWN_DATA_TYPES: Record<string, string> = {
+	'absolute-size': 'AbsoluteSize',
+	'attachment': 'Attachment',
+	'blend-mode': 'BlendMode',
+	'color': 'Color',
+	'content-distribution': 'ContentDistribution',
+	'content-position': 'ContentPosition',
+	'display-inside': 'DisplayInside',
+	'display-outside': 'DisplayOutside',
+	'display-internal': 'DisplayInternal',
+	'display-legacy': 'DisplayLegacy',
+	'easing-function': 'EasingFunction',
+	'generic-family': 'GenericFamily',
+	'geometry-box': 'GeometryBox',
+	'line-style': 'LineStyle',
+	'line-width': 'LineWidth',
+	'named-color': 'NamedColor',
+	'position': 'Position',
+	'repeat-style': 'RepeatStyle',
+	'self-position': 'SelfPosition',
+	'visual-box': 'VisualBox',
+	'compositing-operator': 'CompositingOperator',
+	'masking-mode': 'MaskingMode',
+	'single-animation-direction': 'SingleAnimationDirection',
+	'single-animation-fill-mode': 'SingleAnimationFillMode',
+	'single-animation-timeline': 'SingleAnimationTimeline',
+	'single-animation-composition': 'SingleAnimationComposition',
+	'cubic-bezier-easing-function': 'CubicBezierEasingFunction',
+	'step-easing-function': 'StepEasingFunction',
+	'bg-clip': 'BgClip',
+	'font-stretch-absolute': 'FontStretchAbsolute',
+	'font-weight-absolute': 'FontWeightAbsolute',
+	'east-asian-variant-values': 'EastAsianVariantValues',
+	'page-size': 'PageSize',
+	'paint': 'Paint',
+	'quote': 'Quote',
+	'timeline-range-name': 'TimelineRangeName',
+	'system-color': 'SystemColor',
+	'deprecated-system-color': 'DeprecatedSystemColor',
+	'compat-auto': 'CompatAuto',
+	'composite-style': 'CompositeStyle',
+	'animateable-feature': 'AnimateableFeature',
+	'cursor-predefined': 'CursorPredefined',
+	'outline-line-style': 'OutlineLineStyle',
+	'try-size': 'TrySize',
+	'try-tactic': 'TryTactic',
+	'position-area': 'PositionArea',
+}
+
+/** Primitive/built-in type references */
+const PRIMITIVE_TYPES: Record<string, TypeComponent['kind']> = {
+	'length': 'length',
+	'length-percentage': 'length',
+	'time': 'time',
+	'number': 'string',
+	'integer': 'string',
+	'percentage': 'string',
+	'string': 'string',
+	'custom-ident': 'string',
+	'ident': 'string',
+	'url': 'string',
+	'image': 'string',
+	'angle': 'string',
+	'resolution': 'string',
+	'frequency': 'string',
+	'flex': 'string',
+	'ratio': 'string',
+	'dimension': 'string',
+	'alpha-value': 'string',
+	'shape-box': 'string',
+	'basic-shape': 'string',
+	'filter-function': 'string',
+	'transform-function': 'string',
+	'gradient': 'string',
+	'counter-style': 'string',
+	'counter-style-name': 'string',
+	'family-name': 'string',
+	'generic-name': 'string',
+	'nth': 'string',
+	'an-plus-b': 'string',
+	'an+b': 'string',
+	'calc-sum': 'string',
+	'declaration-value': 'string',
+	'hex-color': 'string',
+	'dashed-ident': 'string',
+	'unicode-range': 'string',
+	'unicode-range-token': 'string',
+	'reversed-counter-name': 'string',
+	'media-query-list': 'string',
+}
+
+function dedup(components: TypeComponent[]): TypeComponent[] {
+	const seen = new Set<string>()
+	const result: TypeComponent[] = []
+	for (const c of components) {
+		const key = `${c.kind}:${c.value ?? ''}`
+		if (!seen.has(key)) {
+			seen.add(key)
+			result.push(c)
+		}
+	}
+	return result
+}
+
+function parseSyntaxToTypes(
+	syntax: string,
+	syntaxes: Record<string, CSSSyntaxData>,
+	visited?: Set<string>,
+): TypeComponent[] {
+	if (!syntax)
+		return [{ kind: 'string' }]
+
+	const vis = visited ?? new Set<string>()
+	const components: TypeComponent[] = []
+
+	// Check for top-level combinators: && or || indicate all components needed together
+	// We only want to split on bare | (alternation), not || or &&
+	// Simple approach: split on ' | ' but be careful about brackets and nested structures
+
+	const alternatives = splitAlternatives(syntax)
+
+	for (const alt of alternatives) {
+		const trimmed = alt.trim()
+		if (!trimmed)
+			continue
+
+		parseAlternative(trimmed, syntaxes, vis, components)
+	}
+
+	return dedup(components)
+}
+
+/**
+ * Split a syntax string on top-level `|` alternation only.
+ * Respects bracket nesting and does not split `||` or `&&`.
+ */
+function splitAlternatives(syntax: string): string[] {
+	const results: string[] = []
+	let depth = 0
+	let current = ''
+
+	for (let i = 0; i < syntax.length; i++) {
+		const ch = syntax[i]
+		if (ch === '[' || ch === '(') {
+			depth++
+			current += ch
+		}
+		else if (ch === ']' || ch === ')') {
+			depth--
+			current += ch
+		}
+		else if (depth === 0 && ch === '|' && syntax[i + 1] !== '|' && (i === 0 || syntax[i - 1] !== '|')) {
+			results.push(current)
+			current = ''
+		}
+		else {
+			current += ch
+		}
+	}
+	results.push(current)
+	return results
+}
+
+function parseAlternative(
+	alt: string,
+	syntaxes: Record<string, CSSSyntaxData>,
+	visited: Set<string>,
+	components: TypeComponent[],
+): void {
+	const trimmed = alt.trim()
+	if (!trimmed)
+		return
+
+	// Strip optional multipliers at end: ?, +, *, #, {n,m}
+	let cleaned = trimmed
+		.replace(/\{[\d,]+\}\s*$/, '')
+		.replace(/[?+*#]+\s*$/, '')
+		.trim()
+
+	// Check for && or || combinators or juxtaposition with multiple terms
+	if (hasComplexCombinator(cleaned)) {
+		// Complex: multiple values needed → string fallback
+		// But still try to extract individual keywords and types from the parts
+		extractFromComplex(cleaned, syntaxes, visited, components)
+		return
+	}
+
+	// Strip surrounding brackets [ ... ]
+	if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+		cleaned = cleaned.slice(1, -1)
+			.trim()
+		// Re-check after stripping brackets
+		if (hasComplexCombinator(cleaned)) {
+			extractFromComplex(cleaned, syntaxes, visited, components)
+			return
+		}
+		// Try splitting alternatives inside brackets
+		const innerAlts = splitAlternatives(cleaned)
+		if (innerAlts.length > 1) {
+			for (const a of innerAlts) {
+				parseAlternative(a, syntaxes, visited, components)
+			}
+			return
+		}
+	}
+
+	// Function call: name( ... )
+	if (/^[\w-]+\(/.test(cleaned)) {
+		components.push({ kind: 'string' })
+		return
+	}
+
+	// Data type reference: <name>
+	const dtMatch = cleaned.match(/^<'([^']+)'>$/)
+	if (dtMatch) {
+		// Property reference <'property-name'>
+		const propName = dtMatch[1]
+		if (!visited.has(`prop:${propName}`)) {
+			visited.add(`prop:${propName}`)
+			const propData = allProperties[propName]
+			if (propData) {
+				const resolved = parseSyntaxToTypes(propData.syntax, syntaxes, visited)
+				components.push(...resolved)
+			}
+			else {
+				components.push({ kind: 'string' })
+			}
+		}
+		return
+	}
+
+	const dtMatch2 = cleaned.match(/^<([\w-]+(?:\(\))?)(?:\s*\[.*?\])?>$/)
+	if (dtMatch2) {
+		const typeName = dtMatch2[1]
+		resolveDataType(typeName, syntaxes, visited, components)
+		return
+	}
+
+	// Numeric literal
+	if (/^\d+(?:\.\d+)?$/.test(cleaned)) {
+		components.push({ kind: 'number' })
+		return
+	}
+
+	// Keyword (alphanumeric, dashes, no angle brackets or spaces)
+	if (/^\w[\w-]*$/.test(cleaned) && !cleaned.includes('<') && !cleaned.includes('>')) {
+		components.push({ kind: 'literal', value: cleaned })
+		return
+	}
+
+	// If we get here, it's something complex we can't parse simply
+	components.push({ kind: 'string' })
+}
+
+function hasComplexCombinator(s: string): boolean {
+	// Check if string has && or || at top level (not inside brackets)
+	let depth = 0
+	for (let i = 0; i < s.length; i++) {
+		const ch = s[i]
+		if (ch === '[' || ch === '(') {
+			depth++
+		}
+		else if (ch === ']' || ch === ')') {
+			depth--
+		}
+		else if (depth === 0) {
+			if (ch === '&' && s[i + 1] === '&')
+				return true
+			if (ch === '|' && s[i + 1] === '|')
+				return true
+		}
+	}
+
+	// Check for juxtaposition: multiple space-separated terms at top level
+	// (but not single <type> or keyword with multiplier)
+	const tokens = tokenizeTopLevel(s)
+	if (tokens.length > 1) {
+		// Multiple terms juxtaposed = complex
+		return true
+	}
+
+	return false
+}
+
+function tokenizeTopLevel(s: string): string[] {
+	const tokens: string[] = []
+	let depth = 0
+	let current = ''
+	for (let i = 0; i < s.length; i++) {
+		const ch = s[i]
+		if (ch === '[' || ch === '(' || ch === '<') {
+			depth++
+			current += ch
+		}
+		else if (ch === ']' || ch === ')' || ch === '>') {
+			depth--
+			current += ch
+		}
+		else if (depth === 0 && ch === ' ') {
+			const trimmed = current.trim()
+			if (trimmed)
+				tokens.push(trimmed)
+			current = ''
+		}
+		else {
+			current += ch
+		}
+	}
+	const trimmed = current.trim()
+	if (trimmed)
+		tokens.push(trimmed)
+
+	// Filter out multipliers and operators
+	return tokens.filter(t => t !== '&&' && t !== '||' && t !== '|' && !/^[?+*#{}]+$/.test(t))
+}
+
+function extractFromComplex(
+	s: string,
+	syntaxes: Record<string, CSSSyntaxData>,
+	visited: Set<string>,
+	components: TypeComponent[],
+): void {
+	// Extract data type references and keywords from complex expressions
+	// Always add string fallback for complex combinator expressions
+	components.push({ kind: 'string' })
+
+	// Also extract named types that appear in the expression
+	const typeRefs = s.matchAll(/<([\w-]+(?:\(\))?)(?:\s*\[.*?\])?>/g)
+	for (const m of typeRefs) {
+		const typeName = m[1]
+		if (KNOWN_DATA_TYPES[typeName]) {
+			components.push({ kind: 'datatype', value: KNOWN_DATA_TYPES[typeName] })
+		}
+		else if (PRIMITIVE_TYPES[typeName]) {
+			components.push({ kind: PRIMITIVE_TYPES[typeName] })
+		}
+	}
+
+	// Extract property refs
+	const propRefs = s.matchAll(/<'([\w-]+)'>/g)
+	for (const m of propRefs) {
+		const propName = m[1]
+		if (!visited.has(`prop:${propName}`)) {
+			visited.add(`prop:${propName}`)
+			const propData = allProperties[propName]
+			if (propData) {
+				const resolved = parseSyntaxToTypes(propData.syntax, syntaxes, visited)
+				components.push(...resolved)
+			}
+		}
+	}
+}
+
+function resolveDataType(
+	typeName: string,
+	syntaxes: Record<string, CSSSyntaxData>,
+	visited: Set<string>,
+	components: TypeComponent[],
+): void {
+	// Check primitive types first
+	if (PRIMITIVE_TYPES[typeName]) {
+		components.push({ kind: PRIMITIVE_TYPES[typeName] })
+		return
+	}
+
+	// Check known data types
+	if (KNOWN_DATA_TYPES[typeName]) {
+		components.push({ kind: 'datatype', value: KNOWN_DATA_TYPES[typeName] })
+		return
+	}
+
+	// Try to resolve from syntaxes
+	const key = typeName.replace(/\(\)$/, '')
+	if (visited.has(`type:${key}`))
+		return
+
+	visited.add(`type:${key}`)
+	const syntaxDef = syntaxes[key] || syntaxes[typeName]
+	if (syntaxDef) {
+		const resolved = parseSyntaxToTypes(syntaxDef.syntax, syntaxes, visited)
+		components.push(...resolved)
+		return
+	}
+
+	// Unknown type → string fallback
+	components.push({ kind: 'string' })
+}
+
+// ---------------------------------------------------------------------------
+// 3. TYPE RESOLVER
+// ---------------------------------------------------------------------------
+
+interface ResolvedPropertyType {
+	name: string
+	camelName: string
+	pascalName: string
+	components: TypeComponent[]
+	needsLength: boolean
+	needsTime: boolean
+	syntax: string
+	initial: string | string[]
+	inherited: boolean
+	mdn_url?: string
+	status?: string
+}
+
+function toCamelCase(kebab: string): string {
+	let result = kebab
+	let prefix = ''
+
+	const vendorMatch = result.match(/^-(webkit|moz|ms|o)-/)
+	if (vendorMatch) {
+		const vendorPrefix = vendorMatch[1]
+		prefix = vendorPrefix === 'ms'
+			? 'ms'
+			: vendorPrefix.charAt(0)
+				.toUpperCase() + vendorPrefix.slice(1)
+		result = result.slice(vendorMatch[0].length)
+		// Capitalize first letter of remainder for vendor-prefixed properties
+		result = result.charAt(0)
+			.toUpperCase() + result.slice(1)
+	}
+
+	// Convert remaining kebab-case to camelCase
+	result = result.replace(/-([a-z0-9])/gi, (_, c: string) => c.toUpperCase())
+
+	return prefix + result
+}
+
+function toPascalCase(kebab: string): string {
+	const camel = toCamelCase(kebab)
+	return camel.charAt(0)
+		.toUpperCase() + camel.slice(1)
+}
+
+function resolveAllProperties(): ResolvedPropertyType[] {
+	const result: ResolvedPropertyType[] = []
+
+	for (const [name, data] of Object.entries(allProperties)) {
+		const components = parseSyntaxToTypes(data.syntax, patchedSyntaxes)
+		const needsLength = components.some(c => c.kind === 'length' || hasLengthInDataType(c))
+		const needsTime = components.some(c => c.kind === 'time' || hasTimeInDataType(c))
+
+		result.push({
+			name,
+			camelName: toCamelCase(name),
+			pascalName: toPascalCase(name),
+			components,
+			needsLength,
+			needsTime,
+			syntax: data.syntax,
+			initial: data.initial,
+			inherited: data.inherited,
+			mdn_url: data.mdn_url,
+			status: data.status,
+		})
+	}
+
+	result.sort((a, b) => a.camelName.localeCompare(b.camelName))
+	return result
+}
+
+/** Check if a DataType reference involves TLength */
+function hasLengthInDataType(c: TypeComponent): boolean {
+	if (c.kind !== 'datatype' || !c.value)
+		return false
+	const lengthTypes = new Set([
+		'LineWidth',
+		'Position',
+		'BgPosition',
+		'BgSize',
+		'BgLayer',
+		'FinalBgLayer',
+		'MaskLayer',
+		'TrackBreadth',
+		'Dasharray',
+		'GridLine',
+	])
+	return lengthTypes.has(c.value)
+}
+
+/** Check if a DataType reference involves TTime */
+function hasTimeInDataType(c: TypeComponent): boolean {
+	if (c.kind !== 'datatype' || !c.value)
+		return false
+	const timeTypes = new Set([
+		'SingleAnimation',
+		'SingleTransition',
+	])
+	return timeTypes.has(c.value)
+}
+
+// ---------------------------------------------------------------------------
+// 4. TYPE STRING BUILDER
+// ---------------------------------------------------------------------------
+
+function componentToTypeString(c: TypeComponent, hasGenerics: { length: boolean, time: boolean }): string {
+	switch (c.kind) {
+		case 'literal':
+			return `"${c.value}"`
+		case 'number':
+			return '(string & {})'
+		case 'string':
+			return '(string & {})'
+		case 'length':
+			return hasGenerics.length ? 'TLength' : '(string & {}) | 0'
+		case 'time':
+			return hasGenerics.time ? 'TTime' : 'string & {}'
+		case 'datatype': {
+			const dt = c.value!
+			// Check if this datatype needs generics
+			const needsLength = hasLengthInDataType(c)
+			const needsTime = hasTimeInDataType(c)
+			if (needsLength && needsTime)
+				return `DataType.${dt}<TLength, TTime>`
+			if (needsLength)
+				return `DataType.${dt}<TLength>`
+			if (needsTime)
+				return `DataType.${dt}<TTime>`
+			return `DataType.${dt}`
+		}
+		default:
+			return '(string & {})'
+	}
+}
+
+function buildPropertyTypeString(prop: ResolvedPropertyType, withGenerics: boolean): string {
+	const hasGenerics = {
+		length: withGenerics && prop.needsLength,
+		time: withGenerics && prop.needsTime,
+	}
+
+	const parts = new Set<string>()
+	parts.add('Globals')
+
+	for (const c of prop.components) {
+		parts.add(componentToTypeString(c, hasGenerics))
+	}
+
+	return Array.from(parts)
+		.join(' | ')
+}
+
+function buildPropertyGenericParams(prop: ResolvedPropertyType, withDefaults: boolean): string {
+	const params: string[] = []
+	if (prop.needsLength) {
+		params.push(withDefaults ? 'TLength = (string & {}) | 0' : 'TLength')
+	}
+	if (prop.needsTime) {
+		params.push(withDefaults ? 'TTime = string & {}' : 'TTime')
+	}
+	return params.length > 0 ? `<${params.join(', ')}>` : ''
+}
+
+// ---------------------------------------------------------------------------
+// 5. JSDOC GENERATOR
+// ---------------------------------------------------------------------------
+
+function formatBaselineDate(dateStr: string): string {
+	const date = new Date(dateStr)
+	if (Number.isNaN(date.getTime()))
+		return dateStr
+	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+	return `${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`
+}
+
+function getBaselineStatus(propertyName: string): string {
+	const bcdProp = (bcd.css as any)?.properties?.[propertyName]
+	const compatData = bcdProp?.__compat
+	if (!compatData)
+		return ''
+
+	// Extract web-features tag from BCD tags
+	const tags: string[] = compatData.tags || []
+	const wfTag = tags.find((t: string) => t.startsWith('web-features:'))
+	if (!wfTag)
+		return ''
+
+	const featureId = wfTag.replace('web-features:', '')
+	const feature = webFeatures[featureId as keyof typeof webFeatures]
+	if (!feature?.status)
+		return ''
+
+	const status = feature.status
+	if (status.baseline === 'high') {
+		const since = status.baseline_high_date ? ` (since ${formatBaselineDate(status.baseline_high_date)})` : ''
+		return `✅ Baseline: Widely available${since}`
+	}
+	if (status.baseline === 'low') {
+		const since = status.baseline_low_date ? ` (since ${formatBaselineDate(status.baseline_low_date)})` : ''
+		return `⚠️ Baseline: Newly available${since}`
+	}
+	return '❌ Baseline: Not widely available'
+}
+
+function getBcdStatus(propertyName: string): { experimental: boolean, deprecated: boolean } {
+	const bcdProp = (bcd.css as any)?.properties?.[propertyName]
+	const compatData = bcdProp?.__compat
+	if (!compatData?.status)
+		return { experimental: false, deprecated: false }
+	return {
+		experimental: compatData.status.experimental === true,
+		deprecated: compatData.status.deprecated === true,
+	}
+}
+
+function getBrowserVersion(support: any): string {
+	if (!support)
+		return '?'
+	const entries = Array.isArray(support) ? support : [support]
+	const entry = entries.find((e: any) => !e.prefix) || entries[0]
+	if (!entry)
+		return '?'
+	const v = entry.version_added
+	if (v === false)
+		return 'No'
+	if (v === true)
+		return 'Yes'
+	if (v === null || v === undefined)
+		return '?'
+	if (v === 'preview')
+		return 'preview'
+	return `**${v}**`
+}
+
+function getBrowserVersionPrefixed(support: any): string | null {
+	if (!support)
+		return null
+	const entries = Array.isArray(support) ? support : [support]
+	const prefixed = entries.filter((e: any) => e.prefix && e.version_added)
+	if (prefixed.length === 0)
+		return null
+	const parts = prefixed.map((e: any) => `${e.version_added} _-x-_`)
+	return parts.join(', ')
+}
+
+function generateCompatTable(propertyName: string): string {
+	const bcdProp = (bcd.css as any)?.properties?.[propertyName]
+	const compatData = bcdProp?.__compat
+	if (!compatData?.support)
+		return ''
+
+	const support = compatData.support
+	const browsers = ['chrome', 'firefox', 'safari', 'edge'] as const
+	const headers = ['Chrome', 'Firefox', 'Safari', 'Edge']
+
+	const versions = browsers.map(b => getBrowserVersion(support[b]))
+	const prefixed = browsers.map(b => getBrowserVersionPrefixed(support[b]))
+
+	// Calculate column widths
+	const colWidths = headers.map((h, i) => {
+		const vLen = versions[i].length
+		const hLen = h.length
+		const pLen = prefixed[i] ? prefixed[i]!.length : 0
+		return Math.max(vLen, hLen, pLen)
+	})
+
+	// Header row
+	const headerRow = `| ${headers.map((h, i) => h.padStart(Math.floor((colWidths[i] + h.length) / 2))
+		.padEnd(colWidths[i]))
+		.join(' | ')} |`
+	const separatorRow = `| ${colWidths.map(w => `:${'-'.repeat(Math.max(w - 2, 1))}:`)
+		.join(' | ')} |`
+	const versionRow = `| ${versions.map((v, i) => v.padStart(Math.floor((colWidths[i] + v.length) / 2))
+		.padEnd(colWidths[i]))
+		.join(' | ')} |`
+
+	let table = `${headerRow}\n   * ${separatorRow}\n   * ${versionRow}`
+
+	// Add prefixed row if any browser has prefixed support
+	if (prefixed.some(p => p !== null)) {
+		const prefixedRow = `| ${prefixed.map((p, i) => (p || '').padStart(Math.floor((colWidths[i] + (p || '').length) / 2))
+			.padEnd(colWidths[i]))
+			.join(' | ')} |`
+		table += `\n   * ${prefixedRow}`
+	}
+
+	return table
+}
+
+function generateJSDoc(prop: ResolvedPropertyType): string {
+	const lines: string[] = []
+	lines.push('  /**')
+
+	// Baseline status
+	const baseline = getBaselineStatus(prop.name)
+	if (baseline) {
+		lines.push(`   * ${baseline}`)
+		lines.push(`   *`)
+	}
+
+	// Syntax
+	lines.push(`   * **Syntax**: \`${prop.syntax}\``)
+	lines.push(`   *`)
+
+	// Initial value
+	const initial = Array.isArray(prop.initial) ? prop.initial.join(', ') : prop.initial
+	lines.push(`   * **Initial value**: \`${initial}\``)
+
+	// Browser compat table
+	const compatTable = generateCompatTable(prop.name)
+	if (compatTable) {
+		lines.push(`   *`)
+		lines.push(`   * ${compatTable}`)
+	}
+
+	// Deprecated / Experimental tags
+	const bcdSt = getBcdStatus(prop.name)
+	if (bcdSt.deprecated) {
+		lines.push(`   *`)
+		lines.push(`   * @deprecated`)
+	}
+	if (bcdSt.experimental) {
+		lines.push(`   *`)
+		lines.push(`   * @experimental`)
+	}
+
+	// MDN URL
+	if (prop.mdn_url) {
+		lines.push(`   *`)
+		lines.push(`   * @see ${prop.mdn_url}`)
+	}
+
+	lines.push(`   */`)
+	return lines.join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// 6. PSEUDOS AND AT-RULES
+// ---------------------------------------------------------------------------
+
+function collectPseudos(): string[] {
+	const pseudos = new Set<string>()
+
+	// From mdn-data selectors
+	for (const name of Object.keys(mdnSelectors)) {
+		if (name.startsWith(':')) {
+			pseudos.add(name)
+		}
+	}
+
+	// From browser-compat-data
+	const bcdSelectors = (bcd.css as any)?.selectors
+	if (bcdSelectors) {
+		for (const name of Object.keys(bcdSelectors)) {
+			if (name.startsWith(':')) {
+				pseudos.add(name)
+			}
+		}
+	}
+
+	return Array.from(pseudos)
+		.sort()
+}
+
+function collectAtRules(): string[] {
+	const atRules = new Set<string>()
+
+	for (const name of Object.keys(mdnAtRules)) {
+		if (name.startsWith('@')) {
+			atRules.add(name)
+		}
+	}
+	return Array.from(atRules)
+		.sort()
+}
+
+// ---------------------------------------------------------------------------
+// 7. DATA TYPE DEFINITIONS (hardcoded)
+// ---------------------------------------------------------------------------
+
+const DATA_TYPE_DEFINITIONS: Record<string, string> = {
+	'AbsoluteSize': '"large" | "medium" | "small" | "x-large" | "x-small" | "xx-large" | "xx-small" | "xxx-large"',
+	'AnimateableFeature': '"contents" | "scroll-position" | (string & {})',
+	'Attachment': '"fixed" | "local" | "scroll"',
+	'Autospace': '"ideograph-alpha" | "ideograph-numeric" | "insert" | "no-autospace" | "punctuation" | "replace" | (string & {})',
+	'BgClip': 'VisualBox | "border-area" | "text"',
+	'BgLayer<TLength>': 'BgPosition<TLength> | RepeatStyle | Attachment | VisualBox | "none" | (string & {})',
+	'BgPosition<TLength>': 'TLength | "bottom" | "center" | "left" | "right" | "top" | (string & {})',
+	'BgSize<TLength>': 'TLength | "auto" | "contain" | "cover" | (string & {})',
+	'BlendMode': '"color" | "color-burn" | "color-dodge" | "darken" | "difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "luminosity" | "multiply" | "normal" | "overlay" | "saturation" | "screen" | "soft-light"',
+	'Color': 'ColorBase | SystemColor | DeprecatedSystemColor | "currentColor" | (string & {})',
+	'ColorBase': 'NamedColor | "transparent" | (string & {})',
+	'CompatAuto': '"button" | "checkbox" | "listbox" | "menulist" | "meter" | "progress-bar" | "radio" | "searchfield" | "textarea"',
+	'CompositeStyle': '"clear" | "copy" | "destination-atop" | "destination-in" | "destination-out" | "destination-over" | "source-atop" | "source-in" | "source-out" | "source-over" | "xor"',
+	'CompositingOperator': '"add" | "exclude" | "intersect" | "subtract"',
+	'ContentDistribution': '"space-around" | "space-between" | "space-evenly" | "stretch"',
+	'ContentPosition': '"center" | "end" | "flex-end" | "flex-start" | "start"',
+	'CubicBezierEasingFunction': '"ease" | "ease-in" | "ease-in-out" | "ease-out" | (string & {})',
+	'CursorPredefined': '"alias" | "all-scroll" | "auto" | "cell" | "col-resize" | "context-menu" | "copy" | "crosshair" | "default" | "e-resize" | "ew-resize" | "grab" | "grabbing" | "help" | "move" | "n-resize" | "ne-resize" | "nesw-resize" | "no-drop" | "none" | "not-allowed" | "ns-resize" | "nw-resize" | "nwse-resize" | "pointer" | "progress" | "row-resize" | "s-resize" | "se-resize" | "sw-resize" | "text" | "vertical-text" | "w-resize" | "wait" | "zoom-in" | "zoom-out"',
+	'Dasharray<TLength>': 'TLength | (string & {})',
+	'DeprecatedSystemColor': '"ActiveBorder" | "ActiveCaption" | "AppWorkspace" | "Background" | "ButtonHighlight" | "ButtonShadow" | "CaptionText" | "InactiveBorder" | "InactiveCaption" | "InactiveCaptionText" | "InfoBackground" | "InfoText" | "Menu" | "MenuText" | "Scrollbar" | "ThreeDDarkShadow" | "ThreeDFace" | "ThreeDHighlight" | "ThreeDLightShadow" | "ThreeDShadow" | "Window" | "WindowFrame" | "WindowText"',
+	'DisplayInside': '"-ms-flexbox" | "-ms-grid" | "-webkit-flex" | "flex" | "flow" | "flow-root" | "grid" | "ruby" | "table"',
+	'DisplayInternal': '"ruby-base" | "ruby-base-container" | "ruby-text" | "ruby-text-container" | "table-caption" | "table-cell" | "table-column" | "table-column-group" | "table-footer-group" | "table-header-group" | "table-row" | "table-row-group"',
+	'DisplayLegacy': '"-ms-inline-flexbox" | "-ms-inline-grid" | "-webkit-inline-flex" | "inline-block" | "inline-flex" | "inline-grid" | "inline-list-item" | "inline-table"',
+	'DisplayOutside': '"block" | "inline" | "run-in"',
+	'EasingFunction': 'CubicBezierEasingFunction | StepEasingFunction | "linear" | (string & {})',
+	'EastAsianVariantValues': '"jis04" | "jis78" | "jis83" | "jis90" | "simplified" | "traditional"',
+	'FinalBgLayer<TLength>': 'BgPosition<TLength> | RepeatStyle | Attachment | VisualBox | Color | "none" | (string & {})',
+	'FontStretchAbsolute': '"condensed" | "expanded" | "extra-condensed" | "extra-expanded" | "normal" | "semi-condensed" | "semi-expanded" | "ultra-condensed" | "ultra-expanded" | (string & {})',
+	'FontWeightAbsolute': '"bold" | "normal" | (string & {})',
+	'GenericComplete': '"-apple-system" | "cursive" | "fantasy" | "math" | "monospace" | "sans-serif" | "serif" | "system-ui"',
+	'GenericFamily': 'GenericComplete | GenericIncomplete | "emoji" | "fangsong"',
+	'GenericIncomplete': '"ui-monospace" | "ui-rounded" | "ui-sans-serif" | "ui-serif"',
+	'GeometryBox': 'VisualBox | "fill-box" | "margin-box" | "stroke-box" | "view-box"',
+	'GridLine': '"auto" | (string & {})',
+	'LineStyle': '"dashed" | "dotted" | "double" | "groove" | "hidden" | "inset" | "none" | "outset" | "ridge" | "solid"',
+	'LineWidth<TLength>': 'TLength | "medium" | "thick" | "thin"',
+	'MaskLayer<TLength>': 'Position<TLength> | RepeatStyle | GeometryBox | CompositingOperator | MaskingMode | "no-clip" | "none" | (string & {})',
+	'MaskingMode': '"alpha" | "luminance" | "match-source"',
+	'NamedColor': '"aliceblue" | "antiquewhite" | "aqua" | "aquamarine" | "azure" | "beige" | "bisque" | "black" | "blanchedalmond" | "blue" | "blueviolet" | "brown" | "burlywood" | "cadetblue" | "chartreuse" | "chocolate" | "coral" | "cornflowerblue" | "cornsilk" | "crimson" | "cyan" | "darkblue" | "darkcyan" | "darkgoldenrod" | "darkgray" | "darkgreen" | "darkgrey" | "darkkhaki" | "darkmagenta" | "darkolivegreen" | "darkorange" | "darkorchid" | "darkred" | "darksalmon" | "darkseagreen" | "darkslateblue" | "darkslategray" | "darkslategrey" | "darkturquoise" | "darkviolet" | "deeppink" | "deepskyblue" | "dimgray" | "dimgrey" | "dodgerblue" | "firebrick" | "floralwhite" | "forestgreen" | "fuchsia" | "gainsboro" | "ghostwhite" | "gold" | "goldenrod" | "gray" | "green" | "greenyellow" | "grey" | "honeydew" | "hotpink" | "indianred" | "indigo" | "ivory" | "khaki" | "lavender" | "lavenderblush" | "lawngreen" | "lemonchiffon" | "lightblue" | "lightcoral" | "lightcyan" | "lightgoldenrodyellow" | "lightgray" | "lightgreen" | "lightgrey" | "lightpink" | "lightsalmon" | "lightseagreen" | "lightskyblue" | "lightslategray" | "lightslategrey" | "lightsteelblue" | "lightyellow" | "lime" | "limegreen" | "linen" | "magenta" | "maroon" | "mediumaquamarine" | "mediumblue" | "mediumorchid" | "mediumpurple" | "mediumseagreen" | "mediumslateblue" | "mediumspringgreen" | "mediumturquoise" | "mediumvioletred" | "midnightblue" | "mintcream" | "mistyrose" | "moccasin" | "navajowhite" | "navy" | "oldlace" | "olive" | "olivedrab" | "orange" | "orangered" | "orchid" | "palegoldenrod" | "palegreen" | "paleturquoise" | "palevioletred" | "papayawhip" | "peachpuff" | "peru" | "pink" | "plum" | "powderblue" | "purple" | "rebeccapurple" | "red" | "rosybrown" | "royalblue" | "saddlebrown" | "salmon" | "sandybrown" | "seagreen" | "seashell" | "sienna" | "silver" | "skyblue" | "slateblue" | "slategray" | "slategrey" | "snow" | "springgreen" | "steelblue" | "tan" | "teal" | "thistle" | "tomato" | "turquoise" | "violet" | "wheat" | "white" | "whitesmoke" | "yellow" | "yellowgreen"',
+	'OutlineLineStyle': '"dashed" | "dotted" | "double" | "groove" | "inset" | "none" | "outset" | "ridge" | "solid"',
+	'PageSize': '"A3" | "A4" | "A5" | "B4" | "B5" | "JIS-B4" | "JIS-B5" | "ledger" | "legal" | "letter"',
+	'Paint': 'Color | "context-fill" | "context-stroke" | "none" | (string & {})',
+	'PaintBox': 'VisualBox | "fill-box" | "stroke-box"',
+	'Position<TLength>': 'TLength | "bottom" | "center" | "left" | "right" | "top" | (string & {})',
+	'PositionArea': '"block-end" | "block-start" | "bottom" | "center" | "end" | "inline-end" | "inline-start" | "left" | "right" | "self-block-end" | "self-block-start" | "self-end" | "self-inline-end" | "self-inline-start" | "self-start" | "span-all" | "span-block-end" | "span-block-start" | "span-bottom" | "span-end" | "span-inline-end" | "span-inline-start" | "span-left" | "span-right" | "span-self-block-end" | "span-self-block-start" | "span-self-end" | "span-self-inline-end" | "span-self-inline-start" | "span-self-start" | "span-start" | "span-top" | "span-x-end" | "span-x-self-end" | "span-x-self-start" | "span-x-start" | "span-y-end" | "span-y-self-end" | "span-y-self-start" | "span-y-start" | "start" | "top" | "x-end" | "x-self-end" | "x-self-start" | "x-start" | "y-end" | "y-self-end" | "y-self-start" | "y-start" | (string & {})',
+	'Quote': '"close-quote" | "no-close-quote" | "no-open-quote" | "open-quote"',
+	'RepeatStyle': '"no-repeat" | "repeat" | "repeat-x" | "repeat-y" | "round" | "space" | (string & {})',
+	'SelfPosition': '"center" | "end" | "flex-end" | "flex-start" | "self-end" | "self-start" | "start"',
+	'SingleAnimation<TTime>': 'EasingFunction | SingleAnimationDirection | SingleAnimationFillMode | SingleAnimationTimeline | TTime | "auto" | "infinite" | "none" | "paused" | "running" | (string & {})',
+	'SingleAnimationComposition': '"accumulate" | "add" | "replace"',
+	'SingleAnimationDirection': '"alternate" | "alternate-reverse" | "normal" | "reverse"',
+	'SingleAnimationFillMode': '"backwards" | "both" | "forwards" | "none"',
+	'SingleAnimationTimeline': '"auto" | "none" | (string & {})',
+	'SingleTransition<TTime>': 'EasingFunction | TTime | "all" | "allow-discrete" | "none" | "normal" | (string & {})',
+	'StepEasingFunction': '"step-end" | "step-start" | (string & {})',
+	'SystemColor': '"AccentColor" | "AccentColorText" | "ActiveText" | "ButtonBorder" | "ButtonFace" | "ButtonText" | "Canvas" | "CanvasText" | "Field" | "FieldText" | "GrayText" | "Highlight" | "HighlightText" | "LinkText" | "Mark" | "MarkText" | "SelectedItem" | "SelectedItemText" | "VisitedText"',
+	'SystemFamilyName': '"caption" | "icon" | "menu" | "message-box" | "small-caption" | "status-bar"',
+	'TextEdge': '"cap" | "ex" | "ideographic" | "ideographic-ink" | "text" | (string & {})',
+	'TimelineRangeName': '"contain" | "cover" | "entry" | "entry-crossing" | "exit" | "exit-crossing"',
+	'TrackBreadth<TLength>': 'TLength | "auto" | "max-content" | "min-content" | (string & {})',
+	'TrySize': '"most-block-size" | "most-height" | "most-inline-size" | "most-width"',
+	'TryTactic': '"flip-block" | "flip-inline" | "flip-start" | (string & {})',
+	'VisualBox': '"border-box" | "content-box" | "padding-box"',
+}
+
+// ---------------------------------------------------------------------------
+// 8. CODE EMITTER
+// ---------------------------------------------------------------------------
+
+function emitOutput(properties: ResolvedPropertyType[]): string {
+	const lines: string[] = []
+
+	// Header
+	lines.push('// This file is auto-generated by scripts/generate-csstype.ts')
+	lines.push('// DO NOT EDIT MANUALLY')
+	lines.push(`// Generated on ${new Date()
+		.toISOString()
+		.split('T')[0]}`)
+	lines.push('')
+	lines.push('export {}')
+	lines.push('')
+
+	// Globals
+	lines.push('export type Globals = "-moz-initial" | "inherit" | "initial" | "revert" | "revert-layer" | "unset";')
+	lines.push('')
+
+	// Properties interface (camelCase)
+	lines.push('export interface Properties<TLength = (string & {}) | 0, TTime = string & {}> {')
+	for (const prop of properties) {
+		const jsdoc = generateJSDoc(prop)
+		const typeStr = buildPropertyTypeRef(prop, true)
+		lines.push(jsdoc)
+		lines.push(`  ${prop.camelName}?: ${typeStr} | undefined;`)
+	}
+	lines.push('}')
+	lines.push('')
+
+	// PropertiesHyphen interface (kebab-case)
+	lines.push('export interface PropertiesHyphen<TLength = (string & {}) | 0, TTime = string & {}> {')
+	const sortedByKebab = [...properties].sort((a, b) => a.name.localeCompare(b.name))
+	for (const prop of sortedByKebab) {
+		const jsdoc = generateJSDoc(prop)
+		const typeStr = buildPropertyTypeRef(prop, true)
+		lines.push(jsdoc)
+		lines.push(`  "${prop.name}"?: ${typeStr} | undefined;`)
+	}
+	lines.push('}')
+	lines.push('')
+
+	// AtRules
+	const atRules = collectAtRules()
+	lines.push('export type AtRules =')
+	for (let i = 0; i < atRules.length; i++) {
+		const sep = i === atRules.length - 1 ? ';' : ''
+		lines.push(`  | "${atRules[i]}"${sep}`)
+	}
+	lines.push('')
+
+	// Pseudos
+	const pseudos = collectPseudos()
+	lines.push('export type Pseudos =')
+	for (let i = 0; i < pseudos.length; i++) {
+		const sep = i === pseudos.length - 1 ? ';' : ''
+		lines.push(`  | "${pseudos[i]}"${sep}`)
+	}
+	lines.push('')
+
+	// Property namespace
+	lines.push('export namespace Property {')
+	for (const prop of properties) {
+		const generics = buildPropertyGenericParams(prop, true)
+		const typeStr = buildPropertyTypeString(prop, true)
+		lines.push(`  export type ${prop.pascalName}${generics} = ${typeStr};`)
+		lines.push('')
+	}
+	lines.push('}')
+	lines.push('')
+
+	// DataType namespace
+	lines.push('export namespace DataType {')
+	const sortedDTKeys = Object.keys(DATA_TYPE_DEFINITIONS)
+		.sort((a, b) => {
+			const aName = a.replace(/<.*>$/, '')
+			const bName = b.replace(/<.*>$/, '')
+			return aName.localeCompare(bName)
+		})
+	for (const key of sortedDTKeys) {
+		const def = DATA_TYPE_DEFINITIONS[key]
+		lines.push(`  export type ${key} = ${def};`)
+		lines.push('')
+	}
+	lines.push('}')
+	lines.push('')
+
+	return lines.join('\n')
+}
+
+function buildPropertyTypeRef(prop: ResolvedPropertyType, _fromInterface: boolean): string {
+	const genericArgs: string[] = []
+	if (prop.needsLength)
+		genericArgs.push('TLength')
+	if (prop.needsTime)
+		genericArgs.push('TTime')
+
+	const generics = genericArgs.length > 0 ? `<${genericArgs.join(', ')}>` : ''
+	return `Property.${prop.pascalName}${generics}`
+}
+
+// ---------------------------------------------------------------------------
+// 9. MAIN
+// ---------------------------------------------------------------------------
+
+function main(): void {
+	console.log('Resolving CSS properties...')
+	const properties = resolveAllProperties()
+	console.log(`  ${properties.length} properties resolved`)
+
+	const pseudos = collectPseudos()
+	console.log(`  ${pseudos.length} pseudo-selectors collected`)
+
+	const atRules = collectAtRules()
+	console.log(`  ${atRules.length} at-rules collected`)
+
+	console.log('Generating output...')
+	const output = emitOutput(properties)
+
+	fs.writeFileSync(OUTPUT_PATH, output, 'utf-8')
+	console.log(`Written to ${OUTPUT_PATH}`)
+	console.log(`  ${output.split('\n').length} lines`)
+	console.log('Done!')
+}
+
+main()

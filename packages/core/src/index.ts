@@ -55,36 +55,38 @@ export type {
 	CSSProperty,
 	CSSSelector,
 	Properties,
+	PropertyValue,
 	StyleDefinition,
+	StyleDefinitionMap,
 	StyleItem,
 } from './types'
 
 // define* functions
-export function defineEngineConfig(config: EngineConfig): EngineConfig {
+export function defineEngineConfig<const T extends EngineConfig>(config: T): T {
 	return config
 }
 
-export function defineStyleDefinition(styleDefinition: StyleDefinition): StyleDefinition {
+export function defineStyleDefinition<const T extends StyleDefinition>(styleDefinition: T): T {
 	return styleDefinition
 }
 
-export function definePreflight(preflight: Preflight): Preflight {
+export function definePreflight<const T extends Preflight>(preflight: T): T {
 	return preflight
 }
 
-export function defineKeyframes(keyframes: Keyframes): Keyframes {
+export function defineKeyframes<const T extends Keyframes>(keyframes: T): T {
 	return keyframes
 }
 
-export function defineSelector(selector: Selector): Selector {
+export function defineSelector<const T extends Selector>(selector: T): T {
 	return selector
 }
 
-export function defineShortcut(shortcut: Shortcut): Shortcut {
+export function defineShortcut<const T extends Shortcut>(shortcut: T): T {
 	return shortcut
 }
 
-export function defineVariables(variables: VariablesDefinition): VariablesDefinition {
+export function defineVariables<const T extends VariablesDefinition>(variables: T): T {
 	return variables
 }
 /* c8 ignore end */

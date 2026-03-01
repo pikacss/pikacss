@@ -926,9 +926,9 @@ describe('engine autocomplete helpers', () => {
 
 	it('should append autocomplete CSS property values', async () => {
 		const engine = await createEngine()
-		engine.appendAutocompleteCssPropertyValues('z-index', 1, 10)
+		engine.appendAutocompleteCssPropertyValues('z-index', '1', '10')
 		expect(engine.config.autocomplete.cssProperties.get('z-index'))
-			.toEqual([1, 10])
+			.toEqual(['1', '10'])
 	})
 })
 

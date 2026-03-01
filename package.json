@@ -32,6 +32,7 @@
 		"@clack/prompts": "catalog:",
 		"@deviltea/eslint-config": "catalog:",
 		"@deviltea/tsconfig": "catalog:",
+		"@mdn/browser-compat-data": "catalog:",
 		"@pikacss/eslint-config": "workspace:*",
 		"@types/node": "catalog:",
 		"@vitest/coverage-v8": "catalog:",
@@ -39,6 +40,7 @@
 		"eslint": "catalog:",
 		"happy-dom": "catalog:",
 		"lint-staged": "catalog:",
+		"mdn-data": "catalog:",
 		"pathe": "catalog:",
 		"pkg-pr-new": "catalog:",
 		"pkg-size": "catalog:",
@@ -50,6 +52,7 @@
 		"typescript": "catalog:",
 		"vitest": "catalog:",
 		"vue-tsc": "catalog:",
+		"web-features": "catalog:",
 		"zx": "catalog:"
 	},
 	"simple-git-hooks": {

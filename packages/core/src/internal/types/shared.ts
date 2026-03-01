@@ -3,7 +3,7 @@ import type { Nullish } from './utils'
 
 export interface PikaAugment {}
 
-export type InternalPropertyValue = PropertyValue<string | number>
+export type InternalPropertyValue = PropertyValue<string>
 
 export type InternalProperties = Properties
 
