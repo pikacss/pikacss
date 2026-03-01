@@ -35,7 +35,7 @@ type Properties_CSS_Vars = {
 	>
 }
 type Properties_ExtraCSS = {
-	[Key in keyof ResolvedAutocomplete['ExtraCssProperty'] & string]?: PropertyValue<
+	[Key in ResolvedAutocomplete['ExtraCssProperty']]?: PropertyValue<
 		| UnionString
 		| GetValue<CSSProperties, Key>
 		| GetValue<_CssPropertiesValue, ToKebab<Key>>
@@ -43,10 +43,10 @@ type Properties_ExtraCSS = {
 	>
 }
 type Properties_Extra = {
-	[Key in ResolvedAutocomplete['ExtraProperty']]?: GetValue<ResolvedAutocomplete['PropertiesValue'], Key & string>
+	[Key in ResolvedAutocomplete['ExtraProperty']]?: GetValue<ResolvedAutocomplete['PropertiesValue'], Key>
 }
 
-export type Properties = Properties_CSS_Camel & Properties_CSS_Hyphen & Properties_CSS_Vars & Properties_ExtraCSS & Properties_Extra
+export interface Properties extends Properties_CSS_Camel, Properties_CSS_Hyphen, Properties_CSS_Vars, Properties_ExtraCSS, Properties_Extra {}
 
 type CSSPseudos = `${'$'}${CSS.Pseudos}`
 type CSSBlockAtRules = Exclude<CSS.AtRules, '@charset' | '@import' | '@namespace'>

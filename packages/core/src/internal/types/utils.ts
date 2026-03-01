@@ -14,13 +14,15 @@ export type IsNever<T> = [T] extends [never] ? true : false
 
 export type Simplify<T> = { [K in keyof T]: T[K] } & {}
 
-export type ToKebab<T extends string> = T extends `${infer A}${infer U}${infer Rest}`
-	? U extends Uppercase<U>
-		? U extends Lowercase<U>
-			? `${Lowercase<A>}${ToKebab<`${U}${Rest}`>}`
-			: `${Lowercase<A>}-${ToKebab<`${Lowercase<U>}${Rest}`>}`
-		: `${Lowercase<A>}${ToKebab<`${U}${Rest}`>}`
-	: Lowercase<T>
+export type ToKebab<T extends string> = T extends `--${string}`
+	? T
+	: T extends `${infer A}${infer U}${infer Rest}`
+		? U extends Uppercase<U>
+			? U extends Lowercase<U>
+				? `${Lowercase<A>}${ToKebab<`${U}${Rest}`>}`
+				: `${Lowercase<A>}-${ToKebab<`${Lowercase<U>}${Rest}`>}`
+			: `${Lowercase<A>}${ToKebab<`${U}${Rest}`>}`
+		: Lowercase<T>
 
 export type FromKebab<T extends string> = T extends `--${string}`
 	? T
