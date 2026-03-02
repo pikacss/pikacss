@@ -749,13 +749,13 @@ function componentToTypeString(c: TypeComponent, hasGenerics: { length: boolean,
 		case 'literal':
 			return `"${c.value}"`
 		case 'number':
-			return '(string & {})'
+			return 'UnionString'
 		case 'string':
-			return '(string & {})'
+			return 'UnionString'
 		case 'length':
-			return hasGenerics.length ? 'TLength' : '(string & {}) | 0'
+			return hasGenerics.length ? 'TLength' : 'UnionString | 0'
 		case 'time':
-			return hasGenerics.time ? 'TTime' : 'string & {}'
+			return hasGenerics.time ? 'TTime' : 'UnionString'
 		case 'datatype': {
 			const dt = c.value!
 			// Check if this datatype needs generics
@@ -770,7 +770,7 @@ function componentToTypeString(c: TypeComponent, hasGenerics: { length: boolean,
 			return `DataType.${dt}`
 		}
 		default:
-			return '(string & {})'
+			return 'UnionString'
 	}
 }
 
@@ -794,10 +794,10 @@ function buildPropertyTypeString(prop: ResolvedPropertyType, withGenerics: boole
 function buildPropertyGenericParams(prop: ResolvedPropertyType, withDefaults: boolean): string {
 	const params: string[] = []
 	if (prop.needsLength) {
-		params.push(withDefaults ? 'TLength = (string & {}) | 0' : 'TLength')
+		params.push(withDefaults ? 'TLength = DefaultTLength' : 'TLength')
 	}
 	if (prop.needsTime) {
-		params.push(withDefaults ? 'TTime = string & {}' : 'TTime')
+		params.push(withDefaults ? 'TTime = DefaultTTime' : 'TTime')
 	}
 	return params.length > 0 ? `<${params.join(', ')}>` : ''
 }
@@ -828,7 +828,7 @@ function getBaselineStatus(propertyName: string): string {
 
 	const featureId = wfTag.replace('web-features:', '')
 	const feature = webFeatures[featureId as keyof typeof webFeatures]
-	if (!feature?.status)
+	if (feature.kind !== 'feature')
 		return ''
 
 	const status = feature.status
@@ -854,80 +854,6 @@ function getBcdStatus(propertyName: string): { experimental: boolean, deprecated
 	}
 }
 
-function getBrowserVersion(support: any): string {
-	if (!support)
-		return '?'
-	const entries = Array.isArray(support) ? support : [support]
-	const entry = entries.find((e: any) => !e.prefix) || entries[0]
-	if (!entry)
-		return '?'
-	const v = entry.version_added
-	if (v === false)
-		return 'No'
-	if (v === true)
-		return 'Yes'
-	if (v === null || v === undefined)
-		return '?'
-	if (v === 'preview')
-		return 'preview'
-	return `**${v}**`
-}
-
-function getBrowserVersionPrefixed(support: any): string | null {
-	if (!support)
-		return null
-	const entries = Array.isArray(support) ? support : [support]
-	const prefixed = entries.filter((e: any) => e.prefix && e.version_added)
-	if (prefixed.length === 0)
-		return null
-	const parts = prefixed.map((e: any) => `${e.version_added} _-x-_`)
-	return parts.join(', ')
-}
-
-function generateCompatTable(propertyName: string): string {
-	const bcdProp = (bcd.css as any)?.properties?.[propertyName]
-	const compatData = bcdProp?.__compat
-	if (!compatData?.support)
-		return ''
-
-	const support = compatData.support
-	const browsers = ['chrome', 'firefox', 'safari', 'edge'] as const
-	const headers = ['Chrome', 'Firefox', 'Safari', 'Edge']
-
-	const versions = browsers.map(b => getBrowserVersion(support[b]))
-	const prefixed = browsers.map(b => getBrowserVersionPrefixed(support[b]))
-
-	// Calculate column widths
-	const colWidths = headers.map((h, i) => {
-		const vLen = versions[i].length
-		const hLen = h.length
-		const pLen = prefixed[i] ? prefixed[i]!.length : 0
-		return Math.max(vLen, hLen, pLen)
-	})
-
-	// Header row
-	const headerRow = `| ${headers.map((h, i) => h.padStart(Math.floor((colWidths[i] + h.length) / 2))
-		.padEnd(colWidths[i]))
-		.join(' | ')} |`
-	const separatorRow = `| ${colWidths.map(w => `:${'-'.repeat(Math.max(w - 2, 1))}:`)
-		.join(' | ')} |`
-	const versionRow = `| ${versions.map((v, i) => v.padStart(Math.floor((colWidths[i] + v.length) / 2))
-		.padEnd(colWidths[i]))
-		.join(' | ')} |`
-
-	let table = `${headerRow}\n   * ${separatorRow}\n   * ${versionRow}`
-
-	// Add prefixed row if any browser has prefixed support
-	if (prefixed.some(p => p !== null)) {
-		const prefixedRow = `| ${prefixed.map((p, i) => (p || '').padStart(Math.floor((colWidths[i] + (p || '').length) / 2))
-			.padEnd(colWidths[i]))
-			.join(' | ')} |`
-		table += `\n   * ${prefixedRow}`
-	}
-
-	return table
-}
-
 function generateJSDoc(prop: ResolvedPropertyType): string {
 	const lines: string[] = []
 	lines.push('  /**')
@@ -936,22 +862,6 @@ function generateJSDoc(prop: ResolvedPropertyType): string {
 	const baseline = getBaselineStatus(prop.name)
 	if (baseline) {
 		lines.push(`   * ${baseline}`)
-		lines.push(`   *`)
-	}
-
-	// Syntax
-	lines.push(`   * **Syntax**: \`${prop.syntax}\``)
-	lines.push(`   *`)
-
-	// Initial value
-	const initial = Array.isArray(prop.initial) ? prop.initial.join(', ') : prop.initial
-	lines.push(`   * **Initial value**: \`${initial}\``)
-
-	// Browser compat table
-	const compatTable = generateCompatTable(prop.name)
-	if (compatTable) {
-		lines.push(`   *`)
-		lines.push(`   * ${compatTable}`)
 	}
 
 	// Deprecated / Experimental tags
@@ -1003,16 +913,35 @@ function collectPseudos(): string[] {
 		.sort()
 }
 
-function collectAtRules(): string[] {
-	const atRules = new Set<string>()
+function collectAtRules(): { regular: string[], nested: string[] } {
+	const regularAtRules = new Set<string>()
+	const nestedAtRules = new Set<string>()
 
-	for (const name of Object.keys(mdnAtRules)) {
+	for (const [name, data] of Object.entries(mdnAtRules)) {
 		if (name.startsWith('@')) {
-			atRules.add(name)
+			const syntax = data.syntax
+			if (syntax.includes(' {\n') && syntax.includes('\n}')) {
+				nestedAtRules.add(name)
+
+				// Special case for @layer, which has either nested or regular syntax
+				if (syntax.endsWith('\n}') === false) {
+					regularAtRules.add(name)
+				}
+			}
+			else {
+				regularAtRules.add(name)
+			}
 		}
 	}
-	return Array.from(atRules)
-		.sort()
+
+	return {
+		regular: Array
+			.from(regularAtRules)
+			.sort(),
+		nested: Array
+			.from(nestedAtRules)
+			.sort(),
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -1021,67 +950,67 @@ function collectAtRules(): string[] {
 
 const DATA_TYPE_DEFINITIONS: Record<string, string> = {
 	'AbsoluteSize': '"large" | "medium" | "small" | "x-large" | "x-small" | "xx-large" | "xx-small" | "xxx-large"',
-	'AnimateableFeature': '"contents" | "scroll-position" | (string & {})',
+	'AnimateableFeature': '"contents" | "scroll-position" | UnionString',
 	'Attachment': '"fixed" | "local" | "scroll"',
-	'Autospace': '"ideograph-alpha" | "ideograph-numeric" | "insert" | "no-autospace" | "punctuation" | "replace" | (string & {})',
+	'Autospace': '"ideograph-alpha" | "ideograph-numeric" | "insert" | "no-autospace" | "punctuation" | "replace" | UnionString',
 	'BgClip': 'VisualBox | "border-area" | "text"',
-	'BgLayer<TLength>': 'BgPosition<TLength> | RepeatStyle | Attachment | VisualBox | "none" | (string & {})',
-	'BgPosition<TLength>': 'TLength | "bottom" | "center" | "left" | "right" | "top" | (string & {})',
-	'BgSize<TLength>': 'TLength | "auto" | "contain" | "cover" | (string & {})',
+	'BgLayer<TLength>': 'BgPosition<TLength> | RepeatStyle | Attachment | VisualBox | "none" | UnionString',
+	'BgPosition<TLength>': 'TLength | "bottom" | "center" | "left" | "right" | "top" | UnionString',
+	'BgSize<TLength>': 'TLength | "auto" | "contain" | "cover" | UnionString',
 	'BlendMode': '"color" | "color-burn" | "color-dodge" | "darken" | "difference" | "exclusion" | "hard-light" | "hue" | "lighten" | "luminosity" | "multiply" | "normal" | "overlay" | "saturation" | "screen" | "soft-light"',
-	'Color': 'ColorBase | SystemColor | DeprecatedSystemColor | "currentColor" | (string & {})',
-	'ColorBase': 'NamedColor | "transparent" | (string & {})',
+	'Color': 'ColorBase | SystemColor | DeprecatedSystemColor | "currentColor" | UnionString',
+	'ColorBase': 'NamedColor | "transparent" | UnionString',
 	'CompatAuto': '"button" | "checkbox" | "listbox" | "menulist" | "meter" | "progress-bar" | "radio" | "searchfield" | "textarea"',
 	'CompositeStyle': '"clear" | "copy" | "destination-atop" | "destination-in" | "destination-out" | "destination-over" | "source-atop" | "source-in" | "source-out" | "source-over" | "xor"',
 	'CompositingOperator': '"add" | "exclude" | "intersect" | "subtract"',
 	'ContentDistribution': '"space-around" | "space-between" | "space-evenly" | "stretch"',
 	'ContentPosition': '"center" | "end" | "flex-end" | "flex-start" | "start"',
-	'CubicBezierEasingFunction': '"ease" | "ease-in" | "ease-in-out" | "ease-out" | (string & {})',
+	'CubicBezierEasingFunction': '"ease" | "ease-in" | "ease-in-out" | "ease-out" | UnionString',
 	'CursorPredefined': '"alias" | "all-scroll" | "auto" | "cell" | "col-resize" | "context-menu" | "copy" | "crosshair" | "default" | "e-resize" | "ew-resize" | "grab" | "grabbing" | "help" | "move" | "n-resize" | "ne-resize" | "nesw-resize" | "no-drop" | "none" | "not-allowed" | "ns-resize" | "nw-resize" | "nwse-resize" | "pointer" | "progress" | "row-resize" | "s-resize" | "se-resize" | "sw-resize" | "text" | "vertical-text" | "w-resize" | "wait" | "zoom-in" | "zoom-out"',
-	'Dasharray<TLength>': 'TLength | (string & {})',
+	'Dasharray<TLength>': 'TLength | UnionString',
 	'DeprecatedSystemColor': '"ActiveBorder" | "ActiveCaption" | "AppWorkspace" | "Background" | "ButtonHighlight" | "ButtonShadow" | "CaptionText" | "InactiveBorder" | "InactiveCaption" | "InactiveCaptionText" | "InfoBackground" | "InfoText" | "Menu" | "MenuText" | "Scrollbar" | "ThreeDDarkShadow" | "ThreeDFace" | "ThreeDHighlight" | "ThreeDLightShadow" | "ThreeDShadow" | "Window" | "WindowFrame" | "WindowText"',
 	'DisplayInside': '"-ms-flexbox" | "-ms-grid" | "-webkit-flex" | "flex" | "flow" | "flow-root" | "grid" | "ruby" | "table"',
 	'DisplayInternal': '"ruby-base" | "ruby-base-container" | "ruby-text" | "ruby-text-container" | "table-caption" | "table-cell" | "table-column" | "table-column-group" | "table-footer-group" | "table-header-group" | "table-row" | "table-row-group"',
 	'DisplayLegacy': '"-ms-inline-flexbox" | "-ms-inline-grid" | "-webkit-inline-flex" | "inline-block" | "inline-flex" | "inline-grid" | "inline-list-item" | "inline-table"',
 	'DisplayOutside': '"block" | "inline" | "run-in"',
-	'EasingFunction': 'CubicBezierEasingFunction | StepEasingFunction | "linear" | (string & {})',
+	'EasingFunction': 'CubicBezierEasingFunction | StepEasingFunction | "linear" | UnionString',
 	'EastAsianVariantValues': '"jis04" | "jis78" | "jis83" | "jis90" | "simplified" | "traditional"',
-	'FinalBgLayer<TLength>': 'BgPosition<TLength> | RepeatStyle | Attachment | VisualBox | Color | "none" | (string & {})',
-	'FontStretchAbsolute': '"condensed" | "expanded" | "extra-condensed" | "extra-expanded" | "normal" | "semi-condensed" | "semi-expanded" | "ultra-condensed" | "ultra-expanded" | (string & {})',
-	'FontWeightAbsolute': '"bold" | "normal" | (string & {})',
+	'FinalBgLayer<TLength>': 'BgPosition<TLength> | RepeatStyle | Attachment | VisualBox | Color | "none" | UnionString',
+	'FontStretchAbsolute': '"condensed" | "expanded" | "extra-condensed" | "extra-expanded" | "normal" | "semi-condensed" | "semi-expanded" | "ultra-condensed" | "ultra-expanded" | UnionString',
+	'FontWeightAbsolute': '"bold" | "normal" | UnionString',
 	'GenericComplete': '"-apple-system" | "cursive" | "fantasy" | "math" | "monospace" | "sans-serif" | "serif" | "system-ui"',
 	'GenericFamily': 'GenericComplete | GenericIncomplete | "emoji" | "fangsong"',
 	'GenericIncomplete': '"ui-monospace" | "ui-rounded" | "ui-sans-serif" | "ui-serif"',
 	'GeometryBox': 'VisualBox | "fill-box" | "margin-box" | "stroke-box" | "view-box"',
-	'GridLine': '"auto" | (string & {})',
+	'GridLine': '"auto" | UnionString',
 	'LineStyle': '"dashed" | "dotted" | "double" | "groove" | "hidden" | "inset" | "none" | "outset" | "ridge" | "solid"',
 	'LineWidth<TLength>': 'TLength | "medium" | "thick" | "thin"',
-	'MaskLayer<TLength>': 'Position<TLength> | RepeatStyle | GeometryBox | CompositingOperator | MaskingMode | "no-clip" | "none" | (string & {})',
+	'MaskLayer<TLength>': 'Position<TLength> | RepeatStyle | GeometryBox | CompositingOperator | MaskingMode | "no-clip" | "none" | UnionString',
 	'MaskingMode': '"alpha" | "luminance" | "match-source"',
 	'NamedColor': '"aliceblue" | "antiquewhite" | "aqua" | "aquamarine" | "azure" | "beige" | "bisque" | "black" | "blanchedalmond" | "blue" | "blueviolet" | "brown" | "burlywood" | "cadetblue" | "chartreuse" | "chocolate" | "coral" | "cornflowerblue" | "cornsilk" | "crimson" | "cyan" | "darkblue" | "darkcyan" | "darkgoldenrod" | "darkgray" | "darkgreen" | "darkgrey" | "darkkhaki" | "darkmagenta" | "darkolivegreen" | "darkorange" | "darkorchid" | "darkred" | "darksalmon" | "darkseagreen" | "darkslateblue" | "darkslategray" | "darkslategrey" | "darkturquoise" | "darkviolet" | "deeppink" | "deepskyblue" | "dimgray" | "dimgrey" | "dodgerblue" | "firebrick" | "floralwhite" | "forestgreen" | "fuchsia" | "gainsboro" | "ghostwhite" | "gold" | "goldenrod" | "gray" | "green" | "greenyellow" | "grey" | "honeydew" | "hotpink" | "indianred" | "indigo" | "ivory" | "khaki" | "lavender" | "lavenderblush" | "lawngreen" | "lemonchiffon" | "lightblue" | "lightcoral" | "lightcyan" | "lightgoldenrodyellow" | "lightgray" | "lightgreen" | "lightgrey" | "lightpink" | "lightsalmon" | "lightseagreen" | "lightskyblue" | "lightslategray" | "lightslategrey" | "lightsteelblue" | "lightyellow" | "lime" | "limegreen" | "linen" | "magenta" | "maroon" | "mediumaquamarine" | "mediumblue" | "mediumorchid" | "mediumpurple" | "mediumseagreen" | "mediumslateblue" | "mediumspringgreen" | "mediumturquoise" | "mediumvioletred" | "midnightblue" | "mintcream" | "mistyrose" | "moccasin" | "navajowhite" | "navy" | "oldlace" | "olive" | "olivedrab" | "orange" | "orangered" | "orchid" | "palegoldenrod" | "palegreen" | "paleturquoise" | "palevioletred" | "papayawhip" | "peachpuff" | "peru" | "pink" | "plum" | "powderblue" | "purple" | "rebeccapurple" | "red" | "rosybrown" | "royalblue" | "saddlebrown" | "salmon" | "sandybrown" | "seagreen" | "seashell" | "sienna" | "silver" | "skyblue" | "slateblue" | "slategray" | "slategrey" | "snow" | "springgreen" | "steelblue" | "tan" | "teal" | "thistle" | "tomato" | "turquoise" | "violet" | "wheat" | "white" | "whitesmoke" | "yellow" | "yellowgreen"',
 	'OutlineLineStyle': '"dashed" | "dotted" | "double" | "groove" | "inset" | "none" | "outset" | "ridge" | "solid"',
 	'PageSize': '"A3" | "A4" | "A5" | "B4" | "B5" | "JIS-B4" | "JIS-B5" | "ledger" | "legal" | "letter"',
-	'Paint': 'Color | "context-fill" | "context-stroke" | "none" | (string & {})',
+	'Paint': 'Color | "context-fill" | "context-stroke" | "none" | UnionString',
 	'PaintBox': 'VisualBox | "fill-box" | "stroke-box"',
-	'Position<TLength>': 'TLength | "bottom" | "center" | "left" | "right" | "top" | (string & {})',
-	'PositionArea': '"block-end" | "block-start" | "bottom" | "center" | "end" | "inline-end" | "inline-start" | "left" | "right" | "self-block-end" | "self-block-start" | "self-end" | "self-inline-end" | "self-inline-start" | "self-start" | "span-all" | "span-block-end" | "span-block-start" | "span-bottom" | "span-end" | "span-inline-end" | "span-inline-start" | "span-left" | "span-right" | "span-self-block-end" | "span-self-block-start" | "span-self-end" | "span-self-inline-end" | "span-self-inline-start" | "span-self-start" | "span-start" | "span-top" | "span-x-end" | "span-x-self-end" | "span-x-self-start" | "span-x-start" | "span-y-end" | "span-y-self-end" | "span-y-self-start" | "span-y-start" | "start" | "top" | "x-end" | "x-self-end" | "x-self-start" | "x-start" | "y-end" | "y-self-end" | "y-self-start" | "y-start" | (string & {})',
+	'Position<TLength>': 'TLength | "bottom" | "center" | "left" | "right" | "top" | UnionString',
+	'PositionArea': '"block-end" | "block-start" | "bottom" | "center" | "end" | "inline-end" | "inline-start" | "left" | "right" | "self-block-end" | "self-block-start" | "self-end" | "self-inline-end" | "self-inline-start" | "self-start" | "span-all" | "span-block-end" | "span-block-start" | "span-bottom" | "span-end" | "span-inline-end" | "span-inline-start" | "span-left" | "span-right" | "span-self-block-end" | "span-self-block-start" | "span-self-end" | "span-self-inline-end" | "span-self-inline-start" | "span-self-start" | "span-start" | "span-top" | "span-x-end" | "span-x-self-end" | "span-x-self-start" | "span-x-start" | "span-y-end" | "span-y-self-end" | "span-y-self-start" | "span-y-start" | "start" | "top" | "x-end" | "x-self-end" | "x-self-start" | "x-start" | "y-end" | "y-self-end" | "y-self-start" | "y-start" | UnionString',
 	'Quote': '"close-quote" | "no-close-quote" | "no-open-quote" | "open-quote"',
-	'RepeatStyle': '"no-repeat" | "repeat" | "repeat-x" | "repeat-y" | "round" | "space" | (string & {})',
+	'RepeatStyle': '"no-repeat" | "repeat" | "repeat-x" | "repeat-y" | "round" | "space" | UnionString',
 	'SelfPosition': '"center" | "end" | "flex-end" | "flex-start" | "self-end" | "self-start" | "start"',
-	'SingleAnimation<TTime>': 'EasingFunction | SingleAnimationDirection | SingleAnimationFillMode | SingleAnimationTimeline | TTime | "auto" | "infinite" | "none" | "paused" | "running" | (string & {})',
+	'SingleAnimation<TTime>': 'EasingFunction | SingleAnimationDirection | SingleAnimationFillMode | SingleAnimationTimeline | TTime | "auto" | "infinite" | "none" | "paused" | "running" | UnionString',
 	'SingleAnimationComposition': '"accumulate" | "add" | "replace"',
 	'SingleAnimationDirection': '"alternate" | "alternate-reverse" | "normal" | "reverse"',
 	'SingleAnimationFillMode': '"backwards" | "both" | "forwards" | "none"',
-	'SingleAnimationTimeline': '"auto" | "none" | (string & {})',
-	'SingleTransition<TTime>': 'EasingFunction | TTime | "all" | "allow-discrete" | "none" | "normal" | (string & {})',
-	'StepEasingFunction': '"step-end" | "step-start" | (string & {})',
+	'SingleAnimationTimeline': '"auto" | "none" | UnionString',
+	'SingleTransition<TTime>': 'EasingFunction | TTime | "all" | "allow-discrete" | "none" | "normal" | UnionString',
+	'StepEasingFunction': '"step-end" | "step-start" | UnionString',
 	'SystemColor': '"AccentColor" | "AccentColorText" | "ActiveText" | "ButtonBorder" | "ButtonFace" | "ButtonText" | "Canvas" | "CanvasText" | "Field" | "FieldText" | "GrayText" | "Highlight" | "HighlightText" | "LinkText" | "Mark" | "MarkText" | "SelectedItem" | "SelectedItemText" | "VisitedText"',
 	'SystemFamilyName': '"caption" | "icon" | "menu" | "message-box" | "small-caption" | "status-bar"',
-	'TextEdge': '"cap" | "ex" | "ideographic" | "ideographic-ink" | "text" | (string & {})',
+	'TextEdge': '"cap" | "ex" | "ideographic" | "ideographic-ink" | "text" | UnionString',
 	'TimelineRangeName': '"contain" | "cover" | "entry" | "entry-crossing" | "exit" | "exit-crossing"',
-	'TrackBreadth<TLength>': 'TLength | "auto" | "max-content" | "min-content" | (string & {})',
+	'TrackBreadth<TLength>': 'TLength | "auto" | "max-content" | "min-content" | UnionString',
 	'TrySize': '"most-block-size" | "most-height" | "most-inline-size" | "most-width"',
-	'TryTactic': '"flip-block" | "flip-inline" | "flip-start" | (string & {})',
+	'TryTactic': '"flip-block" | "flip-inline" | "flip-start" | UnionString',
 	'VisualBox': '"border-box" | "content-box" | "padding-box"',
 }
 
@@ -1101,13 +1030,17 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	lines.push('')
 	lines.push('export {}')
 	lines.push('')
+	lines.push('type UnionString = string & {};')
+	lines.push('type DefaultTLength = UnionString | 0;')
+	lines.push('type DefaultTTime = UnionString;')
+	lines.push('')
 
 	// Globals
 	lines.push('export type Globals = "-moz-initial" | "inherit" | "initial" | "revert" | "revert-layer" | "unset";')
 	lines.push('')
 
 	// Properties interface (camelCase)
-	lines.push('export interface Properties<TLength = (string & {}) | 0, TTime = string & {}> {')
+	lines.push('export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {')
 	for (const prop of properties) {
 		const jsdoc = generateJSDoc(prop)
 		const typeStr = buildPropertyTypeRef(prop, true)
@@ -1118,7 +1051,7 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	lines.push('')
 
 	// PropertiesHyphen interface (kebab-case)
-	lines.push('export interface PropertiesHyphen<TLength = (string & {}) | 0, TTime = string & {}> {')
+	lines.push('export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime> {')
 	const sortedByKebab = [...properties].sort((a, b) => a.name.localeCompare(b.name))
 	for (const prop of sortedByKebab) {
 		const jsdoc = generateJSDoc(prop)
@@ -1130,12 +1063,26 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	lines.push('')
 
 	// AtRules
-	const atRules = collectAtRules()
-	lines.push('export type AtRules =')
-	for (let i = 0; i < atRules.length; i++) {
-		const sep = i === atRules.length - 1 ? ';' : ''
-		lines.push(`  | "${atRules[i]}"${sep}`)
+	const {
+		regular: regularAtRules,
+		nested: nestedAtRules,
+	} = collectAtRules()
+	lines.push('export namespace AtRules {')
+	lines.push('  export type Regular =')
+	for (let i = 0; i < regularAtRules.length; i++) {
+		const sep = i === regularAtRules.length - 1 ? ';' : ''
+		lines.push(`    | "${regularAtRules[i]}"${sep}`)
 	}
+	lines.push('')
+	lines.push('  export type Nested =')
+	for (let i = 0; i < nestedAtRules.length; i++) {
+		const sep = i === nestedAtRules.length - 1 ? ';' : ''
+		lines.push(`    | "${nestedAtRules[i]}"${sep}`)
+	}
+	lines.push('}')
+	lines.push('')
+
+	lines.push('export type AtRules = AtRules.Regular | AtRules.Nested;')
 	lines.push('')
 
 	// Pseudos
@@ -1200,8 +1147,8 @@ function main(): void {
 	const pseudos = collectPseudos()
 	console.log(`  ${pseudos.length} pseudo-selectors collected`)
 
-	const atRules = collectAtRules()
-	console.log(`  ${atRules.length} at-rules collected`)
+	const { regular: regularAtRules, nested: nestedAtRules } = collectAtRules()
+	console.log(`  ${regularAtRules.length + nestedAtRules.length} at-rules collected`)
 
 	console.log('Generating output...')
 	const output = emitOutput(properties)

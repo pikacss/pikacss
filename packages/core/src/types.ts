@@ -49,8 +49,7 @@ type Properties_Extra = {
 export interface Properties extends Properties_CSS_Camel, Properties_CSS_Hyphen, Properties_CSS_Vars, Properties_ExtraCSS, Properties_Extra {}
 
 type CSSPseudos = `${'$'}${CSS.Pseudos}`
-type CSSBlockAtRules = Exclude<CSS.AtRules, '@charset' | '@import' | '@namespace'>
-export type CSSSelector = CSSBlockAtRules | CSSPseudos
+export type CSSSelector = CSS.AtRules.Nested | CSSPseudos
 export type Selector = UnionString | ResolvedAutocomplete['Selector'] | CSSSelector
 
 export type StyleDefinitionMap = {
