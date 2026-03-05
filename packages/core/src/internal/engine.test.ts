@@ -149,6 +149,44 @@ describe('resolvePreflight', () => {
 		expect(resolved.fn)
 			.toBe(fn)
 	})
+
+	it('should extract id from WithId<string>', async () => {
+		const resolved = resolvePreflight({ id: 'my-preflight', preflight: 'body { margin: 0; }' })
+		expect(resolved.id)
+			.toBe('my-preflight')
+		expect(resolved.layer)
+			.toBeUndefined()
+		expect(await resolved.fn(null as unknown as Engine, false))
+			.toBe('body { margin: 0; }')
+	})
+
+	it('should extract id from WithId<PreflightFn>', () => {
+		const fn = () => 'body { margin: 0; }'
+		const resolved = resolvePreflight({ id: 'my-preflight', preflight: fn })
+		expect(resolved.id)
+			.toBe('my-preflight')
+		expect(resolved.fn)
+			.toBe(fn)
+	})
+
+	it('should extract both layer and id from WithLayer<WithId<string>>', async () => {
+		const resolved = resolvePreflight({
+			layer: 'base',
+			preflight: { id: 'my-preflight', preflight: 'body { margin: 0; }' },
+		})
+		expect(resolved.layer)
+			.toBe('base')
+		expect(resolved.id)
+			.toBe('my-preflight')
+		expect(await resolved.fn(null as unknown as Engine, false))
+			.toBe('body { margin: 0; }')
+	})
+
+	it('should have undefined id when no WithId wrapper is used', () => {
+		const resolved = resolvePreflight('body { margin: 0; }')
+		expect(resolved.id)
+			.toBeUndefined()
+	})
 })
 
 // ─── resolveEngineConfig ─────────────────────────────────────────────────────

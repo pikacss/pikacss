@@ -152,6 +152,117 @@ describe('variables plugin (engine integration)', () => {
 			expect(preflight)
 				.toContain('--text-color: #333;')
 		})
+
+		it('should keep transitively referenced variables when pruneUnused is true', async () => {
+			// atomic styles use --primary, which references --base; --base should not be pruned
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--base': '#3498db',
+						'--primary': 'var(--base)',
+					},
+					pruneUnused: true,
+				},
+			})
+
+			await engine.use({ color: 'var(--primary)' })
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--primary: var(--base);')
+			expect(preflight)
+				.toContain('--base: #3498db;')
+		})
+
+		it('should handle multi-level transitive variable references', async () => {
+			// A → B → C chain: using A should keep B and C
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--c': '#fff',
+						'--b': 'var(--c)',
+						'--a': 'var(--b)',
+						'--unrelated': 'red',
+					},
+					pruneUnused: true,
+				},
+			})
+
+			await engine.use({ color: 'var(--a)' })
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--a: var(--b);')
+			expect(preflight)
+				.toContain('--b: var(--c);')
+			expect(preflight)
+				.toContain('--c: #fff;')
+			expect(preflight).not.toContain('--unrelated')
+		})
+
+		it('should keep variables referenced by other preflights (string format)', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--brand': 'hotpink',
+						'--unused': 'gray',
+					},
+					pruneUnused: true,
+				},
+				preflights: [
+					'body { background: var(--brand); }',
+				],
+			})
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--brand: hotpink;')
+			expect(preflight).not.toContain('--unused')
+		})
+
+		it('should keep variables referenced by other preflights (PreflightDefinition format)', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--spacing': '8px',
+						'--unused': 'none',
+					},
+					pruneUnused: true,
+				},
+				preflights: [
+					{ '.container': { padding: 'var(--spacing)' } },
+				],
+			})
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--spacing: 8px;')
+			expect(preflight).not.toContain('--unused')
+		})
+
+		it('should keep transitively referenced vars from other preflights', async () => {
+			// Another preflight uses --alias, --alias references --base; --base should be kept
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--base': '#000',
+						'--alias': 'var(--base)',
+						'--unused': 'red',
+					},
+					pruneUnused: true,
+				},
+				preflights: [
+					'html { color: var(--alias); }',
+				],
+			})
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--alias: var(--base);')
+			expect(preflight)
+				.toContain('--base: #000;')
+			expect(preflight).not.toContain('--unused')
+		})
 	})
 
 	describe('nested selectors', () => {

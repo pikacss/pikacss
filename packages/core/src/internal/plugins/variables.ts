@@ -133,27 +133,73 @@ export function variables() {
 
 			rawVariables.forEach(variables => engine.variables.add(variables))
 
-			engine.addPreflight(async (engine) => {
-				const used = new Set<string>()
-				engine.store.atomicStyles.forEach(({ content: { value } }) => {
-					value.flatMap(extractUsedVarNames)
-						.forEach(name => used.add(normalizeVariableName(name)))
-				})
-				const usedVariables = Array.from(engine.variables.store.values())
-					.flat()
-					.filter(({ name, pruneUnused, value }) => (safeSet.has(name) || (pruneUnused === false) || used.has(name)) && value != null)
-				const preflightDefinition: PreflightDefinition = {}
+			engine.addPreflight({
+				id: 'core:variables',
+				preflight: async (engine) => {
+					const used = new Set<string>()
 
-				for (const { name, value, selector: _selector } of usedVariables) {
-					const selector = await engine.pluginHooks.transformSelectors(engine.config.plugins, _selector)
-					let current = preflightDefinition
-					selector.forEach((s) => {
-						current[s] ||= {}
-						current = current[s] as PreflightDefinition
+					// 1. Collect vars referenced by atomic styles.
+					engine.store.atomicStyles.forEach(({ content: { value } }) => {
+						value.flatMap(extractUsedVarNames)
+							.forEach(name => used.add(normalizeVariableName(name)))
 					})
-					Object.assign(current, { [name]: value })
-				}
-				return preflightDefinition
+
+					// 2. Collect vars referenced by other preflights (skip self to avoid recursion).
+					const otherPreflights = engine.config.preflights.filter(p => p.id !== 'core:variables')
+					const preflightResults = await Promise.all(
+						otherPreflights.map(({ fn }) => Promise.resolve(fn(engine, false))
+							.catch(() => null)),
+					)
+					preflightResults.forEach((result) => {
+						if (result == null)
+							return
+						extractUsedVarNamesFromPreflightResult(result)
+							.forEach(name => used.add(name))
+					})
+
+					// 3. Build a lookup map: variable name -> list of resolved variables.
+					const varMap = new Map<string, ResolvedVariable[]>()
+					for (const [name, list] of engine.variables.store.entries()) {
+						varMap.set(name, list)
+					}
+
+					// 4. Expand `used` transitively: if a used variable's value references
+					// other variables, those must also be considered used.
+					const queue = Array.from(used)
+					while (queue.length > 0) {
+						const name = queue.pop()!
+						const entries = varMap.get(name)
+						if (!entries)
+							continue
+						for (const { value } of entries) {
+							if (value == null)
+								continue
+							for (const refName of extractUsedVarNames(String(value))
+								.map(normalizeVariableName)) {
+								if (!used.has(refName)) {
+									used.add(refName)
+									queue.push(refName)
+								}
+							}
+						}
+					}
+
+					const usedVariables = Array.from(engine.variables.store.values())
+						.flat()
+						.filter(({ name, pruneUnused, value }) => (safeSet.has(name) || (pruneUnused === false) || used.has(name)) && value != null)
+					const preflightDefinition: PreflightDefinition = {}
+
+					for (const { name, value, selector: _selector } of usedVariables) {
+						const selector = await engine.pluginHooks.transformSelectors(engine.config.plugins, _selector)
+						let current = preflightDefinition
+						selector.forEach((s) => {
+							current[s] ||= {}
+							current = current[s] as PreflightDefinition
+						})
+						Object.assign(current, { [name]: value })
+					}
+					return preflightDefinition
+				},
 			})
 		},
 	})
@@ -216,4 +262,31 @@ export function normalizeVariableName(name: string) {
 	if (name.startsWith('--'))
 		return name
 	return `--${name}`
+}
+
+/**
+ * Recursively extract all CSS variable names referenced inside a preflight
+ * result (either a plain CSS string or a `PreflightDefinition` object).
+ */
+export function extractUsedVarNamesFromPreflightResult(
+	result: string | PreflightDefinition,
+): string[] {
+	if (typeof result === 'string') {
+		return extractUsedVarNames(result)
+			.map(normalizeVariableName)
+	}
+	const names: string[] = []
+	for (const value of Object.values(result)) {
+		if (value == null)
+			continue
+		if (typeof value === 'string' || typeof value === 'number') {
+			extractUsedVarNames(String(value))
+				.forEach(n => names.push(normalizeVariableName(n)))
+		}
+		else if (typeof value === 'object') {
+			extractUsedVarNamesFromPreflightResult(value as PreflightDefinition)
+				.forEach(n => names.push(n))
+		}
+	}
+	return names
 }

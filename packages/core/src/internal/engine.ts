@@ -1,5 +1,5 @@
 import type { ExtractFn } from './extractor'
-import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight, StyleContent, WithLayer } from './types'
+import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight, StyleContent } from './types'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
@@ -253,21 +253,38 @@ export function sortLayerNames(layers: Record<string, number>): string[] {
 		.map(([name]) => name)
 }
 
-function isWithLayer(p: Preflight): p is WithLayer<string | PreflightDefinition | PreflightFn> {
+function isWithLayer(p: unknown): p is { layer: string, preflight: unknown } {
 	if (typeof p !== 'object' || p === null)
 		return false
 	const record = p as { layer?: unknown, preflight?: unknown }
 	return typeof record.layer === 'string' && record.preflight !== undefined
 }
 
+function isWithId(p: unknown): p is { id: string, preflight: unknown } {
+	if (typeof p !== 'object' || p === null)
+		return false
+	const record = p as { id?: unknown, preflight?: unknown }
+	return typeof record.id === 'string' && record.preflight !== undefined
+}
+
 export function resolvePreflight(preflight: Preflight): ResolvedPreflight {
+	let layer: string | undefined
+	let id: string | undefined
+
+	// Peel off WithLayer wrapper
 	if (isWithLayer(preflight)) {
-		const inner = preflight.preflight
-		const fn: PreflightFn = typeof inner === 'function' ? inner : () => inner
-		return { layer: preflight.layer, fn }
+		layer = preflight.layer
+		preflight = preflight.preflight as Preflight
 	}
-	const fn: PreflightFn = typeof preflight === 'function' ? preflight : () => preflight
-	return { fn }
+
+	// Peel off WithId wrapper
+	if (isWithId(preflight)) {
+		id = preflight.id
+		preflight = preflight.preflight as Preflight
+	}
+
+	const fn: PreflightFn = typeof preflight === 'function' ? preflight : () => preflight as string | PreflightDefinition
+	return { layer, id, fn }
 }
 
 export async function resolveEngineConfig(config: EngineConfig): Promise<ResolvedEngineConfig> {

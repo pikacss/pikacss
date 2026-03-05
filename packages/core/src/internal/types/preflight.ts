@@ -9,15 +9,25 @@ export type PreflightDefinition = {
 
 export type PreflightFn = (engine: Engine, isFormatted: boolean) => Awaitable<string | PreflightDefinition>
 
-export interface WithLayer<T extends string | PreflightDefinition | PreflightFn> {
+export interface ResolvedPreflight {
+	layer?: string
+	id?: string
+	fn: PreflightFn
+}
+
+interface WithId<T> {
+	id: string
+	preflight: T
+}
+
+type MaybeWithId<T> = WithId<T> | T
+
+interface WithLayer<T> {
 	layer: string
 	preflight: T
 }
 
-export interface ResolvedPreflight {
-	layer?: string
-	fn: PreflightFn
-}
+type MaybeWithLayer<T> = WithLayer<T> | T
 
 /**
  * Preflight can be a string, object, function, or a layer-wrapped variant.
@@ -27,5 +37,5 @@ export interface ResolvedPreflight {
  * 3. A `PreflightFn` is a dynamic preflight that receives the engine instance.
  * 4. A `WithLayer` wrapper assigns any of the above to a specific CSS `@layer`.
  */
-export type Preflight = string | PreflightDefinition | PreflightFn | WithLayer<string | PreflightDefinition | PreflightFn>
+export type Preflight = MaybeWithLayer<MaybeWithId<string | PreflightDefinition | PreflightFn>>
 // #endregion Preflight
