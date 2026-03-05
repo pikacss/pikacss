@@ -12,6 +12,10 @@ The `core:important` plugin controls whether CSS property values receive the `!i
 4. The `__important` key is always stripped from the definition before CSS output.
 5. Nested selector objects are passed through unchanged — only property values are modified.
 
+::: tip Duplicate `!important` Prevention
+The plugin never produces doubled `!important`. Values that already end with `!important` are left unchanged — you will never see `color: red !important !important` in generated CSS.
+:::
+
 ## Config
 
 ```ts

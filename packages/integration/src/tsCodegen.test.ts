@@ -344,6 +344,115 @@ describe('generateTsCodegenContent', () => {
 			.toContain('fn(...params: [p0: P1_0, p1: P1_1]): ReturnType<StyleFn>')
 	})
 
+	it('should output never for PropertiesValue entry with empty value array', async () => {
+		const ctx = createMockCtx({
+			engine: {
+				config: {
+					autocomplete: {
+						selectors: new Set(),
+						styleItemStrings: new Set(),
+						extraProperties: new Set(),
+						extraCssProperties: new Set(),
+						properties: new Map([['emptyProp', []]]),
+						cssProperties: new Map(),
+					},
+					layers: {},
+				},
+				renderAtomicStyles: vi.fn()
+					.mockResolvedValue(''),
+			} as unknown as IntegrationContext['engine'],
+		})
+		const result = await generateTsCodegenContent(ctx)
+		expect(result)
+			.toContain('PropertiesValue: { "emptyProp": never }')
+	})
+
+	it('should output never for CssPropertiesValue entry with empty value array', async () => {
+		const ctx = createMockCtx({
+			engine: {
+				config: {
+					autocomplete: {
+						selectors: new Set(),
+						styleItemStrings: new Set(),
+						extraProperties: new Set(),
+						extraCssProperties: new Set(),
+						properties: new Map(),
+						cssProperties: new Map([['--my-var', []]]),
+					},
+					layers: {},
+				},
+				renderAtomicStyles: vi.fn()
+					.mockResolvedValue(''),
+			} as unknown as IntegrationContext['engine'],
+		})
+		const result = await generateTsCodegenContent(ctx)
+		expect(result)
+			.toContain('CssPropertiesValue: { "--my-var": never }')
+	})
+
+	it('should JSON.stringify property map keys that contain special characters', async () => {
+		const ctx = createMockCtx({
+			engine: {
+				config: {
+					autocomplete: {
+						selectors: new Set(),
+						styleItemStrings: new Set(),
+						extraProperties: new Set(),
+						extraCssProperties: new Set(),
+						properties: new Map([
+							['my property', ['string']],
+							['key-with-dash', ['number']],
+						]),
+						cssProperties: new Map([
+							['--custom color', ['red', 'blue']],
+						]),
+					},
+					layers: {},
+				},
+				renderAtomicStyles: vi.fn()
+					.mockResolvedValue(''),
+			} as unknown as IntegrationContext['engine'],
+		})
+		const result = await generateTsCodegenContent(ctx)
+		expect(result)
+			.toContain('"my property": string')
+		expect(result)
+			.toContain('"key-with-dash": number')
+		expect(result)
+			.toContain('"--custom color": "red" | "blue"')
+	})
+
+	it('should separate multiple PropertiesValue entries with ", "', async () => {
+		const ctx = createMockCtx({
+			engine: {
+				config: {
+					autocomplete: {
+						selectors: new Set(),
+						styleItemStrings: new Set(),
+						extraProperties: new Set(),
+						extraCssProperties: new Set(),
+						properties: new Map([
+							['alpha', ['string']],
+							['beta', ['number']],
+						]),
+						cssProperties: new Map([
+							['color', ['red']],
+							['background', ['blue']],
+						]),
+					},
+					layers: {},
+				},
+				renderAtomicStyles: vi.fn()
+					.mockResolvedValue(''),
+			} as unknown as IntegrationContext['engine'],
+		})
+		const result = await generateTsCodegenContent(ctx)
+		expect(result)
+			.toContain('"alpha": string, "beta": number')
+		expect(result)
+			.toContain('"color": "red", "background": "blue"')
+	})
+
 	describe('formatUnionStringType escaping via JSON.stringify', () => {
 		function makeCtxWithSelectors(...selectors: string[]): IntegrationContext {
 			return {

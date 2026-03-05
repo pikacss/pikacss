@@ -28,6 +28,10 @@
 
 <<< @/.examples/plugin-system/plugin-order.ts
 
+::: info 插件陣列不可變性
+傳入引擎設定的插件陣列**不會被原地排序**。引擎在排序前會先建立副本，因此原始陣列永遠不會被修改。這意味著同一個插件陣列可以安全地在多個引擎實例中重複使用，不會產生意外的副作用。
+:::
+
 ## 生命週期鉤子
 
 在 `createEngine(config)` 期間，鉤子按以下順序觸發：
@@ -114,6 +118,16 @@
 層級渲染順序由 `EngineConfig` 中的 `layers` 設定決定。數值較小的層級會先渲染。命名層級中的前置樣式一律渲染在對應的 `@layer` 區塊內。
 :::
 
+### WithId 包裝器
+
+使用 `WithId<T>`——`{ id, preflight }`——為任何前置樣式指定一個字串識別符。`id` 讓其他插件或引擎能夠識別並去重前置樣式：
+
+<<< @/.examples/plugin-system/preflight-with-id.ts
+
+::: tip 去重
+指定 `id` 對於可能被初始化多次的插件、或多個插件註冊相同基礎樣式的情境特別有用。若已有相同 `id` 的前置樣式被註冊，引擎會略過後續相同 `id` 的前置樣式。
+:::
+
 ## 自動補齊 API
 
 插件可以透過新增自訂項目來豐富 TypeScript 自動補齊體驗。這些 API 可在 `configureEngine` 中的 `engine` 實例上使用：
@@ -149,7 +163,7 @@
 | `engine.shortcuts.add(...shortcuts)` | 新增靜態或動態捷徑 |
 | `engine.selectors.add(...selectors)` | 新增靜態或動態選擇器對應 |
 | `engine.keyframes.add(...keyframes)` | 新增 `@keyframes` 動畫 |
-| `engine.addPreflight(preflight)` | 新增全域前置樣式 CSS |
+| `engine.addPreflight(preflight)` | 新增全域前置樣式 CSS（接受 string、`PreflightDefinition`、`PreflightFn`、`WithLayer<T>` 或 `WithId<T>`）|
 | `engine.config` | 存取已解析的引擎設定 |
 | `engine.store.atomicStyleIds` | 內容雜湊 → 原子化樣式 ID 的對應表 |
 | `engine.store.atomicStyles` | ID → `AtomicStyle` 物件的對應表 |

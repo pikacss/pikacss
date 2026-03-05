@@ -79,6 +79,10 @@ By default, `pruneUnused` is `true`. A variable is kept in CSS output when **any
 - It appears in the `safeList` array
 - Its per-variable `pruneUnused` is explicitly set to `false`
 
+::: tip Transitive Dependency Tracking
+PikaCSS tracks variable dependencies transitively. If your styles reference `--color-primary`, and `--color-primary`'s value references `--color-base`, which in turn references `--color-raw`, all three variables are automatically preserved in CSS output — even if only `--color-primary` appears directly in your styles.
+:::
+
 ## Dynamic Variables via Engine API
 
 Plugins can add variables programmatically at runtime:
@@ -101,7 +105,7 @@ The `engine.variables.store` is a `Map<string, ResolvedVariable[]>` holding all 
 | `autocomplete.asValueOf` default | `['*']` |
 | `autocomplete.asProperty` default | `true` |
 | Null-value variables | Registered for autocomplete only, not emitted to CSS |
-| Detection | Scans atomic style values for `var(--name)` patterns |
+| Detection | Scans atomic style values for `var(--name)` patterns (transitive) |
 
 ## Source Reference
 

@@ -260,6 +260,16 @@ describe('toKebab', () => {
 		expect(toKebab('ABC'))
 			.toBe('-a-b-c')
 	})
+
+	it('should return CSS custom properties (starting with --) unchanged', () => {
+		expect(toKebab('--my-var'))
+			.toBe('--my-var')
+	})
+
+	it('should return CSS custom properties with camelCase suffix unchanged', () => {
+		expect(toKebab('--myVarName'))
+			.toBe('--myVarName')
+	})
 })
 
 describe('isNotNullish', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createEngine } from '../engine'
-import { extractUsedVarNames, normalizeVariableName } from './variables'
+import { extractUsedVarNames, extractUsedVarNamesFromPreflightResult, normalizeVariableName } from './variables'
 
 describe('extractUsedVarNames', () => {
 	it('should extract a single var name', () => {
@@ -384,5 +384,66 @@ describe('variables plugin (engine integration)', () => {
 			expect(preflight)
 				.toContain('--b: two;')
 		})
+	})
+})
+
+describe('extractUsedVarNamesFromPreflightResult', () => {
+	it('should extract var names from a plain CSS string', () => {
+		const result = extractUsedVarNamesFromPreflightResult('color: var(--text); background: var(--bg);')
+		expect(result)
+			.toEqual(['--text', '--bg'])
+	})
+
+	it('should return an empty array for a CSS string without var()', () => {
+		expect(extractUsedVarNamesFromPreflightResult('color: red;'))
+			.toEqual([])
+	})
+
+	it('should return an empty array for an empty string', () => {
+		expect(extractUsedVarNamesFromPreflightResult(''))
+			.toEqual([])
+	})
+
+	it('should extract var names from a PreflightDefinition object (string CSS values)', () => {
+		const result = extractUsedVarNamesFromPreflightResult({
+			':root': { color: 'var(--text-color)' },
+		})
+		expect(result)
+			.toContain('--text-color')
+	})
+
+	it('should recursively extract from nested PreflightDefinition objects', () => {
+		const result = extractUsedVarNamesFromPreflightResult({
+			':root': {
+				'.child': { border: 'var(--border-color)' },
+			},
+		})
+		expect(result)
+			.toContain('--border-color')
+	})
+
+	it('should handle an empty PreflightDefinition object', () => {
+		expect(extractUsedVarNamesFromPreflightResult({}))
+			.toEqual([])
+	})
+
+	it('should extract multiple var names from a PreflightDefinition with multiple properties', () => {
+		const result = extractUsedVarNamesFromPreflightResult({
+			':root': {
+				color: 'var(--fg)',
+				background: 'var(--bg)',
+			},
+		})
+		expect(result)
+			.toContain('--fg')
+		expect(result)
+			.toContain('--bg')
+	})
+
+	it('should return normalized (--prefixed) var names from a string', () => {
+		// var() always includes --, so names should already start with --
+		const result = extractUsedVarNamesFromPreflightResult('border: 1px solid var(--border-color);')
+		expect(result)
+			.toEqual(['--border-color'])
 	})
 })

@@ -34,7 +34,6 @@ export type {
 	PreflightFn,
 	ResolvedLayerName,
 	ResolvedPreflight,
-	WithLayer,
 } from './internal/types'
 
 export type * from './internal/types/utils'

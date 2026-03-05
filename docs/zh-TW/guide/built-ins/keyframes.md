@@ -76,6 +76,10 @@ interface ObjectForm { name: string, frames?: KeyframesProgress, autocomplete?: 
 - **逐關鍵影格覆寫**：在個別條目上設定 `pruneUnused`。
 - 沒有 `frames` 的條目不會被輸出（它們只影響自動補齊）。
 
+::: tip 動畫名稱偵測
+未使用關鍵影格的偵測會掃描原子化樣式中的 `animation-name`（kebab-case）和 `animation` 屬性值。PikaCSS 在內部會將所有 CSS 屬性正規化為 kebab-case，因此無論你在 TypeScript 中使用哪種屬性形式，`pruneUnused` 都能正確運作。
+:::
+
 ## 自動補齊
 
 插件會自動註冊以下自動補齊值：

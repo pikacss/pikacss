@@ -79,6 +79,10 @@ interface VariableObject {
 - 出現在 `safeList` 陣列中
 - 其每個變數的 `pruneUnused` 明確設定為 `false`
 
+::: tip 傳遞性依賴追蹤
+PikaCSS 會傳遞性地追蹤變數依賴。若你的樣式參照了 `--color-primary`，而 `--color-primary` 的值參照了 `--color-base`，`--color-base` 又參照了 `--color-raw`，則三個變數都會自動保留在 CSS 輸出中——即使只有 `--color-primary` 直接出現在你的樣式中。
+:::
+
 ## 透過 Engine API 動態新增變數
 
 插件可以在執行階段以程式方式新增變數：
@@ -101,7 +105,7 @@ engine.variables.add({
 | `autocomplete.asValueOf` 預設值 | `['*']` |
 | `autocomplete.asProperty` 預設值 | `true` |
 | Null 值變數 | 僅供自動補齊使用，不輸出至 CSS |
-| 偵測方式 | 掃描原子化樣式值中的 `var(--name)` 模式 |
+| 偵測方式 | 掃描原子化樣式值中的 `var(--name)` 模式（傳遞性）|
 
 ## 原始碼參考
 

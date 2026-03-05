@@ -14,9 +14,13 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 **/pikacss.config.{js,ts,mjs,mts}
 ```
 
-使用 `defineEngineConfig()` 包裝你的設定，以獲得型別安全的 IntelliSense。這是從 `@pikacss/core` 匯出的恆等函式：
+使用 `defineEngineConfig()` 包裝你的設定，以獲得型別安全的 IntelliSense。此函式從 `@pikacss/core` 匯出，並以 `const T` 回傳，保留設定的精確字面值型別，以便進行準確的型別檢查：
 
 <<< @/.examples/guide/config-basic.ts
+
+::: tip 所有 `define*` 輔助函式的 Const 型別推斷
+所有輔助函式 — `defineEngineConfig`、`defineStyleDefinition`、`definePreflight`、`defineKeyframes`、`defineSelector`、`defineShortcut` 以及 `defineVariables` — 均以 `<const T>` 定義型別。它們會回傳輸入的精確字面值型別，讓你的設定與樣式定義都能獲得精準的型別推斷。
+:::
 
 ## Engine Config
 
@@ -125,6 +129,12 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 <<< @/.examples/guide/config-variables.ts
 
+::: tip 遞移式變數追蹤
+當 `pruneUnused` 為 `true` 時，PikaCSS 會使用廣度優先搜尋（BFS）遞移地展開 `var()` 參照。若變數 `A` 的值中參照了變數 `B`（例如 `--size-lg: calc(var(--size-base) * 4)`），而 `A` 被用於你的樣式中，則 `B` 會自動被保留 — 即使它並未直接出現在任何原子化樣式中。
+:::
+
+<<< @/.examples/guide/config-variables-transitive.ts
+
 你也可以傳入一個變數定義陣列，依序合併：
 
 <<< @/.examples/guide/config-variables-array.ts
@@ -211,6 +221,31 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 - **`'inline'`** — 行內樣式物件格式
 
 <<< @/.examples/guide/config-plugin-options.ts
+
+## 型別匯出
+
+PikaCSS 從 `@pikacss/core` 匯出以下型別，供插件開發、型別標註及共用樣式定義使用。
+
+### `PropertyValue<T>`
+
+- **定義：** `T | [value: T, fallback: T[]] | null | undefined`
+
+表示一個 CSS 屬性值。支援純值、回退值元組（渲染為 `property: primary, fallback`）或 `null`/`undefined`（用於省略該屬性）。此型別由 `Properties` 與所有 `StyleDefinitionMap` 項目在內部使用。
+
+### `StyleDefinition` 與 `StyleDefinitionMap`
+
+`StyleDefinition` 是以下兩種形式的聯集型別：
+
+```ts
+type StyleDefinition = Properties | StyleDefinitionMap
+```
+
+- **`Properties`** — 使用駝峰式或連字號格式鍵的 CSS 屬性-值對應。
+- **`StyleDefinitionMap`** — 以選擇器為鍵的物件，用於巢狀樣式規則。鍵為選擇器字串（包括 `config.selectors` 中定義的自訂別名）；值為 `Properties`、巢狀的 `StyleDefinition` 或樣式項目陣列。
+
+在 `pika()` 呼叫之外定義樣式時，請使用 `defineStyleDefinition()` 以獲得 const 保留的型別推斷：
+
+<<< @/.examples/guide/type-style-definition-map.ts
 
 ## 完整範例
 

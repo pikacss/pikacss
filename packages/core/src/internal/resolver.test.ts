@@ -1,6 +1,7 @@
 import type { DynamicRule, StaticRule } from './resolver'
 import { describe, expect, it, vi } from 'vitest'
 import { AbstractResolver, RecursiveResolver, resolveRuleConfig } from './resolver'
+import { log } from './utils'
 
 class TestResolver extends AbstractResolver<string> {}
 
@@ -409,6 +410,35 @@ describe('recursiveResolver', () => {
 		expect(result)
 			.toEqual(['err'])
 	})
+
+	it('should detect a direct circular self-reference, emit a warning, and return the string as-is', async () => {
+		const resolver = new TestRecursiveResolver()
+		// 'loop' maps to itself, creating an immediate cycle
+		resolver.addStaticRule({ key: 'loop', string: 'loop', resolved: ['loop'] })
+
+		const warnSpy = vi.spyOn(log, 'warn')
+		const result = await resolver.resolve('loop')
+		expect(result)
+			.toEqual(['loop'])
+		expect(warnSpy)
+			.toHaveBeenCalledWith(expect.stringContaining('Circular reference'))
+		warnSpy.mockRestore()
+	})
+
+	it('should detect an indirect cycle (A → B → A), emit a warning, and terminate without infinite recursion', async () => {
+		const resolver = new TestRecursiveResolver()
+		resolver.addStaticRule({ key: 'a', string: 'a', resolved: ['b'] })
+		resolver.addStaticRule({ key: 'b', string: 'b', resolved: ['a'] })
+
+		const warnSpy = vi.spyOn(log, 'warn')
+		const result = await resolver.resolve('a')
+		// Cycle a->b->a: 'a' gets detected as circular, returned as-is, so result is ['a']
+		expect(result)
+			.toEqual(['a'])
+		expect(warnSpy)
+			.toHaveBeenCalledWith(expect.stringContaining('Circular reference'))
+		warnSpy.mockRestore()
+	})
 })
 
 describe('resolveRuleConfig', () => {
@@ -498,5 +528,40 @@ describe('resolveRuleConfig', () => {
 			.toBeUndefined()
 		expect(resolveRuleConfig([123, 'test'] as any, 'testKey'))
 			.toBeUndefined()
+	})
+
+	it('should strip the global flag from regex patterns in dynamic rule configs (stripGlobalFlag)', () => {
+		const fn = vi.fn()
+			.mockReturnValue('result')
+		const result = resolveRuleConfig([/^color-(.+)$/g, fn, 'color-test'], 'testKey')
+		if (typeof result === 'object' && result != null && 'type' in result && result.type === 'dynamic') {
+			expect(result.rule.stringPattern.global)
+				.toBe(false)
+			expect(result.rule.stringPattern.source)
+				.toBe('^color-(.+)$')
+		}
+		else {
+			throw new Error('Expected a dynamic rule result')
+		}
+	})
+
+	it('should produce a non-global pattern that matches reliably across multiple invocations (stripGlobalFlag)', async () => {
+		// Regression: a global regex used directly via addDynamicRule would have lastIndex pollution;
+		// resolveRuleConfig strips the global flag to prevent this.
+		const fn = vi.fn((m: RegExpMatchArray) => [`resolved-${m[1]}`])
+		const config = resolveRuleConfig([/^item-(.+)$/g, fn], 'testKey')
+		if (typeof config === 'object' && config != null && 'type' in config && config.type === 'dynamic') {
+			const resolver = new TestRecursiveResolver()
+			resolver.addDynamicRule(config.rule as DynamicRule<string[]>)
+			const r1 = await resolver.resolve('item-alpha')
+			const r2 = await resolver.resolve('item-beta')
+			expect(r1)
+				.toEqual(['resolved-alpha'])
+			expect(r2)
+				.toEqual(['resolved-beta'])
+		}
+		else {
+			throw new Error('Expected a dynamic rule result')
+		}
 	})
 })

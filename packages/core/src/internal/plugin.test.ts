@@ -258,6 +258,18 @@ describe('resolvePlugins', () => {
 		expect(sorted.map(p => p.name))
 			.toEqual(['a', 'b', 'c'])
 	})
+
+	it('should not mutate the input array (immutable sort)', () => {
+		const plugins: EnginePlugin[] = [
+			{ name: 'post', order: 'post' },
+			{ name: 'default' },
+			{ name: 'pre', order: 'pre' },
+		]
+		const originalOrder = plugins.map(p => p.name)
+		resolvePlugins(plugins)
+		expect(plugins.map(p => p.name))
+			.toEqual(originalOrder)
+	})
 })
 
 describe('defineEnginePlugin', () => {

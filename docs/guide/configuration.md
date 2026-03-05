@@ -14,9 +14,13 @@ PikaCSS auto-detects config files matching the pattern:
 **/pikacss.config.{js,ts,mjs,mts}
 ```
 
-Wrap your config with `defineEngineConfig()` for type-safe IntelliSense. This is an identity function exported from `@pikacss/core`:
+Wrap your config with `defineEngineConfig()` for type-safe IntelliSense. This function is exported from `@pikacss/core` and returns `const T`, preserving the exact literal type of your config for accurate type checking:
 
 <<< @/.examples/guide/config-basic.ts
+
+::: tip Const Type Inference in All `define*` Helpers
+All helper functions — `defineEngineConfig`, `defineStyleDefinition`, `definePreflight`, `defineKeyframes`, `defineSelector`, `defineShortcut`, and `defineVariables` — are typed as `<const T>`. They return the exact literal type of their input, enabling precise inference across your config and style definitions.
+:::
 
 ## Engine Config
 
@@ -125,6 +129,12 @@ Each variable value can be:
 
 <<< @/.examples/guide/config-variables.ts
 
+::: tip Transitive Variable Tracking
+When `pruneUnused` is `true`, PikaCSS uses a breadth-first search to expand `var()` references transitively. If variable `A` references variable `B` in its value (e.g., `--size-lg: calc(var(--size-base) * 4)`), and `A` is used in your styles, `B` is automatically preserved — even if it is not directly referenced in any atomic style.
+:::
+
+<<< @/.examples/guide/config-variables-transitive.ts
+
 You can also pass an array of variable definitions that are merged in order:
 
 <<< @/.examples/guide/config-variables-array.ts
@@ -211,6 +221,31 @@ Controls how `pika()` calls are transformed at build time:
 - **`'inline'`** — object format for inline use in style objects
 
 <<< @/.examples/guide/config-plugin-options.ts
+
+## Type Exports
+
+PikaCSS exports the following types from `@pikacss/core` for plugin authoring, type annotations, and shared style definitions.
+
+### `PropertyValue<T>`
+
+- **Definition:** `T | [value: T, fallback: T[]] | null | undefined`
+
+Represents a CSS property value. Supports a plain value, a fallback tuple (rendered as `property: primary, fallback`), or `null`/`undefined` to omit the property. This type is used internally by `Properties` and all `StyleDefinitionMap` entries.
+
+### `StyleDefinition` and `StyleDefinitionMap`
+
+`StyleDefinition` is a union of two forms:
+
+```ts
+type StyleDefinition = Properties | StyleDefinitionMap
+```
+
+- **`Properties`** — a flat CSS property-value map with camelCase or hyphenated keys.
+- **`StyleDefinitionMap`** — a selector-keyed object for nested style rules. Keys are selector strings (including custom aliases defined in `config.selectors`); values are `Properties`, nested `StyleDefinition`s, or arrays of style items.
+
+Use `defineStyleDefinition()` for const-preserving inference when defining styles outside a `pika()` call:
+
+<<< @/.examples/guide/type-style-definition-map.ts
 
 ## Full Example
 

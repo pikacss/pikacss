@@ -28,6 +28,10 @@ Plugins are sorted by `order` before hooks run. The execution sequence is: `pre`
 
 <<< @/.examples/plugin-system/plugin-order.ts
 
+::: info Plugin Array Immutability
+Plugin arrays passed in the engine config are **not sorted in-place**. A copy is made before sorting, so the original array is never mutated. This means the same plugin array can safely be reused across multiple engine instances without unexpected side effects.
+:::
+
 ## Lifecycle Hooks
 
 During `createEngine(config)`, hooks fire in this order:
@@ -114,6 +118,16 @@ Wrap any preflight with `WithLayer<T>` — `{ layer, preflight }` — to assign 
 Layer rendering order is determined by the `layers` config in `EngineConfig`. Layers with lower numbers are rendered first. Preflights inside a named layer are always rendered inside their respective `@layer` block.
 :::
 
+### WithId Wrapper
+
+Wrap any preflight with `WithId<T>` — `{ id, preflight }` — to assign a string identifier to it. The `id` allows other plugins or the engine to identify and deduplicate preflights:
+
+<<< @/.examples/plugin-system/preflight-with-id.ts
+
+::: tip Deduplication
+Assigning an `id` is especially useful in plugins that may be initialized multiple times or when multiple plugins register the same baseline styles. The engine skips a preflight if another with the same `id` has already been registered.
+:::
+
 ## Autocomplete API
 
 Plugins can enrich the TypeScript autocomplete experience by adding custom entries. These APIs are available on the `engine` instance inside `configureEngine`:
@@ -149,7 +163,7 @@ Inside `configureEngine`, the engine exposes APIs from the built-in core plugins
 | `engine.shortcuts.add(...shortcuts)` | Add static or dynamic shortcuts |
 | `engine.selectors.add(...selectors)` | Add static or dynamic selector mappings |
 | `engine.keyframes.add(...keyframes)` | Add `@keyframes` animations |
-| `engine.addPreflight(preflight)` | Add global preflight CSS |
+| `engine.addPreflight(preflight)` | Add global preflight CSS (accepts string, `PreflightDefinition`, `PreflightFn`, `WithLayer<T>`, or `WithId<T>`) |
 | `engine.config` | Access the resolved engine config |
 | `engine.store.atomicStyleIds` | Map of content hash → atomic style ID |
 | `engine.store.atomicStyles` | Map of ID → `AtomicStyle` object |

@@ -12,6 +12,10 @@
 4. `__important` 鍵在 CSS 輸出前始終會從定義中移除。
 5. 巢狀選擇器物件保持不變——只有屬性值會被修改。
 
+::: tip 防止重複 `!important`
+插件絕不會產生重複的 `!important`。已以 `!important` 結尾的值會保持不變——生成的 CSS 中不會出現 `color: red !important !important`。
+:::
+
 ## 設定
 
 ```ts

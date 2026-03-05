@@ -76,6 +76,10 @@ By default, `pruneUnused` is `true`. Only keyframes whose names appear in `anima
 - **Per-keyframe override**: Set `pruneUnused` on an individual entry.
 - Entries without `frames` are never output (they only affect autocomplete).
 
+::: tip Animation Name Detection
+Unused keyframe detection scans atomic styles for `animation-name` (kebab-case) and `animation` property values. PikaCSS normalizes all CSS properties to kebab-case internally, so `pruneUnused` works correctly regardless of which property form you use in TypeScript.
+:::
+
 ## Autocomplete
 
 The plugin registers these autocomplete values automatically:
