@@ -1,0 +1,10 @@
+{
+	"hooks": {
+		"Stop": [
+			{
+				"type": "command",
+				"command": "pnpm lint && pnpm typecheck && pnpm test"
+			}
+		]
+	}
+}
