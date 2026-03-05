@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 		// The function name used in source code (default: 'pika')
 		fnName: 'pika',
 
-		// Output format: 'string' | 'array' | 'inline' (default: 'string')
+		// Output format: 'string' | 'array' (default: 'string')
 		transformedFormat: 'string',
 
 		// TypeScript codegen file (default: true → 'pika.gen.ts')

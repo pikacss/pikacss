@@ -24,7 +24,7 @@ export interface IntegrationContextOptions {
 	}
 	configOrPath: EngineConfig | string | Nullish
 	fnName: string
-	transformedFormat: 'string' | 'array' | 'inline'
+	transformedFormat: 'string' | 'array'
 	tsCodegen: false | string
 	cssCodegen: string
 	autoCreateConfig: boolean
@@ -34,7 +34,7 @@ export interface IntegrationContext {
 	cwd: string
 	currentPackageName: string
 	fnName: string
-	transformedFormat: 'string' | 'array' | 'inline'
+	transformedFormat: 'string' | 'array'
 	cssCodegenFilepath: string
 	tsCodegenFilepath: string | Nullish
 	hasVue: boolean

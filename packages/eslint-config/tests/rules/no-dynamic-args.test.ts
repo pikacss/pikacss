@@ -76,11 +76,6 @@ describe('no-dynamic-args', () => {
 				// Not a pika call — should be ignored
 				`someOtherFunction(dynamicVar)`,
 
-				// Inline variant
-				`pika.inl({ color: 'red' })`,
-
-				// Preview inline variant
-				`pikap.inl({ color: 'red' })`,
 			],
 
 			invalid: [

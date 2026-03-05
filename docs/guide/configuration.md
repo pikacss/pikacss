@@ -229,7 +229,7 @@ These options are passed to the build plugin (e.g., `pikacss()` in your Vite/Web
 | `config` | `EngineConfig \| string` | `undefined` | Inline engine config or path to config file |
 | `autoCreateConfig` | `boolean` | `true` | Auto-create a config file if none exists |
 | `fnName` | `string` | `'pika'` | Function name to detect in source code |
-| `transformedFormat` | `'string' \| 'array' \| 'inline'` | `'string'` | Output format of generated class names |
+| `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of generated class names |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript codegen file path (`true` = `'pika.gen.ts'`, `false` = disabled) |
 | `cssCodegen` | `true \| string` | `true` | CSS codegen file path (`true` = `'pika.gen.css'`) |
 
@@ -245,7 +245,6 @@ Controls how `pika()` calls are transformed at build time:
 
 - **`'string'`** — `"a b c"` (space-separated string)
 - **`'array'`** — `['a', 'b', 'c']` (array of class names)
-- **`'inline'`** — object format for inline use in style objects
 
 <<< @/.examples/guide/config-plugin-options.ts
 

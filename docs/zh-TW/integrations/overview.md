@@ -61,7 +61,7 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 | `config` | `EngineConfig \| string` | `undefined` | 行內引擎設定物件，或設定檔路徑 |
 | `autoCreateConfig` | `boolean` | `true` | 若不存在設定檔則自動建立 `pika.config.ts` |
 | `fnName` | `string` | `'pika'` | 在原始碼中偵測並轉換的函式名稱 |
-| `transformedFormat` | `'string' \| 'array' \| 'inline'` | `'string'` | 產生的 class 名稱的輸出格式 |
+| `transformedFormat` | `'string' \| 'array'` | `'string'` | 產生的 class 名稱的輸出格式 |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript 程式碼產生檔案路徑（`true` → `'pika.gen.ts'`，`false` 停用） |
 | `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔案路徑（`true` → `'pika.gen.css'`） |
 

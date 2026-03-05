@@ -64,10 +64,9 @@ export interface PluginOptions {
 	 * The format of the generated atomic style class names.
 	 * - `'string'`: Returns a space-separated string of class names (e.g., "a b c")
 	 * - `'array'`: Returns an array of class names (e.g., ['a', 'b', 'c'])
-	 * - `'inline'`: Returns an object format that can be directly used in style objects
 	 * @default 'string'
 	 */
-	transformedFormat?: 'string' | 'array' | 'inline'
+	transformedFormat?: 'string' | 'array'
 
 	/**
 	 * Configuration for TypeScript code generation file.
@@ -103,6 +102,6 @@ export interface ResolvedPluginOptions {
 	cssCodegen: string
 	scan: IntegrationContextOptions['scan']
 	fnName: string
-	transformedFormat: 'string' | 'array' | 'inline'
+	transformedFormat: 'string' | 'array'
 	autoCreateConfig: boolean
 }

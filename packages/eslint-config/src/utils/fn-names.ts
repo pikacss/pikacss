@@ -18,7 +18,6 @@ export interface FnNameOptions {
  * - Preview: fnName + 'p' (e.g. 'pikap')
  * - Force string sub: .str
  * - Force array sub: .arr
- * - Force inline sub: .inl
  */
 export function buildFnNamePatterns(fnName: string = 'pika') {
 	const previewFnName = `${fnName}p`
@@ -28,14 +27,12 @@ export function buildFnNamePatterns(fnName: string = 'pika') {
 		fnName,
 		`${fnName}.str`,
 		`${fnName}.arr`,
-		`${fnName}.inl`,
 	])
 
 	const previewNames = new Set([
 		previewFnName,
 		`${previewFnName}.str`,
 		`${previewFnName}.arr`,
-		`${previewFnName}.inl`,
 	])
 
 	const allNames = new Set([...normalNames, ...previewNames])

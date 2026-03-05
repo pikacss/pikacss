@@ -229,7 +229,7 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 | `config` | `EngineConfig \| string` | `undefined` | 行內引擎設定或設定檔路徑 |
 | `autoCreateConfig` | `boolean` | `true` | 若無設定檔則自動建立 |
 | `fnName` | `string` | `'pika'` | 在原始碼中偵測的函式名稱 |
-| `transformedFormat` | `'string' \| 'array' \| 'inline'` | `'string'` | 產生的 class 名稱輸出格式 |
+| `transformedFormat` | `'string' \| 'array'` | `'string'` | 產生的 class 名稱輸出格式 |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript 程式碼產生檔路徑（`true` = `'pika.gen.ts'`，`false` = 停用） |
 | `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔路徑（`true` = `'pika.gen.css'`） |
 
@@ -245,7 +245,6 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 - **`'string'`** — `"a b c"`（以空格分隔的字串）
 - **`'array'`** — `['a', 'b', 'c']`（class 名稱陣列）
-- **`'inline'`** — 行內樣式物件格式
 
 <<< @/.examples/guide/config-plugin-options.ts
 

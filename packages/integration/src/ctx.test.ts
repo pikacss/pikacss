@@ -339,14 +339,6 @@ describe('createCtx', () => {
 			.toContain('[\'c-red\']')
 	})
 
-	it('transform inline format', async () => {
-		const ctx = createCtx(opts({ transformedFormat: 'inline' }))
-		await ctx.setup()
-		const r = await ctx.transform('pika(\'color:red\')', 'x.ts')
-		expect(r?.code)
-			.toContain('c-red')
-	})
-
 	it('transform returns undefined when no fn calls found', async () => {
 		const ctx = createCtx(opts())
 		await ctx.setup()

@@ -133,8 +133,6 @@ describe('generateTsCodegenContent', () => {
 			.toContain('type StyleFn_Array = (...params: StyleItem[]) => string[]')
 		expect(result)
 			.toContain('type StyleFn_String = (...params: StyleItem[]) => string')
-		expect(result)
-			.toContain('type StyleFn_Inline = (...params: StyleItem[]) => void')
 	})
 
 	it('should generate StyleFn types for array format', async () => {
@@ -144,14 +142,7 @@ describe('generateTsCodegenContent', () => {
 			.toContain('type StyleFn_Normal = StyleFn_Array')
 	})
 
-	it('should generate StyleFn types for inline format', async () => {
-		const ctx = createMockCtx({ transformedFormat: 'inline' })
-		const result = await generateTsCodegenContent(ctx)
-		expect(result)
-			.toContain('type StyleFn_Normal = StyleFn_Inline')
-	})
-
-	it('should generate StyleFn with str, arr, inl accessors', async () => {
+	it('should generate StyleFn with str and arr accessors', async () => {
 		const ctx = createMockCtx()
 		const result = await generateTsCodegenContent(ctx)
 		expect(result)
@@ -160,8 +151,7 @@ describe('generateTsCodegenContent', () => {
 			.toContain('str: StyleFn_String')
 		expect(result)
 			.toContain('arr: StyleFn_Array')
-		expect(result)
-			.toContain('inl: StyleFn_Inline')
+		expect(result).not.toContain('inl:')
 	})
 
 	it('should generate global declaration with fnName', async () => {
@@ -219,7 +209,7 @@ describe('generateTsCodegenContent', () => {
 		const ctx = createMockCtx({ usages: new Map() })
 		const result = await generateTsCodegenContent(ctx)
 		expect(result)
-			.toContain('interface PreviewOverloads<StyleFn extends (StyleFn_Array | StyleFn_String | StyleFn_Inline)>')
+			.toContain('interface PreviewOverloads<StyleFn extends (StyleFn_Array | StyleFn_String)>')
 		expect(result)
 			.toContain('fn(...params: Parameters<StyleFn>): ReturnType<StyleFn>')
 	})

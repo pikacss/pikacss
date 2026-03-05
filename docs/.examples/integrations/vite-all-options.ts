@@ -16,7 +16,6 @@ export default defineConfig({
 			// Format of the transformed output:
 			//   'string' — returns "a b c" (space-separated string)
 			//   'array'  — returns ['a', 'b', 'c']
-			//   'inline' — returns inline style object
 			transformedFormat: 'string', // [!code highlight]
 
 			// TypeScript codegen file path.

@@ -20,7 +20,6 @@ const options: PluginOptions = {
 	// Output format of generated class names
 	// - 'string': "a b c"
 	// - 'array':  ['a', 'b', 'c']
-	// - 'inline': object for inline style usage
 	transformedFormat: 'string', // default
 
 	// TypeScript codegen file for autocomplete support
