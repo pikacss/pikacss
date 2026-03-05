@@ -49,6 +49,7 @@ catalog:
   pkg-pr-new: ^0.0.63
   pkg-size: ^2.4.0
   publint: ^0.3.17
+  repomix: ^1.12.0
   rimraf: ^6.1.3
   simple-git-hooks: ^2.13.1
   tsdown: 0.21.0-beta.2
