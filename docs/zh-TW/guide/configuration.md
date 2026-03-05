@@ -10,8 +10,8 @@ PikaCSS 透過兩個層次進行設定：
 PikaCSS 會自動偵測符合以下模式的設定檔：
 
 ```text
-**/pika.config.{js,ts,mjs,mts}
-**/pikacss.config.{js,ts,mjs,mts}
+**/pika.config.{js,cjs,mjs,ts,cts,mts}
+**/pikacss.config.{js,cjs,mjs,ts,cts,mts}
 ```
 
 使用 `defineEngineConfig()` 包裝你的設定，以獲得型別安全的 IntelliSense。此函式從 `@pikacss/core` 匯出，並以 `const T` 回傳，保留設定的精確字面值型別，以便進行準確的型別檢查：
@@ -75,6 +75,8 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 <<< @/.examples/guide/built-ins/preflights-define-helper.ts
 :::
 
+### `layers`
+
 - **型別：** `Record<string, number>`
 - **預設值：** `{ preflights: 1, utilities: 10 }`
 
@@ -130,6 +132,8 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 - **字串／數字** — CSS 值（預設渲染於 `:root` 下）
 - **`null`** — 僅供自動補齊使用，不產生 CSS 輸出
 - **`VariableObject`** — 對值、自動補齊行為及清除進行精細控制
+
+`VariablesDefinition` 也支援巢狀選擇器鍵（例如 `'[data-theme="dark"]'`），可將變數作用域設定在 `:root` 之外。
 
 <<< @/.examples/guide/config-variables.ts
 

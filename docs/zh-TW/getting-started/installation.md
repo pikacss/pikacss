@@ -40,8 +40,8 @@
 <<< @/.examples/getting-started/pika.config.ts
 
 PikaCSS 會自動偵測符合以下模式的設定檔：
-- `pika.config.{js,ts,mjs,mts}`
-- `pikacss.config.{js,ts,mjs,mts}`
+- `pika.config.{js,cjs,mjs,ts,cts,mts}`
+- `pikacss.config.{js,cjs,mjs,ts,cts,mts}`
 
 `defineEngineConfig` 已從 `@pikacss/unplugin-pikacss` 重新匯出，方便使用 — 無需額外匯入。
 

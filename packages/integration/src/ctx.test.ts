@@ -264,10 +264,10 @@ describe('createCtx', () => {
 		const { statSync } = await import('node:fs')
 		vi.mocked(statSync)
 			.mockReturnValue({ isFile: () => true } as any)
-		const ctx = createCtx(opts({ configOrPath: 'my.config.ts' }))
+		const ctx = createCtx(opts({ configOrPath: 'my.config.cts' }))
 		await ctx.loadConfig()
 		expect(vi.mocked(statSync))
-			.toHaveBeenCalled()
+			.toHaveBeenCalledWith('/test/project/my.config.cts', expect.any(Object))
 	})
 
 	it('loadConfig returns null on error', async () => {
@@ -308,7 +308,10 @@ describe('createCtx', () => {
 		const ctx = createCtx(opts({ configOrPath: undefined }))
 		await ctx.loadConfig()
 		expect(vi.mocked(globbyStream))
-			.toHaveBeenCalled()
+			.toHaveBeenCalledWith(
+				'**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}',
+				{ ignore: ['node_modules'] },
+			)
 	})
 
 	// ── transform ─────────────────────────────────────────────

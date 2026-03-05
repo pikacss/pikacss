@@ -10,8 +10,8 @@ PikaCSS is configured through two layers:
 PikaCSS auto-detects config files matching the pattern:
 
 ```text
-**/pika.config.{js,ts,mjs,mts}
-**/pikacss.config.{js,ts,mjs,mts}
+**/pika.config.{js,cjs,mjs,ts,cts,mts}
+**/pikacss.config.{js,cjs,mjs,ts,cts,mts}
 ```
 
 Wrap your config with `defineEngineConfig()` for type-safe IntelliSense. This function is exported from `@pikacss/core` and returns `const T`, preserving the exact literal type of your config for accurate type checking:
@@ -75,6 +75,8 @@ Use `definePreflight()` from `@pikacss/core` for type-safe preflight definitions
 <<< @/.examples/guide/built-ins/preflights-define-helper.ts
 :::
 
+### `layers`
+
 - **Type:** `Record<string, number>`
 - **Default:** `{ preflights: 1, utilities: 10 }`
 
@@ -130,6 +132,8 @@ Each variable value can be:
 - A **string/number** — the CSS value (rendered under `:root` by default)
 - **`null`** — register for autocomplete only, no CSS output
 - A **`VariableObject`** — fine-grained control over value, autocomplete behavior, and pruning
+
+`VariablesDefinition` also supports nested selector keys (for example, `'[data-theme="dark"]'`) to scope variables outside `:root`.
 
 <<< @/.examples/guide/config-variables.ts
 

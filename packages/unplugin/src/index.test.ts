@@ -1,4 +1,6 @@
 import type { UnpluginOptions } from 'unplugin'
+import process from 'node:process'
+import { resolve } from 'pathe'
 import { describe, expect, it } from 'vitest'
 import { unpluginPika as plugin, unpluginFactory } from './index'
 
@@ -56,6 +58,22 @@ describe('unpluginPika', () => {
 			const plugin = unpluginFactory(undefined, { framework: 'vite' } as any) as UnpluginOptions
 			expect(typeof plugin.buildStart)
 				.toBe('function')
+		})
+
+		it('should resolve virtual CSS module to default cssCodegen path when cssCodegen is true', async () => {
+			const plugin = unpluginFactory({ config: {}, cssCodegen: true }, { framework: 'vite' } as any) as UnpluginOptions
+			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
+			const resolved = await resolveId?.call({}, 'pika.css')
+			expect(resolved)
+				.toBe(resolve(process.cwd(), 'pika.gen.css'))
+		})
+
+		it('should resolve virtual CSS module to custom cssCodegen path', async () => {
+			const plugin = unpluginFactory({ config: {}, cssCodegen: '/tmp/pika.gen.custom.css' }, { framework: 'vite' } as any) as UnpluginOptions
+			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
+			const resolved = await resolveId?.call({}, 'pika.css')
+			expect(resolved)
+				.toBe('/tmp/pika.gen.custom.css')
 		})
 	})
 })

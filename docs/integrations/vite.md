@@ -88,7 +88,7 @@ Controls the output format of transformed `pika()` calls.
 
 ### `config`
 
-Provide engine configuration inline or as a file path. When omitted, the plugin auto-detects `pika.config.{js,ts,mjs,mts}` in the project root.
+Provide engine configuration inline or as a file path. When omitted, the plugin auto-detects `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` in the project root.
 
 - **Type**: `EngineConfig | string`
 - **Default**: `undefined` (auto-detected)
