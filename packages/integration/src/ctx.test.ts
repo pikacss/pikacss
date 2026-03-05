@@ -260,14 +260,15 @@ describe('createCtx', () => {
 			.toHaveBeenCalledWith('/abs/pika.config.ts', expect.any(Object))
 	})
 
-	it('loadConfig handles relative config path', async () => {
+	it.each(['ts', 'cts', 'mts', 'js', 'cjs', 'mjs'] as const)('loadConfig handles relative config path with .%s extension', async (ext) => {
 		const { statSync } = await import('node:fs')
 		vi.mocked(statSync)
 			.mockReturnValue({ isFile: () => true } as any)
-		const ctx = createCtx(opts({ configOrPath: 'my.config.cts' }))
+		const filename = `my.config.${ext}`
+		const ctx = createCtx(opts({ configOrPath: filename }))
 		await ctx.loadConfig()
 		expect(vi.mocked(statSync))
-			.toHaveBeenCalledWith('/test/project/my.config.cts', expect.any(Object))
+			.toHaveBeenCalledWith(`/test/project/${filename}`, expect.any(Object))
 	})
 
 	it('loadConfig returns null on error', async () => {

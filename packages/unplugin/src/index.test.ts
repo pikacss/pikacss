@@ -60,7 +60,7 @@ describe('unpluginPika', () => {
 				.toBe('function')
 		})
 
-		it('should resolve virtual CSS module to default cssCodegen path when cssCodegen is true', async () => {
+		it('should resolve virtual CSS module to the default filename when cssCodegen is true', async () => {
 			const plugin = unpluginFactory({ config: {}, cssCodegen: true }, { framework: 'vite' } as any) as UnpluginOptions
 			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
 			const resolved = await resolveId?.call({}, 'pika.css')
