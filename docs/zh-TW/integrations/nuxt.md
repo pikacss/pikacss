@@ -36,6 +36,23 @@ Nuxt 模組會自動處理以下事項：
 3. **轉送選項**，將 `nuxt.options.pikacss` 中的選項傳遞至底層 Vite 插件。
 4. **預設掃描規則**：若未提供 `pikacss` 選項，預設會掃描 `**/*.vue`、`**/*.tsx` 和 `**/*.jsx` 檔案。
 
+::: warning Nuxt 預設掃描排除了 `.ts` 與 `.js` 檔案
+Nuxt 模組的內建預設有意略過純簹的 `.ts` 與 `.js` 檔案。在 Nuxt 中，建議將 `pika()` 呼叫放在元件檔案（`.vue`、`.tsx`、`.jsx`）中，而非放在組合式函式（Composables）或工具模組裡，因為伺服器端渲染與 Nuxt 的模組解析機制可能導致這些檔案在建置轉換未執行的環境中被求値。
+
+如果你確實需要在 `.ts` 組合式函式中使用 `pika()`，請透過明確設定 `scan.include` 從激活更廣泛的樣式：
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  pikacss: {
+    scan: {
+      include: ['**/*.{js,ts,jsx,tsx,vue}'],
+    },
+  },
+})
+```
+:::
+
 ::: tip 無需匯入 CSS
 與其他整合不同，你**無需**在進入點檔案中新增 `import 'pika.css'`。Nuxt 模組會建立一個插件樣板，自動為你匯入它。
 :::

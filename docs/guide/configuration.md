@@ -69,7 +69,11 @@ To assign preflights to specific CSS `@layer`s, use the `WithLayer` wrapper:
 
 <<< @/.examples/guide/config-preflights-with-layer.ts
 
-### `layers`
+::: tip `definePreflight()` Helper
+Use `definePreflight()` from `@pikacss/core` for type-safe preflight definitions. It is an identity function that narrows the type of the argument, making it easier to extract or share preflights across config files:
+
+<<< @/.examples/guide/built-ins/preflights-define-helper.ts
+:::
 
 - **Type:** `Record<string, number>`
 - **Default:** `{ preflights: 1, utilities: 10 }`
@@ -191,6 +195,25 @@ Define reusable style shortcuts — named combinations of style properties or ot
 | `{ shortcut, value, autocomplete? }` | Object form (dynamic) |
 
 <<< @/.examples/guide/config-shortcuts.ts
+
+## Type Helpers
+
+`@pikacss/core` exports a set of identity functions that narrow TypeScript types and provide full autocomplete. Each corresponds to a specific config concept:
+
+| Helper | Purpose |
+|---|---|
+| `defineEngineConfig()` | Type-safe engine config object |
+| `definePreflight()` | Type-safe `Preflight` definition |
+| `defineStyleDefinition()` | Type-safe style definition object passed to `pika()` |
+| `defineSelector()` | Type-safe `Selector` definition |
+| `defineShortcut()` | Type-safe `Shortcut` definition |
+| `defineKeyframes()` | Type-safe `Keyframes` definition |
+| `defineVariables()` | Type-safe `VariablesDefinition` object |
+| `defineEnginePlugin()` | Type-safe engine plugin |
+
+All helpers are exported from `@pikacss/core`. `defineStyleDefinition()` is particularly useful when you want to reuse a style definition object across multiple `pika()` calls:
+
+<<< @/.examples/guide/built-ins/style-definition-define-helper.ts
 
 ## Build Plugin Options (`PluginOptions`)
 

@@ -107,10 +107,16 @@ engine.variables.add({
 | Null 值變數 | 僅供自動補齊使用，不輸出至 CSS |
 | 偵測方式 | 掃描原子化樣式值中的 `var(--name)` 模式（傳遞性）|
 
+## `defineVariables()` 輔助函式
+
+使用 `defineVariables()` 可獲得具備完整 TypeScript 自動補齊的型別安全變數定義。這是從 `@pikacss/core` 匯出的恆等函式，特別適合將變數抽取至獨立檔案以便跨設定檔重複使用：
+
+<<< @/.examples/guide/built-ins/variables-define-helper.ts
+
 ## 原始碼參考
 
 - `packages/core/src/internal/plugins/variables.ts`
 
-## Next
+## 下一步
 
 - 繼續閱讀 [Keyframes](/zh-TW/guide/built-ins/keyframes)

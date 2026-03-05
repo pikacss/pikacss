@@ -107,6 +107,12 @@ The `engine.variables.store` is a `Map<string, ResolvedVariable[]>` holding all 
 | Null-value variables | Registered for autocomplete only, not emitted to CSS |
 | Detection | Scans atomic style values for `var(--name)` patterns (transitive) |
 
+## The `defineVariables()` Helper
+
+Use `defineVariables()` for type-safe variable definitions with full TypeScript autocomplete. It is an identity function exported from `@pikacss/core`, useful when extracting variables into a separate file for reuse across multiple configs:
+
+<<< @/.examples/guide/built-ins/variables-define-helper.ts
+
 ## Source Reference
 
 - `packages/core/src/internal/plugins/variables.ts`

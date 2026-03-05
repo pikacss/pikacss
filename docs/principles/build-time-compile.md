@@ -8,7 +8,7 @@ When your build tool (Vite, Webpack, Rollup, esbuild, Rspack, or Rolldown) proce
 
 ### Stage 1: Function Call Detection
 
-The plugin scans each source file using a regex to find all `pika()` calls, including format variants (`pika.str()`, `pika.arr()`) and preview variants (`pikap()`). It uses a bracket-depth parser to correctly extract the full function call, handling nested parentheses, strings, comments, and template literals.
+The plugin scans each source file using a regex to find all `pika()` calls, including format variants (`pika.str()`, `pika.arr()`, `pika.inl()`) and preview variants (`pikap()`). It uses a bracket-depth parser to correctly extract the full function call, handling nested parentheses, strings, comments, and template literals.
 
 ::: info Global Function
 `pika()` is a global function — you do not import it. The build plugin finds and replaces these calls via static analysis. The generated `pika.gen.ts` provides TypeScript support through `declare global`, not through module exports.
@@ -67,6 +67,12 @@ PikaCSS supports three output formats for transformed `pika()` calls. The format
 `pika.arr()` produces an array of class name strings, useful for frameworks that accept class arrays:
 
 <<< @/.examples/principles/build-format-array.ts
+
+### Inline Format
+
+`pika.inl()` produces bare class names without surrounding quotes or array brackets. TypeScript types `pika.inl()` as returning `void`, signalling that the compiled value is not meant to be used as a conventional string or array. This format is intended for specific template or framework contexts that consume raw class name tokens:
+
+<<< @/.examples/principles/build-format-inline.ts
 
 ## Static Analyzability Constraint
 

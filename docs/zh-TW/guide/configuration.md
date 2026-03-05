@@ -69,7 +69,11 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 <<< @/.examples/guide/config-preflights-with-layer.ts
 
-### `layers`
+::: tip `definePreflight()` 輔助函式
+使用來自 `@pikacss/core` 的 `definePreflight()` 可獲得型別安全的前置樣式定義。這是恆等函式，會對引數層焧型別，便於抽取或跨設定檔共用前置樣式：
+
+<<< @/.examples/guide/built-ins/preflights-define-helper.ts
+:::
 
 - **型別：** `Record<string, number>`
 - **預設值：** `{ preflights: 1, utilities: 10 }`
@@ -191,6 +195,25 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 | `{ shortcut, value, autocomplete? }` | 物件形式（動態） |
 
 <<< @/.examples/guide/config-shortcuts.ts
+
+## 型別輔助函式
+
+`@pikacss/core` 匯出了一組恆等函式，用於層焧 TypeScript 型別並提供完整的自動補齊。每個函式對應一個特定的設定概念：
+
+| 輔助函式 | 用途 |
+|---|---|
+| `defineEngineConfig()` | 型別安全的引擎設定物件 |
+| `definePreflight()` | 型別安全的 `Preflight` 定義 |
+| `defineStyleDefinition()` | 型別安全的樣式定義物件（傳入 `pika()`） |
+| `defineSelector()` | 型別安全的 `Selector` 定義 |
+| `defineShortcut()` | 型別安全的 `Shortcut` 定義 |
+| `defineKeyframes()` | 型別安全的 `Keyframes` 定義 |
+| `defineVariables()` | 型別安全的 `VariablesDefinition` 物件 |
+| `defineEnginePlugin()` | 型別安全的引擎插件 |
+
+所有輔助函式均從 `@pikacss/core` 匯出。`defineStyleDefinition()` 特別適合當你希望跨多個 `pika()` 呼叫重用同一個樣式定義物件時：
+
+<<< @/.examples/guide/built-ins/style-definition-define-helper.ts
 
 ## Build Plugin Options（`PluginOptions`）
 

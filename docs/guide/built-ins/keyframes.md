@@ -95,6 +95,12 @@ Plugins can manage keyframes programmatically:
 - `engine.keyframes.store` — `Map<string, ResolvedKeyframesConfig>` of all registered keyframes with frames
 - `engine.keyframes.add(...list)` — add keyframe definitions at runtime (accepts all three forms)
 
+## The `defineKeyframes()` Helper
+
+Use `defineKeyframes()` for type-safe keyframe definitions with full TypeScript autocomplete. It is an identity function exported from `@pikacss/core`, especially useful when organizing animations in a separate file:
+
+<<< @/.examples/guide/built-ins/keyframes-define-helper.ts
+
 ## Source Reference
 
 - `packages/core/src/internal/plugins/keyframes.ts`

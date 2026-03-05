@@ -95,10 +95,16 @@ interface ObjectForm { name: string, frames?: KeyframesProgress, autocomplete?: 
 - `engine.keyframes.store` — 所有已註冊關鍵影格的 `Map<string, ResolvedKeyframesConfig>`
 - `engine.keyframes.add(...list)` — 在執行階段新增關鍵影格定義（接受三種形式）
 
+## `defineKeyframes()` 輔助函式
+
+使用 `defineKeyframes()` 可獲得具備完整 TypeScript 自動補齊的型別安全關鍵影格定義。這是從 `@pikacss/core` 匯出的恆等函式，特別適合將動畫組織到獨立檔案中使用：
+
+<<< @/.examples/guide/built-ins/keyframes-define-helper.ts
+
 ## 原始碼參考
 
 - `packages/core/src/internal/plugins/keyframes.ts`
 
-## Next
+## 下一步
 
 - 繼續閱讀 [Selectors](/zh-TW/guide/built-ins/selectors)
