@@ -82,13 +82,12 @@ Controls the output format of transformed `pika()` calls.
 | ---------- | ----------- | ------------------------ | ------------------------------------ |
 | `'string'` | `string`    | `"a b c"`                | Default — works with `class` binding |
 | `'array'`  | `string[]`  | `['a', 'b', 'c']`       | For use with `clsx`, `classnames`    |
-| `'inline'` | —           | inline style application | Direct style injection               |
 
 <<< @/.examples/integrations/vite-custom-format.ts
 
 ### `config`
 
-Provide engine configuration inline or as a file path. When omitted, the plugin auto-detects `pika.config.{js,ts,mjs,mts}` in the project root.
+Provide engine configuration inline or as a file path. When omitted, the plugin auto-detects `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` in the project root.
 
 - **Type**: `EngineConfig | string`
 - **Default**: `undefined` (auto-detected)

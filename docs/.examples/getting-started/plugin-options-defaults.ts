@@ -9,7 +9,7 @@ PikaCSS({
 	// The function name used in source code to define styles.
 	fnName: 'pika',
 
-	// Format of transformed output: 'string' | 'array' | 'inline'
+	// Format of transformed output: 'string' | 'array'
 	transformedFormat: 'string',
 
 	// TypeScript codegen file (provides autocomplete support).

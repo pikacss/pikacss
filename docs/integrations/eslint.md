@@ -109,15 +109,15 @@ Customize the function name to detect if `pika` conflicts with another identifie
 When `fnName` is set to `'css'`, the rule will detect:
 
 - `css()`, `cssp()`
-- `css.str()`, `css.arr()`, `css.inl()`
-- `cssp.str()`, `cssp.arr()`, `cssp.inl()`
+- `css.str()`, `css.arr()`
+- `cssp.str()`, `cssp.arr()`
 
 You can also pass options when using the `recommended()` function:
 
 <<< @/.examples/integrations/eslint-recommended-with-options.mjs
 
 ::: info Default
-By default, `fnName` is `'pika'`, which detects `pika()`, `pikap()`, `pika.str()`, `pika.arr()`, `pika.inl()`, and preview variants.
+By default, `fnName` is `'pika'`, which detects `pika()`, `pikap()`, `pika.str()`, `pika.arr()`, and preview variants.
 :::
 
 ## How It Works
@@ -129,8 +129,8 @@ The ESLint configuration package analyzes the Abstract Syntax Tree (AST) of your
 3. **Report violations**: If a non-static expression is found, the rule reports an ESLint error with a specific message describing why the value is not statically analyzable.
 
 The package derives all function name variants automatically from the base `fnName` option:
-- Normal: `pika`, `pika.str`, `pika.arr`, `pika.inl`
-- Preview: `pikap`, `pikap.str`, `pikap.arr`, `pikap.inl`
+- Normal: `pika`, `pika.str`, `pika.arr`
+- Preview: `pikap`, `pikap.str`, `pikap.arr`
 
 This ensures comprehensive coverage without manual configuration of each variant.
 

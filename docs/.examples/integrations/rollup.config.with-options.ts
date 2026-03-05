@@ -13,7 +13,7 @@ export default {
 			// The function name used in source code (default: 'pika')
 			fnName: 'pika',
 
-			// Output format: 'string' | 'array' | 'inline' (default: 'string')
+			// Output format: 'string' | 'array' (default: 'string')
 			transformedFormat: 'string',
 
 			// Automatically create config file if not found (default: true)

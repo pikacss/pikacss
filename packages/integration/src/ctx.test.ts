@@ -260,14 +260,15 @@ describe('createCtx', () => {
 			.toHaveBeenCalledWith('/abs/pika.config.ts', expect.any(Object))
 	})
 
-	it('loadConfig handles relative config path', async () => {
+	it.each(['ts', 'cts', 'mts', 'js', 'cjs', 'mjs'] as const)('loadConfig handles relative config path with .%s extension', async (ext) => {
 		const { statSync } = await import('node:fs')
 		vi.mocked(statSync)
 			.mockReturnValue({ isFile: () => true } as any)
-		const ctx = createCtx(opts({ configOrPath: 'my.config.ts' }))
+		const filename = `my.config.${ext}`
+		const ctx = createCtx(opts({ configOrPath: filename }))
 		await ctx.loadConfig()
 		expect(vi.mocked(statSync))
-			.toHaveBeenCalled()
+			.toHaveBeenCalledWith(`/test/project/${filename}`, expect.any(Object))
 	})
 
 	it('loadConfig returns null on error', async () => {
@@ -308,7 +309,10 @@ describe('createCtx', () => {
 		const ctx = createCtx(opts({ configOrPath: undefined }))
 		await ctx.loadConfig()
 		expect(vi.mocked(globbyStream))
-			.toHaveBeenCalled()
+			.toHaveBeenCalledWith(
+				'**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}',
+				{ ignore: ['node_modules'] },
+			)
 	})
 
 	// ── transform ─────────────────────────────────────────────
@@ -334,14 +338,6 @@ describe('createCtx', () => {
 		const r = await ctx.transform('pika(\'color:red\')', 'x.ts')
 		expect(r?.code)
 			.toContain('[\'c-red\']')
-	})
-
-	it('transform inline format', async () => {
-		const ctx = createCtx(opts({ transformedFormat: 'inline' }))
-		await ctx.setup()
-		const r = await ctx.transform('pika(\'color:red\')', 'x.ts')
-		expect(r?.code)
-			.toContain('c-red')
 	})
 
 	it('transform returns undefined when no fn calls found', async () => {

@@ -109,15 +109,15 @@ PikaCSS 在建置時期而非執行期編譯樣式。所有值都必須在打包
 當 `fnName` 設定為 `'css'` 時，規則將偵測：
 
 - `css()`、`cssp()`
-- `css.str()`、`css.arr()`、`css.inl()`
-- `cssp.str()`、`cssp.arr()`、`cssp.inl()`
+- `css.str()`、`css.arr()`
+- `cssp.str()`、`cssp.arr()`
 
 使用 `recommended()` 函式時也可傳入選項：
 
 <<< @/.examples/integrations/eslint-recommended-with-options.mjs
 
 ::: info 預設值
-預設情況下，`fnName` 為 `'pika'`，可偵測 `pika()`、`pikap()`、`pika.str()`、`pika.arr()`、`pika.inl()` 及預覽變體。
+預設情況下，`fnName` 為 `'pika'`，可偵測 `pika()`、`pikap()`、`pika.str()`、`pika.arr()` 及預覽變體。
 :::
 
 ## 運作原理
@@ -129,8 +129,8 @@ ESLint 設定套件分析原始碼的抽象語法樹（AST），以偵測對 `pi
 3. **回報違規**：若發現非靜態表達式，規則會回報一個 ESLint 錯誤，說明該值不是靜態可分析的原因。
 
 套件會根據基本 `fnName` 選項自動推導所有函式名稱變體：
-- 一般：`pika`、`pika.str`、`pika.arr`、`pika.inl`
-- 預覽：`pikap`、`pikap.str`、`pikap.arr`、`pikap.inl`
+- 一般：`pika`、`pika.str`、`pika.arr`
+- 預覽：`pikap`、`pikap.str`、`pikap.arr`
 
 這確保了全面的覆蓋範圍，無需手動設定每個變體。
 

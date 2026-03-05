@@ -10,8 +10,8 @@ PikaCSS 透過兩個層次進行設定：
 PikaCSS 會自動偵測符合以下模式的設定檔：
 
 ```text
-**/pika.config.{js,ts,mjs,mts}
-**/pikacss.config.{js,ts,mjs,mts}
+**/pika.config.{js,cjs,mjs,ts,cts,mts}
+**/pikacss.config.{js,cjs,mjs,ts,cts,mts}
 ```
 
 使用 `defineEngineConfig()` 包裝你的設定，以獲得型別安全的 IntelliSense。此函式從 `@pikacss/core` 匯出，並以 `const T` 回傳，保留設定的精確字面值型別，以便進行準確的型別檢查：
@@ -75,6 +75,8 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 <<< @/.examples/guide/built-ins/preflights-define-helper.ts
 :::
 
+### `layers`
+
 - **型別：** `Record<string, number>`
 - **預設值：** `{ preflights: 1, utilities: 10 }`
 
@@ -130,6 +132,8 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 - **字串／數字** — CSS 值（預設渲染於 `:root` 下）
 - **`null`** — 僅供自動補齊使用，不產生 CSS 輸出
 - **`VariableObject`** — 對值、自動補齊行為及清除進行精細控制
+
+`VariablesDefinition` 也支援巢狀選擇器鍵（例如 `'[data-theme="dark"]'`），可將變數作用域設定在 `:root` 之外。
 
 <<< @/.examples/guide/config-variables.ts
 
@@ -225,7 +229,7 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 | `config` | `EngineConfig \| string` | `undefined` | 行內引擎設定或設定檔路徑 |
 | `autoCreateConfig` | `boolean` | `true` | 若無設定檔則自動建立 |
 | `fnName` | `string` | `'pika'` | 在原始碼中偵測的函式名稱 |
-| `transformedFormat` | `'string' \| 'array' \| 'inline'` | `'string'` | 產生的 class 名稱輸出格式 |
+| `transformedFormat` | `'string' \| 'array'` | `'string'` | 產生的 class 名稱輸出格式 |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript 程式碼產生檔路徑（`true` = `'pika.gen.ts'`，`false` = 停用） |
 | `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔路徑（`true` = `'pika.gen.css'`） |
 
@@ -241,7 +245,6 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 - **`'string'`** — `"a b c"`（以空格分隔的字串）
 - **`'array'`** — `['a', 'b', 'c']`（class 名稱陣列）
-- **`'inline'`** — 行內樣式物件格式
 
 <<< @/.examples/guide/config-plugin-options.ts
 

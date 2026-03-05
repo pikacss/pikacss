@@ -38,7 +38,7 @@ PikaCSS 透過 `@pikacss/unplugin-pikacss/rollup` 進入點與 [Rollup](https://
 | `scan.include` | `['**/*.{js,ts,jsx,tsx,vue}']` | 要掃描的檔案 glob 規則 |
 | `scan.exclude` | `['node_modules/**', 'dist/**']` | 要排除的檔案 glob 規則 |
 | `fnName` | `'pika'` | 在原始碼中偵測的函式名稱 |
-| `transformedFormat` | `'string'` | 輸出格式：`'string'`、`'array'` 或 `'inline'` |
+| `transformedFormat` | `'string'` | 輸出格式：`'string'` 或 `'array'` |
 | `autoCreateConfig` | `true` | 找不到 `pika.config.ts` 時自動建立 |
 | `tsCodegen` | `true` → `'pika.gen.ts'` | TypeScript 程式碼產生檔案路徑，或 `false` 停用 |
 | `cssCodegen` | `true` → `'pika.gen.css'` | CSS 程式碼產生檔案路徑 |

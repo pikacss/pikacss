@@ -38,7 +38,7 @@ All unplugin adapters share the same options. You can customize the plugin behav
 | `scan.include` | `['**/*.{js,ts,jsx,tsx,vue}']` | File glob patterns to scan |
 | `scan.exclude` | `['node_modules/**', 'dist/**']` | File glob patterns to exclude |
 | `fnName` | `'pika'` | Function name to detect in source code |
-| `transformedFormat` | `'string'` | Output format: `'string'`, `'array'`, or `'inline'` |
+| `transformedFormat` | `'string'` | Output format: `'string'` or `'array'` |
 | `autoCreateConfig` | `true` | Auto-create `pika.config.ts` if not found |
 | `tsCodegen` | `true` → `'pika.gen.ts'` | TypeScript codegen file path, or `false` to disable |
 | `cssCodegen` | `true` → `'pika.gen.css'` | CSS codegen file path |

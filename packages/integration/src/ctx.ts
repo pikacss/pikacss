@@ -189,7 +189,7 @@ function useTransform({
 		exclude: string[]
 	}
 	fnName: string
-	transformedFormat: 'string' | 'array' | 'inline'
+	transformedFormat: 'string' | 'array'
 	cwd: Signal<string>
 	cssCodegenFilepath: Signal<string>
 	tsCodegenFilepath: Signal<string | null>
@@ -346,9 +346,7 @@ function useTransform({
 					transformedContent = transformedFormat === 'array'
 						? `[${names.map(n => `'${n}'`)
 							.join(', ')}]`
-						: transformedFormat === 'string'
-							? `'${names.join(' ')}'`
-							: names.join(' ')
+						: `'${names.join(' ')}'`
 				}
 				else if (fnUtils.isForceString(fnCall.fnName)) {
 					transformedContent = `'${names.join(' ')}'`

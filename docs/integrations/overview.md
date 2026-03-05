@@ -61,7 +61,7 @@ All build-tool plugins accept the same `PluginOptions` interface:
 | `config` | `EngineConfig \| string` | `undefined` | Inline engine config object, or path to a config file |
 | `autoCreateConfig` | `boolean` | `true` | Auto-create a `pika.config.ts` file if none exists |
 | `fnName` | `string` | `'pika'` | Function name to detect and transform in source code |
-| `transformedFormat` | `'string' \| 'array' \| 'inline'` | `'string'` | Output format of generated class names |
+| `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of generated class names |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript codegen file path (`true` → `'pika.gen.ts'`, `false` to disable) |
 | `cssCodegen` | `true \| string` | `true` | CSS codegen file path (`true` → `'pika.gen.css'`) |
 

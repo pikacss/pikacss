@@ -33,26 +33,21 @@ function generateStyleFn(ctx: IntegrationContext) {
 	const lines: string[] = [
 		'type StyleFn_Array = (...params: StyleItem[]) => string[]',
 		'type StyleFn_String = (...params: StyleItem[]) => string',
-		'type StyleFn_Inline = (...params: StyleItem[]) => void',
 	]
 
 	if (transformedFormat === 'array')
 		lines.push('type StyleFn_Normal = StyleFn_Array')
 	else if (transformedFormat === 'string')
 		lines.push('type StyleFn_Normal = StyleFn_String')
-	else if (transformedFormat === 'inline')
-		lines.push('type StyleFn_Normal = StyleFn_Inline')
 
 	lines.push(
 		'type StyleFn = StyleFn_Normal & {',
 		'  str: StyleFn_String',
 		'  arr: StyleFn_Array',
-		'  inl: StyleFn_Inline',
 		'}',
 		`type StyleFnWithPreview = PreviewOverloads<StyleFn_Normal>[\'fn\'] & {`,
 		`  str: PreviewOverloads<StyleFn_String>[\'fn\']`,
 		`  arr: PreviewOverloads<StyleFn_Array>[\'fn\']`,
-		`  inl: PreviewOverloads<StyleFn_Inline>[\'fn\']`,
 		'}',
 		'',
 	)
@@ -135,7 +130,7 @@ async function generateOverloadContent(ctx: IntegrationContext) {
 	}
 
 	return [
-		'interface PreviewOverloads<StyleFn extends (StyleFn_Array | StyleFn_String | StyleFn_Inline)> {',
+		'interface PreviewOverloads<StyleFn extends (StyleFn_Array | StyleFn_String)> {',
 		...fnsLines,
 		'  /**',
 		'   * PikaCSS Preview',

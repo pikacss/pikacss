@@ -20,7 +20,7 @@ export default defineConfig({
 			// Name of the pika function in source code
 			fnName: 'pika',
 
-			// Output format: 'string' | 'array' | 'inline'
+			// Output format: 'string' | 'array'
 			transformedFormat: 'string',
 
 			// TypeScript codegen file (true = 'pika.gen.ts')

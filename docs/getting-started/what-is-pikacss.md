@@ -57,7 +57,7 @@ The engine ships with five built-in plugins that are always loaded:
 
 ## Configuration
 
-PikaCSS auto-detects a config file named `pika.config.{js,ts,mjs,mts}` in your project root. Use `defineEngineConfig()` for type safety:
+PikaCSS auto-detects config files named `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` in your project root. Use `defineEngineConfig()` for type safety:
 
 <<< @/.examples/getting-started/pika-config-example.ts
 
