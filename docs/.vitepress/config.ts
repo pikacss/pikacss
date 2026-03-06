@@ -57,6 +57,7 @@ export default withMermaid({
 							text: '整合',
 							items: [
 								{ text: '概覽', link: '/zh-TW/integrations/overview' },
+								{ text: '自訂建置工具', link: '/zh-TW/integrations/custom-integration' },
 								{ text: 'Vite', link: '/zh-TW/integrations/vite' },
 								{ text: 'Rollup', link: '/zh-TW/integrations/rollup' },
 								{ text: 'Nuxt', link: '/zh-TW/integrations/nuxt' },
@@ -138,6 +139,7 @@ export default withMermaid({
 					text: 'Integrations',
 					items: [
 						{ text: 'Overview', link: '/integrations/overview' },
+						{ text: 'Custom Build Tool', link: '/integrations/custom-integration' },
 						{ text: 'Vite', link: '/integrations/vite' },
 						{ text: 'Rollup', link: '/integrations/rollup' },
 						{ text: 'Nuxt', link: '/integrations/nuxt' },

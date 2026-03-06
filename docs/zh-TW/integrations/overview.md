@@ -16,6 +16,12 @@ PikaCSS 透過 [`@pikacss/unplugin-pikacss`](https://www.npmjs.com/package/@pika
 | **Rolldown** | `@pikacss/unplugin-pikacss/rolldown` | [Rolldown →](/zh-TW/integrations/rolldown) |
 | **Nuxt** | `@pikacss/nuxt-pikacss` | [Nuxt →](/zh-TW/integrations/nuxt) |
 
+## 自訂建置工具
+
+如果你的打包器或編譯器不在官方 adapter 支援範圍內，可以直接使用 `@pikacss/integration` 的 `createCtx()` 建立自訂整合。
+
+[自訂建置工具整合 →](/zh-TW/integrations/custom-integration)
+
 ## 開發工具
 
 PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐並捕捉錯誤。

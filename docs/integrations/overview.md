@@ -16,6 +16,12 @@ All build-tool plugins are thin adapters around the same core `unpluginFactory`.
 | **Rolldown** | `@pikacss/unplugin-pikacss/rolldown` | [Rolldown →](/integrations/rolldown) |
 | **Nuxt** | `@pikacss/nuxt-pikacss` | [Nuxt →](/integrations/nuxt) |
 
+## Custom Build Tools
+
+If your bundler or compiler is not covered by the official adapters, build directly on top of `createCtx()` from `@pikacss/integration`.
+
+[Custom Build Tool Integration →](/integrations/custom-integration)
+
 ## Development Tools
 
 PikaCSS also provides developer tooling to enforce best practices and catch errors during development.
