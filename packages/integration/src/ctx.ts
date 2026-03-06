@@ -152,7 +152,6 @@ function useConfig({
 		}
 	}
 
-	// const loadedConfig = signal({ config: inlineConfig, file: null as string | null })
 	const resolvedConfig = signal(inlineConfig)
 	const resolvedConfigPath = signal(null as string | null)
 	const resolvedConfigContent = signal(null as string | null)
@@ -221,6 +220,67 @@ function useTransform({
 		}
 	}
 	const fnUtils = createFnUtils(fnName)
+	function findTemplateExpressionEnd(code: string, start: number): number {
+		let end = start
+		let depth = 1
+		let inString: '\'' | '"' | '`' | false = false
+		let isEscaped = false
+
+		while (depth > 0 && end < code.length - 1) {
+			end++
+			const char = code[end]
+
+			if (isEscaped) {
+				isEscaped = false
+				continue
+			}
+
+			if (char === '\\') {
+				isEscaped = true
+				continue
+			}
+
+			if (inString !== false) {
+				if (char === inString) {
+					inString = false
+				}
+				else if (inString === '`' && char === '$' && code[end + 1] === '{') {
+					const nestedExpressionEnd = findTemplateExpressionEnd(code, end + 1)
+					if (nestedExpressionEnd === -1) {
+						return -1
+					}
+					end = nestedExpressionEnd
+				}
+				continue
+			}
+
+			if (char === '{') {
+				depth++
+			}
+			else if (char === '}') {
+				depth--
+			}
+			else if (char === '\'' || char === '"' || char === '`') {
+				inString = char
+			}
+			else if (char === '/' && code[end + 1] === '/') {
+				const lineEnd = code.indexOf('\n', end)
+				if (lineEnd === -1) {
+					return -1
+				}
+				end = lineEnd
+			}
+			else if (char === '/' && code[end + 1] === '*') {
+				const commentEnd = code.indexOf('*/', end + 2)
+				if (commentEnd === -1) {
+					return -1
+				}
+				end = commentEnd + 1
+			}
+		}
+
+		return depth === 0 ? end : -1
+	}
 	function findFunctionCalls(code: string) {
 		const RE = fnUtils.RE
 		const result: { fnName: string, start: number, end: number, snippet: string }[] = []
@@ -257,8 +317,12 @@ function useTransform({
 					}
 					// Handle template literal ${} expressions
 					else if (inString === '`' && char === '$' && code[end + 1] === '{') {
-						end++ // Skip '{'
-						depth++
+						const templateExpressionEnd = findTemplateExpressionEnd(code, end + 1)
+						if (templateExpressionEnd === -1) {
+							log.warn(`Malformed template literal expression in function call at position ${start}`)
+							break
+						}
+						end = templateExpressionEnd
 					}
 					continue
 				}

@@ -28,6 +28,12 @@ vi.mock('globby', () => ({
 	})),
 }))
 
+vi.mock('jiti', () => ({
+	createJiti: vi.fn(() => ({
+		evalModule: vi.fn(async () => ({ default: {} })),
+	})),
+}))
+
 vi.mock('local-pkg', () => ({
 	isPackageExists: vi.fn(() => false),
 }))
@@ -35,6 +41,22 @@ vi.mock('local-pkg', () => ({
 vi.mock('./tsCodegen', () => ({
 	generateTsCodegenContent: vi.fn(async () => '/* ts codegen */'),
 }))
+
+function createAsyncIterable<T>(values: T[]) {
+	return {
+		[Symbol.asyncIterator]: () => {
+			let index = 0
+			return {
+				next: async () => {
+					if (index < values.length) {
+						return { done: false, value: values[index++] }
+					}
+					return { done: true, value: undefined }
+				},
+			}
+		},
+	}
+}
 
 const mockEngine = {
 	use: vi.fn(async () => ['c-red']),
@@ -290,29 +312,45 @@ describe('createCtx', () => {
 			.toBeNull()
 	})
 
-	it('loadConfig picks up config from globbyStream', async () => {
+	it.each([
+		'pika.config.js',
+		'pika.config.cjs',
+		'pika.config.mjs',
+		'pika.config.ts',
+		'pika.config.cts',
+		'pika.config.mts',
+		'pikacss.config.js',
+		'pikacss.config.cjs',
+		'pikacss.config.mjs',
+		'pikacss.config.ts',
+		'pikacss.config.cts',
+		'pikacss.config.mts',
+	] as const)('loadConfig picks up supported config filename %s from globbyStream', async (filename) => {
 		vi.mocked(globbyStream)
-			.mockReturnValue({
-				[Symbol.asyncIterator]: () => {
-					let done = false
-					return {
-						next: async () => {
-							if (!done) {
-								done = true
-								return { done: false, value: 'pika.config.ts' }
-							}
-							return { done: true, value: undefined }
-						},
-					}
-				},
-			} as any)
+			.mockReturnValue(createAsyncIterable([filename]) as any)
 		const ctx = createCtx(opts({ configOrPath: undefined }))
-		await ctx.loadConfig()
+		const result = await ctx.loadConfig()
+
 		expect(vi.mocked(globbyStream))
 			.toHaveBeenCalledWith(
 				'**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}',
 				{ ignore: ['node_modules'] },
 			)
+		expect(result.file)
+			.toBe(`/test/project/${filename}`)
+	})
+
+	it('loadConfig uses the first config path yielded by globbyStream', async () => {
+		vi.mocked(globbyStream)
+			.mockReturnValue(createAsyncIterable([
+				'nested/pikacss.config.mts',
+				'pika.config.ts',
+			]) as any)
+		const ctx = createCtx(opts({ configOrPath: undefined }))
+		const result = await ctx.loadConfig()
+
+		expect(result.file)
+			.toBe('/test/project/nested/pikacss.config.mts')
 	})
 
 	// ── transform ─────────────────────────────────────────────
@@ -424,14 +462,43 @@ describe('createCtx', () => {
 	it('transform handles escape sequences', async () => {
 		const ctx = createCtx(opts())
 		await ctx.setup()
-		await ctx.transform('pika(\'color:\\\'red\\\'\')', 'x.ts')
+		const r = await ctx.transform('pika(\'color:\\\'red\\\'\')', 'x.ts')
+		expect(r)
+			.toBeDefined()
+		expect(mockEngine.use)
+			.toHaveBeenCalledWith('color:\'red\'')
+	})
+
+	it('transform ignores comment-like content inside strings', async () => {
+		const ctx = createCtx(opts())
+		await ctx.setup()
+		const r = await ctx.transform('pika(\'content:"/* not a comment */ // still text"\')', 'x.ts')
+		expect(r)
+			.toBeDefined()
+		expect(mockEngine.use)
+			.toHaveBeenCalledWith('content:"/* not a comment */ // still text"')
 	})
 
 	it('transform handles template literals with expressions', async () => {
 		const ctx = createCtx(opts())
 		await ctx.setup()
 		// eslint-disable-next-line no-template-curly-in-string
-		await ctx.transform('pika(`color:${"red"}`)', 'x.ts')
+		const r = await ctx.transform('pika(`color:${"red"}`)', 'x.ts')
+		expect(r)
+			.toBeDefined()
+		expect(mockEngine.use)
+			.toHaveBeenCalledWith('color:red')
+	})
+
+	it('transform handles comment-like strings inside template literal expressions', async () => {
+		const ctx = createCtx(opts())
+		await ctx.setup()
+		// eslint-disable-next-line no-template-curly-in-string
+		const r = await ctx.transform('pika(`content:${"/* not a comment */"}`)', 'x.ts')
+		expect(r)
+			.toBeDefined()
+		expect(mockEngine.use)
+			.toHaveBeenCalledWith('content:/* not a comment */')
 	})
 
 	it('transform warns on unclosed comment', async () => {

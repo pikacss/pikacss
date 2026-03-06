@@ -1,11 +1,13 @@
 import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
+import { log } from '../utils'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
 
 export interface VariableAutocomplete {
 	/**
 	 * Specify the properties that the variable can be used as a value of.
+	 * Use '-' to disable CSS value autocomplete for this variable.
 	 *
 	 * @default ['*']
 	 */
@@ -221,6 +223,10 @@ function createResolveVariablesFn({
 }: {
 	pruneUnused?: boolean
 } = {}) {
+	function isVariableScopeObject(value: Variable | VariablesDefinition): value is VariablesDefinition {
+		return typeof value === 'object' && value !== null && !Array.isArray(value)
+	}
+
 	function _resolveVariables(variables: VariablesDefinition, levels: string[], result: ResolvedVariable[]): ResolvedVariable[] {
 		for (const [key, value] of Object.entries(variables)) {
 			if (key.startsWith('--')) {
@@ -242,6 +248,10 @@ function createResolveVariablesFn({
 				})
 			}
 			else {
+				if (!isVariableScopeObject(value)) {
+					log.warn(`Invalid variables scope for selector "${key}". Expected a nested object, received ${typeof value}. Skipping.`)
+					continue
+				}
 				_resolveVariables(value as VariablesDefinition, [...levels, key], result)
 			}
 		}

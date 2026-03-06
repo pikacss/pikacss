@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createEngine } from '../engine'
+import { log } from '../utils'
 import { extractUsedVarNames, extractUsedVarNamesFromPreflightResult, normalizeVariableName } from './variables'
 
 describe('extractUsedVarNames', () => {
@@ -200,6 +201,28 @@ describe('variables plugin (engine integration)', () => {
 			expect(preflight).not.toContain('--unrelated')
 		})
 
+		it('should keep circularly referenced variables without infinite traversal', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--a': 'var(--b)',
+						'--b': 'var(--a)',
+						'--unrelated': 'red',
+					},
+					pruneUnused: true,
+				},
+			})
+
+			await engine.use({ color: 'var(--a)' })
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--a: var(--b);')
+			expect(preflight)
+				.toContain('--b: var(--a);')
+			expect(preflight).not.toContain('--unrelated')
+		})
+
 		it('should keep variables referenced by other preflights (string format)', async () => {
 			const engine = await createEngine({
 				variables: {
@@ -289,6 +312,29 @@ describe('variables plugin (engine integration)', () => {
 			expect(preflight)
 				.toContain('--color: #000;')
 		})
+
+		it('should skip invalid selector values instead of recursing indefinitely', async () => {
+			const warnSpy = vi.spyOn(log, 'warn')
+
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'invalid': 'red',
+						'--color': '#fff',
+					},
+					pruneUnused: false,
+				},
+			})
+
+			const preflight = await engine.renderPreflights(true)
+			expect(preflight)
+				.toContain('--color: #fff;')
+			expect(preflight).not.toContain('invalid')
+			expect(warnSpy)
+				.toHaveBeenCalledWith('Invalid variables scope for selector "invalid". Expected a nested object, received string. Skipping.')
+
+			warnSpy.mockRestore()
+		})
 	})
 
 	describe('null-value variables (autocomplete only)', () => {
@@ -344,6 +390,35 @@ describe('variables plugin (engine integration)', () => {
 			const preflight = await engine.renderPreflights(true)
 			expect(preflight)
 				.toContain('--always: red;')
+		})
+
+		it('should skip CSS value autocomplete when asValueOf is set to -', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--color-token': {
+							value: 'red',
+							autocomplete: {
+								asValueOf: 'color',
+								asProperty: false,
+							},
+						},
+						'--icon-token': {
+							value: 'url(icon.svg)',
+							autocomplete: {
+								asValueOf: '-',
+								asProperty: false,
+							},
+						},
+					},
+					pruneUnused: false,
+				},
+			})
+
+			expect(engine.config.autocomplete.cssProperties.get('color'))
+				.toEqual(['var(--color-token)'])
+			expect([...engine.config.autocomplete.cssProperties.values()].flat())
+				.not.toContain('var(--icon-token)')
 		})
 	})
 
@@ -404,6 +479,12 @@ describe('extractUsedVarNamesFromPreflightResult', () => {
 			.toEqual([])
 	})
 
+	it('should extract var names from a CSS string with fallback values', () => {
+		const result = extractUsedVarNamesFromPreflightResult('color: var(--text-color, var(--fallback-color));')
+		expect(result)
+			.toEqual(['--text-color', '--fallback-color'])
+	})
+
 	it('should extract var names from a PreflightDefinition object (string CSS values)', () => {
 		const result = extractUsedVarNamesFromPreflightResult({
 			':root': { color: 'var(--text-color)' },
@@ -420,6 +501,16 @@ describe('extractUsedVarNamesFromPreflightResult', () => {
 		})
 		expect(result)
 			.toContain('--border-color')
+	})
+
+	it('should recursively extract fallback var names from nested PreflightDefinition objects', () => {
+		const result = extractUsedVarNamesFromPreflightResult({
+			':root': {
+				'.child': { color: 'var(--primary-color, var(--secondary-color))' },
+			},
+		})
+		expect(result)
+			.toEqual(['--primary-color', '--secondary-color'])
 	})
 
 	it('should handle an empty PreflightDefinition object', () => {
