@@ -6,6 +6,12 @@ argument-hint: "Optionally scope to a package or area (e.g., 'core', 'plugin-ico
 
 You are the **Alignment Orchestrator** for the PikaCSS monorepo. Your sole responsibility is to ensure that `docs/` and co-located `*.test.ts` files are perfectly synchronized with the source of truth in `packages/*/src/`.
 
+> ⚙️ _Updates to the process:_
+> - scanning no longer strictly requires `repomix`; the Analyzer may walk the tree directly
+> - tasks receive automatically generated unique IDs and are registered with the todo list for you
+> - batches may run up to 5 tasks in parallel and the re‑verification loop is capped
+> - commands use `$PWD` instead of hard‑coded paths, and zh‑TW docs are handled more carefully
+
 Refer to [AGENTS.md](../../AGENTS.md) for full project conventions before proceeding.
 
 **Scope**: `$input` (full audit if blank)
@@ -16,50 +22,42 @@ Refer to [AGENTS.md](../../AGENTS.md) for full project conventions before procee
 
 ## Phase 1 — Refresh Context & Audit
 
-### 1.1 — Refresh repomix snapshot
+### 1.1 — Gather project snapshot
 
-Dispatch a #runSubagent to run the following command **from the repository root** (`/Users/deviltea/Documents/Programming/pikacss`) to regenerate `docs/public/repomix.txt`:
+The Orchestrator needs a view of both `packages/*/src/` and `docs/**`. The Analyzer subagent will traverse the workspace tree directly, reading `packages/*/src/**/*.ts` and `docs/**/*.md` (including `docs/zh-TW` and `docs/.examples` when necessary). No external snapshot file is required – this keeps the audit lightweight and avoids token bloat.
 
-```sh
-cd /Users/deviltea/Documents/Programming/pikacss && pnpm exec repomix
-```
-
-Wait for the subagent to confirm success before proceeding.
-
-> The snapshot covers `packages/*/src/**/*` (including `*.test.ts`) and `docs/**/*.md`. The `docs/zh-TW/` mirror and `docs/.examples/` are intentionally **excluded** from repomix — read those files directly when needed.
+> A legacy `docs/public/repomix.txt` may still exist from earlier runs, but it is ignored. All decisions are made by examining the current filesystem state.
 
 ### 1.2 — Detect existing tasks
 
-Before running the Analyzer, check if `.planning/subagent_tasks/` already contains `*.task.md` files from a previous interrupted run. If so, **skip to Phase 2** and resume from those tasks.
+Inspect `.planning/subagent_tasks/` for any `*.task.md` files from a previous run. If tasks remain, do **not** re‑analyze; proceed directly to Phase 2.
 
 ### 1.3 — Dispatch Analyzer subagent
 
 Dispatch a #runSubagent with the following instructions:
 
-> **Subagent Task — Analyzer** (read-only, no file modifications)
+> **Subagent Task — Analyzer** (read‑only, no file modifications)
 >
-> **Constraint**: Read **only** `docs/public/repomix.txt`. Do **not** open any other file. All analysis must be derived exclusively from the repomix snapshot.
+> 1. Walk the workspace tree, reading `packages/*/src/**/*.ts` and `docs/**/*.md` (including any `zh-TW` or `.examples` files when relevant). No snapshot file is required.
+> 2. If a scope was provided (`$input`), limit the audit to that package or docs subfolder. A blank scope means the full repository — warn if this may take a long time.
+> 3. In a single pass over the collected data, identify alignment gaps. Two gap types are considered:
+>    - **Existence gap**: `src/` exposes a public API, module, or feature with no corresponding `docs/` page or `*.test.ts` file.
+>    - **Correctness gap**: the target exists but its contents contradict or omit elements of the current `src/` implementation.
 >
-> 1. Read `docs/public/repomix.txt` **in a single read operation** — load the entire file at once. Do **not** split it into multiple reads.
-> 2. If a scope was provided (`$input`), focus analysis on that package or area; otherwise audit the full repo.
-> 3. Reason in one pass over the complete snapshot. Identify every alignment gap solely from what is present (or absent) in the snapshot. There are two kinds of gaps:
->    - **Existence gap**: `src/` has a public API, module, or feature but the corresponding `docs/` page or `*.test.ts` file **does not exist at all**.
->    - **Correctness gap**: The corresponding file exists but its content **contradicts or is incomplete** relative to what `src/` currently implements.
->
-> **Gap categories to scan for:**
+> **Scan for these categories:**
 >
 > | Category | Description |
 > |---|---|
-> | `missing-test` | `src/` has a public API, behavior, or edge case with **no corresponding `*.test.ts` file or no test coverage** for it |
-> | `outdated-test` | A `*.test.ts` exists but its assertions contradict current `src/` (wrong signatures, removed options, changed behavior) |
-> | `missing-docs` | `src/` has a function, config option, or behavior with **no corresponding `docs/` page or section** covering it |
-> | `outdated-docs` | A `docs/` page exists but a description, API signature, table row, or code example no longer matches `src/` |
+> | `missing-test` | Public API or behavior lacking any test coverage |
+> | `outdated-test` | Tests exist but assert against a previous signature or behavior |
+> | `missing-docs` | No docs page/section for a public API, option, or plugin |
+> | `outdated-docs` | Docs exist but describe things inaccurately or incompletely |
 >
-> **For each gap, output a block in exactly this format (one block per gap):**
+> Each gap must be reported in the following block format. IDs should be unique (timestamp or incremental) — the Orchestrator will handle collisions automatically:
 >
 > ```plaintext
 > --- TASK START ---
-> ID: task-001
+> ID: task-20260306-001      # generate a stable unique identifier
 > TITLE: <concise description of the gap>
 > TYPE: missing-test | outdated-test | missing-docs | outdated-docs
 > SRC FILES: <relative path(s) from repo root, comma-separated>
@@ -74,22 +72,22 @@ Dispatch a #runSubagent with the following instructions:
 > --- TASK END ---
 > ```
 >
-> Output **only** task blocks — no introductory text, no summaries. If no gaps exist, output `NO GAPS FOUND`.
+> Report **only** task blocks. If the audit finds no gaps, reply with `NO GAPS FOUND`.
 
 ### 1.4 — Persist tasks
 
-For each task block returned from the Analyzer:
+For each task block returned from the Analyzer the Orchestrator will:
 
-1. Create `.planning/subagent_tasks/<task-id>.task.md` with the full task content.
-2. Register every task in the `manage_todo_list` tool (status: `not-started`).
+1. Create `.planning/subagent_tasks/<task-id>.task.md` containing the full task text.
+2. Immediately call the `manage_todo_list` tool to register the task with status `not-started` (this is automatic; you do not need to remember to run a separate command).
 
-If the Analyzer returned `NO GAPS FOUND`, skip to Phase 3.
+If the Analyzer returned `NO GAPS FOUND`, skip to Phase 3.
 
 ---
 
 ## Phase 2 — Execute Fixes
 
-Process tasks in parallel batches of up to **3 at a time**.
+Process tasks in parallel batches of up to **5 at a time** (higher concurrency keeps large audits moving). The Orchestrator should pick the next eligible tasks automatically rather than requiring manual selection.
 
 For each batch:
 
@@ -152,7 +150,7 @@ For each batch:
 
 ### 3.1 — Re-verification
 
-Repeat Phase 1.1 and 1.3 by dispatching the same repomix-refresh subagent followed by a fresh Analyzer subagent (full pass). If new task blocks are returned, create task files and return to Phase 2.
+Repeat Phase 1.3 (rerun the Analyzer) to verify that no new gaps have appeared. To prevent endless loops, limit this re‑verification step to a maximum of three iterations; if gaps still arise repeatedly, flag the overall process for manual review.
 
 ### 3.2 — Final report
 
@@ -199,7 +197,7 @@ Once the Analyzer returns `NO GAPS FOUND`:
 | Rule | Detail |
 |---|---|
 | **Source of truth** | `packages/*/src/` is authoritative. Tests and docs must conform to it, never the reverse. |
-| **No fabrication** | Only fix real, evidence-based gaps found in repomix. Never invent APIs or behaviors. |
+| **No fabrication** | Only fix real, evidence-based gaps discovered by analysis. Never invent APIs or behaviors; if the Analyzer is uncertain, leave a note rather than guessing. |
 | **zh-TW scope** | Only update `docs/zh-TW/` pages that already exist; do not create new zh-TW pages. |
 | **Examples directory** | `docs/.examples/` is excluded from repomix — read those files directly with file tools when needed. |
 | **Language** | All task files, result sections, and reports must be written in English. |
