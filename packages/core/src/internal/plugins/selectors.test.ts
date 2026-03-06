@@ -289,6 +289,21 @@ describe('selectors plugin (engine integration)', () => {
 			expect(css)
 				.toContain('color: red;')
 		})
+
+		it('should fall back to original selector when async resolution rejects', async () => {
+			const engine = await createEngine({
+				selectors: {
+					selectors: [
+						[/^err-(.+)$/, async () => Promise.reject(new Error('intentional async error'))],
+					],
+				},
+			})
+
+			await engine.use({ 'err-test': { color: 'red' } } as any)
+			const css = await engine.renderAtomicStyles(true)
+			expect(css)
+				.toContain('color: red;')
+		})
 	})
 })
 
