@@ -26,6 +26,8 @@
 
 <<< @/.examples/guide/built-ins/variables-object-interface.ts
 
+若以原始碼層級的精準型別來看，`VariableObject.value` 的型別是 `ResolvedCSSProperties[`--${string}`]`。上方範例為了可讀性做了簡化，但實際型別仍會與引擎解析後的 CSS 自訂屬性值模型保持一致。
+
 ## 基本用法
 
 在你的 `pika.config.ts` 中定義變數。頂層變數預設放置於 `:root` 下：
@@ -59,6 +61,8 @@
 - 其每個變數的 `pruneUnused` 明確設定為 `false`
 
 `safeList` 中的每個項目都必須是包含 `--` 前綴的 CSS 自訂屬性名稱，例如 `--color-primary`。
+
+在原始碼中，`safeList` 的型別是 ``(`--${string}` & {})[]``，用來保留字面值推斷，避免自訂屬性名稱被 TypeScript 拓寬成一般 `string`。
 
 ::: tip 傳遞性依賴追蹤
 PikaCSS 會傳遞性地追蹤變數依賴。若你的樣式參照了 `--color-primary`，而 `--color-primary` 的值參照了 `--color-base`，`--color-base` 又參照了 `--color-raw`，則三個變數都會自動保留在 CSS 輸出中——即使只有 `--color-primary` 直接出現在你的樣式中。

@@ -122,7 +122,7 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 ### `variables`
 
-- **型別：** ``{ variables: Arrayable<VariablesDefinition>, pruneUnused?: boolean, safeList?: `--${string}`[] }``
+- **型別：** ``{ variables: Arrayable<VariablesDefinition>, pruneUnused?: boolean, safeList?: (`--${string}` & {})[] }``
 - **預設值：** `undefined`
 
 定義 CSS 自訂屬性（變數），支援作用域選擇器、自動補齊設定及未使用項目清除。
@@ -131,14 +131,16 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 |---|---|---|---|
 | `variables` | `Arrayable<VariablesDefinition>` | （必填） | 變數定義。可為單一物件或物件陣列（依序合併）。 |
 | `pruneUnused` | `boolean` | `true` | 從最終 CSS 中移除未使用的變數。 |
-| `safeList` | `` `--${string}`[] `` | `[]` | 無論是否使用都始終包含的變數。每個項目都必須是包含 `--` 前綴的 CSS 自訂屬性名稱。 |
+| `safeList` | `` (`--${string}` & {})[] `` | `[]` | 無論是否使用都始終包含的變數。每個項目都必須是包含 `--` 前綴的 CSS 自訂屬性名稱。 |
 
 每個變數的值可以是：
 - **字串／數字** — CSS 值（預設渲染於 `:root` 下）
 - **`null`** — 僅供自動補齊使用，不產生 CSS 輸出
 - **`VariableObject`** — 對值、自動補齊行為及清除進行精細控制
 
-`VariablesDefinition` 也支援巢狀選擇器鍵（例如 `'[data-theme="dark"]'`），可將變數作用域設定在 `:root` 之外。使用 `safeList` 時，每個項目都必須是像 `--color-text` 這樣的 CSS 變數名稱。
+原始碼中的 `VariableObject.value` 型別是 `ResolvedCSSProperties[`--${string}`]`，因此變數值會與引擎解析後的 CSS 自訂屬性型別保持一致。
+
+`VariablesDefinition` 也支援巢狀選擇器鍵（例如 `'[data-theme="dark"]'`），可將變數作用域設定在 `:root` 之外。使用 `safeList` 時，每個項目都必須是像 `--color-text` 這樣的 CSS 變數名稱。原始碼型別中的 `& {}` 交集是為了避免 TypeScript 將自訂屬性名稱拓寬成一般 `string`。
 
 <<< @/.examples/guide/config-variables.ts
 
@@ -240,7 +242,11 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 | `fnName` | `string` | `'pika'` | 在原始碼中偵測的函式名稱 |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | 產生的 class 名稱輸出格式 |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript 程式碼產生檔路徑（`true` = `'pika.gen.ts'`，`false` = 停用） |
-| `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔路徑（`true` = `'pika.gen.css'`） |
+| `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔路徑（`true` = `'pika.gen.css'`；不支援 `false`） |
+
+::: info `cssCodegen` 不能停用
+和 `tsCodegen` 不同，`cssCodegen` 不接受 `false`。若你要使用預設路徑，請設為 `true`；若要改變輸出位置，請提供自訂字串路徑。
+:::
 
 ### `scan`
 

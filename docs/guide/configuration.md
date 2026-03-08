@@ -122,7 +122,7 @@ Controls whether `!important` is appended to all generated CSS declarations. Ind
 
 ### `variables`
 
-- **Type:** ``{ variables: Arrayable<VariablesDefinition>, pruneUnused?: boolean, safeList?: `--${string}`[] }``
+- **Type:** ``{ variables: Arrayable<VariablesDefinition>, pruneUnused?: boolean, safeList?: (`--${string}` & {})[] }``
 - **Default:** `undefined`
 
 Define CSS custom properties (variables) with support for scoped selectors, autocomplete configuration, and unused pruning.
@@ -131,14 +131,16 @@ Define CSS custom properties (variables) with support for scoped selectors, auto
 |---|---|---|---|
 | `variables` | `Arrayable<VariablesDefinition>` | (required) | Variable definitions. Can be a single object or array of objects (merged in order). |
 | `pruneUnused` | `boolean` | `true` | Remove unused variables from the final CSS. |
-| `safeList` | `` `--${string}`[] `` | `[]` | Variables that are always included regardless of usage. Each entry must be a CSS custom property name including the `--` prefix. |
+| `safeList` | `` (`--${string}` & {})[] `` | `[]` | Variables that are always included regardless of usage. Each entry must be a CSS custom property name including the `--` prefix. |
 
 Each variable value can be:
 - A **string/number** — the CSS value (rendered under `:root` by default)
 - **`null`** — register for autocomplete only, no CSS output
 - A **`VariableObject`** — fine-grained control over value, autocomplete behavior, and pruning
 
-`VariablesDefinition` also supports nested selector keys (for example, `'[data-theme="dark"]'`) to scope variables outside `:root`. When you use `safeList`, every entry must be a CSS variable name such as `--color-text`.
+`VariableObject.value` is typed as `ResolvedCSSProperties[`--${string}`]` in source, so variable values stay aligned with the engine's resolved CSS custom-property typing.
+
+`VariablesDefinition` also supports nested selector keys (for example, `'[data-theme="dark"]'`) to scope variables outside `:root`. When you use `safeList`, every entry must be a CSS variable name such as `--color-text`. The `& {}` intersection in the source type prevents TypeScript from widening the custom-property name to a plain `string`.
 
 <<< @/.examples/guide/config-variables.ts
 
@@ -240,7 +242,11 @@ These options are passed to the build plugin (e.g., `pikacss()` in your Vite/Web
 | `fnName` | `string` | `'pika'` | Function name to detect in source code |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of generated class names |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript codegen file path (`true` = `'pika.gen.ts'`, `false` = disabled) |
-| `cssCodegen` | `true \| string` | `true` | CSS codegen file path (`true` = `'pika.gen.css'`) |
+| `cssCodegen` | `true \| string` | `true` | CSS codegen file path (`true` = `'pika.gen.css'`; `false` is not supported) |
+
+::: info `cssCodegen` cannot be disabled
+Unlike `tsCodegen`, `cssCodegen` does not accept `false`. Use `true` for the default path or provide a custom string path when you need to relocate the generated CSS file.
+:::
 
 ### `scan`
 

@@ -137,6 +137,10 @@ Controls CSS code generation. The generated file contains all atomic CSS rules.
 | `true`   | Generate `pika.gen.css` in the project root        |
 | `string` | Generate at the specified path                     |
 
+::: info
+`cssCodegen` cannot be set to `false`. The generated CSS file is required for the virtual `pika.css` module, so use `true` for the default path or provide a custom output path.
+:::
+
 <<< @/.examples/integrations/vite-custom-codegen.ts
 
 ## How It Works

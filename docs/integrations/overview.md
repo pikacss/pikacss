@@ -69,7 +69,7 @@ All build-tool plugins accept the same `PluginOptions` interface:
 | `fnName` | `string` | `'pika'` | Function name to detect and transform in source code |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of generated class names |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript codegen file path (`true` → `'pika.gen.ts'`, `false` to disable) |
-| `cssCodegen` | `true \| string` | `true` | CSS codegen file path (`true` → `'pika.gen.css'`) |
+| `cssCodegen` | `true \| string` | `true` | CSS codegen file path (`true` → `'pika.gen.css'`; `false` is not supported) |
 
 ## Generated Files
 

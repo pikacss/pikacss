@@ -19,7 +19,7 @@ The `core:selectors` plugin resolves selector aliases before rendering. It suppo
 
 ## Selector Definition Formats
 
-There are four ways to define a selector.
+There are five forms for defining a selector: string, tuple-static, tuple-dynamic, object-static, and object-dynamic.
 
 ### String Form
 

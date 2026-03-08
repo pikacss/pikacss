@@ -26,6 +26,8 @@ A recursive object where:
 
 <<< @/.examples/guide/built-ins/variables-object-interface.ts
 
+For source-level type accuracy, `VariableObject.value` is typed as `ResolvedCSSProperties[`--${string}`]`. The example above simplifies that shape for readability, but the actual type stays aligned with the engine's resolved CSS custom-property value model.
+
 ## Basic Usage
 
 Define variables in your `pika.config.ts`. Top-level variables are placed under `:root` by default:
@@ -59,6 +61,8 @@ By default, `pruneUnused` is `true`. A variable is kept in CSS output when **any
 - Its per-variable `pruneUnused` is explicitly set to `false`
 
 Each `safeList` entry must be a CSS custom property name that includes the `--` prefix, such as `--color-primary`.
+
+In source, `safeList` is typed as ``(`--${string}` & {})[]`` to preserve literal inference and avoid widening custom-property names to a plain `string`.
 
 ::: tip Transitive Dependency Tracking
 PikaCSS tracks variable dependencies transitively. If your styles reference `--color-primary`, and `--color-primary`'s value references `--color-base`, which in turn references `--color-raw`, all three variables are automatically preserved in CSS output — even if only `--color-primary` appears directly in your styles.

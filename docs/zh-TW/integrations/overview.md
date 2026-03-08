@@ -69,7 +69,7 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 | `fnName` | `string` | `'pika'` | 在原始碼中偵測並轉換的函式名稱 |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | 產生的 class 名稱的輸出格式 |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript 程式碼產生檔案路徑（`true` → `'pika.gen.ts'`，`false` 停用） |
-| `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔案路徑（`true` → `'pika.gen.css'`） |
+| `cssCodegen` | `true \| string` | `true` | CSS 程式碼產生檔案路徑（`true` → `'pika.gen.css'`；不支援 `false`） |
 
 ## 產生的檔案
 
