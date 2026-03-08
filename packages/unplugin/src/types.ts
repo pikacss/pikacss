@@ -6,7 +6,7 @@ export interface PluginOptions {
 	 *
 	 * Default values:
 	 * - `include`: `['**\/*.{js,ts,jsx,tsx,vue}']` - Scans all JS/TS/Vue files by default
-	 * - `exclude`: `['node_modules/**']` - Excludes node_modules by default
+	 * - `exclude`: `['node_modules/**', 'dist/**']` - Excludes dependency and build output folders by default
 	 * @example
 	 * scan: {
 	 *   include: ['src/**\/{*.ts,*.tsx,*.vue}'],

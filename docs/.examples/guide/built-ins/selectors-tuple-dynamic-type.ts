@@ -1,5 +1,5 @@
 type TupleFormDynamic = [
 	selector: RegExp,
-	value: (matched: RegExpMatchArray) => string | string[],
+	value: (matched: RegExpMatchArray) => Awaitable<Arrayable<string>>,
 	autocomplete?: string | string[],
 ]

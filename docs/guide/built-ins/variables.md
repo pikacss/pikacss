@@ -28,6 +28,8 @@ A recursive object where:
 
 For source-level type accuracy, `VariableObject.value` is typed as `ResolvedCSSProperties[`--${string}`]`. The example above simplifies that shape for readability, but the actual type stays aligned with the engine's resolved CSS custom-property value model.
 
+For the same reason, `autocomplete.asValueOf` accepts a CSS property name, an array of property names, the wildcard `'*'`, or `'-'` to disable CSS value autocomplete for that variable entirely.
+
 ## Basic Usage
 
 Define variables in your `pika.config.ts`. Top-level variables are placed under `:root` by default:

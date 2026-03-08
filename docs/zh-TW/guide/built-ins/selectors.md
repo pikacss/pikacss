@@ -37,7 +37,7 @@
 
 ### 元組形式——動態
 
-具有 `RegExp` 模式和解析函式的元組。函式接收 `RegExpMatchArray` 並回傳一個或多個替換字串。可選的第三個元素提供自動補齊提示，且可以是單一字串或陣列。
+具有 `RegExp` 模式和解析函式的元組。函式接收 `RegExpMatchArray`，可同步回傳一個或多個替換字串，也可回傳 `Promise`。可選的第三個元素提供自動補齊提示，且可以是單一字串或陣列。
 
 <<< @/.examples/guide/built-ins/selectors-tuple-dynamic-type.ts
 
@@ -45,7 +45,7 @@
 
 ### 物件形式
 
-等同於元組形式，但使用具名屬性。支援靜態和動態兩種變體：
+等同於元組形式，但使用具名屬性。動態物件解析器也遵循相同規則，包含支援回傳 `Promise`。支援靜態和動態兩種變體：
 
 <<< @/.examples/guide/built-ins/selectors-object-form.ts
 

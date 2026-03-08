@@ -29,6 +29,8 @@ PikaCSS 支援三種定義關鍵影格的形式：
 
 <<< @/.examples/guide/built-ins/keyframes-tuple-form-type.ts
 
+無論是元組形式還是物件形式，`autocomplete` 都必須是字串陣列。這裡不像 selectors 與 shortcuts 那樣接受單一字串捷徑寫法。
+
 ### 3. 物件形式
 
 <<< @/.examples/guide/built-ins/keyframes-object-form-interface.ts

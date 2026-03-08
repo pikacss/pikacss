@@ -40,13 +40,13 @@ The value can be a `StyleDefinition` object, a `string` referencing another shor
 
 <<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic-type.ts
 
-The resolver function receives the `RegExpMatchArray` from the pattern match and returns one or more `ResolvedStyleItem`s. Optional autocomplete hints provide IDE suggestions for the dynamic pattern, and can be passed as either a single string or an array:
+The resolver function receives the `RegExpMatchArray` from the pattern match and may return one or more `ResolvedStyleItem`s either synchronously or via a `Promise`. Optional autocomplete hints provide IDE suggestions for the dynamic pattern, and can be passed as either a single string or an array:
 
 <<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic.ts
 
 ### Object Form
 
-Equivalent to tuple forms but with named properties. Both static and dynamic variants are supported:
+Equivalent to tuple forms but with named properties. Dynamic object resolvers can also return a `Promise`. Both static and dynamic variants are supported:
 
 <<< @/.examples/guide/built-ins/shortcuts-object-form.ts
 

@@ -40,13 +40,13 @@
 
 <<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic-type.ts
 
-解析函式接收來自模式比對的 `RegExpMatchArray`，並回傳一個或多個 `ResolvedStyleItem`。可選的自動補齊提示為動態模式提供 IDE 建議，且可以是單一字串或陣列：
+解析函式接收來自模式比對的 `RegExpMatchArray`，可同步回傳一個或多個 `ResolvedStyleItem`，也可回傳 `Promise`。可選的自動補齊提示為動態模式提供 IDE 建議，且可以是單一字串或陣列：
 
 <<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic.ts
 
 ### 物件形式
 
-等同於元組形式，但使用具名屬性。靜態和動態兩種變體均支援：
+等同於元組形式，但使用具名屬性。動態物件解析器同樣可回傳 `Promise`。靜態和動態兩種變體均支援：
 
 <<< @/.examples/guide/built-ins/shortcuts-object-form.ts
 

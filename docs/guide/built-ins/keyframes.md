@@ -29,6 +29,8 @@ Registers only the keyframe name for autocomplete — no `@keyframes` block is g
 
 <<< @/.examples/guide/built-ins/keyframes-tuple-form-type.ts
 
+In both tuple and object forms, `autocomplete` must be an array of strings. Unlike selectors and shortcuts, keyframes do not accept a single string shorthand here.
+
 ### 3. Object Form
 
 <<< @/.examples/guide/built-ins/keyframes-object-form-interface.ts

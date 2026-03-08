@@ -28,6 +28,8 @@
 
 若以原始碼層級的精準型別來看，`VariableObject.value` 的型別是 `ResolvedCSSProperties[`--${string}`]`。上方範例為了可讀性做了簡化，但實際型別仍會與引擎解析後的 CSS 自訂屬性值模型保持一致。
 
+同樣地，`autocomplete.asValueOf` 可接受單一 CSS 屬性名稱、屬性名稱陣列、萬用字元 `'*'`，或用 `'-'` 完全停用該變數的 CSS 值自動補齊。
+
 ## 基本用法
 
 在你的 `pika.config.ts` 中定義變數。頂層變數預設放置於 `:root` 下：

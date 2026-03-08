@@ -37,7 +37,7 @@ A two-element tuple maps a selector name to one or more replacement strings. Use
 
 ### Tuple Form — Dynamic
 
-A tuple with a `RegExp` pattern and a resolver function. The function receives the `RegExpMatchArray` and returns one or more replacement strings. An optional third element provides autocomplete hints and may be either a single string or an array.
+A tuple with a `RegExp` pattern and a resolver function. The function receives the `RegExpMatchArray` and may return one or more replacement strings either synchronously or via a `Promise`. An optional third element provides autocomplete hints and may be either a single string or an array.
 
 <<< @/.examples/guide/built-ins/selectors-tuple-dynamic-type.ts
 
@@ -45,7 +45,7 @@ A tuple with a `RegExp` pattern and a resolver function. The function receives t
 
 ### Object Form
 
-Equivalent to tuple forms but with named properties. Supports both static and dynamic variants:
+Equivalent to tuple forms but with named properties. Dynamic object resolvers follow the same rules as tuple resolvers, including async `Promise` returns. Supports both static and dynamic variants:
 
 <<< @/.examples/guide/built-ins/selectors-object-form.ts
 
