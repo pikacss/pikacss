@@ -86,7 +86,7 @@ By default, `pika()` returns a space-separated string of class names (e.g. `"a b
 
 ## Configuration (optional)
 
-PikaCSS works with zero configuration, but you can create a `pika.config.ts` (or `.js`, `.mjs`, `.mts`) to customize behavior. Use the `defineEngineConfig()` helper for full TypeScript autocomplete:
+PikaCSS works with zero configuration, but you can create a `pika.config.ts` (or `.js`, `.cjs`, `.mjs`, `.cts`, `.mts`) to customize behavior. Use the `defineEngineConfig()` helper for full TypeScript autocomplete:
 
 <<< @/.examples/getting-started/first-pika-config.ts
 

@@ -86,7 +86,7 @@ PikaCSS 完全在建置時期運作 — **零執行期負擔**。當你執行建
 
 ## 設定（選用）
 
-PikaCSS 可以在零設定情況下運作，但你可以建立 `pika.config.ts`（或 `.js`、`.mjs`、`.mts`、`.cjs`、`.cts`）來自訂行為。使用 `defineEngineConfig()` 輔助函式以獲得完整的 TypeScript 自動補齊：
+PikaCSS 可以在零設定情況下運作，但你可以建立 `pika.config.ts`（或 `.js`、`.cjs`、`.mjs`、`.cts`、`.mts`）來自訂行為。使用 `defineEngineConfig()` 輔助函式以獲得完整的 TypeScript 自動補齊：
 
 <<< @/.examples/getting-started/first-pika-config.ts
 

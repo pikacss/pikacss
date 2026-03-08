@@ -34,12 +34,12 @@ The Nuxt module handles the following automatically:
 1. **Registers a Nuxt plugin** that imports `pika.css` — you do **not** need to manually import the generated CSS.
 2. **Adds the Vite plugin** (`@pikacss/unplugin-pikacss/vite`) with `enforce: 'pre'` for correct transform ordering.
 3. **Forwards options** from `nuxt.options.pikacss` to the underlying Vite plugin.
-4. **Default scan patterns**: When no `pikacss` options are provided at all, it scans `**/*.vue`, `**/*.tsx`, and `**/*.jsx` files by default.
+4. **Default scan patterns**: When the `pikacss` key is omitted entirely, it scans `**/*.vue`, `**/*.tsx`, and `**/*.jsx` files by default. If you pass `pikacss: {}`, the module falls back to the unplugin default scan pattern: `**/*.{js,ts,jsx,tsx,vue}`.
 
 ::: warning Nuxt default scan excludes `.ts` and `.js` files
 The Nuxt module's built-in default intentionally omits plain `.ts` and `.js` files. In Nuxt, it is recommended to keep `pika()` calls inside component files (`.vue`, `.tsx`, `.jsx`) rather than in composables or utility modules, because server-side rendering and Nuxt's module resolution can cause those files to be evaluated in environments where the build transform may not run.
 
-If you do use `pika()` inside `.ts` composables, pass an explicit `scan.include` option to restore the broader pattern:
+If you do use `pika()` inside `.ts` composables, pass an explicit `scan.include` option to restore or customize the broader pattern:
 
 <<< @/.examples/integrations/nuxt.config.scan-all.ts
 :::

@@ -19,7 +19,7 @@ PikaCSS 提供一個 ESLint 設定套件，用於強制執行 `pika()` 函式呼
 
 ## 基本設定
 
-將設定新增至你的 `eslint.config.mjs`（或 `.js`、`.ts`、`.cjs`）：
+將設定新增至你的 `eslint.config.mjs`（或 `.js`、`.ts`）：
 
 <<< @/.examples/integrations/eslint-basic-config.mjs
 
