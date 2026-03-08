@@ -65,7 +65,7 @@ All build-tool plugins accept the same `PluginOptions` interface:
 | `scan.include` | `string \| string[]` | `['**/*.{js,ts,jsx,tsx,vue}']` | File glob patterns to scan for `pika()` calls |
 | `scan.exclude` | `string \| string[]` | `['node_modules/**', 'dist/**']` | File glob patterns to exclude from scanning |
 | `config` | `EngineConfig \| string` | `undefined` | Inline engine config object, or path to a config file |
-| `autoCreateConfig` | `boolean` | `true` | Auto-create a `pika.config.ts` file if none exists |
+| `autoCreateConfig` | `boolean` | `true` | Auto-create a `pika.config.js` file if none exists |
 | `fnName` | `string` | `'pika'` | Function name to detect and transform in source code |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of generated class names |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript codegen file path (`true` → `'pika.gen.ts'`, `false` to disable) |
@@ -73,7 +73,7 @@ All build-tool plugins accept the same `PluginOptions` interface:
 
 ## Generated Files
 
-The plugin generates two files in your project root during build:
+The plugin generates two files in its working directory during build:
 
 - **`pika.gen.css`** — Contains all extracted atomic CSS rules. This is the actual CSS output consumed by the virtual module.
 - **`pika.gen.ts`** — Provides TypeScript type augmentation for autocomplete and type-checking of `pika()` calls (custom selectors, shortcuts, variables, etc.).
@@ -94,7 +94,7 @@ When the build plugin encounters `import 'pika.css'`, it resolves the import to 
 
 ## Configuration File
 
-When `autoCreateConfig` is `true` (the default), the plugin will auto-create a `pika.config.js` file if one does not already exist. The config file is auto-detected with the following names:
+When `autoCreateConfig` is `true` (the default), the plugin will auto-create a `pika.config.js` file if one does not already exist. The config file is auto-detected from the integration working directory with the following names:
 
 - `pika.config.js`
 - `pika.config.cjs`

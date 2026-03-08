@@ -57,7 +57,7 @@ PikaCSS 結合了兩個概念：
 
 ## 設定
 
-PikaCSS 會自動在你的專案根目錄偵測名為 `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` 的設定檔。使用 `defineEngineConfig()` 來確保型別安全：
+PikaCSS 會從整合的工作目錄自動偵測名為 `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` 的設定檔，通常這就是你的專案根目錄。使用 `defineEngineConfig()` 來確保型別安全：
 
 <<< @/.examples/getting-started/pika-config-example.ts
 

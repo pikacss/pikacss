@@ -19,8 +19,8 @@ PikaCSS 透過 `@pikacss/unplugin-pikacss/webpack` 進入點與 [webpack](https:
 <<< @/.examples/integrations/webpack.config.mjs [ESM]
 :::
 
-::: tip ESM vs CommonJS
-webpack 透過 `.mjs` 副檔名或 `package.json` 中的 `"type": "module"` 支援 ESM 設定檔。插件在兩種模組系統下都能運作。
+::: tip ESM 設定檔
+webpack 透過 `.mjs` 副檔名或 `package.json` 中的 `"type": "module"` 支援 ESM 設定檔。
 :::
 
 ## 匯入產生的 CSS

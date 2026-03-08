@@ -7,12 +7,7 @@ PikaCSS 透過兩個層次進行設定：
 
 ## 設定檔
 
-PikaCSS 會自動偵測符合以下模式的設定檔：
-
-```text
-**/pika.config.{js,cjs,mjs,ts,cts,mts}
-**/pikacss.config.{js,cjs,mjs,ts,cts,mts}
-```
+PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` 的設定檔，通常這就是你的專案根目錄。
 
 使用 `defineEngineConfig()` 包裝你的設定，以獲得型別安全的 IntelliSense。此函式從 `@pikacss/core` 匯出，並以 `const T` 回傳，保留設定的精確字面值型別，以便進行準確的型別檢查：
 
@@ -93,6 +88,25 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 <<< @/.examples/guide/config-layers.ts
 
+### 樣式定義中的 `__layer`
+
+`__layer` 是引擎內建的樣式層級能力。當你希望某個樣式定義所提取出的原子化規則被渲染到特定、已設定的 `@layer` 時，可在該樣式定義上加入它。
+
+<<< @/.examples/guide/config-style-layer.ts
+
+在引擎提取 CSS 宣告之前，`__layer` 會先被移除，接著產生出的原子化樣式會帶上對應的 layer 名稱。這表示相同的 CSS 宣告若出現在不同 layer 中，可能會產生不同的原子化 class ID。
+
+它與 layer 設定的互動方式如下：
+
+- `config.layers` 定義有順序的已知 layer 名稱清單。PikaCSS 會將你的項目合併到內建預設值 `{ preflights: 1, utilities: 10 }` 之上。
+- `defaultUtilitiesLayer` 控制未指定 `__layer` 的原子化樣式會渲染到哪裡。預設為 `utilities`。
+- `__layer` 只會影響目前這個樣式定義，不會全域改變 `defaultUtilitiesLayer`。
+- 若 `__layer` 使用的名稱不存在於 `config.layers` 中，該樣式會回退為未分 layer 的輸出，而不會自動建立新的有序 layer。
+
+若要改變未分 layer 的 utility 樣式預設輸出位置，請將 `defaultUtilitiesLayer` 設定為你已知 layer 名稱之一：
+
+<<< @/.examples/guide/config-style-layer-defaults.ts
+
 ### `defaultPreflightsLayer`
 
 - **型別：** `string`
@@ -105,7 +119,7 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 - **型別：** `string`
 - **預設值：** `'utilities'`
 
-原子化工具樣式預設放入的 CSS `@layer`。
+未明確指定 `__layer` 的原子化工具樣式，預設會放入的 CSS `@layer`。
 
 ## Core Plugin 設定
 

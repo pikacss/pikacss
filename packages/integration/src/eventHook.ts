@@ -1,4 +1,4 @@
-export type EventHookListener<EventPayload> = (payload: EventPayload) => void | Promise<void>
+export type EventHookListener<EventPayload> = (payload: EventPayload) => void
 
 export interface EventHook<EventPayload> {
 	listeners: Set<EventHookListener<EventPayload>>

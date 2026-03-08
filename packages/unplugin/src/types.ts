@@ -28,7 +28,7 @@ export interface PluginOptions {
 
 	/**
 	 * Configuration object or path to a configuration file for the PikaCSS engine.
-	 * Can pass a config object directly to define engine options, or a config file path (e.g., 'pika.config.ts').
+	 * Can pass a config object directly to define engine options, or a config file path (e.g., 'pika.config.js').
 	 *
 	 * Behavior:
 	 * - If a file path is specified but the file doesn't exist and autoCreateConfig is true, a config file will be generated at the specified path.
@@ -37,7 +37,7 @@ export interface PluginOptions {
 	 * @example
 	 * config: { prefix: 'pika-', defaultSelector: '.%' }
 	 * // or
-	 * config: './pika.config.ts'
+	 * config: './pika.config.js'
 	 */
 	config?: EngineConfig | string
 
@@ -45,7 +45,7 @@ export interface PluginOptions {
 	 * Whether to automatically create a configuration file when needed.
 	 *
 	 * Behavior:
-	 * - If config is not provided: Creates a default 'pika.config.ts' in the project root.
+	 * - If config is not provided: Creates a default 'pika.config.js' in the project root.
 	 * - If config is a file path that doesn't exist: Creates a config file at the specified path.
 	 * - If config is an inline config object: This option is ignored (no file will be created).
 	 * @default true

@@ -254,11 +254,25 @@ describe('createCtx', () => {
 			.toHaveBeenCalledWith(expect.stringContaining('autoCreateConfig is false'))
 	})
 
-	it('loadConfig creates config when not found (autoCreate true)', async () => {
+	it('loadConfig creates default pika.config.js when config is not provided', async () => {
 		const ctx = createCtx(opts({ configOrPath: undefined, autoCreateConfig: true }))
 		await ctx.loadConfig()
 		expect(vi.mocked(writeFile))
-			.toHaveBeenCalled()
+			.toHaveBeenCalledWith('/test/project/pika.config.js', expect.any(String))
+	})
+
+	it('loadConfig creates missing absolute config path at the absolute location', async () => {
+		const ctx = createCtx(opts({ configOrPath: '/abs/configs/pika.config.ts', autoCreateConfig: true }))
+		await ctx.loadConfig()
+		expect(vi.mocked(writeFile))
+			.toHaveBeenCalledWith('/abs/configs/pika.config.ts', expect.any(String))
+	})
+
+	it('loadConfig creates missing relative config path under cwd', async () => {
+		const ctx = createCtx(opts({ configOrPath: 'configs/pika.config.ts', autoCreateConfig: true }))
+		await ctx.loadConfig()
+		expect(vi.mocked(writeFile))
+			.toHaveBeenCalledWith('/test/project/configs/pika.config.ts', expect.any(String))
 	})
 
 	it('loadConfig creates config without tsCodegen reference when tsCodegen false', async () => {

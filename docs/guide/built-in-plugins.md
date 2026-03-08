@@ -57,6 +57,12 @@ You configure built-in plugins through top-level keys in `EngineConfig`, not by 
 
 <<< @/.examples/guide/built-in-plugins-config.ts
 
+## Engine-Level Style Capabilities
+
+Not every special style property comes from a built-in plugin hook. For example, `__layer` is handled by the core engine before atomic styles are stored and rendered, so assigning a style to a CSS layer is a style-level engine capability rather than part of the built-in plugin transformation pipeline.
+
+See [Configuration](/guide/configuration) for how `__layer`, `config.layers`, and `defaultUtilitiesLayer` work together.
+
 ## Plugin Detail Pages
 
 - [Important](/guide/built-ins/important) — `!important` management

@@ -73,7 +73,7 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 
 ## 產生的檔案
 
-插件在建置期間會在專案根目錄產生兩個檔案：
+插件在建置期間會在其工作目錄中產生兩個檔案：
 
 - **`pika.gen.css`** — 包含所有提取的原子化 CSS 規則。這是虛擬模組所使用的實際 CSS 輸出。
 - **`pika.gen.ts`** — 提供 TypeScript 型別擴充，用於 `pika()` 呼叫的自動補齊和型別檢查（自訂選擇器、捷徑、變數等）。
@@ -94,7 +94,7 @@ PikaCSS 提供一個名為 `pika.css` 的虛擬模組，它會解析至產生的
 
 ## 設定檔
 
-當 `autoCreateConfig` 為 `true`（預設值）時，若不存在設定檔，插件會自動建立一個 `pika.config.js` 檔案。設定檔會以下列名稱自動偵測：
+當 `autoCreateConfig` 為 `true`（預設值）時，若不存在設定檔，插件會自動建立一個 `pika.config.js` 檔案。設定檔會從整合的工作目錄自動偵測，支援以下名稱：
 
 - `pika.config.js`
 - `pika.config.cjs`

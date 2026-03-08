@@ -109,7 +109,7 @@ function useConfig({
 				}
 
 				const _specificConfigPath = specificConfigPath()
-				resolvedConfigPath = join(_cwd, _specificConfigPath ?? 'pika.config.js')
+				resolvedConfigPath = _specificConfigPath ?? join(_cwd, 'pika.config.js')
 				await mkdir(dirname(resolvedConfigPath), { recursive: true })
 					.catch(() => {})
 				const _tsCodegenFilepath = tsCodegenFilepath()

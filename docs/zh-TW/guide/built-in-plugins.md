@@ -57,6 +57,12 @@ flowchart LR
 
 <<< @/.examples/guide/built-in-plugins-config.ts
 
+## 引擎層級的樣式能力
+
+不是每個特殊樣式屬性都來自內建插件的鉤子。例如，`__layer` 由核心引擎在原子化樣式被儲存與渲染之前處理，因此將樣式指派到 CSS layer 是一項樣式層級的引擎能力，而不是內建插件轉換流程的一部分。
+
+關於 `__layer`、`config.layers` 與 `defaultUtilitiesLayer` 如何一起運作，請參閱 [設定](/zh-TW/guide/configuration)。
+
 ## 插件詳細頁面
 
 - [Important](/zh-TW/guide/built-ins/important) — `!important` 管理

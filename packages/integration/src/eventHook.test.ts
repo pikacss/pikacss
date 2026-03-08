@@ -125,15 +125,19 @@ describe('createEventHook', () => {
 			.toBe(0)
 	})
 
-	it('should support async listeners', async () => {
+	it('trigger() should remain synchronous when listeners schedule async work', async () => {
 		const hook = createEventHook<number>()
 		const results: number[] = []
-		const asyncListener = async (payload: number) => {
-			results.push(payload * 2)
+		const listener = (payload: number) => {
+			void Promise.resolve()
+				.then(() => {
+					results.push(payload * 2)
+				})
 		}
-		hook.on(asyncListener)
+		hook.on(listener)
 		hook.trigger(5)
-		// Give async listener time to resolve
+		expect(results)
+			.toEqual([])
 		await Promise.resolve()
 		expect(results)
 			.toEqual([10])

@@ -39,10 +39,12 @@ PikaCSS 透過 `@pikacss/unplugin-pikacss/rollup` 進入點與 [Rollup](https://
 | `scan.exclude` | `['node_modules/**', 'dist/**']` | 要排除的檔案 glob 規則 |
 | `fnName` | `'pika'` | 在原始碼中偵測的函式名稱 |
 | `transformedFormat` | `'string'` | 輸出格式：`'string'` 或 `'array'` |
-| `autoCreateConfig` | `true` | 找不到 `pika.config.ts` 時自動建立 |
+| `autoCreateConfig` | `true` | 找不到 `pika.config.js` 時自動建立 |
 | `tsCodegen` | `true` → `'pika.gen.ts'` | TypeScript 程式碼產生檔案路徑，或 `false` 停用 |
 | `cssCodegen` | `true` → `'pika.gen.css'` | CSS 程式碼產生檔案路徑 |
 | `config` | `undefined` | 引擎設定物件或設定檔路徑 |
+
+省略 `config` 時，插件會從整合的工作目錄（通常就是你的專案根目錄）自動偵測 `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}`。若 `autoCreateConfig` 保持預設值 `true` 且找不到設定檔，首次執行時會在同一位置建立 `pika.config.js`。
 
 ## 運作原理
 

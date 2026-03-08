@@ -38,14 +38,14 @@ In your application entry file, import `pika.css` — this is a virtual module t
 
 ### 3. Start Using PikaCSS
 
-You're ready to go! Use `pika()` in your source files. On first run with the default `autoCreateConfig: true`, a `pika.config.ts` file will be auto-created in your project root.
+You're ready to go! Use `pika()` in your source files. On first run with the default `autoCreateConfig: true`, PikaCSS writes a starter `pika.config.js` file into Vite's working directory (usually your project root).
 
 ## HMR Behavior (Dev Mode)
 
 In `vite dev` mode, PikaCSS provides a full HMR experience:
 
 - **Style changes**: When you modify `pika()` calls in your source files, the plugin re-scans and regenerates atomic CSS. The updated styles are hot-reloaded without a full page refresh.
-- **Config file watching**: The plugin watches your `pika.config.ts` (or whichever config file is active). When the config file content changes, the plugin automatically reloads the engine configuration, invalidates affected modules, and triggers HMR updates.
+- **Config file watching**: The plugin watches your active config file (for example `pika.config.js` or `pika.config.ts`). When the config file content changes, the plugin automatically reloads the engine configuration, invalidates affected modules, and triggers HMR updates.
 - **Debounced codegen**: CSS and TypeScript codegen writes are debounced (300ms) to avoid excessive file system writes during rapid edits.
 
 ## Plugin Options
@@ -87,7 +87,7 @@ Controls the output format of transformed `pika()` calls.
 
 ### `config`
 
-Provide engine configuration inline or as a file path. When omitted, the plugin auto-detects `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` in the project root.
+Provide engine configuration inline or as a file path. When omitted, the plugin auto-detects `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` from Vite's working directory (usually your project root).
 
 - **Type**: `EngineConfig | string`
 - **Default**: `undefined` (auto-detected)
@@ -108,7 +108,7 @@ Whether to automatically create a configuration file when none is found.
 - **Type**: `boolean`
 - **Default**: `true`
 
-When `true` and no config file exists, a default `pika.config.ts` is created in the project root on first run.
+When `true` and no config file exists, a default `pika.config.js` is created in Vite's working directory on first run.
 
 ### `tsCodegen`
 
@@ -119,7 +119,7 @@ Controls TypeScript code generation. The generated file provides type hints and 
 
 | Value    | Behavior                                           |
 | -------- | -------------------------------------------------- |
-| `true`   | Generate `pika.gen.ts` in the project root         |
+| `true`   | Generate `pika.gen.ts` in Vite's working directory |
 | `false`  | Disable TypeScript codegen                         |
 | `string` | Generate at the specified path                     |
 
@@ -134,7 +134,7 @@ Controls CSS code generation. The generated file contains all atomic CSS rules.
 
 | Value    | Behavior                                           |
 | -------- | -------------------------------------------------- |
-| `true`   | Generate `pika.gen.css` in the project root        |
+| `true`   | Generate `pika.gen.css` in Vite's working directory |
 | `string` | Generate at the specified path                     |
 
 ::: info

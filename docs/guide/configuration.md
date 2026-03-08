@@ -7,12 +7,7 @@ PikaCSS is configured through two layers:
 
 ## Config File
 
-PikaCSS auto-detects config files matching the pattern:
-
-```text
-**/pika.config.{js,cjs,mjs,ts,cts,mts}
-**/pikacss.config.{js,cjs,mjs,ts,cts,mts}
-```
+PikaCSS auto-detects config files matching `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` from the integration working directory, which is usually your project root.
 
 Wrap your config with `defineEngineConfig()` for type-safe IntelliSense. This function is exported from `@pikacss/core` and returns `const T`, preserving the exact literal type of your config for accurate type checking:
 
@@ -93,6 +88,25 @@ Configure the CSS `@layer` order. Keys are layer names; values are order numbers
 
 <<< @/.examples/guide/config-layers.ts
 
+### `__layer` in style definitions
+
+`__layer` is a style-level capability built into the engine. Add it to a style definition when you want the extracted atomic rules from that definition to render into a specific configured `@layer`.
+
+<<< @/.examples/guide/config-style-layer.ts
+
+`__layer` is stripped before the engine extracts CSS declarations, then the resulting atomic styles are tagged with that layer name. This means the same CSS declaration can produce different atomic class IDs when it appears in different layers.
+
+The interaction with layer config is:
+
+- `config.layers` defines the ordered list of known layer names. PikaCSS merges your entries on top of the built-in defaults `{ preflights: 1, utilities: 10 }`.
+- `defaultUtilitiesLayer` controls where atomic styles without `__layer` are rendered. By default, that is `utilities`.
+- `__layer` only affects the current style definition. It does not change `defaultUtilitiesLayer` globally.
+- If `__layer` uses a name that is not present in `config.layers`, the style falls back to unlayered output instead of creating a new ordered layer automatically.
+
+To change the default destination for unlayered utilities, configure `defaultUtilitiesLayer` to one of your known layer names:
+
+<<< @/.examples/guide/config-style-layer-defaults.ts
+
 ### `defaultPreflightsLayer`
 
 - **Type:** `string`
@@ -105,7 +119,7 @@ The CSS `@layer` that preflights without an explicit `layer` property are placed
 - **Type:** `string`
 - **Default:** `'utilities'`
 
-The CSS `@layer` that atomic utility styles are placed into by default.
+The CSS `@layer` that atomic utility styles without an explicit `__layer` are placed into by default.
 
 ## Core Plugin Config
 
