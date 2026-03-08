@@ -6,7 +6,11 @@
 
 此插件需要 `@iconify/utils` 作為 peer dependency：
 
-<<< @/.examples/plugins/icons-install.sh
+::: code-group
+<<< @/.examples/plugins/icons-install.sh [pnpm]
+<<< @/.examples/plugins/icons-install-npm.sh [npm]
+<<< @/.examples/plugins/icons-install-yarn.sh [yarn]
+:::
 
 ## 基本設定
 
@@ -86,11 +90,7 @@
 
 此插件以 `icons` 欄位擴充 `EngineConfig`：
 
-```ts
-interface EngineConfig {
-  icons?: IconsConfig
-}
-```
+<<< @/.examples/plugins/icons-engine-config-interface.ts
 
 `IconsConfig` 繼承 `@unocss/preset-icons` 的選項（排除 `warn`、`layer` 和 `customFetcher`），並加入 PikaCSS 特定的項目：
 
@@ -119,3 +119,5 @@ interface EngineConfig {
 ## 下一步
 
 - 繼續至 [Reset 插件](/zh-TW/plugins/reset)
+- 繼續至 [Typography 插件](/zh-TW/plugins/typography)
+- 了解 [建立插件](/zh-TW/plugin-system/create-plugin)

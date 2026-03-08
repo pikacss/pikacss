@@ -6,7 +6,11 @@
 
 The plugin requires `@iconify/utils` as a peer dependency:
 
-<<< @/.examples/plugins/icons-install.sh
+::: code-group
+<<< @/.examples/plugins/icons-install.sh [pnpm]
+<<< @/.examples/plugins/icons-install-npm.sh [npm]
+<<< @/.examples/plugins/icons-install-yarn.sh [yarn]
+:::
 
 ## Basic Setup
 
@@ -86,11 +90,7 @@ Provide a list of icon names to enhance IDE autocomplete suggestions:
 
 This plugin augments `EngineConfig` with an `icons` field:
 
-```ts
-interface EngineConfig {
-  icons?: IconsConfig
-}
-```
+<<< @/.examples/plugins/icons-engine-config-interface.ts
 
 `IconsConfig` extends `@unocss/preset-icons` options (excluding `warn`, `layer`, and `customFetcher`) with PikaCSS-specific additions:
 
@@ -119,3 +119,5 @@ interface EngineConfig {
 ## Next
 
 - Continue to [Reset Plugin](/plugins/reset)
+- Continue to [Typography Plugin](/plugins/typography)
+- Learn [Create Plugin](/plugin-system/create-plugin)

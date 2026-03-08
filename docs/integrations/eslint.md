@@ -94,6 +94,10 @@ These are **NOT** statically analyzable:
 - **Dynamic spreads**: `pika({ ...baseStyles })`
 - **Dynamic computed keys**: `pika({ [key]: 'value' })`
 
+::: info Boolean Literals
+`true` and `false` are JavaScript literals, so they are static at the AST level. However, they are not documented PikaCSS CSS property values, so you should not treat boolean values as supported style arguments. The rule focuses on build-time analyzability, not full CSS value semantics.
+:::
+
 ::: tip Why This Restriction?
 PikaCSS compiles styles at build time, not runtime. All values must be known during bundling so the engine can extract and generate atomic CSS classes. See [Build-Time Compile](/principles/build-time-compile) for conceptual details.
 :::

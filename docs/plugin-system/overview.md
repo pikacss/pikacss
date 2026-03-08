@@ -109,7 +109,7 @@ Async hooks receive a payload and can **return a modified version**. The modifie
 
 ## Sync Hooks (Notification) {#sync-hooks}
 
-Sync hooks are **notification-only** — they inform plugins that something happened. They should **not** return a value.
+Sync hooks are primarily notification hooks — they inform plugins that something happened. Although the hook runner forwards non-nullish return values to the next plugin internally, the engine uses these hooks for observation rather than for normal payload transformation.
 
 <<< @/.examples/plugin-system/overview-sync-hook.ts
 
@@ -142,7 +142,7 @@ Sync hooks are **notification-only** — they inform plugins that something happ
 All hooks — both async and sync — follow the same execution rules:
 
 1. **Plugin order**: Hooks run plugin-by-plugin in sorted order (`pre` → default → `post`)
-2. **Payload chaining**: For async hooks, if a plugin returns a non-nullish value, that value replaces the payload for the next plugin
+2. **Payload chaining**: If a plugin returns a non-nullish value, that value replaces the payload for the next plugin. In practice, this matters most for async hooks such as config and transform hooks.
 3. **Error isolation**: If a plugin's hook throws an error, the error is caught and logged. Execution continues with the next plugin — one failing plugin does not break the chain
 4. **Skipping**: If a plugin does not define a particular hook, it is simply skipped
 
@@ -160,3 +160,5 @@ A full plugin using all available hooks:
 ## Next
 
 - Continue to [Create Plugin](/plugin-system/create-plugin) for a step-by-step guide to building your own plugin
+- Review [Built-in Plugins](/guide/built-in-plugins)
+- Compare [Configuration](/guide/configuration)

@@ -5,15 +5,9 @@
 ## Installation
 
 ::: code-group
-```bash [pnpm]
-pnpm add @pikacss/plugin-typography
-```
-```bash [npm]
-npm install @pikacss/plugin-typography
-```
-```bash [yarn]
-yarn add @pikacss/plugin-typography
-```
+<<< @/.examples/plugins/typography-install.sh [pnpm]
+<<< @/.examples/plugins/typography-install-npm.sh [npm]
+<<< @/.examples/plugins/typography-install-yarn.sh [yarn]
 :::
 
 ## Basic Usage
@@ -28,15 +22,7 @@ Then use the `prose` shortcut in your components:
 
 This plugin augments `EngineConfig` with a `typography` field via [module augmentation](/plugin-system/overview):
 
-```ts
-interface EngineConfig {
-  typography?: TypographyPluginOptions
-}
-
-interface TypographyPluginOptions {
-  variables?: Partial<typeof typographyVariables>
-}
-```
+<<< @/.examples/plugins/typography-engine-config-interface.ts
 
 ## Customizing Variables
 
@@ -130,3 +116,5 @@ The plugin name is `'typography'`. During engine configuration:
 ## Next
 
 - Continue to [FAQ](/community/faq)
+- Continue to [Reset Plugin](/plugins/reset)
+- Learn [Create Plugin](/plugin-system/create-plugin)

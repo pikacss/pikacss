@@ -18,16 +18,7 @@
 
 ## 設定
 
-```ts
-interface ImportantConfig {
-  /**
-   * When true, all CSS values get `!important` by default.
-   * Individual definitions can override this with `__important`.
-   * @default false
-   */
-  default?: boolean
-}
-```
+<<< @/.examples/guide/built-ins/important-config-interface.ts
 
 ## 基本用法
 
@@ -70,6 +61,8 @@ interface ImportantConfig {
 
 - `packages/core/src/internal/plugins/important.ts`
 
-## Next
+## 下一步
 
 - 繼續閱讀 [Variables](/zh-TW/guide/built-ins/variables)
+- 回到 [內建插件](/zh-TW/guide/built-in-plugins)
+- 了解 [插件系統概覽](/zh-TW/plugin-system/overview)

@@ -1,0 +1,3 @@
+interface SelectorsConfig {
+	selectors: Selector[]
+}

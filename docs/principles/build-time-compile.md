@@ -108,3 +108,5 @@ The unplugin behaves differently depending on the mode:
 ## Next
 
 - [Zero Side-effect](/principles/zero-sideeffect)
+- [Integrations Overview](/integrations/overview)
+- [ESLint Configuration](/integrations/eslint)

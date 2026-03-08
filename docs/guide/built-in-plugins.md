@@ -55,17 +55,7 @@ At runtime, additional hooks fire as styles are processed:
 
 You configure built-in plugins through top-level keys in `EngineConfig`, not by importing internal factories:
 
-```ts
-import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
-
-export default defineEngineConfig({
-  important: { /* ... */ },
-  variables: { /* ... */ },
-  keyframes: { /* ... */ },
-  selectors: { /* ... */ },
-  shortcuts: { /* ... */ },
-})
-```
+<<< @/.examples/guide/built-in-plugins-config.ts
 
 ## Plugin Detail Pages
 
@@ -80,3 +70,9 @@ export default defineEngineConfig({
 - `packages/core/src/internal/engine.ts` — `createEngine()`, plugin wiring
 - `packages/core/src/internal/plugin.ts` — `resolvePlugins()`, hook execution
 - `packages/core/src/internal/plugins/` — individual plugin implementations
+
+## Next
+
+- Inspect [Configuration](/guide/configuration)
+- Learn the [Plugin System](/plugin-system/overview)
+- Dive into [Variables](/guide/built-ins/variables)

@@ -156,3 +156,5 @@ Vite 插件是一個輕量的 `createVitePlugin(unpluginFactory)` 轉接器。�
 ## 下一步
 
 - [Rollup](/zh-TW/integrations/rollup)
+- [整合概覽](/zh-TW/integrations/overview)
+- [設定](/zh-TW/guide/configuration)

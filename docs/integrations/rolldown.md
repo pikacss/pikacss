@@ -41,3 +41,5 @@ The Rolldown adapter is a thin `createRolldownPlugin(unpluginFactory)` wrapper. 
 ## Next
 
 - [Configuration](/guide/configuration)
+- [Rollup](/integrations/rollup)
+- [Integrations Overview](/integrations/overview)

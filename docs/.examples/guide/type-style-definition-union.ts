@@ -1,0 +1,1 @@
+type StyleDefinition = Properties | StyleDefinitionMap

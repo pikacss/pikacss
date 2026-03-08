@@ -83,3 +83,5 @@ PikaCSS 新增至執行期打包中的**唯一**產物是一個靜態 CSS 檔案
 ## 下一步
 
 - [整合概覽](/zh-TW/integrations/overview)
+- [建置時期編譯](/zh-TW/principles/build-time-compile)
+- [什麼是 PikaCSS？](/zh-TW/getting-started/what-is-pikacss)

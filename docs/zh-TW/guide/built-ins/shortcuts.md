@@ -16,12 +16,7 @@
 
 ## 設定
 
-```ts
-interface ShortcutsConfig {
-  /** Array of shortcut definitions. @default [] */
-  shortcuts: Shortcut[]
-}
-```
+<<< @/.examples/guide/built-ins/shortcuts-config-interface.ts
 
 ## 捷徑定義格式
 
@@ -35,9 +30,7 @@ interface ShortcutsConfig {
 
 ### 元組形式——靜態
 
-```ts
-type TupleFormStatic = [shortcut: string, value: Arrayable<ResolvedStyleItem>]
-```
+<<< @/.examples/guide/built-ins/shortcuts-tuple-static-type.ts
 
 值可以是 `StyleDefinition` 物件、參照另一個捷徑的 `string`，或兩者的陣列：
 
@@ -45,11 +38,9 @@ type TupleFormStatic = [shortcut: string, value: Arrayable<ResolvedStyleItem>]
 
 ### 元組形式——動態
 
-```ts
-type TupleFormDynamic = [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>, autocomplete?: Arrayable<string>]
-```
+<<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic-type.ts
 
-解析函式接收來自模式比對的 `RegExpMatchArray`，並回傳一個或多個 `ResolvedStyleItem`。可選的自動補齊提示為動態模式提供 IDE 建議：
+解析函式接收來自模式比對的 `RegExpMatchArray`，並回傳一個或多個 `ResolvedStyleItem`。可選的自動補齊提示為動態模式提供 IDE 建議，且可以是單一字串或陣列：
 
 <<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic.ts
 
@@ -105,6 +96,10 @@ type TupleFormDynamic = [shortcut: RegExp, value: (matched: RegExpMatchArray) =>
 
 當呼叫 `pika('btn')` 時，引擎會先解析 `'flex-center'`，再將結果與其餘的行內樣式合併。
 
+::: tip 循環安全機制
+解析器會偵測像 `btn -> flex-center -> btn` 這樣的循環參照。發生時，引擎會記錄警告，並安全地將未解析項目視為一般字串，而不是進入無限迴圈。
+:::
+
 ## 自動補齊
 
 插件會登錄：
@@ -132,6 +127,8 @@ type TupleFormDynamic = [shortcut: RegExp, value: (matched: RegExpMatchArray) =>
 
 - `packages/core/src/internal/plugins/shortcuts.ts`
 
-## Next
+## 下一步
 
 - 繼續閱讀 [Plugin System Overview](/zh-TW/plugin-system/overview)
+- 回到 [內建插件](/zh-TW/guide/built-in-plugins)
+- 對照 [Selectors](/zh-TW/guide/built-ins/selectors)

@@ -15,12 +15,7 @@ The `core:selectors` plugin resolves selector aliases before rendering. It suppo
 
 ## Config
 
-```ts
-interface SelectorsConfig {
-  /** Array of selector definitions. */
-  selectors: Selector[]
-}
-```
+<<< @/.examples/guide/built-ins/selectors-config-interface.ts
 
 ## Selector Definition Formats
 
@@ -36,19 +31,15 @@ A plain string is registered as an autocomplete suggestion only — no resolutio
 
 A two-element tuple maps a selector name to one or more replacement strings. Use `$` as a placeholder for the element's default selector (see [The `$` Placeholder](#the-placeholder) below).
 
-```ts
-type TupleFormStatic = [selector: string, value: string | string[]]
-```
+<<< @/.examples/guide/built-ins/selectors-tuple-static-type.ts
 
 <<< @/.examples/guide/built-ins/selectors-tuple-static.ts
 
 ### Tuple Form — Dynamic
 
-A tuple with a `RegExp` pattern and a resolver function. The function receives the `RegExpMatchArray` and returns one or more replacement strings. An optional third element provides autocomplete hints.
+A tuple with a `RegExp` pattern and a resolver function. The function receives the `RegExpMatchArray` and returns one or more replacement strings. An optional third element provides autocomplete hints and may be either a single string or an array.
 
-```ts
-type TupleFormDynamic = [selector: RegExp, value: (matched: RegExpMatchArray) => string | string[], autocomplete?: string | string[]]
-```
+<<< @/.examples/guide/built-ins/selectors-tuple-dynamic-type.ts
 
 <<< @/.examples/guide/built-ins/selectors-tuple-dynamic.ts
 
@@ -90,11 +81,7 @@ In selector values, `$` is replaced with the element's **default selector** (whi
 ::: tip At-Rules
 For CSS at-rules like `@media` or `@container`, **do not** include `$` in the value. When the resolved selector does not contain the `%` placeholder, the engine automatically appends the default selector (`.%`) as a nested level, producing the correct two-level structure:
 
-```css
-@media (min-width: 768px) {
-  .a { ... }
-}
-```
+<<< @/.examples/guide/built-ins/selectors-at-rule-output.css
 :::
 
 ::: warning
@@ -106,6 +93,10 @@ Do not embed `$` inside an at-rule string (e.g., `@media (...) { $ }`). This pro
 Selector resolution is recursive. A selector value can reference another selector name, and it will be resolved through the chain:
 
 <<< @/.examples/guide/built-ins/selectors-recursive.ts
+
+::: tip Cycle Safety
+The resolver detects circular references such as `a -> b -> a`. When that happens, the engine logs a warning and safely falls back to the unresolved string instead of recursing forever or hanging the build.
+:::
 
 ## `defineSelector` Helper
 
@@ -134,3 +125,5 @@ Plugins can manage selectors programmatically:
 ## Next
 
 - Continue to [Shortcuts](/guide/built-ins/shortcuts)
+- Review [Built-in Plugins](/guide/built-in-plugins)
+- Learn the [Plugin System](/plugin-system/overview)

@@ -43,3 +43,5 @@ esbuild 轉接器是一個輕量的 `createEsbuildPlugin(unpluginFactory)` 封�
 ## 下一步
 
 - [Rolldown](/zh-TW/integrations/rolldown)
+- [整合概覽](/zh-TW/integrations/overview)
+- [設定](/zh-TW/guide/configuration)

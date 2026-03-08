@@ -19,7 +19,7 @@ All of these steps happen without any manual setup.
 PikaCSS searches your project for files matching the glob pattern:
 
 ```text
-**/{pika,pikacss}.config.{js,mjs,ts,mts}
+**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}
 ```
 
 This means any of these file names are recognized: `pika.config.js`, `pika.config.ts`, `pikacss.config.mjs`, etc.
@@ -101,3 +101,5 @@ Here is an example of a customized config:
 ## Next
 
 - Continue to [First Pika](/getting-started/first-pika)
+- Review [Installation](/getting-started/installation)
+- Explore [Configuration](/guide/configuration)

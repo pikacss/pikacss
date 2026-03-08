@@ -13,16 +13,7 @@ The `core:variables` plugin manages CSS custom properties (variables). It handle
 
 ## Config
 
-```ts
-interface VariablesConfig {
-  /** Variable definitions — a single object or an array of objects. */
-  variables: VariablesDefinition | VariablesDefinition[]
-  /** Whether to prune unused variables from CSS output. @default true */
-  pruneUnused?: boolean
-  /** Variables that are always included regardless of usage. @default [] */
-  safeList?: `--${string}`[]
-}
-```
+<<< @/.examples/guide/built-ins/variables-config-interface.ts
 
 ### `VariablesDefinition`
 
@@ -33,19 +24,7 @@ A recursive object where:
 
 ### `VariableObject`
 
-```ts
-interface VariableObject {
-  value?: string | number | null
-  autocomplete?: {
-    /** Which CSS properties suggest var(--name). @default ['*'] */
-    asValueOf?: string | string[]
-    /** Register --name as a CSS property in autocomplete. @default true */
-    asProperty?: boolean
-  }
-  /** Override pruning for this specific variable. */
-  pruneUnused?: boolean
-}
-```
+<<< @/.examples/guide/built-ins/variables-object-interface.ts
 
 ## Basic Usage
 
@@ -79,6 +58,8 @@ By default, `pruneUnused` is `true`. A variable is kept in CSS output when **any
 - It appears in the `safeList` array
 - Its per-variable `pruneUnused` is explicitly set to `false`
 
+Each `safeList` entry must be a CSS custom property name that includes the `--` prefix, such as `--color-primary`.
+
 ::: tip Transitive Dependency Tracking
 PikaCSS tracks variable dependencies transitively. If your styles reference `--color-primary`, and `--color-primary`'s value references `--color-base`, which in turn references `--color-raw`, all three variables are automatically preserved in CSS output — even if only `--color-primary` appears directly in your styles.
 :::
@@ -87,11 +68,7 @@ PikaCSS tracks variable dependencies transitively. If your styles reference `--c
 
 Plugins can add variables programmatically at runtime:
 
-```ts
-engine.variables.add({
-  '--dynamic-color': '#ff007f',
-})
-```
+<<< @/.examples/guide/built-ins/variables-engine-api.ts
 
 The `engine.variables.store` is a `Map<string, ResolvedVariable[]>` holding all registered variables, keyed by variable name.
 
@@ -120,3 +97,5 @@ Use `defineVariables()` for type-safe variable definitions with full TypeScript 
 ## Next
 
 - Continue to [Keyframes](/guide/built-ins/keyframes)
+- Review [Built-in Plugins](/guide/built-in-plugins)
+- Learn the [Plugin System](/plugin-system/overview)

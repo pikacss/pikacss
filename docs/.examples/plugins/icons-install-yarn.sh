@@ -1,0 +1,1 @@
+yarn add @pikacss/plugin-icons @iconify/utils

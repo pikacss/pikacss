@@ -94,6 +94,10 @@ PikaCSS 在建置時期使用 `new Function('return ...')` 求值所有 `pika()`
 - **動態展開**：`pika({ ...baseStyles })`
 - **動態計算鍵**：`pika({ [key]: 'value' })`
 
+::: info Boolean 字面值
+`true` 與 `false` 在 JavaScript AST 層級確實屬於字面值，因此在語法上是靜態的。但它們不是文件化支援的 PikaCSS CSS 屬性值，因此不應把 boolean 視為受支援的樣式引數。這條規則主要檢查的是建置時可分析性，而不是完整的 CSS 值語意。
+:::
+
 ::: tip 為何有此限制？
 PikaCSS 在建置時期而非執行期編譯樣式。所有值都必須在打包期間已知，引擎才能提取並產生原子化 CSS class。概念性詳細說明請參閱[建置時期編譯](/zh-TW/principles/build-time-compile)。
 :::

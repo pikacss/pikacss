@@ -108,3 +108,5 @@ unplugin 的行為會依模式而有所不同：
 ## 下一步
 
 - [零副作用](/zh-TW/principles/zero-sideeffect)
+- [整合概覽](/zh-TW/integrations/overview)
+- [ESLint 設定](/zh-TW/integrations/eslint)

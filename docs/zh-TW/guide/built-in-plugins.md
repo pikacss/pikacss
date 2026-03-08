@@ -55,17 +55,7 @@ flowchart LR
 
 你可透過 `EngineConfig` 的頂層鍵來設定內建插件，而非匯入內部工廠函式：
 
-```ts
-import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
-
-export default defineEngineConfig({
-  important: { /* ... */ },
-  variables: { /* ... */ },
-  keyframes: { /* ... */ },
-  selectors: { /* ... */ },
-  shortcuts: { /* ... */ },
-})
-```
+<<< @/.examples/guide/built-in-plugins-config.ts
 
 ## 插件詳細頁面
 
@@ -80,3 +70,9 @@ export default defineEngineConfig({
 - `packages/core/src/internal/engine.ts` — `createEngine()`、插件連接
 - `packages/core/src/internal/plugin.ts` — `resolvePlugins()`、鉤子執行
 - `packages/core/src/internal/plugins/` — 各個插件實作
+
+## 下一步
+
+- 查看 [設定](/zh-TW/guide/configuration)
+- 了解 [插件系統概覽](/zh-TW/plugin-system/overview)
+- 深入閱讀 [Variables](/zh-TW/guide/built-ins/variables)

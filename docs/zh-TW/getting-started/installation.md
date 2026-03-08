@@ -35,7 +35,7 @@
 
 ## 4) 設定檔（選用）
 
-使用預設設定（`autoCreateConfig: true`）首次執行時，如果專案根目錄中還沒有設定檔，PikaCSS 會自動在專案根目錄中建立 `pika.config.ts` 檔案。你也可以手動建立：
+使用預設設定（`autoCreateConfig: true`）首次執行時，如果專案根目錄中還沒有設定檔，PikaCSS 會自動在專案根目錄中建立 `pika.config.js` 檔案。你也可以使用任何受支援的檔名手動建立設定檔：
 
 <<< @/.examples/getting-started/pika.config.ts
 
@@ -60,12 +60,7 @@ PikaCSS 會自動偵測符合以下模式的設定檔：
 
 你可以透過插件選項自訂輸出路徑：
 
-```ts
-PikaCSS({
-  tsCodegen: './src/pika.gen.ts',
-  cssCodegen: './src/pika.gen.css',
-})
-```
+<<< @/.examples/getting-started/pika-custom-codegen.ts
 
 設定 `tsCodegen: false` 可完全停用 TypeScript 程式碼產生。
 
@@ -117,3 +112,5 @@ Nuxt 模組會自動以 `enforce: 'pre'` 方式註冊 Vite 插件，並為你匯
 ## 下一步
 
 - 繼續閱讀[零設定](/zh-TW/getting-started/zero-config)
+- 先看[什麼是 PikaCSS？](/zh-TW/getting-started/what-is-pikacss)
+- 對照[整合概覽](/zh-TW/integrations/overview)

@@ -156,3 +156,5 @@ The Vite plugin is a thin `createVitePlugin(unpluginFactory)` adapter. All trans
 ## Next
 
 - [Rollup](/integrations/rollup)
+- [Integrations Overview](/integrations/overview)
+- [Configuration](/guide/configuration)

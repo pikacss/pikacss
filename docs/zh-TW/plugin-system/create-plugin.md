@@ -88,7 +88,7 @@
 
 ## 新增前置樣式
 
-前置樣式是在原子化樣式之前注入的全域 CSS 樣式。`engine.addPreflight()` 方法接受三種形式：
+前置樣式是在原子化樣式之前注入的全域 CSS 樣式。`engine.addPreflight()` 方法接受三種核心形式，另外也支援像 `WithLayer`、`WithId` 這類包裝器。
 
 ### 字串前置樣式
 
@@ -104,9 +104,13 @@
 
 ### PreflightFn 函式
 
-接收引擎實例並回傳字串或 `PreflightDefinition` 的函式。適用於需要讀取引擎狀態的動態前置樣式：
+接收引擎實例與 `isFormatted` 旗標，並回傳字串、`PreflightDefinition`，或其 `Promise` 的函式。適用於需要讀取引擎狀態，或在產生 CSS 前執行非同步工作的動態前置樣式：
 
 <<< @/.examples/plugin-system/preflight-function.ts
+
+::: info `isFormatted`
+當引擎輸出可讀 CSS 時，`isFormatted` 會是 `true`；輸出緊湊格式時則為 `false`。若你是手動拼接 CSS 字串，可用它來決定是否加入空白、縮排與換行。
+:::
 
 ### WithLayer 包裝器
 

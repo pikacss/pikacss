@@ -13,14 +13,7 @@
 
 ## 設定
 
-```ts
-interface KeyframesConfig {
-  /** Array of keyframe definitions. */
-  keyframes: Keyframes[]
-  /** Whether to prune unused keyframes from CSS output. @default true */
-  pruneUnused?: boolean
-}
-```
+<<< @/.examples/guide/built-ins/keyframes-config-interface.ts
 
 ## 關鍵影格定義格式
 
@@ -30,21 +23,15 @@ PikaCSS 支援三種定義關鍵影格的形式：
 
 僅為自動補齊登錄關鍵影格名稱——不會產生 `@keyframes` 區塊。
 
-```ts
-'external-animation'
-```
+<<< @/.examples/guide/built-ins/keyframes-string-form.ts
 
 ### 2. 元組形式
 
-```ts
-type TupleForm = [name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean]
-```
+<<< @/.examples/guide/built-ins/keyframes-tuple-form-type.ts
 
 ### 3. 物件形式
 
-```ts
-interface ObjectForm { name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean }
-```
+<<< @/.examples/guide/built-ins/keyframes-object-form-interface.ts
 
 ### `KeyframesProgress`
 
@@ -108,3 +95,5 @@ interface ObjectForm { name: string, frames?: KeyframesProgress, autocomplete?: 
 ## 下一步
 
 - 繼續閱讀 [Selectors](/zh-TW/guide/built-ins/selectors)
+- 回到 [內建插件](/zh-TW/guide/built-in-plugins)
+- 了解 [插件系統概覽](/zh-TW/plugin-system/overview)

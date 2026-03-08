@@ -5,19 +5,9 @@
 ## Installation
 
 ::: code-group
-
-```bash [pnpm]
-pnpm add @pikacss/plugin-reset
-```
-
-```bash [npm]
-npm install @pikacss/plugin-reset
-```
-
-```bash [yarn]
-yarn add @pikacss/plugin-reset
-```
-
+<<< @/.examples/plugins/reset-install.sh [pnpm]
+<<< @/.examples/plugins/reset-install-npm.sh [npm]
+<<< @/.examples/plugins/reset-install-yarn.sh [yarn]
 :::
 
 `@pikacss/core` is required as a peer dependency.
@@ -70,11 +60,7 @@ The reset plugin pairs naturally with other PikaCSS plugins. Since it runs with 
 
 The plugin augments `EngineConfig` from `@pikacss/core` with:
 
-```ts
-interface EngineConfig {
-  reset?: 'andy-bell' | 'eric-meyer' | 'modern-normalize' | 'normalize' | 'the-new-css-reset'
-}
-```
+<<< @/.examples/plugins/reset-engine-config-interface.ts
 
 This gives you full TypeScript autocomplete when setting the `reset` option in your config.
 

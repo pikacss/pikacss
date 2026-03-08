@@ -65,7 +65,7 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 | `scan.include` | `string \| string[]` | `['**/*.{js,ts,jsx,tsx,vue}']` | 用於掃描 `pika()` 呼叫的檔案 glob 規則 |
 | `scan.exclude` | `string \| string[]` | `['node_modules/**', 'dist/**']` | 排除掃描的檔案 glob 規則 |
 | `config` | `EngineConfig \| string` | `undefined` | 行內引擎設定物件，或設定檔路徑 |
-| `autoCreateConfig` | `boolean` | `true` | 若不存在設定檔則自動建立 `pika.config.ts` |
+| `autoCreateConfig` | `boolean` | `true` | 若不存在設定檔則自動建立 `pika.config.js` |
 | `fnName` | `string` | `'pika'` | 在原始碼中偵測並轉換的函式名稱 |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | 產生的 class 名稱的輸出格式 |
 | `tsCodegen` | `boolean \| string` | `true` | TypeScript 程式碼產生檔案路徑（`true` → `'pika.gen.ts'`，`false` 停用） |
@@ -80,10 +80,7 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 
 你應該將這兩個檔案加入 `.gitignore`：
 
-```gitignore
-pika.gen.css
-pika.gen.ts
-```
+<<< @/.examples/integrations/generated-files.gitignore
 
 ## 虛擬 CSS 模組（`pika.css`）
 
@@ -97,13 +94,20 @@ PikaCSS 提供一個名為 `pika.css` 的虛擬模組，它會解析至產生的
 
 ## 設定檔
 
-當 `autoCreateConfig` 為 `true`（預設值）時，若不存在設定檔，插件會自動建立一個 `pika.config.ts` 檔案。設定檔會以下列名稱自動偵測：
+當 `autoCreateConfig` 為 `true`（預設值）時，若不存在設定檔，插件會自動建立一個 `pika.config.js` 檔案。設定檔會以下列名稱自動偵測：
 
 - `pika.config.js`
-- `pika.config.ts`
+- `pika.config.cjs`
 - `pika.config.mjs`
-- `pika.config.mts`
+- `pika.config.ts`
 - `pika.config.cts`
+- `pika.config.mts`
+- `pikacss.config.js`
+- `pikacss.config.cjs`
+- `pikacss.config.mjs`
+- `pikacss.config.ts`
+- `pikacss.config.cts`
+- `pikacss.config.mts`
 
 插件會監控設定檔的變更，並在修改後自動重新載入。
 
@@ -129,3 +133,9 @@ PikaCSS 提供一個名為 `pika.css` 的虛擬模組，它會解析至產生的
 3. [esbuild](/zh-TW/integrations/esbuild) — 設定精簡的快速打包器
 4. [Webpack](/zh-TW/integrations/webpack) / [Rspack](/zh-TW/integrations/rspack) — Webpack 系列打包器
 5. [Nuxt](/zh-TW/integrations/nuxt) — 框架層級整合
+
+## 下一步
+
+- 先從 [Vite](/zh-TW/integrations/vite) 開始
+- 查看 [Nuxt](/zh-TW/integrations/nuxt)
+- 延伸到 [自訂建置工具整合](/zh-TW/integrations/custom-integration)

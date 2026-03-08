@@ -13,14 +13,7 @@ The `core:keyframes` plugin manages CSS `@keyframes` animations. It generates `@
 
 ## Config
 
-```ts
-interface KeyframesConfig {
-  /** Array of keyframe definitions. */
-  keyframes: Keyframes[]
-  /** Whether to prune unused keyframes from CSS output. @default true */
-  pruneUnused?: boolean
-}
-```
+<<< @/.examples/guide/built-ins/keyframes-config-interface.ts
 
 ## Keyframe Definition Formats
 
@@ -30,21 +23,15 @@ PikaCSS supports three forms for defining keyframes:
 
 Registers only the keyframe name for autocomplete — no `@keyframes` block is generated.
 
-```ts
-'external-animation'
-```
+<<< @/.examples/guide/built-ins/keyframes-string-form.ts
 
 ### 2. Tuple Form
 
-```ts
-type TupleForm = [name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean]
-```
+<<< @/.examples/guide/built-ins/keyframes-tuple-form-type.ts
 
 ### 3. Object Form
 
-```ts
-interface ObjectForm { name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean }
-```
+<<< @/.examples/guide/built-ins/keyframes-object-form-interface.ts
 
 ### `KeyframesProgress`
 
@@ -108,3 +95,5 @@ Use `defineKeyframes()` for type-safe keyframe definitions with full TypeScript 
 ## Next
 
 - Continue to [Selectors](/guide/built-ins/selectors)
+- Review [Built-in Plugins](/guide/built-in-plugins)
+- Learn the [Plugin System](/plugin-system/overview)

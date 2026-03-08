@@ -83,3 +83,5 @@ The CSS for unused styles may still appear in `pika.gen.css` if the `pika()` cal
 ## Next
 
 - [Integrations Overview](/integrations/overview)
+- [Build-Time Compile](/principles/build-time-compile)
+- [What Is PikaCSS?](/getting-started/what-is-pikacss)

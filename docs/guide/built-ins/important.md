@@ -18,16 +18,7 @@ The plugin never produces doubled `!important`. Values that already end with `!i
 
 ## Config
 
-```ts
-interface ImportantConfig {
-  /**
-   * When true, all CSS values get `!important` by default.
-   * Individual definitions can override this with `__important`.
-   * @default false
-   */
-  default?: boolean
-}
-```
+<<< @/.examples/guide/built-ins/important-config-interface.ts
 
 ## Basic Usage
 
@@ -73,3 +64,5 @@ The plugin registers `__important` as an extra property with `boolean` values fo
 ## Next
 
 - Continue to [Variables](/guide/built-ins/variables)
+- Review [Built-in Plugins](/guide/built-in-plugins)
+- Learn the [Plugin System](/plugin-system/overview)

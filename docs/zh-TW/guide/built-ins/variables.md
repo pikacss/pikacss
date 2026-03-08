@@ -13,16 +13,7 @@
 
 ## 設定
 
-```ts
-interface VariablesConfig {
-  /** Variable definitions — a single object or an array of objects. */
-  variables: VariablesDefinition | VariablesDefinition[]
-  /** Whether to prune unused variables from CSS output. @default true */
-  pruneUnused?: boolean
-  /** Variables that are always included regardless of usage. @default [] */
-  safeList?: `--${string}`[]
-}
-```
+<<< @/.examples/guide/built-ins/variables-config-interface.ts
 
 ### `VariablesDefinition`
 
@@ -33,19 +24,7 @@ interface VariablesConfig {
 
 ### `VariableObject`
 
-```ts
-interface VariableObject {
-  value?: string | number | null
-  autocomplete?: {
-    /** Which CSS properties suggest var(--name). @default ['*'] */
-    asValueOf?: string | string[]
-    /** Register --name as a CSS property in autocomplete. @default true */
-    asProperty?: boolean
-  }
-  /** Override pruning for this specific variable. */
-  pruneUnused?: boolean
-}
-```
+<<< @/.examples/guide/built-ins/variables-object-interface.ts
 
 ## 基本用法
 
@@ -79,6 +58,8 @@ interface VariableObject {
 - 出現在 `safeList` 陣列中
 - 其每個變數的 `pruneUnused` 明確設定為 `false`
 
+`safeList` 中的每個項目都必須是包含 `--` 前綴的 CSS 自訂屬性名稱，例如 `--color-primary`。
+
 ::: tip 傳遞性依賴追蹤
 PikaCSS 會傳遞性地追蹤變數依賴。若你的樣式參照了 `--color-primary`，而 `--color-primary` 的值參照了 `--color-base`，`--color-base` 又參照了 `--color-raw`，則三個變數都會自動保留在 CSS 輸出中——即使只有 `--color-primary` 直接出現在你的樣式中。
 :::
@@ -87,11 +68,7 @@ PikaCSS 會傳遞性地追蹤變數依賴。若你的樣式參照了 `--color-pr
 
 插件可以在執行階段以程式方式新增變數：
 
-```ts
-engine.variables.add({
-  '--dynamic-color': '#ff007f',
-})
-```
+<<< @/.examples/guide/built-ins/variables-engine-api.ts
 
 `engine.variables.store` 是一個 `Map<string, ResolvedVariable[]>`，保存所有已註冊的變數，以變數名稱為鍵。
 
@@ -120,3 +97,5 @@ engine.variables.add({
 ## 下一步
 
 - 繼續閱讀 [Keyframes](/zh-TW/guide/built-ins/keyframes)
+- 回到 [內建插件](/zh-TW/guide/built-in-plugins)
+- 了解 [插件系統概覽](/zh-TW/plugin-system/overview)

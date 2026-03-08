@@ -49,3 +49,5 @@ In Rspack specifically, the shared factory uses the compiler context to determin
 ## Next
 
 - [Esbuild](/integrations/esbuild)
+- [Webpack](/integrations/webpack)
+- [Integrations Overview](/integrations/overview)

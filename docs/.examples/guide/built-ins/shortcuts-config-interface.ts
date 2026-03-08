@@ -1,0 +1,3 @@
+interface ShortcutsConfig {
+	shortcuts: Shortcut[]
+}

@@ -5,19 +5,9 @@
 ## 安裝
 
 ::: code-group
-
-```bash [pnpm]
-pnpm add @pikacss/plugin-reset
-```
-
-```bash [npm]
-npm install @pikacss/plugin-reset
-```
-
-```bash [yarn]
-yarn add @pikacss/plugin-reset
-```
-
+<<< @/.examples/plugins/reset-install.sh [pnpm]
+<<< @/.examples/plugins/reset-install-npm.sh [npm]
+<<< @/.examples/plugins/reset-install-yarn.sh [yarn]
 :::
 
 `@pikacss/core` 為必要的 peer dependency。
@@ -70,11 +60,7 @@ Reset 插件與其他 PikaCSS 插件自然地搭配使用。由於它以 `order:
 
 此插件擴增了 `@pikacss/core` 的 `EngineConfig`：
 
-```ts
-interface EngineConfig {
-  reset?: 'andy-bell' | 'eric-meyer' | 'modern-normalize' | 'normalize' | 'the-new-css-reset'
-}
-```
+<<< @/.examples/plugins/reset-engine-config-interface.ts
 
 這讓你在設定中指定 `reset` 選項時，能獲得完整的 TypeScript 自動完成功能。
 

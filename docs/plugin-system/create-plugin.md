@@ -88,7 +88,7 @@ Users then get full autocomplete when configuring the engine:
 
 ## Adding Preflights
 
-Preflights are global CSS styles injected before atomic styles. The `engine.addPreflight()` method accepts three forms:
+Preflights are global CSS styles injected before atomic styles. The `engine.addPreflight()` method accepts three core forms, plus wrapper utilities such as `WithLayer` and `WithId`.
 
 ### String Preflight
 
@@ -104,9 +104,13 @@ A structured object with selectors as keys and CSS properties as values:
 
 ### PreflightFn Function
 
-A function that receives the engine instance and returns a string or `PreflightDefinition`. Useful for dynamic preflights that read engine state:
+A function that receives the engine instance and an `isFormatted` flag, then returns a string, a `PreflightDefinition`, or a `Promise` of either. Useful for dynamic preflights that read engine state or perform async work before generating CSS:
 
 <<< @/.examples/plugin-system/preflight-function.ts
+
+::: info `isFormatted`
+`isFormatted` is `true` when the engine is rendering readable CSS and `false` when it is rendering compact output. If you manually concatenate CSS strings, use this flag to decide whether to include whitespace, indentation, and line breaks.
+:::
 
 ### WithLayer Wrapper
 

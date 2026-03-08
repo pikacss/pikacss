@@ -80,10 +80,7 @@ The plugin generates two files in your project root during build:
 
 You should add both files to your `.gitignore`:
 
-```gitignore
-pika.gen.css
-pika.gen.ts
-```
+<<< @/.examples/integrations/generated-files.gitignore
 
 ## Virtual CSS Module (`pika.css`)
 
@@ -97,13 +94,20 @@ When the build plugin encounters `import 'pika.css'`, it resolves the import to 
 
 ## Configuration File
 
-When `autoCreateConfig` is `true` (the default), the plugin will auto-create a `pika.config.ts` file if one does not already exist. The config file is auto-detected with the following names:
+When `autoCreateConfig` is `true` (the default), the plugin will auto-create a `pika.config.js` file if one does not already exist. The config file is auto-detected with the following names:
 
 - `pika.config.js`
-- `pika.config.ts`
+- `pika.config.cjs`
 - `pika.config.mjs`
-- `pika.config.mts`
+- `pika.config.ts`
 - `pika.config.cts`
+- `pika.config.mts`
+- `pikacss.config.js`
+- `pikacss.config.cjs`
+- `pikacss.config.mjs`
+- `pikacss.config.ts`
+- `pikacss.config.cts`
+- `pikacss.config.mts`
 
 The plugin watches the config file for changes and automatically reloads when it is modified.
 
@@ -129,3 +133,9 @@ We recommend starting with the **Vite** integration as the primary learning path
 3. [esbuild](/integrations/esbuild) — Fast bundler with minimal config
 4. [Webpack](/integrations/webpack) / [Rspack](/integrations/rspack) — Webpack-family bundlers
 5. [Nuxt](/integrations/nuxt) — Framework-level integration
+
+## Next
+
+- Start with [Vite](/integrations/vite)
+- See [Nuxt](/integrations/nuxt)
+- Build a [Custom Integration](/integrations/custom-integration)

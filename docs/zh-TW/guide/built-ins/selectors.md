@@ -15,12 +15,7 @@
 
 ## 設定
 
-```ts
-interface SelectorsConfig {
-  /** Array of selector definitions. */
-  selectors: Selector[]
-}
-```
+<<< @/.examples/guide/built-ins/selectors-config-interface.ts
 
 ## 選擇器定義格式
 
@@ -36,19 +31,15 @@ interface SelectorsConfig {
 
 雙元素元組將選擇器名稱對應至一個或多個替換字串。使用 `$` 作為元素預設選擇器的佔位符（見下方的 [`$` 佔位符](#the-placeholder)）。
 
-```ts
-type TupleFormStatic = [selector: string, value: string | string[]]
-```
+<<< @/.examples/guide/built-ins/selectors-tuple-static-type.ts
 
 <<< @/.examples/guide/built-ins/selectors-tuple-static.ts
 
 ### 元組形式——動態
 
-具有 `RegExp` 模式和解析函式的元組。函式接收 `RegExpMatchArray` 並回傳一個或多個替換字串。可選的第三個元素提供自動補齊提示。
+具有 `RegExp` 模式和解析函式的元組。函式接收 `RegExpMatchArray` 並回傳一個或多個替換字串。可選的第三個元素提供自動補齊提示，且可以是單一字串或陣列。
 
-```ts
-type TupleFormDynamic = [selector: RegExp, value: (matched: RegExpMatchArray) => string | string[], autocomplete?: string | string[]]
-```
+<<< @/.examples/guide/built-ins/selectors-tuple-dynamic-type.ts
 
 <<< @/.examples/guide/built-ins/selectors-tuple-dynamic.ts
 
@@ -90,11 +81,7 @@ type TupleFormDynamic = [selector: RegExp, value: (matched: RegExpMatchArray) =>
 ::: tip At-Rules
 對於 CSS at-rules，如 `@media` 或 `@container`，**請勿**在值中包含 `$`。當解析後的選擇器不包含 `%` 佔位符時，引擎會自動將預設選擇器（`.%`）作為巢狀層級附加，產生正確的兩層結構：
 
-```css
-@media (min-width: 768px) {
-  .a { ... }
-}
-```
+<<< @/.examples/guide/built-ins/selectors-at-rule-output.css
 :::
 
 ::: warning
@@ -106,6 +93,10 @@ type TupleFormDynamic = [selector: RegExp, value: (matched: RegExpMatchArray) =>
 選擇器解析是遞迴的。選擇器值可以參照另一個選擇器名稱，並透過鏈式關係進行解析：
 
 <<< @/.examples/guide/built-ins/selectors-recursive.ts
+
+::: tip 循環安全機制
+解析器會偵測像 `a -> b -> a` 這樣的循環參照。發生時，引擎會記錄警告，並安全地回退為未解析字串，而不是無限遞迴或讓建置卡住。
+:::
 
 ## `defineSelector` 輔助函式
 
@@ -131,6 +122,8 @@ type TupleFormDynamic = [selector: RegExp, value: (matched: RegExpMatchArray) =>
 
 - `packages/core/src/internal/plugins/selectors.ts`
 
-## Next
+## 下一步
 
 - 繼續閱讀 [Shortcuts](/zh-TW/guide/built-ins/shortcuts)
+- 回到 [內建插件](/zh-TW/guide/built-in-plugins)
+- 了解 [插件系統概覽](/zh-TW/plugin-system/overview)

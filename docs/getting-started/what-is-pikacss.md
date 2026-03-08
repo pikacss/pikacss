@@ -77,7 +77,7 @@ Use PikaCSS when you want:
 
 - **Type-safe style authoring** directly in your application code with full IDE support.
 - **Build-time compilation** instead of any runtime styling work.
-- **Framework-agnostic integration** that works across Vite, Webpack, Rspack, Rollup, esbuild, Rolldown, and Nuxt.
+- **Build-tool integration across major ecosystems** including Vite, Webpack, Rspack, Rollup, esbuild, Rolldown, and Nuxt.
 - **Minimal CSS output** thanks to atomic deduplication.
 
 ## Important Constraint
@@ -87,3 +87,5 @@ Use PikaCSS when you want:
 ## Next
 
 - Continue to [Installation](/getting-started/installation)
+- Explore [Zero Config](/getting-started/zero-config)
+- Review [Configuration](/guide/configuration)

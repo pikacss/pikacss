@@ -49,3 +49,5 @@ In webpack specifically, the shared factory uses the compiler context to determi
 ## Next
 
 - [Rspack](/integrations/rspack)
+- [Integrations Overview](/integrations/overview)
+- [Configuration](/guide/configuration)

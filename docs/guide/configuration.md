@@ -38,7 +38,7 @@ Register plugins to extend PikaCSS functionality. Core built-in plugins (`import
 - **Type:** `string`
 - **Default:** `''`
 
-A prefix prepended to every generated atomic style ID. Useful for avoiding naming conflicts with other CSS frameworks.
+A prefix prepended to every generated atomic style ID. Useful for avoiding naming conflicts with other CSS tooling or pre-existing class namespaces.
 
 <<< @/.examples/guide/config-prefix.ts
 
@@ -60,14 +60,19 @@ Global CSS injected before atomic styles. Each item can be:
 
 1. A **CSS string** — injected as-is
 2. A **preflight definition object** — a CSS-in-JS object (like `{ ':root': { fontSize: '16px' } }`)
-3. A **function** `(engine, isFormatted) => string | PreflightDefinition` — dynamically generates CSS using the engine instance
+3. A **function** `(engine, isFormatted) => string | PreflightDefinition | Promise<string | PreflightDefinition>` — dynamically generates CSS using the engine instance, including async workflows
 4. A **`WithLayer` wrapper** `{ layer, preflight }` — assigns any of the above to a specific CSS `@layer`
+5. A **`WithId` wrapper** `{ id, preflight }` — assigns an identifier so duplicate preflights can be detected and skipped
 
 <<< @/.examples/guide/config-preflights.ts
 
 To assign preflights to specific CSS `@layer`s, use the `WithLayer` wrapper:
 
 <<< @/.examples/guide/config-preflights-with-layer.ts
+
+::: info Async Preflights and `isFormatted`
+Preflight functions may be async and return a `Promise`. The `isFormatted` boolean tells you whether the current output should stay human-readable (`true`) or be compact/minified (`false`), which is useful when you manually build CSS strings.
+:::
 
 ::: tip `definePreflight()` Helper
 Use `definePreflight()` from `@pikacss/core` for type-safe preflight definitions. It is an identity function that narrows the type of the argument, making it easier to extract or share preflights across config files:
@@ -117,7 +122,7 @@ Controls whether `!important` is appended to all generated CSS declarations. Ind
 
 ### `variables`
 
-- **Type:** `{ variables: Arrayable<VariablesDefinition>, pruneUnused?: boolean, safeList?: string[] }`
+- **Type:** ``{ variables: Arrayable<VariablesDefinition>, pruneUnused?: boolean, safeList?: `--${string}`[] }``
 - **Default:** `undefined`
 
 Define CSS custom properties (variables) with support for scoped selectors, autocomplete configuration, and unused pruning.
@@ -126,14 +131,14 @@ Define CSS custom properties (variables) with support for scoped selectors, auto
 |---|---|---|---|
 | `variables` | `Arrayable<VariablesDefinition>` | (required) | Variable definitions. Can be a single object or array of objects (merged in order). |
 | `pruneUnused` | `boolean` | `true` | Remove unused variables from the final CSS. |
-| `safeList` | `string[]` | `[]` | Variables that are always included regardless of usage. |
+| `safeList` | `` `--${string}`[] `` | `[]` | Variables that are always included regardless of usage. Each entry must be a CSS custom property name including the `--` prefix. |
 
 Each variable value can be:
 - A **string/number** — the CSS value (rendered under `:root` by default)
 - **`null`** — register for autocomplete only, no CSS output
 - A **`VariableObject`** — fine-grained control over value, autocomplete behavior, and pruning
 
-`VariablesDefinition` also supports nested selector keys (for example, `'[data-theme="dark"]'`) to scope variables outside `:root`.
+`VariablesDefinition` also supports nested selector keys (for example, `'[data-theme="dark"]'`) to scope variables outside `:root`. When you use `safeList`, every entry must be a CSS variable name such as `--color-text`.
 
 <<< @/.examples/guide/config-variables.ts
 
@@ -181,6 +186,8 @@ Define custom selectors that can be used as keys in style definitions. `$` in th
 | `{ selector, value }` | Object form (static) |
 | `{ selector, value, autocomplete? }` | Object form (dynamic) |
 
+For dynamic selector rules, `autocomplete` accepts either a single string or an array of strings.
+
 <<< @/.examples/guide/config-selectors.ts
 
 ### `shortcuts`
@@ -197,6 +204,8 @@ Define reusable style shortcuts — named combinations of style properties or ot
 | `[pattern, handler, autocomplete?]` | Dynamic (regex-based) mapping |
 | `{ shortcut, value }` | Object form (static) |
 | `{ shortcut, value, autocomplete? }` | Object form (dynamic) |
+
+For dynamic shortcut rules, `autocomplete` accepts either a single string or an array of strings.
 
 <<< @/.examples/guide/config-shortcuts.ts
 
@@ -262,9 +271,7 @@ Represents a CSS property value. Supports a plain value, a fallback tuple (rende
 
 `StyleDefinition` is a union of two forms:
 
-```ts
-type StyleDefinition = Properties | StyleDefinitionMap
-```
+<<< @/.examples/guide/type-style-definition-union.ts
 
 - **`Properties`** — a flat CSS property-value map with camelCase or hyphenated keys.
 - **`StyleDefinitionMap`** — a selector-keyed object for nested style rules. Keys are selector strings (including custom aliases defined in `config.selectors`); values are `Properties`, nested `StyleDefinition`s, or arrays of style items.
@@ -282,3 +289,5 @@ A complete config file using all available options:
 ## Next
 
 - Continue to [Built-in Plugins](/guide/built-in-plugins)
+- Review [What Is PikaCSS?](/getting-started/what-is-pikacss)
+- Explore [Integrations Overview](/integrations/overview)

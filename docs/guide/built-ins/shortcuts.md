@@ -16,12 +16,7 @@ The `core:shortcuts` plugin enables reusable style combinations. Define named st
 
 ## Config
 
-```ts
-interface ShortcutsConfig {
-  /** Array of shortcut definitions. @default [] */
-  shortcuts: Shortcut[]
-}
-```
+<<< @/.examples/guide/built-ins/shortcuts-config-interface.ts
 
 ## Shortcut Definition Formats
 
@@ -35,9 +30,7 @@ A plain string is registered as an autocomplete suggestion only — no resolutio
 
 ### Tuple Form — Static
 
-```ts
-type TupleFormStatic = [shortcut: string, value: Arrayable<ResolvedStyleItem>]
-```
+<<< @/.examples/guide/built-ins/shortcuts-tuple-static-type.ts
 
 The value can be a `StyleDefinition` object, a `string` referencing another shortcut, or an array of both:
 
@@ -45,11 +38,9 @@ The value can be a `StyleDefinition` object, a `string` referencing another shor
 
 ### Tuple Form — Dynamic
 
-```ts
-type TupleFormDynamic = [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>, autocomplete?: Arrayable<string>]
-```
+<<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic-type.ts
 
-The resolver function receives the `RegExpMatchArray` from the pattern match and returns one or more `ResolvedStyleItem`s. Optional autocomplete hints provide IDE suggestions for the dynamic pattern:
+The resolver function receives the `RegExpMatchArray` from the pattern match and returns one or more `ResolvedStyleItem`s. Optional autocomplete hints provide IDE suggestions for the dynamic pattern, and can be passed as either a single string or an array:
 
 <<< @/.examples/guide/built-ins/shortcuts-tuple-dynamic.ts
 
@@ -105,6 +96,10 @@ Shortcuts can reference other shortcuts by name. Resolution is recursive — a s
 
 When `pika('btn')` is called, the engine resolves `'flex-center'` first, then merges the result with the remaining inline styles.
 
+::: tip Cycle Safety
+The resolver detects circular references such as `btn -> flex-center -> btn`. When that happens, the engine logs a warning and safely treats the unresolved item as a plain string instead of entering an infinite loop.
+:::
+
 ## Autocomplete
 
 The plugin registers:
@@ -135,3 +130,5 @@ Plugins can manage shortcuts programmatically:
 ## Next
 
 - Continue to [Plugin System Overview](/plugin-system/overview)
+- Review [Built-in Plugins](/guide/built-in-plugins)
+- Compare [Selectors](/guide/built-ins/selectors)

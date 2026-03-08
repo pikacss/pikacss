@@ -35,7 +35,7 @@ Add the following import to your application entry file (e.g., `src/main.ts`):
 
 ## 4) Configuration File (Optional)
 
-On first run with default settings (`autoCreateConfig: true`), PikaCSS automatically creates a `pika.config.ts` file in your project root if one doesn't already exist. You can also create it manually:
+On first run with default settings (`autoCreateConfig: true`), PikaCSS automatically creates a `pika.config.js` file in your project root if one doesn't already exist. You can also create a config file manually using any supported file name:
 
 <<< @/.examples/getting-started/pika.config.ts
 
@@ -60,12 +60,7 @@ When you start your dev server or run a build, the plugin generates two files by
 
 You can customize their output paths via plugin options:
 
-```ts
-PikaCSS({
-  tsCodegen: './src/pika.gen.ts',
-  cssCodegen: './src/pika.gen.css',
-})
-```
+<<< @/.examples/getting-started/pika-custom-codegen.ts
 
 Set `tsCodegen: false` to disable TypeScript code generation entirely.
 
@@ -117,3 +112,5 @@ The Nuxt module automatically registers the Vite plugin with `enforce: 'pre'` an
 ## Next
 
 - Continue to [Zero Config](/getting-started/zero-config)
+- Learn [What Is PikaCSS?](/getting-started/what-is-pikacss)
+- Compare [Integrations Overview](/integrations/overview)

@@ -5,15 +5,9 @@
 ## 安裝
 
 ::: code-group
-```bash [pnpm]
-pnpm add @pikacss/plugin-typography
-```
-```bash [npm]
-npm install @pikacss/plugin-typography
-```
-```bash [yarn]
-yarn add @pikacss/plugin-typography
-```
+<<< @/.examples/plugins/typography-install.sh [pnpm]
+<<< @/.examples/plugins/typography-install-npm.sh [npm]
+<<< @/.examples/plugins/typography-install-yarn.sh [yarn]
 :::
 
 ## 基本用法
@@ -28,15 +22,7 @@ yarn add @pikacss/plugin-typography
 
 此插件透過[模組擴增](/zh-TW/plugin-system/overview)將 `typography` 欄位加入 `EngineConfig`：
 
-```ts
-interface EngineConfig {
-  typography?: TypographyPluginOptions
-}
-
-interface TypographyPluginOptions {
-  variables?: Partial<typeof typographyVariables>
-}
-```
+<<< @/.examples/plugins/typography-engine-config-interface.ts
 
 ## 自訂變數
 
@@ -130,3 +116,5 @@ Prose 排版的所有視覺面向均由 CSS 變數控制。你可以透過 `typo
 ## 下一步
 
 - 繼續前往 [FAQ](/zh-TW/community/faq)
+- 繼續至 [Reset 插件](/zh-TW/plugins/reset)
+- 了解 [建立插件](/zh-TW/plugin-system/create-plugin)

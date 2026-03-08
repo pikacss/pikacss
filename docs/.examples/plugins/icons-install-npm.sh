@@ -1,0 +1,1 @@
+npm install @pikacss/plugin-icons @iconify/utils

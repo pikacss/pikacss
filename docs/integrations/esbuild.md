@@ -43,3 +43,5 @@ In esbuild specifically, the plugin uses an `onResolve` hook to handle the `pika
 ## Next
 
 - [Rolldown](/integrations/rolldown)
+- [Integrations Overview](/integrations/overview)
+- [Configuration](/guide/configuration)

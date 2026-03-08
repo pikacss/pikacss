@@ -109,7 +109,7 @@ createEngine(config)
 
 ## 同步鉤子（通知）{#sync-hooks}
 
-同步鉤子**僅用於通知**——它們告知插件某件事已發生。它們**不應回傳值**。
+同步鉤子主要用於通知——它們告知插件某件事已發生。雖然鉤子執行器在內部會把非 nullish 的回傳值傳給下一個插件，但引擎使用這些鉤子的目的仍以觀察事件為主，而非一般性的 payload 轉換。
 
 <<< @/.examples/plugin-system/overview-sync-hook.ts
 
@@ -142,7 +142,7 @@ createEngine(config)
 所有鉤子——包含非同步與同步——都遵循相同的執行規則：
 
 1. **插件順序**：鉤子依排序順序逐一執行（`pre` → 預設 → `post`）
-2. **Payload 串聯**：對於非同步鉤子，若插件回傳非空值，該值會取代傳遞給下一個插件的 payload
+2. **Payload 串聯**：若插件回傳非 nullish 的值，該值會取代傳遞給下一個插件的 payload。實務上，這主要影響設定與轉換類的非同步鉤子。
 3. **錯誤隔離**：若插件的鉤子拋出錯誤，錯誤會被捕捉並記錄。執行繼續進行到下一個插件——單一插件失敗不會中斷整個鏈
 4. **跳過**：若插件未定義特定鉤子，則直接跳過
 
@@ -160,3 +160,5 @@ createEngine(config)
 ## 下一步
 
 - 繼續閱讀[建立插件](/zh-TW/plugin-system/create-plugin)，取得建立自訂插件的逐步指南
+- 查看[內建插件](/zh-TW/guide/built-in-plugins)
+- 對照[設定](/zh-TW/guide/configuration)
