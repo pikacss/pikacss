@@ -193,6 +193,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # repomix
-repomix-*.*
+repomix/
 
 .audit

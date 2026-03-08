@@ -22,7 +22,7 @@ async function main() {
 	const packages = await getPackages()
 
 	// Clear old txt file if exists
-	await rm(resolve(rootDir, 'docs/public/repomix.txt'), { force: true })
+	await rm(resolve(rootDir, 'repomix/repomix.txt'), { force: true })
 		.catch(() => {})
 
 	let totalTokens = 0
@@ -32,18 +32,28 @@ async function main() {
 	const docsInclude = 'docs/**/*.md,docs/.examples/**/*'
 	const docsIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,docs/zh-TW/**,**/dist/**,**/coverage/**'
 
-	const resDocs = await $`repomix . --output docs/public/repomix-docs.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${docsInclude} --ignore ${docsIgnore} --no-security-check`.quiet()
+	const resDocs = await $`repomix . --output repomix/repomix-docs.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${docsInclude} --ignore ${docsIgnore} --no-security-check`.quiet()
 
 	const docsTokens = extractTokens(resDocs.stdout)
 	totalTokens += docsTokens
 	results.push({ name: 'docs', tokens: docsTokens })
+
+	console.log('Packing docs (zh-TW)...')
+	const docsZhTwInclude = 'docs/zh-TW/**/*.md'
+	const docsZhTwIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,**/dist/**,**/coverage/**'
+
+	const resDocsZhTw = await $`repomix . --output repomix/repomix-docs-zh-tw.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${docsZhTwInclude} --ignore ${docsZhTwIgnore} --no-security-check`.quiet()
+
+	const docsZhTwTokens = extractTokens(resDocsZhTw.stdout)
+	totalTokens += docsZhTwTokens
+	results.push({ name: 'docs/zh-TW', tokens: docsZhTwTokens })
 
 	for (const pkg of packages) {
 		console.log(`Packing package: ${pkg}...`)
 		const pkgInclude = `packages/${pkg}/src/**/*,packages/${pkg}/tests/**/*`
 		const pkgIgnore = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/csstype.ts'
 
-		const resPkg = await $`repomix . --output docs/public/repomix-${pkg}.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${pkgInclude} --ignore ${pkgIgnore} --no-security-check`.quiet()
+		const resPkg = await $`repomix . --output repomix/repomix-${pkg}.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${pkgInclude} --ignore ${pkgIgnore} --no-security-check`.quiet()
 
 		const pkgTokens = extractTokens(resPkg.stdout)
 		totalTokens += pkgTokens
@@ -68,11 +78,12 @@ async function main() {
 		.join(',')
 	const allInclude = `${docsInclude},${allPkgIncludes}`
 	const allPkgIgnores = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/csstype.ts'
-	const allIgnore = `${docsIgnore},${allPkgIgnores}`
+	const commonIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,**/dist/**,**/coverage/**'
+	const allIgnore = `${commonIgnore},${allPkgIgnores}`
 
-	const resAll = await $`repomix . --output docs/public/repomix-all-temp.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${allInclude} --ignore ${allIgnore} --no-security-check`.quiet()
+	const resAll = await $`repomix . --output repomix/repomix-all-temp.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${allInclude} --ignore ${allIgnore} --no-security-check`.quiet()
 
-	await rm(resolve(rootDir, 'docs/public/repomix-all-temp.txt'), { force: true })
+	await rm(resolve(rootDir, 'repomix/repomix-all-temp.txt'), { force: true })
 		.catch(() => {})
 
 	const top10match = resAll.stdout.match(/📈 Top 10 Files by Token Count:[\s\S]*?(?=📊 Pack Summary:)/)
