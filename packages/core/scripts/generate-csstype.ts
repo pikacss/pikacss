@@ -844,7 +844,8 @@ function getBaselineStatus(propertyName: string): string {
 	if (feature.kind !== 'feature')
 		return ''
 
-	const status = feature.status
+	const compatKey = `css.properties.${propertyName}`
+	const status = feature.status.by_compat_key?.[compatKey] ?? feature.status
 	if (status.baseline === 'high') {
 		const since = status.baseline_high_date ? ` (since ${formatBaselineDate(status.baseline_high_date)})` : ''
 		return `✅ Baseline: Widely available${since}`

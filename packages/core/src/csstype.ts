@@ -51,13 +51,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   all?: Property.All | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/anchor-name
    */
   anchorName?: Property.AnchorName | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    */
   anchorScope?: Property.AnchorScope | undefined;
   /**
@@ -182,7 +182,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   background?: Property.Background | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-attachment
    */
@@ -224,19 +224,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   backgroundPosition?: Property.BackgroundPosition<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Mar 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-position-x
    */
   backgroundPositionX?: Property.BackgroundPositionX<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Mar 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-position-y
    */
   backgroundPositionY?: Property.BackgroundPositionY<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-repeat
    */
@@ -258,7 +258,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   baselineSource?: Property.BaselineSource | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/block-size
    */
@@ -270,73 +270,73 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   border?: Property.Border<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block
    */
   borderBlock?: Property.BorderBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-color
    */
   borderBlockColor?: Property.BorderBlockColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end
    */
   borderBlockEnd?: Property.BorderBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end-color
    */
   borderBlockEndColor?: Property.BorderBlockEndColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end-style
    */
   borderBlockEndStyle?: Property.BorderBlockEndStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end-width
    */
   borderBlockEndWidth?: Property.BorderBlockEndWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start
    */
   borderBlockStart?: Property.BorderBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start-color
    */
   borderBlockStartColor?: Property.BorderBlockStartColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start-style
    */
   borderBlockStartStyle?: Property.BorderBlockStartStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start-width
    */
   borderBlockStartWidth?: Property.BorderBlockStartWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-style
    */
   borderBlockStyle?: Property.BorderBlockStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-width
    */
@@ -402,109 +402,109 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   borderEndStartRadius?: Property.BorderEndStartRadius<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image
    */
   borderImage?: Property.BorderImage<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-outset
    */
   borderImageOutset?: Property.BorderImageOutset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Sep 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-repeat
    */
   borderImageRepeat?: Property.BorderImageRepeat | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-slice
    */
   borderImageSlice?: Property.BorderImageSlice | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-source
    */
   borderImageSource?: Property.BorderImageSource | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-width
    */
   borderImageWidth?: Property.BorderImageWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline
    */
   borderInline?: Property.BorderInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-color
    */
   borderInlineColor?: Property.BorderInlineColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end
    */
   borderInlineEnd?: Property.BorderInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end-color
    */
   borderInlineEndColor?: Property.BorderInlineEndColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end-style
    */
   borderInlineEndStyle?: Property.BorderInlineEndStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end-width
    */
   borderInlineEndWidth?: Property.BorderInlineEndWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start
    */
   borderInlineStart?: Property.BorderInlineStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start-color
    */
   borderInlineStartColor?: Property.BorderInlineStartColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start-style
    */
   borderInlineStartStyle?: Property.BorderInlineStartStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start-width
    */
   borderInlineStartWidth?: Property.BorderInlineStartWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-style
    */
   borderInlineStyle?: Property.BorderInlineStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-width
    */
@@ -770,7 +770,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   clip?: Property.Clip | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2023)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/clip-path
    */
@@ -792,7 +792,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   colorInterpolation?: Property.ColorInterpolation | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/color-interpolation-filters
    */
@@ -803,7 +803,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   colorRendering?: Property.ColorRendering | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2024)
+   * ✅ Baseline: Widely available (since Jul 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/color-scheme
    */
@@ -821,7 +821,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   columnFill?: Property.ColumnFill | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/column-gap
    */
@@ -870,7 +870,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   columnSpan?: Property.ColumnSpan | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2019)
+   * ✅ Baseline: Widely available (since May 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/column-width
    */
@@ -943,7 +943,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   content?: Property.Content | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Sep 2025)
+   * ⚠️ Baseline: Newly available (since Sep 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/content-visibility
    */
@@ -1103,31 +1103,31 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   counterSet?: Property.CounterSet | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ✅ Baseline: Widely available (since Jun 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/cursor
    */
   cursor?: Property.Cursor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/cx
    */
   cx?: Property.Cx<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/cy
    */
   cy?: Property.Cy<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ❌ Baseline: Not widely available
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/d
    */
   d?: Property.D | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/direction
    */
@@ -1162,19 +1162,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   fieldSizing?: Property.FieldSizing | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/fill
    */
   fill?: Property.Fill | undefined;
   /**
-   * ✅ Baseline: Widely available (since ≤2022-09-24)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/fill-opacity
    */
   fillOpacity?: Property.FillOpacity | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/fill-rule
    */
@@ -1305,7 +1305,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   fontSmooth?: Property.FontSmooth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2020)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/font-stretch
    */
@@ -1391,7 +1391,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   fontVariantNumeric?: Property.FontVariantNumeric | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Sep 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/font-variant-position
    */
@@ -1415,7 +1415,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   fontWidth?: Property.FontWidth | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ❌ Baseline: Not widely available
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/forced-color-adjust
    */
@@ -1445,7 +1445,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   gridArea?: Property.GridArea | undefined;
   /**
-   * ✅ Baseline: Widely available (since Apr 2020)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/grid-auto-columns
    */
@@ -1457,7 +1457,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   gridAutoFlow?: Property.GridAutoFlow | undefined;
   /**
-   * ✅ Baseline: Widely available (since Apr 2020)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/grid-auto-rows
    */
@@ -1574,7 +1574,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   imageOrientation?: Property.ImageOrientation | undefined;
   /**
-   * ✅ Baseline: Widely available (since Apr 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/image-rendering
    */
@@ -1600,49 +1600,49 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   initialLetterAlign?: Property.InitialLetterAlign | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inline-size
    */
   inlineSize?: Property.InlineSize<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset
    */
   inset?: Property.Inset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-block
    */
   insetBlock?: Property.InsetBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-block-end
    */
   insetBlockEnd?: Property.InsetBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-block-start
    */
   insetBlockStart?: Property.InsetBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-inline
    */
   insetInline?: Property.InsetInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-inline-end
    */
   insetInlineEnd?: Property.InsetInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-inline-start
    */
@@ -1697,7 +1697,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   justifyContent?: Property.JustifyContent | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jan 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/justify-items
    */
@@ -1783,19 +1783,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   margin?: Property.Margin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-block
    */
   marginBlock?: Property.MarginBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-block-end
    */
   marginBlockEnd?: Property.MarginBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-block-start
    */
@@ -1807,19 +1807,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   marginBottom?: Property.MarginBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-inline
    */
   marginInline?: Property.MarginInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-inline-end
    */
   marginInlineEnd?: Property.MarginInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-inline-start
    */
@@ -1851,25 +1851,25 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   marginTrim?: Property.MarginTrim | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker
    */
   marker?: Property.Marker | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker-end
    */
   markerEnd?: Property.MarkerEnd | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker-mid
    */
   markerMid?: Property.MarkerMid | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker-start
    */
@@ -1981,25 +1981,25 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   masonryAutoFlow?: Property.MasonryAutoFlow | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2025)
+   * ❌ Baseline: Not widely available
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/math-depth
    */
   mathDepth?: Property.MathDepth | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2025)
+   * ⚠️ Baseline: Newly available (since Dec 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/math-shift
    */
   mathShift?: Property.MathShift | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2025)
+   * ⚠️ Baseline: Newly available (since Aug 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/math-style
    */
   mathStyle?: Property.MathStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/max-block-size
    */
@@ -2011,7 +2011,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maxHeight?: Property.MaxHeight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/max-inline-size
    */
@@ -2026,7 +2026,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maxWidth?: Property.MaxWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/min-block-size
    */
@@ -2038,7 +2038,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   minHeight?: Property.MinHeight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/min-inline-size
    */
@@ -2312,7 +2312,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   offset?: Property.Offset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ⚠️ Baseline: Newly available (since Aug 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/offset-anchor
    */
@@ -2324,13 +2324,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   offsetDistance?: Property.OffsetDistance<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ✅ Baseline: Widely available (since Sep 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/offset-path
    */
   offsetPath?: Property.OffsetPath | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ⚠️ Baseline: Newly available (since Jan 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/offset-position
    */
@@ -2366,7 +2366,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   outline?: Property.Outline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/outline-color
    */
@@ -2378,19 +2378,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   outlineOffset?: Property.OutlineOffset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/outline-style
    */
   outlineStyle?: Property.OutlineStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/outline-width
    */
   outlineWidth?: Property.OutlineWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow
    */
@@ -2402,7 +2402,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   overflowAnchor?: Property.OverflowAnchor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ⚠️ Baseline: Newly available (since Sep 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-block
    */
@@ -2417,7 +2417,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   overflowClipMargin?: Property.OverflowClipMargin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ⚠️ Baseline: Newly available (since Sep 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-inline
    */
@@ -2429,13 +2429,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   overflowWrap?: Property.OverflowWrap | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-x
    */
   overflowX?: Property.OverflowX | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-y
    */
@@ -2485,19 +2485,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   padding?: Property.Padding<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-block
    */
   paddingBlock?: Property.PaddingBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-block-end
    */
   paddingBlockEnd?: Property.PaddingBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-block-start
    */
@@ -2509,19 +2509,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   paddingBottom?: Property.PaddingBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-inline
    */
   paddingInline?: Property.PaddingInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-inline-end
    */
   paddingInlineEnd?: Property.PaddingInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-inline-start
    */
@@ -2545,7 +2545,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   paddingTop?: Property.PaddingTop<TLength> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2024)
+   * ✅ Baseline: Widely available (since Aug 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/page
    */
@@ -2581,31 +2581,31 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   paintOrder?: Property.PaintOrder | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2024)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/perspective
    */
   perspective?: Property.Perspective<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2024)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/perspective-origin
    */
   perspectiveOrigin?: Property.PerspectiveOrigin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/place-content
    */
   placeContent?: Property.PlaceContent | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/place-items
    */
   placeItems?: Property.PlaceItems | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/place-self
    */
@@ -2623,25 +2623,25 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   position?: Property.Position | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-anchor
    */
   positionAnchor?: Property.PositionAnchor | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-area
    */
   positionArea?: Property.PositionArea | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-try
    */
   positionTry?: Property.PositionTry | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-try-fallbacks
    */
@@ -2653,7 +2653,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   positionTryOrder?: Property.PositionTryOrder | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-visibility
    */
@@ -2665,13 +2665,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   printColorAdjust?: Property.PrintColorAdjust | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2023)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/quotes
    */
   quotes?: Property.Quotes | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/r
    */
@@ -2736,13 +2736,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   rubyPosition?: Property.RubyPosition | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ⚠️ Baseline: Newly available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/rx
    */
   rx?: Property.Rx<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ⚠️ Baseline: Newly available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/ry
    */
@@ -2784,67 +2784,67 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   scrollInitialTarget?: Property.ScrollInitialTarget | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin
    */
   scrollMargin?: Property.ScrollMargin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block
    */
   scrollMarginBlock?: Property.ScrollMarginBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block-end
    */
   scrollMarginBlockEnd?: Property.ScrollMarginBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block-start
    */
   scrollMarginBlockStart?: Property.ScrollMarginBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-bottom
    */
   scrollMarginBottom?: Property.ScrollMarginBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline
    */
   scrollMarginInline?: Property.ScrollMarginInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline-end
    */
   scrollMarginInlineEnd?: Property.ScrollMarginInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline-start
    */
   scrollMarginInlineStart?: Property.ScrollMarginInlineStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-left
    */
   scrollMarginLeft?: Property.ScrollMarginLeft<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-right
    */
   scrollMarginRight?: Property.ScrollMarginRight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-top
    */
@@ -2858,67 +2858,67 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   scrollMarkerGroup?: Property.ScrollMarkerGroup | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding
    */
   scrollPadding?: Property.ScrollPadding<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block
    */
   scrollPaddingBlock?: Property.ScrollPaddingBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block-end
    */
   scrollPaddingBlockEnd?: Property.ScrollPaddingBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block-start
    */
   scrollPaddingBlockStart?: Property.ScrollPaddingBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-bottom
    */
   scrollPaddingBottom?: Property.ScrollPaddingBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline
    */
   scrollPaddingInline?: Property.ScrollPaddingInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline-end
    */
   scrollPaddingInlineEnd?: Property.ScrollPaddingInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline-start
    */
   scrollPaddingInlineStart?: Property.ScrollPaddingInlineStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-left
    */
   scrollPaddingLeft?: Property.ScrollPaddingLeft<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-right
    */
   scrollPaddingRight?: Property.ScrollPaddingRight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-top
    */
@@ -2942,13 +2942,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   scrollSnapPointsY?: Property.ScrollSnapPointsY | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-snap-stop
    */
   scrollSnapStop?: Property.ScrollSnapStop | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-snap-type
    */
@@ -3016,67 +3016,67 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   speakAs?: Property.SpeakAs | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stop-color
    */
   stopColor?: Property.StopColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stop-opacity
    */
   stopOpacity?: Property.StopOpacity | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke
    */
   stroke?: Property.Stroke | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ❌ Baseline: Not widely available
    *
    * @experimental
    */
   strokeColor?: Property.StrokeColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-dasharray
    */
   strokeDasharray?: Property.StrokeDasharray<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-dashoffset
    */
   strokeDashoffset?: Property.StrokeDashoffset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-linecap
    */
   strokeLinecap?: Property.StrokeLinecap | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-linejoin
    */
   strokeLinejoin?: Property.StrokeLinejoin | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-miterlimit
    */
   strokeMiterlimit?: Property.StrokeMiterlimit | undefined;
   /**
-   * ✅ Baseline: Widely available (since ≤2022-09-24)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-opacity
    */
   strokeOpacity?: Property.StrokeOpacity | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-width
    */
@@ -3106,13 +3106,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   textAlignLast?: Property.TextAlignLast | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-02-02)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-anchor
    */
   textAnchor?: Property.TextAnchor | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Nov 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-autospace
    */
@@ -3142,7 +3142,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   textDecoration?: Property.TextDecoration<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-color
    */
@@ -3156,13 +3156,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   textDecorationInset?: Property.TextDecorationInset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-line
    */
   textDecorationLine?: Property.TextDecorationLine | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ❌ Baseline: Not widely available
    *
    * @experimental
    *
@@ -3170,19 +3170,19 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   textDecorationSkip?: Property.TextDecorationSkip | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Sep 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-skip-ink
    */
   textDecorationSkipInk?: Property.TextDecorationSkipInk | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-style
    */
   textDecorationStyle?: Property.TextDecorationStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Sep 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-thickness
    */
@@ -3282,7 +3282,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   textUnderlinePosition?: Property.TextUnderlinePosition | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Oct 2024)
+   * ⚠️ Baseline: Newly available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-wrap
    */
@@ -3375,7 +3375,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   transform?: Property.Transform | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Apr 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/transform-box
    */
@@ -3387,7 +3387,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   transformOrigin?: Property.TransformOrigin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2024)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/transform-style
    */
@@ -3442,7 +3442,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   triggerScope?: Property.TriggerScope | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/unicode-bidi
    */
@@ -3606,7 +3606,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   WebkitTapHighlightColor?: Property.WebkitTapHighlightColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Mar 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/-webkit-text-fill-color
    */
@@ -3673,7 +3673,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   willChange?: Property.WillChange | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/word-break
    */
@@ -3696,13 +3696,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   writingMode?: Property.WritingMode | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/x
    */
   x?: Property.X<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/y
    */
@@ -4055,7 +4055,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "-webkit-tap-highlight-color"?: Property.WebkitTapHighlightColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Mar 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/-webkit-text-fill-color
    */
@@ -4131,13 +4131,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "all"?: Property.All | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/anchor-name
    */
   "anchor-name"?: Property.AnchorName | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    */
   "anchor-scope"?: Property.AnchorScope | undefined;
   /**
@@ -4262,7 +4262,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "background"?: Property.Background | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-attachment
    */
@@ -4304,19 +4304,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "background-position"?: Property.BackgroundPosition<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Mar 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-position-x
    */
   "background-position-x"?: Property.BackgroundPositionX<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Mar 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-position-y
    */
   "background-position-y"?: Property.BackgroundPositionY<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/background-repeat
    */
@@ -4338,7 +4338,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "baseline-source"?: Property.BaselineSource | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/block-size
    */
@@ -4350,73 +4350,73 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "border"?: Property.Border<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block
    */
   "border-block"?: Property.BorderBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-color
    */
   "border-block-color"?: Property.BorderBlockColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end
    */
   "border-block-end"?: Property.BorderBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end-color
    */
   "border-block-end-color"?: Property.BorderBlockEndColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end-style
    */
   "border-block-end-style"?: Property.BorderBlockEndStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-end-width
    */
   "border-block-end-width"?: Property.BorderBlockEndWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start
    */
   "border-block-start"?: Property.BorderBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start-color
    */
   "border-block-start-color"?: Property.BorderBlockStartColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start-style
    */
   "border-block-start-style"?: Property.BorderBlockStartStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-start-width
    */
   "border-block-start-width"?: Property.BorderBlockStartWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-style
    */
   "border-block-style"?: Property.BorderBlockStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-block-width
    */
@@ -4482,109 +4482,109 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "border-end-start-radius"?: Property.BorderEndStartRadius<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image
    */
   "border-image"?: Property.BorderImage<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-outset
    */
   "border-image-outset"?: Property.BorderImageOutset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Sep 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-repeat
    */
   "border-image-repeat"?: Property.BorderImageRepeat | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-slice
    */
   "border-image-slice"?: Property.BorderImageSlice | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-source
    */
   "border-image-source"?: Property.BorderImageSource | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-image-width
    */
   "border-image-width"?: Property.BorderImageWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline
    */
   "border-inline"?: Property.BorderInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-color
    */
   "border-inline-color"?: Property.BorderInlineColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end
    */
   "border-inline-end"?: Property.BorderInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end-color
    */
   "border-inline-end-color"?: Property.BorderInlineEndColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end-style
    */
   "border-inline-end-style"?: Property.BorderInlineEndStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-end-width
    */
   "border-inline-end-width"?: Property.BorderInlineEndWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start
    */
   "border-inline-start"?: Property.BorderInlineStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start-color
    */
   "border-inline-start-color"?: Property.BorderInlineStartColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start-style
    */
   "border-inline-start-style"?: Property.BorderInlineStartStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-start-width
    */
   "border-inline-start-width"?: Property.BorderInlineStartWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-style
    */
   "border-inline-style"?: Property.BorderInlineStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/border-inline-width
    */
@@ -4850,7 +4850,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "clip"?: Property.Clip | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2023)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/clip-path
    */
@@ -4872,7 +4872,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "color-interpolation"?: Property.ColorInterpolation | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/color-interpolation-filters
    */
@@ -4883,7 +4883,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "color-rendering"?: Property.ColorRendering | undefined;
   /**
-   * ✅ Baseline: Widely available (since Aug 2024)
+   * ✅ Baseline: Widely available (since Jul 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/color-scheme
    */
@@ -4901,7 +4901,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "column-fill"?: Property.ColumnFill | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/column-gap
    */
@@ -4944,7 +4944,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "column-span"?: Property.ColumnSpan | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2019)
+   * ✅ Baseline: Widely available (since May 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/column-width
    */
@@ -5023,7 +5023,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "content"?: Property.Content | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Sep 2025)
+   * ⚠️ Baseline: Newly available (since Sep 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/content-visibility
    */
@@ -5183,31 +5183,31 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "counter-set"?: Property.CounterSet | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ✅ Baseline: Widely available (since Jun 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/cursor
    */
   "cursor"?: Property.Cursor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/cx
    */
   "cx"?: Property.Cx<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/cy
    */
   "cy"?: Property.Cy<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ❌ Baseline: Not widely available
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/d
    */
   "d"?: Property.D | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/direction
    */
@@ -5242,19 +5242,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "field-sizing"?: Property.FieldSizing | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/fill
    */
   "fill"?: Property.Fill | undefined;
   /**
-   * ✅ Baseline: Widely available (since ≤2022-09-24)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/fill-opacity
    */
   "fill-opacity"?: Property.FillOpacity | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/fill-rule
    */
@@ -5385,7 +5385,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "font-smooth"?: Property.FontSmooth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2020)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/font-stretch
    */
@@ -5471,7 +5471,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "font-variant-numeric"?: Property.FontVariantNumeric | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Sep 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/font-variant-position
    */
@@ -5495,7 +5495,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "font-width"?: Property.FontWidth | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ❌ Baseline: Not widely available
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/forced-color-adjust
    */
@@ -5525,7 +5525,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "grid-area"?: Property.GridArea | undefined;
   /**
-   * ✅ Baseline: Widely available (since Apr 2020)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/grid-auto-columns
    */
@@ -5537,7 +5537,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "grid-auto-flow"?: Property.GridAutoFlow | undefined;
   /**
-   * ✅ Baseline: Widely available (since Apr 2020)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/grid-auto-rows
    */
@@ -5654,7 +5654,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "image-orientation"?: Property.ImageOrientation | undefined;
   /**
-   * ✅ Baseline: Widely available (since Apr 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/image-rendering
    */
@@ -5680,49 +5680,49 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "initial-letter-align"?: Property.InitialLetterAlign | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inline-size
    */
   "inline-size"?: Property.InlineSize<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset
    */
   "inset"?: Property.Inset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-block
    */
   "inset-block"?: Property.InsetBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-block-end
    */
   "inset-block-end"?: Property.InsetBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-block-start
    */
   "inset-block-start"?: Property.InsetBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-inline
    */
   "inset-inline"?: Property.InsetInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-inline-end
    */
   "inset-inline-end"?: Property.InsetInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/inset-inline-start
    */
@@ -5777,7 +5777,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "justify-content"?: Property.JustifyContent | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jan 2019)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/justify-items
    */
@@ -5863,19 +5863,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "margin"?: Property.Margin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-block
    */
   "margin-block"?: Property.MarginBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-block-end
    */
   "margin-block-end"?: Property.MarginBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-block-start
    */
@@ -5887,19 +5887,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "margin-bottom"?: Property.MarginBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-inline
    */
   "margin-inline"?: Property.MarginInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-inline-end
    */
   "margin-inline-end"?: Property.MarginInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/margin-inline-start
    */
@@ -5931,25 +5931,25 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "margin-trim"?: Property.MarginTrim | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker
    */
   "marker"?: Property.Marker | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker-end
    */
   "marker-end"?: Property.MarkerEnd | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker-mid
    */
   "marker-mid"?: Property.MarkerMid | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/marker-start
    */
@@ -6061,25 +6061,25 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "masonry-auto-flow"?: Property.MasonryAutoFlow | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2025)
+   * ❌ Baseline: Not widely available
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/math-depth
    */
   "math-depth"?: Property.MathDepth | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2025)
+   * ⚠️ Baseline: Newly available (since Dec 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/math-shift
    */
   "math-shift"?: Property.MathShift | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2025)
+   * ⚠️ Baseline: Newly available (since Aug 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/math-style
    */
   "math-style"?: Property.MathStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/max-block-size
    */
@@ -6091,7 +6091,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "max-height"?: Property.MaxHeight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/max-inline-size
    */
@@ -6106,7 +6106,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "max-width"?: Property.MaxWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/min-block-size
    */
@@ -6118,7 +6118,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "min-height"?: Property.MinHeight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/min-inline-size
    */
@@ -6160,7 +6160,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "offset"?: Property.Offset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ⚠️ Baseline: Newly available (since Aug 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/offset-anchor
    */
@@ -6172,13 +6172,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "offset-distance"?: Property.OffsetDistance<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ✅ Baseline: Widely available (since Sep 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/offset-path
    */
   "offset-path"?: Property.OffsetPath | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2025)
+   * ⚠️ Baseline: Newly available (since Jan 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/offset-position
    */
@@ -6214,7 +6214,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "outline"?: Property.Outline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/outline-color
    */
@@ -6226,19 +6226,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "outline-offset"?: Property.OutlineOffset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/outline-style
    */
   "outline-style"?: Property.OutlineStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2019)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/outline-width
    */
   "outline-width"?: Property.OutlineWidth<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow
    */
@@ -6250,7 +6250,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "overflow-anchor"?: Property.OverflowAnchor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ⚠️ Baseline: Newly available (since Sep 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-block
    */
@@ -6265,7 +6265,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "overflow-clip-margin"?: Property.OverflowClipMargin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ⚠️ Baseline: Newly available (since Sep 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-inline
    */
@@ -6277,13 +6277,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "overflow-wrap"?: Property.OverflowWrap | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-x
    */
   "overflow-x"?: Property.OverflowX | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/overflow-y
    */
@@ -6333,19 +6333,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "padding"?: Property.Padding<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-block
    */
   "padding-block"?: Property.PaddingBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-block-end
    */
   "padding-block-end"?: Property.PaddingBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-block-start
    */
@@ -6357,19 +6357,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "padding-bottom"?: Property.PaddingBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-inline
    */
   "padding-inline"?: Property.PaddingInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-inline-end
    */
   "padding-inline-end"?: Property.PaddingInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/padding-inline-start
    */
@@ -6393,7 +6393,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "padding-top"?: Property.PaddingTop<TLength> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2024)
+   * ✅ Baseline: Widely available (since Aug 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/page
    */
@@ -6429,31 +6429,31 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "paint-order"?: Property.PaintOrder | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2024)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/perspective
    */
   "perspective"?: Property.Perspective<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2024)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/perspective-origin
    */
   "perspective-origin"?: Property.PerspectiveOrigin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/place-content
    */
   "place-content"?: Property.PlaceContent | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/place-items
    */
   "place-items"?: Property.PlaceItems | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/place-self
    */
@@ -6471,25 +6471,25 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "position"?: Property.Position | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-anchor
    */
   "position-anchor"?: Property.PositionAnchor | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-area
    */
   "position-area"?: Property.PositionArea | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-try
    */
   "position-try"?: Property.PositionTry | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-try-fallbacks
    */
@@ -6501,7 +6501,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "position-try-order"?: Property.PositionTryOrder | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jan 2026)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/position-visibility
    */
@@ -6513,13 +6513,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "print-color-adjust"?: Property.PrintColorAdjust | undefined;
   /**
-   * ✅ Baseline: Widely available (since Oct 2023)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/quotes
    */
   "quotes"?: Property.Quotes | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/r
    */
@@ -6584,13 +6584,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "ruby-position"?: Property.RubyPosition | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ⚠️ Baseline: Newly available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/rx
    */
   "rx"?: Property.Rx<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ⚠️ Baseline: Newly available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/ry
    */
@@ -6614,67 +6614,67 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "scroll-initial-target"?: Property.ScrollInitialTarget | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin
    */
   "scroll-margin"?: Property.ScrollMargin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block
    */
   "scroll-margin-block"?: Property.ScrollMarginBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block-end
    */
   "scroll-margin-block-end"?: Property.ScrollMarginBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block-start
    */
   "scroll-margin-block-start"?: Property.ScrollMarginBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-bottom
    */
   "scroll-margin-bottom"?: Property.ScrollMarginBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline
    */
   "scroll-margin-inline"?: Property.ScrollMarginInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline-end
    */
   "scroll-margin-inline-end"?: Property.ScrollMarginInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline-start
    */
   "scroll-margin-inline-start"?: Property.ScrollMarginInlineStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-left
    */
   "scroll-margin-left"?: Property.ScrollMarginLeft<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-right
    */
   "scroll-margin-right"?: Property.ScrollMarginRight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-margin-top
    */
@@ -6688,67 +6688,67 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "scroll-marker-group"?: Property.ScrollMarkerGroup | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding
    */
   "scroll-padding"?: Property.ScrollPadding<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block
    */
   "scroll-padding-block"?: Property.ScrollPaddingBlock<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block-end
    */
   "scroll-padding-block-end"?: Property.ScrollPaddingBlockEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block-start
    */
   "scroll-padding-block-start"?: Property.ScrollPaddingBlockStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-bottom
    */
   "scroll-padding-bottom"?: Property.ScrollPaddingBottom<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline
    */
   "scroll-padding-inline"?: Property.ScrollPaddingInline<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline-end
    */
   "scroll-padding-inline-end"?: Property.ScrollPaddingInlineEnd<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline-start
    */
   "scroll-padding-inline-start"?: Property.ScrollPaddingInlineStart<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-left
    */
   "scroll-padding-left"?: Property.ScrollPaddingLeft<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-right
    */
   "scroll-padding-right"?: Property.ScrollPaddingRight<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-padding-top
    */
@@ -6772,13 +6772,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "scroll-snap-points-y"?: Property.ScrollSnapPointsY | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-snap-stop
    */
   "scroll-snap-stop"?: Property.ScrollSnapStop | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Oct 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/scroll-snap-type
    */
@@ -6864,67 +6864,67 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "speak-as"?: Property.SpeakAs | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stop-color
    */
   "stop-color"?: Property.StopColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stop-opacity
    */
   "stop-opacity"?: Property.StopOpacity | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke
    */
   "stroke"?: Property.Stroke | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ❌ Baseline: Not widely available
    *
    * @experimental
    */
   "stroke-color"?: Property.StrokeColor | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-dasharray
    */
   "stroke-dasharray"?: Property.StrokeDasharray<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-dashoffset
    */
   "stroke-dashoffset"?: Property.StrokeDashoffset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-linecap
    */
   "stroke-linecap"?: Property.StrokeLinecap | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-linejoin
    */
   "stroke-linejoin"?: Property.StrokeLinejoin | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-miterlimit
    */
   "stroke-miterlimit"?: Property.StrokeMiterlimit | undefined;
   /**
-   * ✅ Baseline: Widely available (since ≤2022-09-24)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-opacity
    */
   "stroke-opacity"?: Property.StrokeOpacity | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-10-05)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/stroke-width
    */
@@ -6954,13 +6954,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "text-align-last"?: Property.TextAlignLast | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since ≤2019-02-02)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-anchor
    */
   "text-anchor"?: Property.TextAnchor | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Nov 2025)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-autospace
    */
@@ -6990,7 +6990,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "text-decoration"?: Property.TextDecoration<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-color
    */
@@ -7004,13 +7004,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "text-decoration-inset"?: Property.TextDecorationInset<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-line
    */
   "text-decoration-line"?: Property.TextDecorationLine | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ❌ Baseline: Not widely available
    *
    * @experimental
    *
@@ -7018,19 +7018,19 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "text-decoration-skip"?: Property.TextDecorationSkip | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Sep 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-skip-ink
    */
   "text-decoration-skip-ink"?: Property.TextDecorationSkipInk | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-style
    */
   "text-decoration-style"?: Property.TextDecorationStyle | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jan 2018)
+   * ✅ Baseline: Widely available (since Sep 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-decoration-thickness
    */
@@ -7130,7 +7130,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "text-underline-position"?: Property.TextUnderlinePosition | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Oct 2024)
+   * ⚠️ Baseline: Newly available (since Mar 2024)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/text-wrap
    */
@@ -7223,7 +7223,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "transform"?: Property.Transform | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Apr 2024)
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/transform-box
    */
@@ -7235,7 +7235,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "transform-origin"?: Property.TransformOrigin<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Sep 2024)
+   * ✅ Baseline: Widely available (since Mar 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/transform-style
    */
@@ -7290,7 +7290,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "trigger-scope"?: Property.TriggerScope | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/unicode-bidi
    */
@@ -7384,7 +7384,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "will-change"?: Property.WillChange | undefined;
   /**
-   * ✅ Baseline: Widely available (since Mar 2018)
+   * ✅ Baseline: Widely available (since Jan 2018)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/word-break
    */
@@ -7407,13 +7407,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "writing-mode"?: Property.WritingMode | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/x
    */
   "x"?: Property.X<TLength> | undefined;
   /**
-   * ✅ Baseline: Widely available (since Jul 2022)
+   * ✅ Baseline: Widely available (since Jan 2023)
    *
    * @see https://developer.mozilla.org/docs/Web/CSS/y
    */
