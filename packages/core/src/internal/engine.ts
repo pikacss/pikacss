@@ -165,51 +165,48 @@ export class Engine {
 		log.debug('Rendering preflights...')
 		const lineEnd = isFormatted ? '\n' : ''
 
-		const rendered: { layer?: string, css: string }[] = await Promise.all(
+		const rendered: { layer?: string, css: string }[] = (await Promise.all(
 			this.config.preflights.map(async ({ layer, fn }) => {
 				const result = await fn(this, isFormatted)
-				const css = typeof result === 'string'
-					? result
-					: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
+				const css = (
+					typeof result === 'string'
+						? result
+						: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
+				).trim()
 				return { layer, css }
 			}),
-		)
+		)).filter(r => r.css)
 		log.debug(`Rendered ${rendered.length} preflights`)
 
-		const unlayeredParts: string[] = []
-		const layerGroups = new Map<string, string[]>()
-		for (const { layer, css } of rendered) {
-			if (layer == null) {
-				unlayeredParts.push(css)
-			}
-			else {
-				if (!layerGroups.has(layer))
-					layerGroups.set(layer, [])
-				layerGroups.get(layer)!.push(css)
-			}
-		}
+		const { unlayeredParts, layerGroups } = groupRenderedPreflightsByLayer(rendered)
 
 		const outputParts: string[] = []
 		if (unlayeredParts.length > 0) {
-			const unlayeredContent = unlayeredParts.join(lineEnd)
 			const { defaultPreflightsLayer } = this.config
 			// Unlayered preflights are automatically wrapped inside the defaultPreflightsLayer
 			// when that layer name exists in the configured layers.
-			if (defaultPreflightsLayer in this.config.layers)
+			if (defaultPreflightsLayer in this.config.layers) {
+				const unlayeredContent = unlayeredParts
+					.map(
+						part => part.trim()
+							.split('\n')
+							.map(line => `  ${line}`)
+							.join(lineEnd),
+					)
+					.join(lineEnd)
 				outputParts.push(`@layer ${defaultPreflightsLayer} {${lineEnd}${unlayeredContent}${lineEnd}}`)
-			else
+			}
+			else {
+				const unlayeredContent = unlayeredParts.join(lineEnd)
 				outputParts.push(unlayeredContent)
+			}
 		}
-		const configLayerOrder = sortLayerNames(this.config.layers)
-		const orderedLayerNames = [
-			...configLayerOrder.filter(name => layerGroups.has(name)),
-			...[...layerGroups.keys()].filter(name => !configLayerOrder.includes(name)),
-		]
-		for (const layerName of orderedLayerNames) {
-			const cssList = layerGroups.get(layerName)!
-			const content = cssList.join(lineEnd)
-			outputParts.push(`@layer ${layerName} {${lineEnd}${content}${lineEnd}}`)
-		}
+		outputParts.push(...renderLayerBlocks({
+			layerGroups,
+			layerOrder: sortLayerNames(this.config.layers),
+			isFormatted,
+			render: cssList => cssList.join(lineEnd),
+		}))
 		return outputParts.join(lineEnd)
 	}
 
@@ -251,6 +248,95 @@ export function sortLayerNames(layers: Record<string, number>): string[] {
 	return Object.entries(layers)
 		.sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]))
 		.map(([name]) => name)
+}
+
+function appendLayerGroupItem<T>(layerGroups: Map<string, T[]>, layer: string, item: T) {
+	if (!layerGroups.has(layer))
+		layerGroups.set(layer, [])
+	layerGroups.get(layer)!.push(item)
+}
+
+function getOrderedLayerNamesForGroups<T>(layerGroups: Map<string, T[]>, layerOrder: string[]) {
+	return [
+		...layerOrder.filter(name => (layerGroups.get(name)?.length ?? 0) > 0),
+		...[...layerGroups.keys()].filter(name => !layerOrder.includes(name) && (layerGroups.get(name)?.length ?? 0) > 0),
+	]
+}
+
+function renderLayerBlocks<T>({
+	layerGroups,
+	layerOrder,
+	isFormatted,
+	render,
+}: {
+	layerGroups: Map<string, T[]>
+	layerOrder: string[]
+	isFormatted: boolean
+	render: (items: T[]) => string
+}) {
+	const lineEnd = isFormatted ? '\n' : ''
+	return getOrderedLayerNamesForGroups(layerGroups, layerOrder)
+		.map((layerName) => {
+			const items = layerGroups.get(layerName)!
+			const content = isFormatted
+				? render(items)
+						.trim()
+						.split('\n')
+						.map(line => `  ${line}`)
+						.join('\n')
+				: render(items)
+			return `@layer ${layerName} {${lineEnd}${content}${lineEnd}}`
+		})
+}
+
+function groupRenderedPreflightsByLayer(rendered: { layer?: string, css: string }[]) {
+	const unlayeredParts: string[] = []
+	const layerGroups = new Map<string, string[]>()
+	for (const { layer, css } of rendered) {
+		if (layer == null) {
+			unlayeredParts.push(css)
+			continue
+		}
+		appendLayerGroupItem(layerGroups, layer, css)
+	}
+	return { unlayeredParts, layerGroups }
+}
+
+function groupAtomicStylesByLayer({
+	styles,
+	layerOrder,
+	defaultUtilitiesLayer,
+}: {
+	styles: AtomicStyle[]
+	layerOrder: string[]
+	defaultUtilitiesLayer?: string
+}) {
+	const unlayeredStyles: AtomicStyle[] = []
+	const layerGroups = new Map<string, AtomicStyle[]>(layerOrder.map(name => [name, []]))
+	const candidateDefaultLayer = defaultUtilitiesLayer ?? layerOrder[layerOrder.length - 1]
+	const defaultLayer = (candidateDefaultLayer != null && layerGroups.has(candidateDefaultLayer))
+		? candidateDefaultLayer
+		: layerOrder[layerOrder.length - 1]
+
+	for (const style of styles) {
+		const layer = style.content.layer
+		if (layer != null && layerGroups.has(layer)) {
+			layerGroups.get(layer)!.push(style)
+			continue
+		}
+		if (layer != null) {
+			log.warn(`Unknown layer "${layer}" encountered in atomic style; falling back to unlayered output.`)
+			unlayeredStyles.push(style)
+			continue
+		}
+		if (defaultLayer != null) {
+			layerGroups.get(defaultLayer)!.push(style)
+			continue
+		}
+		unlayeredStyles.push(style)
+	}
+
+	return { unlayeredStyles, layerGroups }
 }
 
 function isWithLayer(p: unknown): p is { layer: string, preflight: unknown } {
@@ -461,43 +547,23 @@ export function renderAtomicStyles(payload: { atomicStyles: AtomicStyle[], isPre
 
 	const layerOrder = sortLayerNames(layers)
 	const lineEnd = isFormatted ? '\n' : ''
-
-	const unlayeredStyles: AtomicStyle[] = []
-	const layerGroups = new Map<string, AtomicStyle[]>(layerOrder.map(name => [name, []]))
-	const candidateDefaultLayer = defaultUtilitiesLayer ?? layerOrder[layerOrder.length - 1]
-	const defaultLayer = (candidateDefaultLayer != null && layerGroups.has(candidateDefaultLayer))
-		? candidateDefaultLayer
-		: layerOrder[layerOrder.length - 1]
-
-	for (const style of sortedStyles) {
-		const layer = style.content.layer
-		if (layer != null && layerGroups.has(layer)) {
-			layerGroups.get(layer)!.push(style)
-		}
-		else if (layer != null) {
-			log.warn(`Unknown layer "${layer}" encountered in atomic style; falling back to unlayered output.`)
-			unlayeredStyles.push(style)
-		}
-		else if (defaultLayer != null) {
-			layerGroups.get(defaultLayer)!.push(style)
-		}
-		else {
-			unlayeredStyles.push(style)
-		}
-	}
+	const { unlayeredStyles, layerGroups } = groupAtomicStylesByLayer({
+		styles: sortedStyles,
+		layerOrder,
+		defaultUtilitiesLayer,
+	})
 
 	const parts: string[] = []
 
 	if (unlayeredStyles.length > 0)
 		parts.push(renderAtomicStylesCss({ atomicStyles: unlayeredStyles, isPreview, isFormatted }))
 
-	for (const layerName of layerOrder) {
-		const styles = layerGroups.get(layerName)!
-		if (styles.length === 0)
-			continue
-		const innerCss = renderAtomicStylesCss({ atomicStyles: styles, isPreview, isFormatted })
-		parts.push(`@layer ${layerName} {${lineEnd}${innerCss}${lineEnd}}`)
-	}
+	parts.push(...renderLayerBlocks({
+		layerGroups,
+		layerOrder,
+		isFormatted,
+		render: styles => renderAtomicStylesCss({ atomicStyles: styles, isPreview, isFormatted }),
+	}))
 
 	return parts.join(lineEnd)
 }
