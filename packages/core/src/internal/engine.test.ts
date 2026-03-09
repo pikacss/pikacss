@@ -17,6 +17,10 @@ import {
 	sortLayerNames,
 } from './engine'
 
+function withLayerSelector(layer: string, ...selector: string[]) {
+	return [`@layer ${layer}`, ...selector]
+}
+
 // ─── sortLayerNames ──────────────────────────────────────────────────────────────────────
 
 describe('sortLayerNames', () => {
@@ -57,6 +61,15 @@ describe('calcAtomicStyleRenderingWeight', () => {
 		const style: AtomicStyle = {
 			id: 'a',
 			content: { selector: [defaultSelector], property: 'color', value: ['red'] },
+		}
+		expect(calcAtomicStyleRenderingWeight(style, defaultSelector))
+			.toBe(0)
+	})
+
+	it('should ignore encoded layer selector when computing default selector weight', () => {
+		const style: AtomicStyle = {
+			id: 'a',
+			content: { selector: withLayerSelector('components', defaultSelector), property: 'color', value: ['red'] },
 		}
 		expect(calcAtomicStyleRenderingWeight(style, defaultSelector))
 			.toBe(0)
@@ -346,8 +359,8 @@ describe('getAtomicStyleId', () => {
 
 	it('should differentiate by layer', () => {
 		const stored = new Map<string, string>()
-		const c1: StyleContent = { selector: ['.%'], property: 'color', value: ['red'], layer: 'a' }
-		const c2: StyleContent = { selector: ['.%'], property: 'color', value: ['red'], layer: 'b' }
+		const c1: StyleContent = { selector: withLayerSelector('a', '.%'), property: 'color', value: ['red'] }
+		const c2: StyleContent = { selector: withLayerSelector('b', '.%'), property: 'color', value: ['red'] }
 		const c3: StyleContent = { selector: ['.%'], property: 'color', value: ['red'] }
 		const id1 = getAtomicStyleId({ content: c1, prefix: '', stored })
 		const id2 = getAtomicStyleId({ content: c2, prefix: '', stored })
@@ -450,8 +463,8 @@ describe('optimizeAtomicStyleContents', () => {
 
 	it('should treat same selector+property with different layers as separate entries', () => {
 		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'], layer: 'a' },
-			{ selector: ['.%'], property: 'color', value: ['blue'], layer: 'b' },
+			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['red'] },
+			{ selector: withLayerSelector('b', '.%'), property: 'color', value: ['blue'] },
 		]
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
@@ -460,8 +473,8 @@ describe('optimizeAtomicStyleContents', () => {
 
 	it('should override entry with same selector+property+layer', () => {
 		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'], layer: 'a' },
-			{ selector: ['.%'], property: 'color', value: ['blue'], layer: 'a' },
+			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['red'] },
+			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['blue'] },
 		]
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
@@ -473,7 +486,7 @@ describe('optimizeAtomicStyleContents', () => {
 	it('should treat entry without layer and entry with layer as separate entries for same selector+property', () => {
 		const list: ExtractedStyleContent[] = [
 			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'color', value: ['blue'], layer: 'a' },
+			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['blue'] },
 		]
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
@@ -590,7 +603,7 @@ describe('resolveStyleItemList', () => {
 			.toEqual([])
 	})
 
-	it('should strip __layer from definition passed to extractStyleDefinition and assign layer to extracted contents', async () => {
+	it('should strip __layer from definition passed to extractStyleDefinition and encode layer into extracted selectors', async () => {
 		let capturedDef: Record<string, unknown> = {}
 		const result = await resolveStyleItemList({
 			itemList: [{ __layer: 'components', color: 'red' } as unknown as InternalStyleItem],
@@ -602,11 +615,11 @@ describe('resolveStyleItemList', () => {
 		})
 		expect('__layer' in capturedDef)
 			.toBe(false)
-		expect(result.contents[0]?.layer)
-			.toBe('components')
+		expect(result.contents[0]?.selector)
+			.toEqual(withLayerSelector('components', '.%'))
 	})
 
-	it('should not assign layer when __layer is absent', async () => {
+	it('should not encode layer selector when __layer is absent', async () => {
 		const result = await resolveStyleItemList({
 			itemList: [{ color: 'red' }],
 			transformStyleItems: async items => items,
@@ -614,8 +627,8 @@ describe('resolveStyleItemList', () => {
 				{ selector: ['.%'], property: 'color', value: ['red'] },
 			],
 		})
-		expect(result.contents[0]?.layer)
-			.toBeUndefined()
+		expect(result.contents[0]?.selector)
+			.toEqual(['.%'])
 	})
 })
 
@@ -988,9 +1001,24 @@ describe('renderAtomicStyles with layers', () => {
 		expect(result).not.toContain('@layer')
 	})
 
+	it('should strip encoded layer selectors before rendering CSS blocks', () => {
+		const atomicStyles: AtomicStyle[] = [
+			{ id: 'a', content: { selector: withLayerSelector('components', defaultSelector), property: 'color', value: ['red'] } },
+		]
+		const result = renderAtomicStyles({
+			atomicStyles,
+			isPreview: false,
+			isFormatted: false,
+			defaultSelector,
+		})
+		expect(result)
+			.toContain('.a{color:red;}')
+		expect(result).not.toContain('@layer components')
+	})
+
 	it('should wrap styles in @layer block when layers is provided and style has matching layer', () => {
 		const atomicStyles: AtomicStyle[] = [
-			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'], layer: 'components' } },
+			{ id: 'a', content: { selector: withLayerSelector('components', defaultSelector), property: 'color', value: ['red'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1007,7 +1035,7 @@ describe('renderAtomicStyles with layers', () => {
 
 	it('should NOT include @layer declaration line — use renderLayerOrderDeclaration for that', () => {
 		const atomicStyles: AtomicStyle[] = [
-			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'], layer: 'components' } },
+			{ id: 'a', content: { selector: withLayerSelector('components', defaultSelector), property: 'color', value: ['red'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1023,8 +1051,8 @@ describe('renderAtomicStyles with layers', () => {
 
 	it('should render layer blocks in the correct order (lower order number first)', () => {
 		const atomicStyles: AtomicStyle[] = [
-			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'], layer: 'utilities' } },
-			{ id: 'b', content: { selector: [defaultSelector], property: 'display', value: ['flex'], layer: 'components' } },
+			{ id: 'a', content: { selector: withLayerSelector('utilities', defaultSelector), property: 'color', value: ['red'] } },
+			{ id: 'b', content: { selector: withLayerSelector('components', defaultSelector), property: 'display', value: ['flex'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1043,8 +1071,8 @@ describe('renderAtomicStyles with layers', () => {
 
 	it('should group multiple styles with the same layer into a single @layer block', () => {
 		const atomicStyles: AtomicStyle[] = [
-			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'], layer: 'components' } },
-			{ id: 'b', content: { selector: [defaultSelector], property: 'display', value: ['flex'], layer: 'components' } },
+			{ id: 'a', content: { selector: withLayerSelector('components', defaultSelector), property: 'color', value: ['red'] } },
+			{ id: 'b', content: { selector: withLayerSelector('components', defaultSelector), property: 'display', value: ['flex'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1064,7 +1092,7 @@ describe('renderAtomicStyles with layers', () => {
 
 	it('should NOT output @layer block for configured-but-empty layers', () => {
 		const atomicStyles: AtomicStyle[] = [
-			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'], layer: 'components' } },
+			{ id: 'a', content: { selector: withLayerSelector('components', defaultSelector), property: 'color', value: ['red'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1081,7 +1109,7 @@ describe('renderAtomicStyles with layers', () => {
 	it('should render styles without layer property inside the last @layer block when layers is configured', () => {
 		const atomicStyles: AtomicStyle[] = [
 			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'] } },
-			{ id: 'b', content: { selector: [defaultSelector], property: 'display', value: ['flex'], layer: 'components' } },
+			{ id: 'b', content: { selector: withLayerSelector('components', defaultSelector), property: 'display', value: ['flex'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1107,7 +1135,7 @@ describe('renderAtomicStyles with layers', () => {
 
 	it('should treat a style whose layer is not in the layers config as unlayered', () => {
 		const atomicStyles: AtomicStyle[] = [
-			{ id: 'a', content: { selector: [defaultSelector], property: 'color', value: ['red'], layer: 'unknown' } },
+			{ id: 'a', content: { selector: withLayerSelector('unknown', defaultSelector), property: 'color', value: ['red'] } },
 		]
 		const result = renderAtomicStyles({
 			atomicStyles,
@@ -1183,26 +1211,26 @@ describe('engine with layers', () => {
 			.toContain('@layer utilities {')
 	})
 
-	it('__layer in StyleDefinition should set layer property on resulting AtomicStyle', async () => {
+	it('__layer in StyleDefinition should encode layer into resulting AtomicStyle selector', async () => {
 		const engine = await createEngine({ layers: { components: 0 } })
 		const ids = await engine.use({ __layer: 'components', color: 'red' } as unknown as InternalStyleItem)
 		const atomicStyleId = ids.find(id => engine.store.atomicStyles.has(id))
 		expect(atomicStyleId)
 			.toBeDefined()
 		const atomicStyle = engine.store.atomicStyles.get(atomicStyleId!)
-		expect(atomicStyle?.content.layer)
-			.toBe('components')
+		expect(atomicStyle?.content.selector)
+			.toEqual(withLayerSelector('components', '.%'))
 	})
 
-	it('__layer in StyleDefinition: styles without __layer should have layer: undefined', async () => {
+	it('__layer in StyleDefinition: styles without __layer should not encode a layer selector', async () => {
 		const engine = await createEngine()
 		const ids = await engine.use({ color: 'red' })
 		const atomicStyleId = ids.find(id => engine.store.atomicStyles.has(id))
 		expect(atomicStyleId)
 			.toBeDefined()
 		const atomicStyle = engine.store.atomicStyles.get(atomicStyleId!)
-		expect(atomicStyle?.content.layer)
-			.toBeUndefined()
+		expect(atomicStyle?.content.selector)
+			.toEqual(['.%'])
 	})
 
 	it('__layer in StyleDefinition: same CSS in different layers should get different atomic IDs', async () => {

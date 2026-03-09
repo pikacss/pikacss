@@ -1,6 +1,6 @@
 import type { ExtractFn } from './extractor'
 import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight, StyleContent } from './types'
-import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX } from './constants'
+import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX, LAYER_SELECTOR_PREFIX } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
@@ -239,7 +239,7 @@ export class Engine {
 }
 
 export function calcAtomicStyleRenderingWeight(style: AtomicStyle, defaultSelector: string) {
-	const { selector } = style.content
+	const { selector } = splitLayerSelector(style.content.selector)
 	const isDefaultSelector = selector.length === 1 && selector[0]! === defaultSelector
 	return isDefaultSelector ? 0 : selector.length
 }
@@ -302,6 +302,26 @@ function groupRenderedPreflightsByLayer(rendered: { layer?: string, css: string 
 	return { unlayeredParts, layerGroups }
 }
 
+function splitLayerSelector(selector: string[]) {
+	const [first, ...rest] = selector
+	if (first == null || first.startsWith(LAYER_SELECTOR_PREFIX) === false)
+		return { layer: undefined, selector }
+
+	const layer = first.slice(LAYER_SELECTOR_PREFIX.length)
+		.trim()
+	if (layer.length === 0)
+		return { layer: undefined, selector }
+
+	return {
+		layer,
+		selector: rest,
+	}
+}
+
+function prependLayerSelector(selector: string[], layer: string) {
+	return [`${LAYER_SELECTOR_PREFIX}${layer}`, ...selector]
+}
+
 function groupAtomicStylesByLayer({
 	styles,
 	layerOrder,
@@ -319,7 +339,7 @@ function groupAtomicStylesByLayer({
 		: layerOrder[layerOrder.length - 1]
 
 	for (const style of styles) {
-		const layer = style.content.layer
+		const { layer } = splitLayerSelector(style.content.selector)
 		if (layer != null && layerGroups.has(layer)) {
 			layerGroups.get(layer)!.push(style)
 			continue
@@ -421,7 +441,7 @@ export function getAtomicStyleId({
 	prefix: string
 	stored: Map<string, string>
 }) {
-	const key = serialize([content.selector, content.property, content.value, content.layer])
+	const key = serialize([content.selector, content.property, content.value])
 	const cached = stored.get(key)
 	if (cached != null) {
 		log.debug(`Atomic style cached: ${cached}`)
@@ -438,7 +458,7 @@ export function getAtomicStyleId({
 export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
 	const map = new Map<string, StyleContent>()
 	list.forEach((content) => {
-		const key = serialize([content.selector, content.property, content.layer])
+		const key = serialize([content.selector, content.property])
 
 		map.delete(key)
 
@@ -478,10 +498,12 @@ export async function resolveStyleItemList({
 		else {
 			const { layer, definition } = extractLayerFromStyleItem(styleItem)
 			const extracted = await extractStyleDefinition(definition)
-			if (layer != null) {
-				extracted.forEach(c => (c.layer = layer))
-			}
-			list.push(...extracted)
+			list.push(...(layer == null
+				? extracted
+				: extracted.map(content => ({
+						...content,
+						selector: prependLayerSelector(content.selector, layer),
+					}))))
 		}
 	}
 	return {
@@ -503,7 +525,8 @@ function renderAtomicStylesCss({ atomicStyles, isPreview, isFormatted }: {
 }): string {
 	const blocks: CSSStyleBlocks = new Map()
 	atomicStyles
-		.forEach(({ id, content: { selector, property, value } }) => {
+		.forEach(({ id, content: { selector: rawSelector, property, value } }) => {
+			const { selector } = splitLayerSelector(rawSelector)
 			const isValidSelector = selector.some(s => s.includes(ATOMIC_STYLE_ID_PLACEHOLDER))
 			if (isValidSelector === false || value == null)
 				return

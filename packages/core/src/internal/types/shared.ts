@@ -15,14 +15,12 @@ export interface ExtractedStyleContent {
 	selector: string[]
 	property: string
 	value: string[] | Nullish
-	layer?: string
 }
 
 export interface StyleContent {
 	selector: string[]
 	property: string
 	value: string[]
-	layer?: string
 }
 
 export interface AtomicStyle {
