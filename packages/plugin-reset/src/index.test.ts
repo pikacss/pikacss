@@ -7,6 +7,13 @@ import modernNormalize from './resets/modern-normalize'
 import normalize from './resets/normalize'
 import theNewCssReset from './resets/the-new-css-reset'
 
+function expectResetPreflight(css: string, resetCss: string) {
+	expect(css)
+		.toContain('@layer reset {')
+	expect(css)
+		.toContain(resetCss.trim())
+}
+
 describe('reset plugin', () => {
 	it('should have plugin name "reset"', () => {
 		const plugin = reset()
@@ -25,8 +32,7 @@ describe('reset plugin', () => {
 			plugins: [reset()],
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain(modernNormalize)
+		expectResetPreflight(css, modernNormalize)
 	})
 
 	it('should apply "andy-bell" reset when configured', async () => {
@@ -35,8 +41,7 @@ describe('reset plugin', () => {
 			plugins: [reset()],
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain(andyBell)
+		expectResetPreflight(css, andyBell)
 	})
 
 	it('should apply "eric-meyer" reset when configured', async () => {
@@ -45,8 +50,7 @@ describe('reset plugin', () => {
 			plugins: [reset()],
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain(ericMeyer)
+		expectResetPreflight(css, ericMeyer)
 	})
 
 	it('should apply "normalize" reset when configured', async () => {
@@ -55,8 +59,7 @@ describe('reset plugin', () => {
 			plugins: [reset()],
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain(normalize)
+		expectResetPreflight(css, normalize)
 	})
 
 	it('should apply "the-new-css-reset" when configured', async () => {
@@ -65,8 +68,7 @@ describe('reset plugin', () => {
 			plugins: [reset()],
 		})
 		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain(theNewCssReset)
+		expectResetPreflight(css, theNewCssReset)
 	})
 
 	it('should add preflight containing the reset CSS', async () => {
