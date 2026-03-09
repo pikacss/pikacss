@@ -1,3 +1,4 @@
+import type * as CSS from '../../csstype'
 import type { CSSProperty, CSSSelector, Properties, PropertyValue, Selector, StyleDefinition, StyleDefinitionMap, StyleItem } from '../../index'
 import { describe, expectTypeOf, it } from 'vitest'
 
@@ -23,6 +24,20 @@ describe('public types - types.ts', () => {
 	})
 
 	describe('properties', () => {
+		it('should keep generated CSS spec types narrower than the public authoring surface', () => {
+			// @ts-expect-error generated spec types are intentionally closed by default
+			const _specOnly: CSS.Properties['animationName'] = 'fade-in'
+			// @ts-expect-error generated datatype families are also intentionally closed by default
+			const _generatedColor: CSS.DataType.Color = 'brand-accent'
+
+			const props: Properties = {
+				animationName: 'fade-in',
+				color: 'brand-accent',
+			}
+			expectTypeOf(props)
+				.toExtend<Properties>()
+		})
+
 		it('should accept standard CSS properties in camelCase', () => {
 			const props: Properties = {
 				color: 'red',

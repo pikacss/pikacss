@@ -784,7 +784,12 @@ function buildPropertyTypeString(prop: ResolvedPropertyType, withGenerics: boole
 	parts.add('Globals')
 
 	for (const c of prop.components) {
-		parts.add(componentToTypeString(c, hasGenerics))
+		const component = componentToTypeString(c, hasGenerics)
+		// Keep generated property families closed by default. Authoring openness
+		// is added later in core/types.ts, where arbitrary CSS input is needed.
+		if (component === 'UnionString')
+			continue
+		parts.add(component)
 	}
 
 	return Array.from(parts)
@@ -800,6 +805,14 @@ function buildPropertyGenericParams(prop: ResolvedPropertyType, withDefaults: bo
 		params.push(withDefaults ? 'TTime = DefaultTTime' : 'TTime')
 	}
 	return params.length > 0 ? `<${params.join(', ')}>` : ''
+}
+
+function buildClosedGeneratedUnion(definition: string): string {
+	const parts = definition.split(' | ')
+		.map(part => part.trim())
+		.filter(part => part !== 'UnionString')
+
+	return parts.join(' | ')
 }
 
 // ---------------------------------------------------------------------------
@@ -1114,7 +1127,7 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 			return aName.localeCompare(bName)
 		})
 	for (const key of sortedDTKeys) {
-		const def = DATA_TYPE_DEFINITIONS[key]
+		const def = buildClosedGeneratedUnion(DATA_TYPE_DEFINITIONS[key]!)
 		lines.push(`  export type ${key} = ${def};`)
 		lines.push('')
 	}

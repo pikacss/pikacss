@@ -1,5 +1,7 @@
 import type { Arrayable, UnionString } from './utils'
 
+export type AutocompleteKeys<T> = [T] extends [never] ? never : Extract<keyof T, string>
+
 export interface AutocompleteConfig {
 	selectors?: string[]
 	styleItemStrings?: string[]
@@ -21,11 +23,9 @@ export interface ResolvedAutocompleteConfig {
 export interface _Autocomplete {
 	Selector: UnionString
 	StyleItemString: UnionString
-	ExtraProperty: UnionString
-	ExtraCssProperty: UnionString
 	Layer: UnionString
-	PropertiesValue: Record<string, unknown>
-	CssPropertiesValue: Record<string, UnionString>
+	PropertyValue: Record<string, unknown>
+	CSSPropertyValue: Record<string, UnionString>
 }
 
 export type DefineAutocomplete<A extends _Autocomplete> = A
@@ -33,9 +33,7 @@ export type DefineAutocomplete<A extends _Autocomplete> = A
 export type EmptyAutocomplete = DefineAutocomplete<{
 	Selector: never
 	StyleItemString: never
-	ExtraProperty: never
-	ExtraCssProperty: never
 	Layer: never
-	PropertiesValue: never
-	CssPropertiesValue: never
+	PropertyValue: never
+	CSSPropertyValue: never
 }>

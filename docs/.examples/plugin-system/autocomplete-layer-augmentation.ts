@@ -9,11 +9,9 @@ declare module '@pikacss/core' {
 		Autocomplete: DefineAutocomplete<{
 			Selector: never
 			StyleItemString: never
-			ExtraProperty: never
-			ExtraCssProperty: never
 			Layer: 'base' | 'components' | 'utilities'
-			PropertiesValue: Record<string, never>
-			CssPropertiesValue: Record<string, never>
+			PropertyValue: never
+			CSSPropertyValue: never
 		}>
 	}
 }

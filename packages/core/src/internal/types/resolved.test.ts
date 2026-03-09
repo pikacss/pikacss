@@ -11,15 +11,11 @@ describe('autocomplete and resolved types', () => {
 				.toEqualTypeOf<never>()
 			expectTypeOf<EmptyAutocomplete['StyleItemString']>()
 				.toEqualTypeOf<never>()
-			expectTypeOf<EmptyAutocomplete['ExtraProperty']>()
-				.toEqualTypeOf<never>()
-			expectTypeOf<EmptyAutocomplete['ExtraCssProperty']>()
-				.toEqualTypeOf<never>()
 			expectTypeOf<EmptyAutocomplete['Layer']>()
 				.toEqualTypeOf<never>()
-			expectTypeOf<EmptyAutocomplete['PropertiesValue']>()
+			expectTypeOf<EmptyAutocomplete['PropertyValue']>()
 				.toEqualTypeOf<never>()
-			expectTypeOf<EmptyAutocomplete['CssPropertiesValue']>()
+			expectTypeOf<EmptyAutocomplete['CSSPropertyValue']>()
 				.toEqualTypeOf<never>()
 		})
 	})
@@ -29,16 +25,16 @@ describe('autocomplete and resolved types', () => {
 			type Custom = DefineAutocomplete<{
 				Selector: 'hover' | 'focus'
 				StyleItemString: 'flex-center'
-				ExtraProperty: '__myProp'
-				ExtraCssProperty: never
 				Layer: 'base' | 'components'
-				PropertiesValue: never
-				CssPropertiesValue: never
+				PropertyValue: { __myProp: boolean }
+				CSSPropertyValue: never
 			}>
 			expectTypeOf<Custom['Selector']>()
 				.toEqualTypeOf<'hover' | 'focus'>()
 			expectTypeOf<Custom['Layer']>()
 				.toEqualTypeOf<'base' | 'components'>()
+			expectTypeOf<Custom['PropertyValue']>()
+				.toEqualTypeOf<{ __myProp: boolean }>()
 		})
 	})
 
@@ -46,7 +42,7 @@ describe('autocomplete and resolved types', () => {
 		it('should have all required fields', () => {
 			expectTypeOf<keyof _Autocomplete>()
 				.toEqualTypeOf<
-				'Selector' | 'StyleItemString' | 'ExtraProperty' | 'ExtraCssProperty' | 'Layer' | 'PropertiesValue' | 'CssPropertiesValue'
+				'Selector' | 'StyleItemString' | 'Layer' | 'PropertyValue' | 'CSSPropertyValue'
 			>()
 		})
 	})
@@ -91,8 +87,8 @@ describe('autocomplete and resolved types', () => {
 	})
 
 	describe('resolvedCSSProperties', () => {
-		it('should be bidirectionally compatible with ResolvedProperties when ExtraProperty is never', () => {
-			// With no augmentation, ExtraProperty is never, so ResolvedCSSProperties ≈ ResolvedProperties
+		it('should be bidirectionally compatible with ResolvedProperties when PropertyValue is never', () => {
+			// With no augmentation, PropertyValue is never, so ResolvedCSSProperties ≈ ResolvedProperties
 			expectTypeOf<ResolvedCSSProperties>()
 				.toMatchTypeOf<ResolvedProperties>()
 			expectTypeOf<ResolvedProperties>()

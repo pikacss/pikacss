@@ -8,6 +8,22 @@ function formatUnionStringType(list: string[]) {
 		: 'never'
 }
 
+function formatAutocompleteValueMap(
+	keys: Iterable<string>,
+	entries: Map<string, string[]>,
+	formatValue: (values: string[]) => string,
+) {
+	const mergedKeys = new Set<string>(keys)
+	for (const key of entries.keys()) {
+		mergedKeys.add(key)
+	}
+
+	return mergedKeys.size > 0
+		? `{ ${Array.from(mergedKeys, key => `${JSON.stringify(key)}: ${formatValue(entries.get(key) || [])}`)
+			.join(', ')} }`
+		: 'never'
+}
+
 function generateAutocomplete(ctx: IntegrationContext) {
 	const autocomplete = ctx.engine.config.autocomplete
 	const { layers } = ctx.engine.config
@@ -16,12 +32,8 @@ function generateAutocomplete(ctx: IntegrationContext) {
 		'export type Autocomplete = DefineAutocomplete<{',
 		`  Selector: ${formatUnionStringType([...autocomplete.selectors])}`,
 		`  StyleItemString: ${formatUnionStringType([...autocomplete.styleItemStrings])}`,
-		`  ExtraProperty: ${formatUnionStringType([...autocomplete.extraProperties])}`,
-		`  ExtraCssProperty: ${formatUnionStringType([...autocomplete.extraCssProperties])}`,
-		`  PropertiesValue: { ${Array.from(autocomplete.properties.entries(), ([k, v]) => `${JSON.stringify(k)}: ${v.length > 0 ? v.join(' | ') : 'never'}`)
-			.join(', ')} }`,
-		`  CssPropertiesValue: { ${Array.from(autocomplete.cssProperties.entries(), ([k, v]) => `${JSON.stringify(k)}: ${formatUnionStringType(v)}`)
-			.join(', ')} }`,
+		`  PropertyValue: ${formatAutocompleteValueMap(autocomplete.extraProperties, autocomplete.properties, values => values.length > 0 ? values.join(' | ') : 'never')}`,
+		`  CSSPropertyValue: ${formatAutocompleteValueMap(autocomplete.extraCssProperties, autocomplete.cssProperties, values => formatUnionStringType(values))}`,
 		`  Layer: ${formatUnionStringType(layerNames)}`,
 		'}>',
 		'',
@@ -153,7 +165,7 @@ export async function generateTsCodegenContent(ctx: IntegrationContext) {
 		'  interface PikaAugment {',
 		'    Autocomplete: Autocomplete',
 		'    Selector: Autocomplete[\'Selector\'] | CSSSelector',
-		'    CSSProperty: Autocomplete[\'ExtraCssProperty\'] | CSSProperty',
+		'    CSSProperty: ([Autocomplete[\'CSSPropertyValue\']] extends [never] ? never : Extract<keyof Autocomplete[\'CSSPropertyValue\'], string>) | CSSProperty',
 		'    Properties: Properties',
 		'    StyleDefinition: StyleDefinition',
 		'    StyleItem: StyleItem',

@@ -84,13 +84,9 @@ describe('generateTsCodegenContent', () => {
 		expect(result)
 			.toContain(`StyleItemString: "flex-center"`)
 		expect(result)
-			.toContain(`ExtraProperty: "__important"`)
+			.toContain(`PropertyValue: { "__important": boolean }`)
 		expect(result)
-			.toContain(`ExtraCssProperty: "--color"`)
-		expect(result)
-			.toContain(`PropertiesValue: { "__important": boolean }`)
-		expect(result)
-			.toContain(`CssPropertiesValue: { "color": "red" | "blue" }`)
+			.toContain(`CSSPropertyValue: { "--color": never, "color": "red" | "blue" }`)
 		expect(result)
 			.toContain('Layer: never')
 	})
@@ -119,9 +115,9 @@ describe('generateTsCodegenContent', () => {
 		expect(result)
 			.toContain('StyleItemString: never')
 		expect(result)
-			.toContain('ExtraProperty: never')
+			.toContain('PropertyValue: never')
 		expect(result)
-			.toContain('ExtraCssProperty: never')
+			.toContain('CSSPropertyValue: never')
 	})
 
 	it('should generate StyleFn types for string format', async () => {
@@ -203,6 +199,8 @@ describe('generateTsCodegenContent', () => {
 			.toContain('interface PikaAugment')
 		expect(result)
 			.toContain('Autocomplete: Autocomplete')
+		expect(result)
+			.toContain('CSSProperty: ([Autocomplete[\'CSSPropertyValue\']] extends [never] ? never : Extract<keyof Autocomplete[\'CSSPropertyValue\'], string>) | CSSProperty')
 	})
 
 	it('should generate PreviewOverloads with empty usages', async () => {
@@ -334,7 +332,7 @@ describe('generateTsCodegenContent', () => {
 			.toContain('fn(...params: [p0: P1_0, p1: P1_1]): ReturnType<StyleFn>')
 	})
 
-	it('should output never for PropertiesValue entry with empty value array', async () => {
+	it('should output never for PropertyValue entry with empty value array', async () => {
 		const ctx = createMockCtx({
 			engine: {
 				config: {
@@ -354,10 +352,10 @@ describe('generateTsCodegenContent', () => {
 		})
 		const result = await generateTsCodegenContent(ctx)
 		expect(result)
-			.toContain('PropertiesValue: { "emptyProp": never }')
+			.toContain('PropertyValue: { "emptyProp": never }')
 	})
 
-	it('should output never for CssPropertiesValue entry with empty value array', async () => {
+	it('should output never for CSSPropertyValue entry with empty value array', async () => {
 		const ctx = createMockCtx({
 			engine: {
 				config: {
@@ -377,7 +375,7 @@ describe('generateTsCodegenContent', () => {
 		})
 		const result = await generateTsCodegenContent(ctx)
 		expect(result)
-			.toContain('CssPropertiesValue: { "--my-var": never }')
+			.toContain('CSSPropertyValue: { "--my-var": never }')
 	})
 
 	it('should JSON.stringify property map keys that contain special characters', async () => {
@@ -412,7 +410,7 @@ describe('generateTsCodegenContent', () => {
 			.toContain('"--custom color": "red" | "blue"')
 	})
 
-	it('should separate multiple PropertiesValue entries with ", "', async () => {
+	it('should separate multiple PropertyValue entries with ", "', async () => {
 		const ctx = createMockCtx({
 			engine: {
 				config: {
