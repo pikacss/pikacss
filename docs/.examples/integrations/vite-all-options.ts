@@ -14,8 +14,8 @@ export default defineConfig({
 			fnName: 'pika', // [!code highlight]
 
 			// Format of the transformed output:
-			//   'string' — returns "a b c" (space-separated string)
-			//   'array'  — returns ['a', 'b', 'c']
+			//   'string' — returns "pk-a pk-b pk-c" (space-separated string)
+			//   'array'  — returns ['pk-a', 'pk-b', 'pk-c']
 			transformedFormat: 'string', // [!code highlight]
 
 			// TypeScript codegen file path.

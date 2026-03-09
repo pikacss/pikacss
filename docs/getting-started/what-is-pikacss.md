@@ -33,7 +33,7 @@ Style definitions support nesting with pseudo-classes, media queries, and custom
 
 <<< @/.examples/getting-started/pika-nested-selectors.ts
 
-Custom selectors like `@dark` or `@screen-md` are configured in your `pika.config.ts`. PikaCSS resolves them at build time into their actual CSS counterparts (e.g., `html.dark .a { ... }` or `@media screen and (min-width: 768px) { ... }`).
+Custom selectors like `@dark` or `@screen-md` are configured in your `pika.config.ts`. PikaCSS resolves them at build time into their actual CSS counterparts (e.g., `html.dark .pk-a { ... }` or `@media screen and (min-width: 768px) { ... }`).
 
 ## Shortcuts
 

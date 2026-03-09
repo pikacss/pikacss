@@ -52,8 +52,8 @@ PikaCSS 會在你的專案中搜尋符合以下 glob 模式的檔案：
 
 重點說明：
 
-- **`prefix`** — 預設為空。產生的 class 名稱為簡短識別符，如 `a`、`b`、`c`。設定前綴（例如 `'pk-'`）可為其加上命名空間。
-- **`defaultSelector`** — `.%` 將每個原子化樣式轉換為 class 選擇器，其中 `%` 會被樣式 ID 取代（例如 `.a { color: red }`）。
+- **`prefix`** — 預設為 `'pk-'`。產生的 class 名稱會帶此前綴，如 `pk-a`、`pk-b`、`pk-c`。若想使用不帶前綴的 `a`、`b`、`c`，請明確設定 `prefix: ''`。
+- **`defaultSelector`** — `.%` 將每個原子化樣式轉換為 class 選擇器，其中 `%` 會被樣式 ID 取代（在預設 prefix 下例如 `.pk-a { color: red }`）。
 - **`plugins`** — 空陣列。內建插件會分別自動載入。
 - **`preflights`** — 無全域基礎樣式。`plugin-reset` 等插件可以新增它們。
 - **`important.default`** — `false`。除非明確指定，否則樣式不會加上 `!important`。

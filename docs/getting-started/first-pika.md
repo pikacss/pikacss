@@ -49,7 +49,7 @@ And the generated `pika.gen.css` contains one atomic rule per property:
 <<< @/.examples/getting-started/first-pika-output.css
 
 ::: tip Why atomic CSS?
-Each CSS property-value pair is extracted to a **single, reusable class**. If another element uses `color: 'white'`, it will share the same `.d` class. This deduplication keeps the stylesheet small as your app grows.
+Each CSS property-value pair is extracted to a **single, reusable class**. If another element uses `color: 'white'`, it will share the same `.pk-d` class. This deduplication keeps the stylesheet small as your app grows.
 :::
 
 ## Nested selectors
@@ -70,7 +70,7 @@ This produces the following atomic CSS:
 
 ## Output format variants
 
-By default, `pika()` returns a space-separated string of class names (e.g. `"a b c"`). It also exposes variants for different output formats:
+By default, `pika()` returns a space-separated string of class names (e.g. `"pk-a pk-b pk-c"`). It also exposes variants for different output formats:
 
 <<< @/.examples/getting-started/first-pika-variants.ts
 

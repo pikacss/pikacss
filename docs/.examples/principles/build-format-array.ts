@@ -4,4 +4,4 @@
 // Source:
 const cls = pika.arr({ color: 'red', fontSize: '16px' })
 // Compiled output:
-const cls = ['a', 'b'] // [!code highlight]
+const cls = ['pk-a', 'pk-b'] // [!code highlight]

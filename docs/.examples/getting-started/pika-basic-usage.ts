@@ -7,5 +7,5 @@ const className = pika({
 	color: 'red',
 	fontSize: '16px',
 })
-// At build time, this becomes something like: "a b"
-// where `a` → `.a { color: red }` and `b` → `.b { font-size: 16px }`
+// At build time, this becomes something like: "pk-a pk-b"
+// where `pk-a` → `.pk-a { color: red }` and `pk-b` → `.pk-b { font-size: 16px }`

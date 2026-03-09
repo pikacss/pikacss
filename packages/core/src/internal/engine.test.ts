@@ -1,6 +1,6 @@
 import type { AtomicStyle, ExtractedStyleContent, InternalStyleItem, StyleContent } from './types'
 import { describe, expect, it, vi } from 'vitest'
-import { ATOMIC_STYLE_ID_PLACEHOLDER } from './constants'
+import { ATOMIC_STYLE_ID_PLACEHOLDER, DEFAULT_ATOMIC_STYLE_ID_PREFIX } from './constants'
 import {
 	calcAtomicStyleRenderingWeight,
 	createEngine,
@@ -195,7 +195,7 @@ describe('resolveEngineConfig', () => {
 	it('should apply default values when no config is provided', async () => {
 		const resolved = await resolveEngineConfig({})
 		expect(resolved.prefix)
-			.toBe('')
+			.toBe(DEFAULT_ATOMIC_STYLE_ID_PREFIX)
 		expect(resolved.defaultSelector)
 			.toBe(`.${ATOMIC_STYLE_ID_PLACEHOLDER}`)
 		expect(resolved.plugins)
@@ -796,7 +796,7 @@ describe('createEngine', () => {
 		expect(engine)
 			.toBeInstanceOf(Engine)
 		expect(engine.config.prefix)
-			.toBe('')
+			.toBe(DEFAULT_ATOMIC_STYLE_ID_PREFIX)
 		expect(engine.config.defaultSelector)
 			.toBe(`.${ATOMIC_STYLE_ID_PLACEHOLDER}`)
 	})

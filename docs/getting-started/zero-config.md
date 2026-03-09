@@ -52,8 +52,8 @@ When no config file exists (or the config object is empty), the engine uses thes
 
 Key points:
 
-- **`prefix`** — Empty by default. Generated class names are short identifiers like `a`, `b`, `c`. Set a prefix (e.g., `'pk-'`) to namespace them.
-- **`defaultSelector`** — `.%` turns each atomic style into a class selector where `%` is replaced by the style ID (e.g., `.a { color: red }`).
+- **`prefix`** — Defaults to `'pk-'`. Generated class names are prefixed identifiers like `pk-a`, `pk-b`, `pk-c`. Set `prefix: ''` if you want bare IDs such as `a`, `b`, `c`.
+- **`defaultSelector`** — `.%` turns each atomic style into a class selector where `%` is replaced by the style ID (e.g., `.pk-a { color: red }` with the default prefix).
 - **`plugins`** — Empty array. Built-in plugins are always loaded separately.
 - **`preflights`** — No global base styles. Plugins like `plugin-reset` can add them.
 - **`important.default`** — `false`. Styles are not `!important` unless explicitly specified.

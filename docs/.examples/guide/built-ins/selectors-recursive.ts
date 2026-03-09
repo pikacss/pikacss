@@ -15,4 +15,4 @@ export default defineEngineConfig({
 // Using 'alias-hover' in a style definition:
 // → resolves 'alias-hover' to 'hover'
 // → resolves 'hover' to '$:hover'
-// → final output: .a:hover { ... }
+// → final output: .pk-a:hover { ... }

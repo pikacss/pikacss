@@ -1,22 +1,22 @@
 /* Each CSS property becomes its own atomic class */
-.a {
+.pk-a {
   padding: 0.5rem 1rem;
 }
-.b {
+.pk-b {
   border-radius: 0.5rem;
 }
-.c {
+.pk-c {
   background-color: #0ea5e9;
 }
-.d {
+.pk-d {
   color: white;
 }
-.e {
+.pk-e {
   border: none;
 }
-.f {
+.pk-f {
   cursor: pointer;
 }
-.g {
+.pk-g {
   font-size: 1rem;
 }

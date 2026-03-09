@@ -1,30 +1,30 @@
 /* Base styles become atomic classes */
-.a {
+.pk-a {
   padding: 0.5em 1em;
 }
-.b {
+.pk-b {
   border-radius: 0.25em;
 }
-.c {
+.pk-c {
   border: none;
 }
-.d {
+.pk-d {
   background-color: #0ea5e9;
 }
-.e {
+.pk-e {
   color: white;
 }
-.f {
+.pk-f {
   cursor: pointer;
 }
-.g {
+.pk-g {
   transition: transform 0.2s ease;
 }
 
 /* Pseudo-selectors also become atomic classes */
-.h:hover {
+.pk-h:hover {
   transform: scale(1.05);
 }
-.i:active {
+.pk-i:active {
   transform: scale(0.95);
 }

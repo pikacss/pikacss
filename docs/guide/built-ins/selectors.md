@@ -73,10 +73,10 @@ In selector values, `$` is replaced with the element's **default selector** (whi
 
 | Definition | `$` → defaultSelector | Final CSS |
 | --- | --- | --- |
-| `['hover', '$:hover']` | `.%:hover` | `.a:hover { ... }` |
-| `['before', '$::before']` | `.%::before` | `.a::before { ... }` |
-| `['dark', '[data-theme="dark"] $']` | `[data-theme="dark"] .%` | `[data-theme="dark"] .a { ... }` |
-| `['md', '@media (min-width: 768px)']` | _(no `$`)_ | `@media (min-width: 768px) { .a { ... } }` |
+| `['hover', '$:hover']` | `.%:hover` | `.pk-a:hover { ... }` |
+| `['before', '$::before']` | `.%::before` | `.pk-a::before { ... }` |
+| `['dark', '[data-theme="dark"] $']` | `[data-theme="dark"] .%` | `[data-theme="dark"] .pk-a { ... }` |
+| `['md', '@media (min-width: 768px)']` | _(no `$`)_ | `@media (min-width: 768px) { .pk-a { ... } }` |
 
 ::: tip At-Rules
 For CSS at-rules like `@media` or `@container`, **do not** include `$` in the value. When the resolved selector does not contain the `%` placeholder, the engine automatically appends the default selector (`.%`) as a nested level, producing the correct two-level structure:

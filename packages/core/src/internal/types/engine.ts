@@ -22,11 +22,11 @@ export interface EngineConfig {
 	/**
 	 * Set the prefix for generated atomic style id.
 	 *
-	 * @default ''
+	 * @default 'pk-'
 	 * @example
 	 * ```ts
 	 * {
-	 *   prefix: 'pika-' // Generated atomic id will be 'pika-xxx'
+	 *   prefix: 'pk-' // Generated atomic id will be 'pk-xxx'
 	 * }
 	 * ```
 	 */

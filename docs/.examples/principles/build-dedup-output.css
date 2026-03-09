@@ -3,8 +3,8 @@
 @layer preflights, utilities;
 
 @layer utilities {
-  .a { color: white; }
-  .b { padding: 1rem; }
-  .c { cursor: pointer; }
-  .d { font-size: 14px; }
+  .pk-a { color: white; }
+  .pk-b { padding: 1rem; }
+  .pk-c { cursor: pointer; }
+  .pk-d { font-size: 14px; }
 }

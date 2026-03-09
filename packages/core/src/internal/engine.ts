@@ -1,6 +1,6 @@
 import type { ExtractFn } from './extractor'
 import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight, StyleContent } from './types'
-import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL } from './constants'
+import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
@@ -289,7 +289,7 @@ export function resolvePreflight(preflight: Preflight): ResolvedPreflight {
 
 export async function resolveEngineConfig(config: EngineConfig): Promise<ResolvedEngineConfig> {
 	const {
-		prefix = '',
+		prefix = DEFAULT_ATOMIC_STYLE_ID_PREFIX,
 		defaultSelector = `.${ATOMIC_STYLE_ID_PLACEHOLDER}`,
 		plugins = [],
 		preflights = [],

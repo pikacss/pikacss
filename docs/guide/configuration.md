@@ -31,7 +31,7 @@ Register plugins to extend PikaCSS functionality. Core built-in plugins (`import
 ### `prefix`
 
 - **Type:** `string`
-- **Default:** `''`
+- **Default:** `'pk-'`
 
 A prefix prepended to every generated atomic style ID. Useful for avoiding naming conflicts with other CSS tooling or pre-existing class namespaces.
 
@@ -272,8 +272,8 @@ Default values:
 
 Controls how `pika()` calls are transformed at build time:
 
-- **`'string'`** — `"a b c"` (space-separated string)
-- **`'array'`** — `['a', 'b', 'c']` (array of class names)
+- **`'string'`** — `"pk-a pk-b pk-c"` (space-separated string)
+- **`'array'`** — `['pk-a', 'pk-b', 'pk-c']` (array of class names)
 
 <<< @/.examples/guide/config-plugin-options.ts
 

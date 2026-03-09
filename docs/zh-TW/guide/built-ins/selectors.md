@@ -73,10 +73,10 @@
 
 | 定義 | `$` → defaultSelector | 最終 CSS |
 | --- | --- | --- |
-| `['hover', '$:hover']` | `.%:hover` | `.a:hover { ... }` |
-| `['before', '$::before']` | `.%::before` | `.a::before { ... }` |
-| `['dark', '[data-theme="dark"] $']` | `[data-theme="dark"] .%` | `[data-theme="dark"] .a { ... }` |
-| `['md', '@media (min-width: 768px)']` | _（無 `$`）_ | `@media (min-width: 768px) { .a { ... } }` |
+| `['hover', '$:hover']` | `.%:hover` | `.pk-a:hover { ... }` |
+| `['before', '$::before']` | `.%::before` | `.pk-a::before { ... }` |
+| `['dark', '[data-theme="dark"] $']` | `[data-theme="dark"] .%` | `[data-theme="dark"] .pk-a { ... }` |
+| `['md', '@media (min-width: 768px)']` | _（無 `$`）_ | `@media (min-width: 768px) { .pk-a { ... } }` |
 
 ::: tip At-Rules
 對於 CSS at-rules，如 `@media` 或 `@container`，**請勿**在值中包含 `$`。當解析後的選擇器不包含 `%` 佔位符時，引擎會自動將預設選擇器（`.%`）作為巢狀層級附加，產生正確的兩層結構：

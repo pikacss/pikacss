@@ -31,7 +31,7 @@ PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js
 ### `prefix`
 
 - **型別：** `string`
-- **預設值：** `''`
+- **預設值：** `'pk-'`
 
 附加在每個產生的原子化樣式 ID 前面的前綴。適合用來避免與其他 CSS 工具鏈或既有 class 命名空間發生命名衝突。
 
@@ -272,8 +272,8 @@ PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js
 
 控制 `pika()` 呼叫在建置時期的轉換方式：
 
-- **`'string'`** — `"a b c"`（以空格分隔的字串）
-- **`'array'`** — `['a', 'b', 'c']`（class 名稱陣列）
+- **`'string'`** — `"pk-a pk-b pk-c"`（以空格分隔的字串）
+- **`'array'`** — `['pk-a', 'pk-b', 'pk-c']`（class 名稱陣列）
 
 <<< @/.examples/guide/config-plugin-options.ts
 

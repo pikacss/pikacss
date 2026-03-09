@@ -18,8 +18,8 @@ const options: PluginOptions = {
 	fnName: 'pika', // default
 
 	// Output format of generated class names
-	// - 'string': "a b c"
-	// - 'array':  ['a', 'b', 'c']
+	// - 'string': "pk-a pk-b pk-c"
+	// - 'array':  ['pk-a', 'pk-b', 'pk-c']
 	transformedFormat: 'string', // default
 
 	// TypeScript codegen file for autocomplete support

@@ -2,9 +2,9 @@
 @layer preflights, utilities;
 
 @layer utilities {
-  .a { padding: 0.5rem 1rem; }
-  .b { border-radius: 0.5rem; }
-  .c { background-color: #0ea5e9; }
-  .d { color: white; }
+  .pk-a { padding: 0.5rem 1rem; }
+  .pk-b { border-radius: 0.5rem; }
+  .pk-c { background-color: #0ea5e9; }
+  .pk-d { color: white; }
   .e { cursor: pointer; }
 }

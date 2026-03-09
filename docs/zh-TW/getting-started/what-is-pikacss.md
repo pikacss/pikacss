@@ -33,7 +33,7 @@ PikaCSS 結合了兩個概念：
 
 <<< @/.examples/getting-started/pika-nested-selectors.ts
 
-如 `@dark` 或 `@screen-md` 等自訂選擇器需在你的 `pika.config.ts` 中設定。PikaCSS 會在建置時期將它們解析為對應的實際 CSS（例如 `html.dark .a { ... }` 或 `@media screen and (min-width: 768px) { ... }`）。
+如 `@dark` 或 `@screen-md` 等自訂選擇器需在你的 `pika.config.ts` 中設定。PikaCSS 會在建置時期將它們解析為對應的實際 CSS（例如 `html.dark .pk-a { ... }` 或 `@media screen and (min-width: 768px) { ... }`）。
 
 ## 捷徑
 

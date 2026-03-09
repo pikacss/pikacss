@@ -2,8 +2,8 @@
 import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineEngineConfig({
-	// Prefix for generated class names (default: '')
-	prefix: '',
+	// Prefix for generated class names (default: 'pk-')
+	prefix: 'pk-',
 
 	// Selector pattern, '%' is replaced with the class ID (default: '.%')
 	defaultSelector: '.%',

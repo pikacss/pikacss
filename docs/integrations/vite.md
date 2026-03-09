@@ -80,8 +80,8 @@ Controls the output format of transformed `pika()` calls.
 
 | Value      | Return Type | Example Output           | Use Case                             |
 | ---------- | ----------- | ------------------------ | ------------------------------------ |
-| `'string'` | `string`    | `"a b c"`                | Default — works with `class` binding |
-| `'array'`  | `string[]`  | `['a', 'b', 'c']`       | For use with `clsx`, `classnames`    |
+| `'string'` | `string`    | `"pk-a pk-b pk-c"`      | Default — works with `class` binding |
+| `'array'`  | `string[]`  | `['pk-a', 'pk-b', 'pk-c']` | For use with `clsx`, `classnames`    |
 
 <<< @/.examples/integrations/vite-custom-format.ts
 

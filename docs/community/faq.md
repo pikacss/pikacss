@@ -14,7 +14,7 @@ Atomic CSS is a strategy where each CSS class contains exactly **one** CSS prope
 
 ## How are class names generated?
 
-PikaCSS assigns each unique property-value-selector combination a short class name using a base-52 encoding (`a`–`z`, `A`–`Z`). The first atomic style becomes `a`, the second `b`, and so on. After 52 classes, names become two characters (`aa`, `ba`, etc.). You can also add a prefix via the `prefix` option in your engine config.
+PikaCSS assigns each unique property-value-selector combination a short class name using a base-52 encoding (`a`–`z`, `A`–`Z`). By default, the engine prepends the `pk-` prefix, so the first atomic style becomes `pk-a`, the second `pk-b`, and so on. After 52 classes, names become `pk-aa`, `pk-ba`, etc. Set `prefix: ''` in your engine config if you want bare IDs such as `a`, `b`, and `c`.
 
 ## Why must `pika(...)` arguments be statically analyzable?
 

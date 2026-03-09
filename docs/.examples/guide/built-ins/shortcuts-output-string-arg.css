@@ -1,6 +1,6 @@
 /* pika('flex-center', { gap: '1rem', padding: '2rem' }) */
-.a { display: flex; }
-.b { align-items: center; }
-.c { justify-content: center; }
-.d { gap: 1rem; }
+.pk-a { display: flex; }
+.pk-b { align-items: center; }
+.pk-c { justify-content: center; }
+.pk-d { gap: 1rem; }
 .e { padding: 2rem; }

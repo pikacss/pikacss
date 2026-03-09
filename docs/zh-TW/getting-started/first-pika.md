@@ -49,7 +49,7 @@ PikaCSS 完全在建置時期運作 — **零執行期負擔**。當你執行建
 <<< @/.examples/getting-started/first-pika-output.css
 
 ::: tip 為什麼使用原子化 CSS？
-每個 CSS 屬性值對都被提取為**單一可重複使用的 class**。如果另一個元素也使用 `color: 'white'`，它將共用相同的 `.d` class。這種去重複化機制讓樣式表隨著應用程式成長而保持精簡。
+每個 CSS 屬性值對都被提取為**單一可重複使用的 class**。如果另一個元素也使用 `color: 'white'`，它將共用相同的 `.pk-d` class。這種去重複化機制讓樣式表隨著應用程式成長而保持精簡。
 :::
 
 ## 巢狀選擇器
@@ -70,7 +70,7 @@ PikaCSS 完全在建置時期運作 — **零執行期負擔**。當你執行建
 
 ## 輸出格式變體
 
-預設情況下，`pika()` 回傳以空格分隔的 class 名稱字串（例如 `"a b c"`）。它也提供不同輸出格式的變體：
+預設情況下，`pika()` 回傳以空格分隔的 class 名稱字串（例如 `"pk-a pk-b pk-c"`）。它也提供不同輸出格式的變體：
 
 <<< @/.examples/getting-started/first-pika-variants.ts
 

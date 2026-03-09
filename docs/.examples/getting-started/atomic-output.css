@@ -1,12 +1,12 @@
 /* Each CSS property-value pair becomes its own atomic class */
-.a { color: red }
-.b { font-size: 16px }
-.c { color: black }
-.d { padding: 1rem }
+.pk-a { color: red }
+.pk-b { font-size: 16px }
+.pk-c { color: black }
+.pk-d { padding: 1rem }
 
 /* Selectors are also scoped per atomic class */
-.e:hover { color: blue }
+.pk-e:hover { color: blue }
 
 @media screen and (min-width: 768px) {
-  .f { font-size: 1.25rem }
+  .pk-f { font-size: 1.25rem }
 }
