@@ -37,7 +37,7 @@ features:
     details: Extend selectors, shortcuts, variables, keyframes, preflights, and autocomplete through a consistent hook system.
   - icon: 📚
     title: Docs for both adopters and extenders
-    details: The main path targets product teams using PikaCSS daily. Advanced sections cover plugin authors and contributors separately.
+    details: The main path targets product teams using PikaCSS daily. Advanced sections cover plugin authors separately.
 
 ---
 
@@ -61,9 +61,9 @@ Do not skip [Static Arguments](/getting-started/static-arguments). Most incorrec
 4. Move into [Component Styling](/patterns/component-styling), [Responsive And Selectors](/patterns/responsive-and-selectors), and [Theming And Variables](/patterns/theming-and-variables) for real project patterns.
 5. Keep [Common Problems](/troubleshooting/common-problems) open when something looks missing or incorrect.
 
-## For plugin authors and contributors
+## For plugin authors
 
-The primary docs path is intentionally user-first. If you are extending the engine instead of only consuming it, jump to [Plugin System Overview](/plugin-system/overview) and [Contributor Architecture](/contributors/architecture).
+The primary docs path is intentionally user-first. If you are extending the engine instead of only consuming it, jump to [Plugin System Overview](/plugin-system/overview).
 
 ## Next
 

@@ -41,6 +41,5 @@ Start with `configureEngine`. Only move earlier or deeper into transforms when a
 ## Next
 
 - [Create A Plugin](/plugin-system/create-plugin)
-- [Contributor Architecture](/contributors/architecture)
 - [Built-in Plugins](/guide/built-in-plugins)
 - [FAQ](/community/faq)

@@ -37,7 +37,7 @@ features:
     details: 透過一致的 hook system 擴充 selectors、shortcuts、variables、keyframes、preflights 與 autocomplete。
   - icon: 📚
     title: 同時服務採用者與擴充者的文件
-    details: 主要路徑面向每天都在使用 PikaCSS 的產品團隊；進階章節則另外照顧 plugin authors 與 contributors。
+    details: 主要路徑面向每天都在使用 PikaCSS 的產品團隊；進階章節則另外照顧 plugin authors。
 
 ---
 
@@ -61,9 +61,9 @@ features:
 4. 接著再看 [Component Styling](/zh-TW/patterns/component-styling)、[Responsive And Selectors](/zh-TW/patterns/responsive-and-selectors) 與 [Theming And Variables](/zh-TW/patterns/theming-and-variables)，了解真正在專案裡會怎麼使用它。
 5. 如果你覺得哪裡少了東西，或輸出結果不太對，請直接對照 [Common Problems](/zh-TW/troubleshooting/common-problems)。
 
-## 給 plugin authors 與 contributors
+## 給 plugin authors
 
-主要文件路徑是以使用者為優先來安排的。如果你的目的是擴充 engine，而不只是使用它，請直接跳到 [Plugin System Overview](/zh-TW/plugin-system/overview) 與 [Contributor Architecture](/zh-TW/contributors/architecture)。
+主要文件路徑是以使用者為優先來安排的。如果你的目的是擴充 engine，而不只是使用它，請直接跳到 [Plugin System Overview](/zh-TW/plugin-system/overview)。
 
 ## Next
 

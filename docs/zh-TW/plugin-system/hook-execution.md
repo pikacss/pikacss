@@ -41,6 +41,5 @@ Notification hooks 的存在，是讓 integrations 或 plugins 可以對 preflig
 ## Next
 
 - [Create A Plugin](/zh-TW/plugin-system/create-plugin)
-- [Contributor Architecture](/zh-TW/contributors/architecture)
 - [Built-in Plugins](/zh-TW/guide/built-in-plugins)
 - [FAQ](/zh-TW/community/faq)

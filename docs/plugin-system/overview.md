@@ -58,4 +58,3 @@ Built-in plugins run before user plugins, which means `order` only controls your
 - [Create A Plugin](/plugin-system/create-plugin)
 - [Hook Execution](/plugin-system/hook-execution)
 - [Built-in Plugins](/guide/built-in-plugins)
-- [Contributor Architecture](/contributors/architecture)
