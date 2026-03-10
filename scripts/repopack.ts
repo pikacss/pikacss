@@ -30,7 +30,7 @@ async function main() {
 
 	console.log('Packing docs...')
 	const docsInclude = 'docs/**/*.md,docs/.examples/**/*'
-	const docsIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,docs/zh-TW/**,**/dist/**,**/coverage/**'
+	const docsIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,docs/zh-TW/**,docs/.examples/zh-TW/**,**/dist/**,**/coverage/**'
 
 	const resDocs = await $`repomix . --output repomix/repomix-docs.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${docsInclude} --ignore ${docsIgnore} --no-security-check`.quiet()
 
@@ -39,7 +39,7 @@ async function main() {
 	results.push({ name: 'docs', tokens: docsTokens })
 
 	console.log('Packing docs (zh-TW)...')
-	const docsZhTwInclude = 'docs/zh-TW/**/*.md'
+	const docsZhTwInclude = 'docs/zh-TW/**/*.md,docs/.examples/zh-TW/**/*'
 	const docsZhTwIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,**/dist/**,**/coverage/**'
 
 	const resDocsZhTw = await $`repomix . --output repomix/repomix-docs-zh-tw.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${docsZhTwInclude} --ignore ${docsZhTwIgnore} --no-security-check`.quiet()
