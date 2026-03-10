@@ -1,0 +1,10 @@
+/* Shared utility CSS is emitted once for the whole project */
+
+.px-4 {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.pl-2 {
+	padding-left: 0.5rem;
+}

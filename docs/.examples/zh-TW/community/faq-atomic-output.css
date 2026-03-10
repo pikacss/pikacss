@@ -1,0 +1,6 @@
+/* 每一組 property-value 都會變成一個 atomic class */
+.pk-a { color: white; }
+.pk-b { background-color: blue; }
+.pk-c { text-decoration: underline; }
+
+/* btn → "pk-a pk-b"，link → "pk-a pk-c"，其中 `color: white` 會共用同一個 class */

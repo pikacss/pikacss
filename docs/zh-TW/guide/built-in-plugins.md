@@ -1,84 +1,35 @@
-# 內建插件
+# Built-in Plugins
 
-`createEngine()` 在附加任何來自 `config.plugins` 的使用者插件之前，始終會載入五個核心插件。
+PikaCSS 內建了一組隨時可用的 engine capabilities。這些能力是透過 engine config 的頂層 keys 來設定，不是放在 external `plugins` array 裡。
 
-## 核心插件
+## 內建集合
 
-五個內建插件以固定順序在 `createEngine()` 內部建立：
+| Built-in plugin | 用途 |
+| --- | --- |
+| important | 全域與每個 definition 的 `!important` 行為 |
+| variables | CSS custom properties、token scope 與 autocomplete |
+| keyframes | animation 註冊與 autocomplete |
+| selectors | pseudo states、media aliases 與自訂 selector 展開 |
+| shortcuts | 可重用的 style recipes 與動態 shortcut patterns |
 
-| 順序 | 插件名稱 | 設定鍵 | 用途 |
-|-------|------------|------------|---------|
-| 1 | `core:important` | `important` | 在 CSS 值後附加 `!important` |
-| 2 | `core:variables` | `variables` | 帶有清除功能的 CSS 自訂屬性 |
-| 3 | `core:keyframes` | `keyframes` | `@keyframes` 動畫管理 |
-| 4 | `core:selectors` | `selectors` | 選擇器別名解析 |
-| 5 | `core:shortcuts` | `shortcuts` | 可重複使用的樣式捷徑 |
+<<< @/.examples/zh-TW/guide/built-in-plugins-config.ts
 
-## 插件載入與排序
+## 為什麼要特別區分
 
-建立核心插件並附加使用者插件後，**所有插件會依其 `order` 屬性一起排序**：
+第一次接觸 plugin 的人，常會以為所有 extension points 都該放進 `plugins`。其實只有 icons、reset、typography 這類 external plugins 才是這樣。
 
-| `order` 值 | 排序權重 | 執行時機 |
-|---------------|-------------|--------|
-| `'pre'` | 0 | 最先執行 |
-| `undefined` | 1 | 預設值（核心插件使用此值） |
-| `'post'` | 2 | 最後執行 |
+Built-in plugin config 之所以獨立存在，是因為這些行為本來就是 engine 的核心能力。
 
-<<< @/.examples/guide/plugin-loading-order.ts
+## 接下來可以深入的地方
 
-::: warning
-由於核心插件未設定 `order`（權重為 1），具有 `order: 'pre'` 的使用者插件會在核心插件**之前**執行。這對於在核心插件處理之前修改原始設定非常有用。
-:::
+- selectors 會在 [Responsive And Selectors](/zh-TW/patterns/responsive-and-selectors) 進一步說明
+- variables 會在 [Theming And Variables](/zh-TW/patterns/theming-and-variables) 進一步說明
+- engine 層級的設定方式在 [Configuration](/zh-TW/guide/configuration)
+- extension APIs 會在 [Plugin System Overview](/zh-TW/plugin-system/overview) 說明
 
-## 鉤子執行流程
+## Next
 
-所有插件（核心與使用者的）都參與同一個鉤子流程，依排序順序執行：
-
-```mermaid
-flowchart LR
-    A[configureRawConfig] --> B[rawConfigConfigured]
-    B --> C[resolveConfig]
-    C --> D[configureResolvedConfig]
-    D --> E[configureEngine]
-```
-
-在執行階段，當樣式被處理時會觸發額外的鉤子：
-
-- `transformSelectors` — 解析選擇器別名
-- `transformStyleItems` — 解析捷徑字串
-- `transformStyleDefinitions` — 展開 `__important` 與 `__shortcut`
-- `preflightUpdated` — 變數／關鍵影格已變更
-- `atomicStyleAdded` — 新的原子化樣式已被註冊
-- `autocompleteConfigUpdated` — 自動補齊中繼資料已變更
-
-## 設定內建插件
-
-你可透過 `EngineConfig` 的頂層鍵來設定內建插件，而非匯入內部工廠函式：
-
-<<< @/.examples/guide/built-in-plugins-config.ts
-
-## 引擎層級的樣式能力
-
-不是每個特殊樣式屬性都來自內建插件的鉤子。例如，`__layer` 由核心引擎在原子化樣式被儲存與渲染之前處理，因此將樣式指派到 CSS layer 是一項樣式層級的引擎能力，而不是內建插件轉換流程的一部分。
-
-關於 `__layer`、`config.layers` 與 `defaultUtilitiesLayer` 如何一起運作，請參閱 [設定](/zh-TW/guide/configuration)。
-
-## 插件詳細頁面
-
-- [Important](/zh-TW/guide/built-ins/important) — `!important` 管理
-- [Variables](/zh-TW/guide/built-ins/variables) — CSS 自訂屬性
-- [Keyframes](/zh-TW/guide/built-ins/keyframes) — `@keyframes` 動畫
-- [Selectors](/zh-TW/guide/built-ins/selectors) — 選擇器別名
-- [Shortcuts](/zh-TW/guide/built-ins/shortcuts) — 可重複使用的樣式捷徑
-
-## 原始碼參考
-
-- `packages/core/src/internal/engine.ts` — `createEngine()`、插件連接
-- `packages/core/src/internal/plugin.ts` — `resolvePlugins()`、鉤子執行
-- `packages/core/src/internal/plugins/` — 各個插件實作
-
-## 下一步
-
-- 查看 [設定](/zh-TW/guide/configuration)
-- 了解 [插件系統概覽](/zh-TW/plugin-system/overview)
-- 深入閱讀 [Variables](/zh-TW/guide/built-ins/variables)
+- [Configuration](/zh-TW/guide/configuration)
+- [Responsive And Selectors](/zh-TW/patterns/responsive-and-selectors)
+- [Theming And Variables](/zh-TW/patterns/theming-and-variables)
+- [Plugin System Overview](/zh-TW/plugin-system/overview)

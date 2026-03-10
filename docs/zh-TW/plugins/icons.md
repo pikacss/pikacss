@@ -1,126 +1,57 @@
-# Icons 插件
+# Icons
 
-`@pikacss/plugin-icons` 讓你可以使用 [Iconify](https://iconify.design/) 上的任何圖示作為原子化 CSS class，並透過專為 PikaCSS 設計的原生 Iconify 整合來解析。圖示在建置時期解析並以優化的 CSS data URI 嵌入，零執行期開銷。
+`@pikacss/plugin-icons` 是把大型 icon sets 拉進同一套 build-time styling workflow 的最快方式，能直接融入你的 PikaCSS 系統。
 
-## 安裝
+## 什麼時候該用它
 
-安裝插件後，另外加入至少一個本機 Iconify collection 供實際使用的圖示來源：
+當你想要下面這些能力時，就用 icons plugin：
+
+- icon names 能像 style-item strings 一樣使用
+- 不需要 runtime icon component 的額外負擔
+- 使用 Iconify collections
+- 仍然能透過既有 styling model 進行主題化的 CSS 輸出
+
+## Install
 
 ::: code-group
-<<< @/.examples/plugins/icons-install.sh [pnpm]
-<<< @/.examples/plugins/icons-install-npm.sh [npm]
-<<< @/.examples/plugins/icons-install-yarn.sh [yarn]
+<<< @/.examples/zh-TW/plugins/icons-install.sh [pnpm]
+<<< @/.examples/zh-TW/plugins/icons-install-npm.sh [npm]
+<<< @/.examples/zh-TW/plugins/icons-install-yarn.sh [yarn]
 :::
 
-本機 collection 會優先從 `node_modules` 解析；如果你想允許遠端抓取，再額外設定 `cdn` 作為 fallback。
+## 最小設定
 
-## 基本設定
+<<< @/.examples/zh-TW/plugins/icons-basic-config.ts
 
-<<< @/.examples/plugins/icons-basic-config.ts
+## Usage
 
-## 圖示命名慣例
+<<< @/.examples/zh-TW/plugins/icons-usage.ts
 
-圖示遵循以下模式：**`prefix` + `collection:name`**
+<<< @/.examples/zh-TW/plugins/icons-usage.vue
 
-預設前綴為 `i-`。使用 Iconify collection 和圖示名稱以冒號分隔來參照圖示：
+## 命名模型
 
-| 簡寫 | Collection | 圖示 |
-| --- | --- | --- |
-| `i-mdi:home` | Material Design Icons | home |
-| `i-lucide:settings` | Lucide | settings |
-| `i-carbon:warning` | Carbon | warning |
-| `i-tabler:brand-github` | Tabler Icons | brand-github |
+預設命名模式會使用 `i-` prefix，加上 `collection:name`，例如 `i-mdi:home`。
 
-瀏覽可用圖示：[Iconify](https://icon-sets.iconify.design/)。
+這很有價值，因為 icons 會成為和 shortcuts、selectors 同一層級的靜態 authoring surface。團隊可以把它們當成一般的原始碼字串來 review，而不是另一套 runtime component system。
 
-## 使用方式
+## 該做與不該做
 
-<<< @/.examples/plugins/icons-usage.ts
+| 該做 | 不該做 |
+| --- | --- |
+| 安裝你實際會用到的 icon collections。 | 假設所有遠端 icons 在 CI 中都一定會在無設定下解析成功。 |
+| 在整個專案中維持一致的 icon naming conventions。 | 無理由地混用多種 prefixes 與臨時命名方式。 |
+| 為常用 icons 使用 autocomplete。 | 期待人類能準確記住幾百個 icon names。 |
 
-在 Vue 元件中：
+## 進階自訂
 
-<<< @/.examples/plugins/icons-usage.vue
+<<< @/.examples/zh-TW/plugins/icons-advanced-config.ts
 
-## 渲染模式
+<<< @/.examples/zh-TW/plugins/icons-custom-collections.ts
 
-插件支援兩種渲染模式，決定如何將圖示 SVG 作為 CSS 套用：
+## Next
 
-### Mask 模式
-
-在 **mask** 模式中，SVG 作為 CSS mask 使用。圖示繼承元素的文字 `color`，便於主題化：
-
-<<< @/.examples/plugins/icons-mask-output.css
-
-### Background 模式
-
-在 **background** 模式中，SVG 作為 CSS 背景圖片使用。圖示保留其原始 SVG 顏色：
-
-<<< @/.examples/plugins/icons-bg-output.css
-
-### Auto 模式（預設）
-
-當 `mode` 為 `'auto'`（預設值）時，插件自動選擇適合的模式：
-
-- **`mask`** — 若 SVG 包含 `currentColor`
-- **`bg`** — 否則
-
-你可以在 shortcut 名稱後加上 `?mask`、`?bg` 或 `?auto` 來覆蓋每個圖示的模式。
-
-## 自訂 Collection
-
-你可以在設定中定義內嵌 SVG collection：
-
-<<< @/.examples/plugins/icons-custom-collections.ts
-
-## 自訂處理器
-
-使用 `processor` 選項在 CSS 屬性發出前修改它們：
-
-<<< @/.examples/plugins/icons-processor.ts
-
-## 自動完成
-
-提供圖示名稱清單以增強 IDE 自動完成建議：
-
-<<< @/.examples/plugins/icons-autocomplete.ts
-
-## 進階設定
-
-<<< @/.examples/plugins/icons-advanced-config.ts
-
-## 設定參考
-
-此插件以 `icons` 欄位擴充 `EngineConfig`：
-
-<<< @/.examples/plugins/icons-engine-config-interface.ts
-
-`IconsConfig` 由 `@pikacss/plugin-icons` 自行定義，暴露以原生 Iconify 為中心的設定選項：
-
-| 選項 | 型別 | 預設值 | 說明 |
-| --- | --- | --- | --- |
-| `scale` | `number` | `1` | 圖示縮放係數 |
-| `mode` | `'auto' \| 'mask' \| 'bg'` | `'auto'` | 預設渲染模式 |
-| `prefix` | `string \| string[]` | `'i-'` | 圖示 shortcut 的 class 名稱前綴 |
-| `collections` | `CustomCollections` | — | 自訂 SVG collection 或 loader |
-| `customizations` | `IconCustomizations` | — | 轉換圖示（旋轉、調整大小等） |
-| `autoInstall` | `boolean` | `false` | 依需求自動安裝圖示套件 |
-| `cwd` | `string \| string[]` | `process.cwd()` | 從指定路徑解析本機 Iconify JSON 套件 |
-| `cdn` | `string` | — | 載入圖示的 CDN 基底 URL |
-| `unit` | `string` | — | 圖示尺寸的 CSS 單位（例如 `'em'`） |
-| `extraProperties` | `Record<string, string>` | — | 每個圖示的額外 CSS 屬性 |
-| `processor` | `(styleItem: StyleItem, meta: Required<IconMeta>) => void` | — | 修改每個圖示的 CSS 輸出 |
-| `autocomplete` | `string[]` | — | 額外的自動完成項目 |
-
-## 運作原理
-
-1. 插件註冊一個符合 regex 模式 `/^(?:i-)([\w:-]+)(?:\?(mask|bg|auto))?$/` 的動態 shortcut
-2. 當符合的 shortcut 被解析時，它會解析圖示名稱（`collection:name` 格式）
-3. SVG 會依序從自訂 collections、本機 Iconify JSON 套件，最後才是已設定的 `cdn` fallback 解析
-4. SVG 被編碼為 CSS data URI 並儲存為 CSS 變數（`--<prefix>svg-icon-...`），標記為 `pruneUnused: true`
-5. 根據解析的模式，產生以 mask 為基礎或以背景為基礎的 CSS 屬性
-
-## 下一步
-
-- 繼續至 [Reset 插件](/zh-TW/plugins/reset)
-- 繼續至 [Typography 插件](/zh-TW/plugins/typography)
-- 了解 [建立插件](/zh-TW/plugin-system/create-plugin)
+- [Reset](/zh-TW/plugins/reset)
+- [Typography](/zh-TW/plugins/typography)
+- [Create A Plugin](/zh-TW/plugin-system/create-plugin)
+- [Configuration](/zh-TW/guide/configuration)

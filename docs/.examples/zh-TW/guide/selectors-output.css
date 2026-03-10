@@ -1,0 +1,6 @@
+.pk-a { color: black; }
+.b:hover { color: blue; }
+[data-theme="dark"] .pk-c { color: white; }
+@media (min-width: 768px) {
+  .pk-d { font-size: 1.25rem; }
+}

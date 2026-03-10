@@ -58,7 +58,7 @@ Each package: `src/index.ts` entry · co-located tests (`src/foo.ts` → `src/fo
 - Named exports preferred over default exports
 - Use `defineConfig` / `defineProject` helpers for config files
 - No comments or docstrings added to unchanged code
-- All content (code, comments, docs, commits) in **English**
+- All content (code, comments, default docs, commits) in **English**
 - Conversation language should remain consistent with the user's choice, including specific variants (e.g. Simplified Chinese vs. Traditional Chinese (Taiwan))
 - When in doubt or anything feels unclear, ask questions instead of guessing; use the ask‑questions mechanism to get my input.
 - In `tests`, `docs`, and `src` directories, do **not** reference absolute file system paths.
@@ -88,3 +88,5 @@ Config auto-detected as: `pika.config.{js,ts,mjs,mts,cjs,cts}`
 Docs live in `docs/` (VitePress). All code examples must be stored in `docs/.examples/` and imported with `<<<` syntax — never inline code in markdown.
 
 For full documentation authoring conventions, see `.github/instructions/documentation.instructions.md`.
+For zh-TW localized markdown pages, also follow `.github/instructions/translation.instructions.md`.
+For zh-TW localized example files under `docs/.examples/zh-TW/`, also follow `.github/instructions/translation-examples.instructions.md`.

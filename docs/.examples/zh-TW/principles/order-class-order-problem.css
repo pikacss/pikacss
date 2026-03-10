@@ -1,0 +1,10 @@
+/* 共享的 utility CSS 只會在整個專案中輸出一次 */
+
+.px-4 {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.pl-2 {
+	padding-left: 0.5rem;
+}

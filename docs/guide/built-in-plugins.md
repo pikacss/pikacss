@@ -1,84 +1,35 @@
 # Built-in Plugins
 
-`createEngine()` always loads five core plugins before appending any user plugins from `config.plugins`.
+PikaCSS ships with built-in engine capabilities that are always available. They are configured through top-level engine config keys, not through the external `plugins` array.
 
-## Core Plugins
+## The built-in set
 
-The five built-in plugins are created in this fixed order inside `createEngine()`:
-
-| Order | Plugin Name | Config Key | Purpose |
-|-------|------------|------------|---------|
-| 1 | `core:important` | `important` | Appends `!important` to CSS values |
-| 2 | `core:variables` | `variables` | CSS custom properties with pruning |
-| 3 | `core:keyframes` | `keyframes` | `@keyframes` animation management |
-| 4 | `core:selectors` | `selectors` | Selector alias resolution |
-| 5 | `core:shortcuts` | `shortcuts` | Reusable style shortcuts |
-
-## Plugin Loading & Sorting
-
-After creating core plugins and appending user plugins, **all plugins are sorted together** by their `order` property:
-
-| `order` value | Sort weight | Timing |
-|---------------|-------------|--------|
-| `'pre'` | 0 | Runs first |
-| `undefined` | 1 | Default (core plugins use this) |
-| `'post'` | 2 | Runs last |
-
-<<< @/.examples/guide/plugin-loading-order.ts
-
-::: warning
-Since core plugins have no `order` set (weight 1), a user plugin with `order: 'pre'` will execute **before** the core plugins. This can be useful for modifying raw config before core plugins process it.
-:::
-
-## Hook Execution Pipeline
-
-All plugins (core and user) participate in the same hook pipeline, executed in sort order:
-
-```mermaid
-flowchart LR
-    A[configureRawConfig] --> B[rawConfigConfigured]
-    B --> C[resolveConfig]
-    C --> D[configureResolvedConfig]
-    D --> E[configureEngine]
-```
-
-At runtime, additional hooks fire as styles are processed:
-
-- `transformSelectors` — resolve selector aliases
-- `transformStyleItems` — resolve shortcut strings
-- `transformStyleDefinitions` — expand `__important` and `__shortcut`
-- `preflightUpdated` — variables/keyframes changed
-- `atomicStyleAdded` — a new atomic style was registered
-- `autocompleteConfigUpdated` — autocomplete metadata changed
-
-## Configuring Built-in Plugins
-
-You configure built-in plugins through top-level keys in `EngineConfig`, not by importing internal factories:
+| Built-in plugin | Use it for |
+| --- | --- |
+| important | global and per-definition `!important` behavior |
+| variables | CSS custom properties, token scoping, autocomplete |
+| keyframes | animation registration and autocomplete |
+| selectors | pseudo states, media aliases, custom selector expansion |
+| shortcuts | reusable style recipes and dynamic shortcut patterns |
 
 <<< @/.examples/guide/built-in-plugins-config.ts
 
-## Engine-Level Style Capabilities
+## Why this matters
 
-Not every special style property comes from a built-in plugin hook. For example, `__layer` is handled by the core engine before atomic styles are stored and rendered, so assigning a style to a CSS layer is a style-level engine capability rather than part of the built-in plugin transformation pipeline.
+Many first-time plugin users assume every extension point belongs inside `plugins`. That is only true for external plugins such as icons, reset, and typography.
 
-See [Configuration](/guide/configuration) for how `__layer`, `config.layers`, and `defaultUtilitiesLayer` work together.
+Built-in plugin config exists because these behaviors are foundational parts of the engine itself.
 
-## Plugin Detail Pages
+## Where to go deeper
 
-- [Important](/guide/built-ins/important) — `!important` management
-- [Variables](/guide/built-ins/variables) — CSS custom properties
-- [Keyframes](/guide/built-ins/keyframes) — `@keyframes` animations
-- [Selectors](/guide/built-ins/selectors) — selector aliases
-- [Shortcuts](/guide/built-ins/shortcuts) — reusable style shortcuts
-
-## Source Reference
-
-- `packages/core/src/internal/engine.ts` — `createEngine()`, plugin wiring
-- `packages/core/src/internal/plugin.ts` — `resolvePlugins()`, hook execution
-- `packages/core/src/internal/plugins/` — individual plugin implementations
+- selectors are covered in [Responsive And Selectors](/patterns/responsive-and-selectors)
+- variables are covered in [Theming And Variables](/patterns/theming-and-variables)
+- engine-level setup is covered in [Configuration](/guide/configuration)
+- extension APIs are covered in [Plugin System Overview](/plugin-system/overview)
 
 ## Next
 
-- Inspect [Configuration](/guide/configuration)
-- Learn the [Plugin System](/plugin-system/overview)
-- Dive into [Variables](/guide/built-ins/variables)
+- [Configuration](/guide/configuration)
+- [Responsive And Selectors](/patterns/responsive-and-selectors)
+- [Theming And Variables](/patterns/theming-and-variables)
+- [Plugin System Overview](/plugin-system/overview)

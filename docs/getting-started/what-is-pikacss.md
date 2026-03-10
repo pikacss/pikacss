@@ -1,91 +1,63 @@
-# What is PikaCSS?
+# What Is PikaCSS?
 
-PikaCSS is an instant on-demand **Atomic CSS-in-JS engine**. It lets you author styles using familiar CSS property objects with full TypeScript autocomplete, and compiles them into optimized atomic CSS classes entirely at build time — **zero runtime overhead**.
+PikaCSS is a build-time atomic CSS-in-JS engine. You write style definitions in JavaScript or TypeScript, the integration scans supported files for `pika()` calls, and the build transforms those calls into class names plus a generated CSS file.
 
-## Core Idea
+That makes PikaCSS a good fit for teams that want:
 
-You write styles through the global `pika(...)` function using standard CSS properties in camelCase. The build plugin statically analyzes every `pika()` call, extracts each CSS property-value pair into its own atomic class, and replaces the call with the generated class names.
+- CSS-in-JS authoring without runtime styling cost.
+- Full TypeScript autocomplete for style definitions and plugin-defined tokens.
+- Reusable selectors, shortcuts, variables, and keyframes in the same authoring model.
+- Predictable CSS output that can be inspected as generated files.
+
+It is a poor fit if your design system depends on arbitrary runtime expressions inside styling calls. PikaCSS is opinionated: inputs must be statically analyzable because the engine works at build time.
+
+::: tip When PikaCSS shines
+PikaCSS is strongest when styles are known from source code structure: component variants, responsive rules, theme selectors, design tokens, and reusable shortcuts.
+:::
+
+## The core idea
+
+PikaCSS does three things well:
+
+1. It treats `pika()` as build input, not runtime logic.
+2. It decomposes style definitions into atomic declarations and deduplicates them.
+3. It keeps public extension points for selectors, shortcuts, variables, keyframes, preflights, and plugins.
 
 <<< @/.examples/getting-started/pika-basic-usage.ts
 
-This means:
+## What makes it different
 
-- **No runtime cost** — all style generation happens during the build step. The `pika()` calls are replaced with plain strings in the final bundle.
-- **No custom vocabulary** — you write real CSS properties (`color`, `fontSize`, `padding`, etc.) rather than memorizing utility class names.
-- **Full TypeScript autocomplete** — the build plugin generates a type declaration file (`pika.gen.ts`) that provides precise autocompletion for all CSS properties, custom selectors, shortcuts, and CSS variables.
+Most CSS-in-JS tools optimize for runtime flexibility. Most utility-first tools optimize for predeclared tokens. PikaCSS sits in a different place:
 
-## How It Works
+- You still author style objects directly.
+- The final application ships static CSS, not runtime style injection.
+- You can extend the engine with plugin hooks instead of forcing every workflow into utility class conventions.
 
-PikaCSS combines two ideas:
+## What it does not promise
 
-1. **CSS-in-JS authoring** — style objects with nesting, composition, and TypeScript inference for readability and developer experience.
-2. **Atomic CSS output** — each unique CSS property-value pair produces exactly one small, reusable class rule, keeping the final stylesheet compact.
+PikaCSS does not promise that any valid JavaScript expression can become style input. The engine cannot safely optimize expressions it cannot analyze up front.
 
-The generated CSS contains one class per declaration:
+::: warning Do not evaluate PikaCSS like a runtime API
+If you judge PikaCSS by trying dynamic function calls, mutable state, ternaries that depend on runtime data, or computed member access inside `pika()`, you are testing the wrong model.
+:::
 
-<<< @/.examples/getting-started/atomic-output.css
+## Built-in capabilities you will actually use
 
-When multiple components share the same declaration (e.g., `color: red`), they reuse the same atomic class. This deduplication keeps the CSS bundle size minimal regardless of how many components use the same styles.
+- Variables for theme tokens and scoped custom properties.
+- Selectors for pseudo states, media queries, and custom aliases.
+- Shortcuts for reusable style bundles.
+- Keyframes for animation registration with autocomplete.
+- Preflights and layers for global and ordered CSS.
 
-## Nested Selectors and Responsive Design
+## Who should read what next
 
-Style definitions support nesting with pseudo-classes, media queries, and custom selectors defined in your configuration:
-
-<<< @/.examples/getting-started/pika-nested-selectors.ts
-
-Custom selectors like `@dark` or `@screen-md` are configured in your `pika.config.ts`. PikaCSS resolves them at build time into their actual CSS counterparts (e.g., `html.dark .pk-a { ... }` or `@media screen and (min-width: 768px) { ... }`).
-
-## Shortcuts
-
-You can define reusable style combinations as **shortcuts** in your configuration and use them by passing string names to `pika()`:
-
-<<< @/.examples/getting-started/pika-shortcuts-usage.ts
-
-Shortcuts are resolved at build time — no runtime lookup involved.
-
-## Built-in Plugins
-
-The engine ships with five built-in plugins that are always loaded:
-
-| Plugin | Purpose |
-| --- | --- |
-| **important** | Adds `!important` to all declarations (opt-in via config) |
-| **variables** | Defines CSS custom properties (`--var`) with autocomplete, scoped by selector, and prunes unused variables |
-| **keyframes** | Registers `@keyframes` animations with autocomplete for `animation` / `animationName` |
-| **selectors** | Registers custom selector aliases (static or dynamic with RegExp) |
-| **shortcuts** | Registers reusable style combinations (static or dynamic with RegExp) |
-
-## Configuration
-
-PikaCSS auto-detects config files named `{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` from the integration working directory, which is usually your project root. Use `defineEngineConfig()` for type safety:
-
-<<< @/.examples/getting-started/pika-config-example.ts
-
-## Framework Integration
-
-PikaCSS integrates with all major build tools through a universal [unplugin](https://github.com/unjs/unplugin)-based plugin. The default function name is `pika` and it is exposed as a **global function** — no import is needed in your source files. The build plugin statically finds and replaces all `pika()` calls at build time.
-
-Supported build tools: **Vite**, **Rollup**, **Webpack**, **esbuild**, **Rspack**, **Rolldown**, and **Nuxt** (via a dedicated module).
-
-Here is how it looks in a Vue single-file component:
-
-<<< @/.examples/getting-started/pika-vue-example.vue
-
-## When PikaCSS Is a Good Fit
-
-Use PikaCSS when you want:
-
-- **Type-safe style authoring** directly in your application code with full IDE support.
-- **Build-time compilation** instead of any runtime styling work.
-- **Build-tool integration across major ecosystems** including Vite, Webpack, Rspack, Rollup, esbuild, Rolldown, and Nuxt.
-- **Minimal CSS output** thanks to atomic deduplication.
-
-## Important Constraint
-
-`pika()` calls are compiled **statically**. The build plugin evaluates the arguments using `new Function(...)`, so all arguments must be deterministic JavaScript expressions — no references to runtime-only variables, component state, or dynamic imports.
+- New adopters should continue to [Installation](/getting-started/installation).
+- Teams evaluating the tradeoffs should read [Static Arguments](/getting-started/static-arguments) immediately after setup.
+- Plugin authors should skip ahead to [Plugin System Overview](/plugin-system/overview).
 
 ## Next
 
-- Continue to [Installation](/getting-started/installation)
-- Explore [Zero Config](/getting-started/zero-config)
-- Review [Configuration](/guide/configuration)
+- [Installation](/getting-started/installation)
+- [First Pika](/getting-started/first-pika)
+- [Static Arguments](/getting-started/static-arguments)
+- [How PikaCSS Works](/concepts/how-pikacss-works)

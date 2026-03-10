@@ -1,80 +1,42 @@
-# Reset 插件
+# Reset
 
-`@pikacss/plugin-reset` 將 CSS Reset 樣式表注入至 PikaCSS 前置樣式。它內建 5 種流行的 Reset 預設集，預設使用 `modern-normalize`。
+`@pikacss/plugin-reset` 讓你可以在不離開 PikaCSS configuration model 的情況下，以 build-time 方式建立 CSS reset baseline。
 
-## 安裝
+## 什麼時候該用它
+
+當你想替整個專案或 design system 建立一套共享的 element defaults baseline 時，就使用 reset plugin。
+
+## Install
 
 ::: code-group
-<<< @/.examples/plugins/reset-install.sh [pnpm]
-<<< @/.examples/plugins/reset-install-npm.sh [npm]
-<<< @/.examples/plugins/reset-install-yarn.sh [yarn]
+<<< @/.examples/zh-TW/plugins/reset-install.sh [pnpm]
+<<< @/.examples/zh-TW/plugins/reset-install-npm.sh [npm]
+<<< @/.examples/zh-TW/plugins/reset-install-yarn.sh [yarn]
 :::
 
-`@pikacss/core` 為必要的 peer dependency。
+## 最小設定
 
-## 基本用法
+<<< @/.examples/zh-TW/plugins/reset-basic-usage.ts
 
-將 `reset()` 插件新增至你的引擎設定。若未設定 `reset` 選項，預設使用 `'modern-normalize'`：
+## 可用 presets
 
-<<< @/.examples/plugins/reset-basic-usage.ts
+<<< @/.examples/zh-TW/plugins/reset-all-presets.ts
 
-## 選擇預設集
+## Reset 什麼時候有幫助，什麼時候反而有害
 
-將 `reset` 設定欄位設為選擇不同的預設集：
+如果你希望早點把瀏覽器 defaults 統一起來，reset 會很有幫助。反過來說，若專案本來就已經有一套清楚而刻意的 baseline，reset 反而可能只是多添一層意外。
 
-<<< @/.examples/plugins/reset-custom-preset.ts
+::: warning 不要把專案 styling 問題藏在 reset 後面
+Reset 應該只負責標準化 defaults。它不應該變成把不相關的 typography、spacing 與 component 決策全都累積進去的地方。
+:::
 
-## 可用預設集
+## 自訂 preset 範例
 
-此插件內建 5 種 CSS Reset 樣式表：
+<<< @/.examples/zh-TW/plugins/reset-custom-preset.ts
 
-<<< @/.examples/plugins/reset-all-presets.ts
+## Next
 
-| 預設集 | 說明 |
-|--------|-------------|
-| `'modern-normalize'` | **預設。** 為現代瀏覽器標準化樣式。基於 [modern-normalize](https://github.com/sindresorhus/modern-normalize)。 |
-| `'normalize'` | 經典的 [Normalize.css](https://necolas.github.io/normalize.css/) — 讓瀏覽器以一致的方式渲染元素。 |
-| `'eric-meyer'` | [Eric Meyer 的 CSS Reset](https://meyerweb.com/eric/tools/css/reset/) — 將所有預設的瀏覽器樣式清除至空白狀態。 |
-| `'andy-bell'` | [Andy Bell 的現代 CSS Reset](https://piccalil.li/blog/a-modern-css-reset/) — 適用於現代開發的極簡且具主觀性的 Reset。 |
-| `'the-new-css-reset'` | [The New CSS Reset](https://elad2412.github.io/the-new-css-reset/) — 使用 `all: unset` 移除所有預設樣式。 |
-
-## 運作原理
-
-此插件使用 `order: 'pre'`，代表它會在其他插件**之前**執行。這確保 Reset CSS 始終是第一個注入的前置樣式，讓你的其他樣式和插件得以建立在一致的基準線之上。
-
-插件內部運作流程：
-
-1. 在 `configureRawConfig` 鉤子期間讀取 `config.reset` 欄位
-2. 若未設定值，則回退至 `'modern-normalize'`
-3. 預設將 `config.layers.reset` 設為 `-1`，確保 reset layer 最先渲染
-4. 從內建的預設集檔案載入對應的 CSS 字串
-5. 在 `configureEngine` 鉤子期間透過 `engine.addPreflight({ layer: 'reset', preflight: resetCss })` 注入 CSS
-
-## 與其他插件搭配使用
-
-Reset 插件與其他 PikaCSS 插件自然地搭配使用。由於它以 `order: 'pre'` 執行，其樣式無論插件陣列順序為何，始終會最先被注入：
-
-<<< @/.examples/plugins/reset-with-other-plugins.ts
-
-## 型別擴增
-
-此插件擴增了 `@pikacss/core` 的 `EngineConfig`：
-
-<<< @/.examples/plugins/reset-engine-config-interface.ts
-
-這讓你在設定中指定 `reset` 選項時，能獲得完整的 TypeScript 自動完成功能。
-
-## 插件詳情
-
-| 屬性 | 值 |
-|----------|-------|
-| 插件名稱 | `'reset'` |
-| 順序 | `'pre'` |
-| 套件 | `@pikacss/plugin-reset` |
-| 預設預設集 | `'modern-normalize'` |
-
-## 下一步
-
-- [Icons 插件](/zh-TW/plugins/icons)
-- [Typography 插件](/zh-TW/plugins/typography)
-- [建立你自己的插件](/zh-TW/plugin-system/create-plugin)
+- [Typography](/zh-TW/plugins/typography)
+- [Configuration](/zh-TW/guide/configuration)
+- [Create A Plugin](/zh-TW/plugin-system/create-plugin)
+- [Common Problems](/zh-TW/troubleshooting/common-problems)

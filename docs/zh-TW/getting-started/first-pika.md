@@ -1,103 +1,62 @@
-# 第一個 Pika
+# First Pika
 
-在[安裝](/zh-TW/getting-started/installation)建置插件並匯入 `pika.css` 之後，你就可以開始使用 `pika(...)` 撰寫樣式了。
+這一頁的目標很簡單：先讓 `pika()` 成功跑通一次，看看輸出會長什麼樣子，也順便理解 engine 幫你做了哪些轉換。
 
-## 前置作業
+## Entry 設定
 
-請確保你已完成以下步驟：
+先在應用程式的 entry 匯入 virtual CSS module：
 
-1. 安裝 `@pikacss/unplugin-pikacss` 並在打包器設定中註冊插件。
-2. 在應用程式進入點中匯入 `pika.css`。
+<<< @/.examples/zh-TW/getting-started/first-pika-entry.ts
 
-<<< @/.examples/getting-started/first-pika-entry.ts
+## 最小 style definition
 
-## 最簡單的範例
+下面是最小但已經實用的 `pika()` 呼叫：
 
-`pika()` 是一個全域函式，接受以 camelCase CSS 屬性組成的樣式物件，並回傳可繫結至元素的 class 名稱。
+<<< @/.examples/zh-TW/getting-started/first-pika-basic.ts
 
-::: tip 全域函式 — 無需匯入
-`pika()` 由建置插件註冊為**全域函式**。你**不需要**匯入它 — 直接在任何原始碼檔案中使用即可。建置插件會在建置時期轉換符合條件的 `pika()` 呼叫，並以產生的 class 名稱取代它們。`pika.gen.ts` 檔案為編輯器自動補齊提供 TypeScript 型別宣告（透過 `declare global`），但它不是你匯入來源的模組。
-:::
+如果你使用的是 Vue，同樣的概念可以寫成這樣：
 
-::: code-group
-<<< @/.examples/getting-started/first-pika-basic.vue [Vue SFC]
-<<< @/.examples/getting-started/first-pika-basic.ts [Vanilla TS]
-:::
+<<< @/.examples/zh-TW/getting-started/first-pika-basic.vue
 
-## 建置時期的行為
+## 輸出最後會變成什麼
 
-PikaCSS 完全在建置時期運作 — **零執行期負擔**。當你執行建置時，PikaCSS 會：
+PikaCSS 不會在 runtime 保留這個 object。它會把這段呼叫轉成 atomic class names，並在 build 期間產生 CSS。
 
-1. **掃描**你的原始碼檔案，尋找 `pika(...)` 呼叫。
-2. **在建置時期求值**符合條件的樣式引數。
-3. **產生原子化 CSS 類別** — 每個 CSS 屬性值對成為各自的 class。
-4. **替換**每個 `pika(...)` 呼叫為對應的 class 名稱字串。
-5. **寫入**原子化 CSS 規則至產生的樣式表（`pika.gen.css`）。
+<<< @/.examples/zh-TW/getting-started/first-pika-output.css
 
-### 原始碼與編譯輸出
+## 多個 arguments 很正常
 
-原始碼中的 `pika()` 呼叫：
+你可以用多個 `pika()` arguments，把穩定的 base styles 和局部 overrides 分開。
 
-<<< @/.examples/getting-started/first-pika-basic.vue{3-12}
+<<< @/.examples/zh-TW/getting-started/first-pika-multiple-args.vue
 
-在輸出中被編譯為靜態 class 名稱：
+這種組合方式比把所有東西塞進同一個巨大 object 更容易維護，也更容易擴展。
 
-<<< @/.examples/getting-started/first-pika-compiled.html
+## String 與 array variants
 
-而產生的 `pika.gen.css` 每個屬性包含一個原子化規則：
+請選擇最符合你的 framework 與呼叫方式的輸出形式。
 
-<<< @/.examples/getting-started/first-pika-output.css
+<<< @/.examples/zh-TW/getting-started/first-pika-variants.ts
 
-::: tip 為什麼使用原子化 CSS？
-每個 CSS 屬性值對都被提取為**單一可重複使用的 class**。如果另一個元素也使用 `color: 'white'`，它將共用相同的 `.pk-d` class。這種去重複化機制讓樣式表隨著應用程式成長而保持精簡。
-:::
+## 巢狀 selectors 本來就是模型的一部分
 
-## 巢狀選擇器
+要加 pseudo states 或 at-rules 時，不需要跳出 style object 另外寫。
 
-樣式物件支援用於偽類別、媒體查詢和自訂選擇器的巢狀語法。將它們作為樣式物件的鍵進行巢狀 — PikaCSS 會將每個巢狀屬性編譯為各自的原子化 class。
+<<< @/.examples/zh-TW/getting-started/first-pika-nested.vue
 
-<<< @/.examples/getting-started/first-pika-nested.vue{12-18}
+<<< @/.examples/zh-TW/getting-started/first-pika-nested-output.css
 
-這將產生以下原子化 CSS：
+## 該做與不該做
 
-<<< @/.examples/getting-started/first-pika-nested-output.css
+| 該做 | 不該做 |
+| --- | --- |
+| 先從字面值 objects 和簡單組合開始。 | 一開始就塞進 dynamic expressions，之後再回頭 debug build 失敗。 |
+| 至少檢查一次產生的 CSS，讓整個模型更具體。 | 把 `pika()` 當成會讀取目前 state 的 runtime helper。 |
+| 用多個 arguments 分開 base styles 和 overrides。 | 把每個 variant 分支都塞進同一個超大的 style object。 |
 
-## 多個引數
+## Next
 
-`pika()` 接受多個引數（每個都是 `StyleItem`）。一個引數可以是**樣式物件**或**字串**（用於設定中定義的捷徑）。它們會按順序合併：
-
-<<< @/.examples/getting-started/first-pika-multiple-args.vue{5-12}
-
-## 輸出格式變體
-
-預設情況下，`pika()` 回傳以空格分隔的 class 名稱字串（例如 `"pk-a pk-b pk-c"`）。它也提供不同輸出格式的變體：
-
-<<< @/.examples/getting-started/first-pika-variants.ts
-
-| 變體 | 回傳型別 | 使用情境 |
-| --- | --- | --- |
-| `pika()` | 已設定值 | 預設（通常為 `string`） |
-| `pika.str()` | `string` | 強制使用空格分隔的字串 |
-| `pika.arr()` | `string[]` | 強制使用 class 名稱陣列 |
-
-### 使用 `pikap` 進行 IDE 預覽
-
-`pikap` 是偏向預覽用途的 `pika` 變體。它支援與 `pika()` 相同的呼叫形式，包含 `pikap.str()` 與 `pikap.arr()`，同時會在產生的 TypeScript 宣告中加入 IDE 內的 CSS 預覽提示。建置時期，`pikap(...)` 和 `pika(...)` 一樣都會被轉換移除，不會作為執行期 helper 留在正式版本中。
-
-## 設定（選用）
-
-PikaCSS 可以在零設定情況下運作，但你可以建立 `pika.config.ts`（或 `.js`、`.cjs`、`.mjs`、`.cts`、`.mts`）來自訂行為。使用 `defineEngineConfig()` 輔助函式以獲得完整的 TypeScript 自動補齊：
-
-<<< @/.examples/getting-started/first-pika-config.ts
-
-設定檔會由插件自動偵測。所有可用選項請參閱[設定](/zh-TW/guide/configuration)。
-
-## 為什麼這樣設計
-
-你保留了 **CSS-in-JS 的撰寫體驗** — 標準 CSS 屬性、TypeScript 自動補齊、物件組合 — 同時輸出**靜態 CSS**，無任何執行期樣式產生的負擔。
-
-## 下一步
-
-- [建置時期編譯](/zh-TW/principles/build-time-compile) — 深入了解編譯策略
-- [設定](/zh-TW/guide/configuration) — 自訂選擇器、捷徑、變數等
-- [內建插件](/zh-TW/guide/built-in-plugins) — 了解插件系統
+- [Static Arguments](/zh-TW/getting-started/static-arguments)
+- [How PikaCSS Works](/zh-TW/concepts/how-pikacss-works)
+- [Component Styling](/zh-TW/patterns/component-styling)
+- [Generated Files](/zh-TW/guide/generated-files)

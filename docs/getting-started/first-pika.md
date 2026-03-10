@@ -1,103 +1,62 @@
 # First Pika
 
-After [installing](/getting-started/installation) the build plugin and importing `pika.css`, you can start writing styles with `pika(...)`.
+The goal of this page is simple: get one successful `pika()` flow working, inspect the output, and understand what the engine transformed for you.
 
-## Prerequisites
+## Entry setup
 
-Make sure you have already:
-
-1. Installed `@pikacss/unplugin-pikacss` and registered the plugin in your bundler config.
-2. Imported `pika.css` in your application entry point.
+Import the virtual CSS module in your application entry:
 
 <<< @/.examples/getting-started/first-pika-entry.ts
 
-## A minimal first example
+## Minimal style definition
 
-`pika()` is a global function that accepts style objects with camelCase CSS properties. It returns class name(s) that you can bind to elements.
+This is the smallest useful `pika()` call:
 
-::: tip Global Function — No Import Needed
-`pika()` is registered as a **global function** by the build plugin. You do **not** need to import it — just use it directly in any source file. The build plugin transforms matched `pika()` calls at build time and replaces them with generated class names. The `pika.gen.ts` file provides TypeScript type declarations (via `declare global`) for editor autocomplete, but it is not a module you import from.
-:::
+<<< @/.examples/getting-started/first-pika-basic.ts
 
-::: code-group
-<<< @/.examples/getting-started/first-pika-basic.vue [Vue SFC]
-<<< @/.examples/getting-started/first-pika-basic.ts [Vanilla TS]
-:::
+If you are working in Vue, the same idea looks like this:
 
-## What happens at build time
+<<< @/.examples/getting-started/first-pika-basic.vue
 
-PikaCSS works entirely at build time — there is **zero runtime overhead**. When you run your build, PikaCSS:
+## What the output becomes
 
-1. **Scans** your source files for `pika(...)` calls.
-2. **Evaluates** the matched style arguments at build time.
-3. **Generates atomic CSS classes** — each CSS property-value pair becomes its own class.
-4. **Replaces** every `pika(...)` call with the resulting class name string(s).
-5. **Writes** the atomic CSS rules into the generated stylesheet (`pika.gen.css`).
-
-### Source vs. compiled output
-
-Your `pika()` call in source code:
-
-<<< @/.examples/getting-started/first-pika-basic.vue{3-12}
-
-Gets compiled to static class names in the output:
-
-<<< @/.examples/getting-started/first-pika-compiled.html
-
-And the generated `pika.gen.css` contains one atomic rule per property:
+PikaCSS does not keep this object around at runtime. It transforms the call into atomic class names and emits CSS during the build.
 
 <<< @/.examples/getting-started/first-pika-output.css
 
-::: tip Why atomic CSS?
-Each CSS property-value pair is extracted to a **single, reusable class**. If another element uses `color: 'white'`, it will share the same `.pk-d` class. This deduplication keeps the stylesheet small as your app grows.
-:::
+## Multiple arguments are normal
 
-## Nested selectors
+Use multiple `pika()` arguments to separate stable base styles from local overrides.
 
-Style objects support nested selectors for pseudo-classes, media queries, and custom selectors. Nest them as keys in the style object — PikaCSS compiles each nested property to its own atomic class.
+<<< @/.examples/getting-started/first-pika-multiple-args.vue
 
-<<< @/.examples/getting-started/first-pika-nested.vue{12-18}
+That composition pattern scales much better than one giant object.
 
-This produces the following atomic CSS:
+## String and array variants
 
-<<< @/.examples/getting-started/first-pika-nested-output.css
-
-## Multiple arguments
-
-`pika()` accepts multiple arguments (each is a `StyleItem`). An argument may be a **style object** or a **string** (for shortcuts defined in your config). They are merged in order:
-
-<<< @/.examples/getting-started/first-pika-multiple-args.vue{5-12}
-
-## Output format variants
-
-By default, `pika()` returns a space-separated string of class names (e.g. `"pk-a pk-b pk-c"`). It also exposes variants for different output formats:
+Use the output form that best matches your framework and calling style.
 
 <<< @/.examples/getting-started/first-pika-variants.ts
 
-| Variant       | Return type | Use case                                    |
-| ------------- | ----------- | ------------------------------------------- |
-| `pika()`      | Configured  | Default (usually `string`)                  |
-| `pika.str()`  | `string`    | Force space-separated string                |
-| `pika.arr()`  | `string[]`  | Force array of class names                  |
+## Nested selectors are part of the model
 
-### IDE preview with `pikap`
+You do not need to leave the style object when you add pseudo states or at-rules.
 
-`pikap` is a preview-oriented variant of `pika`. It supports the same call shapes as `pika()`, including `pikap.str()` and `pikap.arr()`, while enriching the generated TypeScript declarations with CSS preview tooltips in your IDE. At build time, `pikap(...)` calls are transformed away just like `pika(...)` calls, so they do not ship as runtime helpers.
+<<< @/.examples/getting-started/first-pika-nested.vue
 
-## Configuration (optional)
+<<< @/.examples/getting-started/first-pika-nested-output.css
 
-PikaCSS works with zero configuration, but you can create a `pika.config.ts` (or `.js`, `.cjs`, `.mjs`, `.cts`, `.mts`) to customize behavior. Use the `defineEngineConfig()` helper for full TypeScript autocomplete:
+## Do and do not
 
-<<< @/.examples/getting-started/first-pika-config.ts
-
-The config file is auto-detected by the plugin. See [Configuration](/guide/configuration) for all available options.
-
-## Why this matters
-
-You keep a **CSS-in-JS authoring experience** — standard CSS properties, TypeScript autocomplete, object composition — while shipping **static CSS output** with no runtime style generation overhead.
+| Do | Do not |
+| --- | --- |
+| Start with literal objects and simple composition. | Start with dynamic expressions and debug build failures later. |
+| Inspect generated CSS once so the model becomes concrete. | Treat `pika()` like a runtime helper that can read current state. |
+| Split base styles and overrides across multiple arguments. | Put every variant branch inside one massive style object. |
 
 ## Next
 
-- [Build-time Compile](/principles/build-time-compile) — understand the compile strategy in detail
-- [Configuration](/guide/configuration) — customize selectors, shortcuts, variables, and more
-- [Built-in Plugins](/guide/built-in-plugins) — learn about the plugin system
+- [Static Arguments](/getting-started/static-arguments)
+- [How PikaCSS Works](/concepts/how-pikacss-works)
+- [Component Styling](/patterns/component-styling)
+- [Generated Files](/guide/generated-files)

@@ -1,0 +1,30 @@
+/* 基礎樣式會拆成一組 atomic classes */
+.pk-a {
+  padding: 0.5em 1em;
+}
+.pk-b {
+  border-radius: 0.25em;
+}
+.pk-c {
+  border: none;
+}
+.pk-d {
+  background-color: #0ea5e9;
+}
+.pk-e {
+  color: white;
+}
+.pk-f {
+  cursor: pointer;
+}
+.pk-g {
+  transition: transform 0.2s ease;
+}
+
+/* Pseudo-selectors 也會拆成 atomic classes */
+.pk-h:hover {
+  transform: scale(1.05);
+}
+.pk-i:active {
+  transform: scale(0.95);
+}

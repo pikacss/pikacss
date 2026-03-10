@@ -1,164 +1,61 @@
-# 插件系統概覽
+# Plugin System Overview
 
-PikaCSS 擁有強大的插件系統，讓你能在每個階段擴充引擎行為——從設定解析到樣式生成。插件是透過 `defineEnginePlugin()` 輔助函式建立的純物件。
+PikaCSS plugins 是擴充 engine 的公開方式。它們讓你在不 fork core behavior 的前提下，調整 config、加入 selectors、variables、shortcuts、keyframes、preflights、autocomplete 與 style transforms。
 
-## EnginePlugin 介面
+## 這個章節適合誰
 
-每個插件都必須有 `name`，並可選擇性地定義 `order` 及鉤子函式：
+這個章節不是一般使用者採用路徑的一部分。當你想做下面這些事時，再來讀它：
 
-<<< @/.examples/plugin-system/overview-engine-plugin-interface.ts
+- 建立自己的 plugin
+- 理解官方 plugins 如何運作
+- 貢獻給 core 的公開 extension points
 
-## 最小插件
+## 什麼是 engine plugin
 
-最簡單的插件只需要一個 `name`：
+Plugins 是用 `defineEnginePlugin()` 建立的普通 objects。
 
-<<< @/.examples/plugin-system/overview-minimal-plugin.ts
+<<< @/.examples/zh-TW/plugin-system/overview-minimal-plugin.ts
 
-## 插件排序 {#plugin-ordering}
+完整介面會包含 `name`、可選的 `order`，以及可選的 lifecycle hooks。
 
-`order` 屬性控制插件鉤子相對於其他插件的執行時機：
+<<< @/.examples/zh-TW/plugin-system/overview-engine-plugin-interface.ts
 
-| `order` 值 | 優先級 | 執行時機 |
-|---|---|---|
-| `'pre'` | 0 | 最先 |
-| `undefined`（預設值）| 1 | 一般 |
-| `'post'` | 2 | 最後 |
+## 用一句話理解 plugin lifecycle
 
-在相同優先級群組內，插件依照註冊順序執行。PikaCSS 的內建核心插件（例如 `core:variables`、`core:keyframes`、`core:selectors`、`core:shortcuts`、`core:important`）會在使用者插件之前載入，接著所有插件一起排序。
+Plugins 可以影響 raw config、resolved config、engine setup、style-item transforms、selector transforms、style-definition transforms，以及數個通知節點。
 
-<<< @/.examples/plugin-system/overview-plugin-order.ts
+## 怎麼看待 hooks
 
-## 鉤子生命週期 {#hook-lifecycle}
+- 當你需要在 resolution 之前修改 user config，請用 `configureRawConfig`
+- 當你需要先讓 defaults 穩定下來，再處理事情，請用 `configureResolvedConfig`
+- 當你想呼叫 `engine.selectors.add()` 或 `engine.addPreflight()` 這類 engine APIs，請用 `configureEngine`
+- 當你需要改寫 style processing 本身時，才使用 transform hooks
+- 當你只是需要觀察變化時，才使用 notification hooks
 
-在 `createEngine(config)` 期間，鉤子依此順序呼叫：
+## 排序規則
 
-```text
-createEngine(config)
-│
-├─ 1. configureRawConfig    (async)  — Modify the raw config
-├─ 2. rawConfigConfigured   (sync)   — Notification: raw config settled
-├─ 3. configureResolvedConfig (async) — Modify the resolved config
-├─ 4. configureEngine        (async)  — Modify/set up the engine instance
-│
-└─ Engine is ready
-   │
-   ├─ During engine.use(...):
-   │   ├─ 5. transformStyleItems       (async) — Transform style items
-   │   ├─ 6. transformSelectors        (async) — Transform selectors
-   │   └─ 7. transformStyleDefinitions (async) — Transform style definitions
-   │
-   ├─ When preflights change:
-   │   └─ 8. preflightUpdated          (sync)  — Notification
-   │
-   ├─ When atomic style is generated:
-   │   └─ 9. atomicStyleAdded          (sync)  — Notification
-   │
-   └─ When autocomplete config changes:
-       └─ 10. autocompleteConfigUpdated (sync)  — Notification
-```
+Plugins 會依照 `pre`、預設、再到 `post` 的順序執行。
 
-鉤子 1–4 在引擎建立期間只執行一次。鉤子 5–10 則在對應事件發生時於執行期執行。
+<<< @/.examples/zh-TW/plugin-system/overview-plugin-order.ts
 
-## 非同步鉤子（轉換）{#async-hooks}
+Built-in plugins 會先於 user plugins 執行，所以 `order` 只能控制你相對於其他 user plugins 的位置，無法把你排到 core internals 前面。
 
-非同步鉤子接收一個 payload，並可**回傳修改後的版本**。修改後的 payload 接著會傳遞給下一個插件。若鉤子回傳 `void` 或 `undefined`，則當前 payload 保持不變。
+## Plugin authors 一開始就該知道的事
 
-<<< @/.examples/plugin-system/overview-async-hook.ts
+1. Built-in plugin config 與 external plugins 是兩套不同機制。
+2. 像 selectors 與 shortcuts 這種由 resolver 支撐的功能，本來就已經暴露了 engine APIs。
+3. Preflights 與 layers 很有用，但它們會影響全域輸出，必須謹慎使用。
+4. Module augmentation 會直接改變使用者看到的 TypeScript 體驗，因此應該保持有意識。
 
-### `configureRawConfig`
+## 建議學習路徑
 
-- **時機**：`createEngine()` 期間，設定解析之前
-- **接收**：`config: EngineConfig` — 使用者的原始設定
-- **回傳**：`EngineConfig | void`
-- **用途**：在解析前新增插件、修改前綴、新增前置樣式或設定任何設定選項
+1. 先從 [Create A Plugin](/zh-TW/plugin-system/create-plugin) 開始。
+2. 接著閱讀 [Hook Execution](/zh-TW/plugin-system/hook-execution)。
+3. 把官方 plugins 當成參考實作。
 
-### `configureResolvedConfig`
+## Next
 
-- **時機**：`createEngine()` 期間，設定解析之後
-- **接收**：`resolvedConfig: ResolvedEngineConfig` — 已完全解析的設定
-- **回傳**：`ResolvedEngineConfig | void`
-- **用途**：修改已解析的值，如自動補齊設定或前置樣式清單
-
-### `configureEngine`
-
-- **時機**：`createEngine()` 期間，引擎實例建立之後
-- **接收**：`engine: Engine` — 引擎實例
-- **回傳**：`Engine | void`
-- **用途**：設定執行期功能、新增前置樣式、配置自動補齊，或將自訂屬性附加至引擎
-
-### `transformSelectors`
-
-- **時機**：樣式提取期間（由 `engine.use()` 及前置樣式渲染觸發）
-- **接收**：`selectors: string[]` — 正在處理的選擇器鏈
-- **回傳**：`string[] | void`
-- **用途**：重寫、擴展或替換選擇器（例如將 `$hover` 對應至 `&:hover`）
-
-### `transformStyleItems`
-
-- **時機**：`engine.use()` 期間，樣式項目解析之前
-- **接收**：`styleItems: ResolvedStyleItem[]` — 樣式項目清單
-- **回傳**：`ResolvedStyleItem[] | void`
-- **用途**：新增、移除或轉換樣式項目（例如展開捷徑）
-
-### `transformStyleDefinitions`
-
-- **時機**：樣式提取期間，處理巢狀樣式定義時
-- **接收**：`styleDefinitions: ResolvedStyleDefinition[]` — 樣式定義清單
-- **回傳**：`ResolvedStyleDefinition[] | void`
-- **用途**：在提取為原子化樣式之前修改樣式定義物件
-
-## 同步鉤子（通知）{#sync-hooks}
-
-同步鉤子主要用於通知——它們告知插件某件事已發生。雖然鉤子執行器在內部會把非 nullish 的回傳值傳給下一個插件，但引擎使用這些鉤子的目的仍以觀察事件為主，而非一般性的 payload 轉換。
-
-<<< @/.examples/plugin-system/overview-sync-hook.ts
-
-### `rawConfigConfigured`
-
-- **時機**：`createEngine()` 期間，`configureRawConfig` 完成後
-- **接收**：`config: EngineConfig` — 已確定的原始設定
-- **用途**：讀取最終的原始設定（例如快取值以供其他鉤子後續使用）
-
-### `preflightUpdated`
-
-- **時機**：每當前置樣式被新增或修改時
-- **接收**：無
-- **用途**：回應前置樣式變更（例如觸發重新建構）
-
-### `atomicStyleAdded`
-
-- **時機**：每當新的原子化樣式被生成並儲存時
-- **接收**：`atomicStyle: AtomicStyle` — `{ id: string, content: StyleContent }`
-- **用途**：追蹤或記錄已生成的原子化樣式
-
-### `autocompleteConfigUpdated`
-
-- **時機**：每當自動補齊設定變更時
-- **接收**：無
-- **用途**：回應自動補齊變更（例如重建補齊資料）
-
-## 鉤子執行模型 {#execution-model}
-
-所有鉤子——包含非同步與同步——都遵循相同的執行規則：
-
-1. **插件順序**：鉤子依排序順序逐一執行（`pre` → 預設 → `post`）
-2. **Payload 串聯**：若插件回傳非 nullish 的值，該值會取代傳遞給下一個插件的 payload。實務上，這主要影響設定與轉換類的非同步鉤子。
-3. **錯誤隔離**：若插件的鉤子拋出錯誤，錯誤會被捕捉並記錄。執行繼續進行到下一個插件——單一插件失敗不會中斷整個鏈
-4. **跳過**：若插件未定義特定鉤子，則直接跳過
-
-## 完整範例 {#complete-example}
-
-使用所有可用鉤子的完整插件：
-
-<<< @/.examples/plugin-system/overview-full-plugin.ts
-
-## 原始碼參考
-
-- `packages/core/src/internal/plugin.ts` — `EnginePlugin` 介面、`defineEnginePlugin`、鉤子執行、插件排序
-- `packages/core/src/internal/engine.ts` — `createEngine`、引擎生命週期中的鉤子呼叫
-
-## 下一步
-
-- 繼續閱讀[建立插件](/zh-TW/plugin-system/create-plugin)，取得建立自訂插件的逐步指南
-- 查看[內建插件](/zh-TW/guide/built-in-plugins)
-- 對照[設定](/zh-TW/guide/configuration)
+- [Create A Plugin](/zh-TW/plugin-system/create-plugin)
+- [Hook Execution](/zh-TW/plugin-system/hook-execution)
+- [Built-in Plugins](/zh-TW/guide/built-in-plugins)
+- [Contributor Architecture](/zh-TW/contributors/architecture)

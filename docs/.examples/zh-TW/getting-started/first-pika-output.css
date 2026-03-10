@@ -1,0 +1,22 @@
+/* 每個 CSS property 都會變成獨立的 atomic class */
+.pk-a {
+  padding: 0.5rem 1rem;
+}
+.pk-b {
+  border-radius: 0.5rem;
+}
+.pk-c {
+  background-color: #0ea5e9;
+}
+.pk-d {
+  color: white;
+}
+.pk-e {
+  border: none;
+}
+.pk-f {
+  cursor: pointer;
+}
+.pk-g {
+  font-size: 1rem;
+}

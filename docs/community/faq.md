@@ -1,119 +1,54 @@
 # FAQ
 
-## What is Atomic CSS?
+## Is `pika()` a runtime function?
 
-Atomic CSS is a strategy where each CSS class contains exactly **one** CSS property-value pair. When you write styles with PikaCSS, they are decomposed into these small atomic classes. Multiple elements that share the same property-value pair reuse the same class, leading to smaller CSS output as your project grows.
+No. It is build-time input. The call is scanned and transformed during the build.
 
-**Input:**
+## Why do static arguments matter so much?
+
+Because static input is what allows PikaCSS to generate deterministic atomic CSS, deduplicate declarations, and provide generated autocomplete.
+
+See [Static Arguments](/getting-started/static-arguments).
+
+## Is PikaCSS just another utility CSS framework?
+
+No. The output is atomic CSS, but the authoring model is style-definition based. You write style objects and plugin-driven config, not only predefined utility class tokens.
 
 <<< @/.examples/community/faq-atomic-input.ts
 
-**Generated CSS:**
-
 <<< @/.examples/community/faq-atomic-output.css
 
-## How are class names generated?
+## Does class token order decide the final result?
 
-PikaCSS assigns each unique property-value-selector combination a short class name using a base-52 encoding (`a`–`z`, `A`–`Z`). By default, the engine prepends the `pk-` prefix, so the first atomic style becomes `pk-a`, the second `pk-b`, and so on. After 52 classes, names become `pk-aa`, `pk-ba`, etc. Set `prefix: ''` in your engine config if you want bare IDs such as `a`, `b`, and `c`.
+Not by itself.
 
-## Why does PikaCSS recommend static `pika(...)` arguments?
+When atomic declarations have the same specificity, the browser still resolves conflicts by stylesheet declaration order. That is why overlapping utilities can produce surprising results in many atomic systems.
 
-PikaCSS works entirely at build time. The integration transform finds `pika(...)` calls via regex and evaluates their argument expressions using `new Function('return [...]')`. In practice, the recommended usage is to keep arguments in a literal-only subset so the build stays predictable and side-effect free. That is also the subset enforced by `@pikacss/eslint-config`.
+PikaCSS detects overlapping property effects and keeps later overlapping declarations order-sensitive, so local author order stays meaningful where it actually affects the cascade.
 
-**✅ This works:**
+See [Atomic Order And Cascade](/concepts/atomic-order-and-cascade).
 
-<<< @/.examples/community/faq-static-ok.ts
+## Can I use nested selectors?
 
-**❌ This does NOT work:**
-
-<<< @/.examples/community/faq-static-bad.ts
-
-## What does "zero runtime" mean?
-
-PikaCSS does all its work during the build step. Every `pika(...)` call is replaced with the generated class name string (or array) at build time, and the corresponding CSS is written to a generated file. Your production bundle contains **no PikaCSS runtime code** — only plain class name strings and a standard CSS file.
-
-## Can I use both camelCase and kebab-case for CSS properties?
-
-Yes. PikaCSS accepts both formats. Internally, camelCase properties are converted to kebab-case. Both produce identical atomic classes.
-
-<<< @/.examples/community/faq-case.ts
-
-## Does PikaCSS support nested selectors?
-
-Yes. You can nest pseudo-classes, pseudo-elements, media queries, and custom selectors inside your style definitions:
+Yes. Nested selectors are part of the normal style-definition model.
 
 <<< @/.examples/community/faq-nested.ts
 
-## Do I need to import `pika()`?
+## Should I keep zero-config forever?
 
-No. `pika()` is a **global function** — you use it directly in any source file without importing it. The build plugin finds all matched `pika()` calls via source transforms and replaces them with generated class names at build time. The `pika.gen.ts` file provides TypeScript autocomplete through `declare global`, but it is not a module to import from. You should never write `import { pika } from '...'`.
+Usually no. Zero-config is a fast starting point. Real projects should centralize selectors, variables, shortcuts, and plugin usage in config.
 
-## Why do I need to import `pika.css`?
+## Should I edit `pika.gen.ts` or `pika.gen.css`?
 
-The unplugin handles a virtual module ID matching `pika.css` and resolves it to the generated CSS codegen file. Importing `pika.css` in your entry file is how the generated CSS is pulled into the bundler's module graph. Note that this is a **CSS import** (for stylesheets), not a JavaScript import for the `pika` function.
+No. Generated files are output artifacts. Fix config or source instead.
 
-## Why is a config file auto-created?
+## When should I use the ESLint integration?
 
-When no config file is found and `autoCreateConfig` is `true` (the default), the integration writes a new `pika.config.js` (or your specified path) seeded with a `defineEngineConfig({})` template. This ensures the TypeScript reference path for autocomplete is set up correctly from the start.
-
-## Can I disable config auto-creation?
-
-Yes. Set `autoCreateConfig: false` in the plugin options. When no config exists, the integration logs a warning and continues with the default engine configuration.
-
-## Which build tools are supported?
-
-PikaCSS works with all major JavaScript bundlers through `@pikacss/unplugin-pikacss`:
-
-| Build Tool | Import Path |
-|---|---|
-| Vite | `@pikacss/unplugin-pikacss/vite` |
-| Rollup | `@pikacss/unplugin-pikacss/rollup` |
-| Webpack | `@pikacss/unplugin-pikacss/webpack` |
-| esbuild | `@pikacss/unplugin-pikacss/esbuild` |
-| Rspack | `@pikacss/unplugin-pikacss/rspack` |
-| Rolldown | `@pikacss/unplugin-pikacss/rolldown` |
-
-Additionally, **Nuxt** is supported via the dedicated `@pikacss/nuxt-pikacss` module.
-
-## What are the built-in plugins?
-
-The core engine includes 5 built-in plugins that are always active. You configure them through `defineEngineConfig()` fields — no extra installation needed:
-
-| Plugin | Purpose |
-|---|---|
-| `important` | Adds `!important` to selected styles |
-| `variables` | Defines CSS custom properties with preflight generation |
-| `keyframes` | Defines `@keyframes` animations with optional unused pruning |
-| `selectors` | Registers custom selector shorthands |
-| `shortcuts` | Defines reusable style shortcut strings |
-
-## Which plugin hooks are available?
-
-Hooks are executed on all registered plugins in order (`pre` → default → `post`):
-
-| Hook | Type | Description |
-|---|---|---|
-| `configureRawConfig` | async | Modify raw config before resolution |
-| `rawConfigConfigured` | sync | Called after raw config is set (read-only) |
-| `configureResolvedConfig` | async | Modify resolved config |
-| `configureEngine` | async | Modify the engine instance after creation |
-| `transformSelectors` | async | Transform selector strings |
-| `transformStyleItems` | async | Transform style items before extraction |
-| `transformStyleDefinitions` | async | Transform style definitions |
-| `preflightUpdated` | sync | Called when preflights change |
-| `atomicStyleAdded` | sync | Called when a new atomic style is registered |
-| `autocompleteConfigUpdated` | sync | Called when autocomplete config changes |
-
-## How are plugin execution order conflicts resolved?
-
-Plugins are sorted by their `order` property: `'pre'` runs first, default (no `order`) runs in the middle, and `'post'` runs last. This ordering applies to both built-in and user plugins.
-
-## Why does generated CSS only include styles that are used?
-
-The variable and keyframe systems have a `pruneUnused` option (defaults to `true`). When enabled, preflight generation only emits variables and keyframes that are actually referenced by the atomic styles in use. This keeps the CSS output minimal.
+As early as possible. It prevents invalid runtime-style habits from spreading through the codebase.
 
 ## Next
 
-- Back to [Plugin System Overview](/plugin-system/overview)
-- Revisit [Build-time Compile](/principles/build-time-compile)
-- Read [What is PikaCSS](/getting-started/what-is-pikacss)
+- [Static Arguments](/getting-started/static-arguments)
+- [Common Problems](/troubleshooting/common-problems)
+- [Configuration](/guide/configuration)
+- [Plugin System Overview](/plugin-system/overview)
