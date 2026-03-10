@@ -61,6 +61,7 @@ Each package: `src/index.ts` entry · co-located tests (`src/foo.ts` → `src/fo
 - All content (code, comments, docs, commits) in **English**
 - Conversation language should remain consistent with the user's choice, including specific variants (e.g. Simplified Chinese vs. Traditional Chinese (Taiwan))
 - When in doubt or anything feels unclear, ask questions instead of guessing; use the ask‑questions mechanism to get my input.
+- In `tests`, `docs`, and `src` directories, do **not** reference absolute file system paths.
 
 ## Key APIs
 
