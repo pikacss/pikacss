@@ -1,6 +1,6 @@
 import { createEngine, log } from '@pikacss/core'
 import { $fetch } from 'ofetch'
-
+import { resolve } from 'pathe'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { icons } from './index'
 
@@ -8,7 +8,7 @@ vi.mock('ofetch', () => ({
 	$fetch: vi.fn(),
 }))
 
-const docsWorkspace = '/Users/deviltea/Documents/Programming/pikacss/docs'
+const docsWorkspace = resolve(__dirname, '../../../docs')
 
 async function createIconsEngine(config: Parameters<typeof createEngine>[0] = {}) {
 	return createEngine({
