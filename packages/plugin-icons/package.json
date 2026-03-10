@@ -50,7 +50,6 @@
 	},
 	"dependencies": {
 		"@iconify/utils": "catalog:",
-		"@unocss/preset-icons": "catalog:",
 		"ofetch": "catalog:"
 	},
 	"devDependencies": {

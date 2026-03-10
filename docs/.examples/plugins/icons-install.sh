@@ -1,1 +1,1 @@
-pnpm add @pikacss/plugin-icons @iconify/utils
+pnpm add @pikacss/plugin-icons @iconify-json/mdi

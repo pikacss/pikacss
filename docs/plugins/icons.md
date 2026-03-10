@@ -1,16 +1,18 @@
 # Icons Plugin
 
-`@pikacss/plugin-icons` lets you use any icon from [Iconify](https://iconify.design/) as an atomic CSS class — powered by `@iconify/utils` and `@unocss/preset-icons`. Icons are resolved at build time and embedded as optimized CSS data URIs with zero runtime cost.
+`@pikacss/plugin-icons` lets you use any icon from [Iconify](https://iconify.design/) as an atomic CSS class through a native Iconify integration built for PikaCSS. Icons are resolved at build time and embedded as optimized CSS data URIs with zero runtime cost.
 
 ## Installation
 
-The plugin requires `@iconify/utils` as a peer dependency:
+Install the plugin and at least one local Iconify collection for the icons you use:
 
 ::: code-group
 <<< @/.examples/plugins/icons-install.sh [pnpm]
 <<< @/.examples/plugins/icons-install-npm.sh [npm]
 <<< @/.examples/plugins/icons-install-yarn.sh [yarn]
 :::
+
+Local collections are resolved from `node_modules` first. When you prefer remote loading, configure `cdn` as a fallback source.
 
 ## Basic Setup
 
@@ -92,16 +94,17 @@ This plugin augments `EngineConfig` with an `icons` field:
 
 <<< @/.examples/plugins/icons-engine-config-interface.ts
 
-`IconsConfig` extends `@unocss/preset-icons` options (excluding `warn`, `layer`, and `customFetcher`) with PikaCSS-specific additions:
+`IconsConfig` is owned by `@pikacss/plugin-icons` and exposes native Iconify-oriented options:
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `scale` | `number` | `1` | Icon scale factor |
 | `mode` | `'auto' \| 'mask' \| 'bg'` | `'auto'` | Default rendering mode |
 | `prefix` | `string \| string[]` | `'i-'` | Class name prefix for icon shortcuts |
-| `collections` | `Record<string, IconifyJSON \| (() => Awaitable<IconifyJSON>)>` | — | Custom icon collections |
+| `collections` | `CustomCollections` | — | Custom SVG collections or loaders |
 | `customizations` | `IconCustomizations` | — | Transform icons (rotate, resize, etc.) |
 | `autoInstall` | `boolean` | `false` | Auto-install icon packages on demand |
+| `cwd` | `string \| string[]` | `process.cwd()` | Resolve local Iconify JSON packages from specific paths |
 | `cdn` | `string` | — | CDN base URL for loading icons |
 | `unit` | `string` | — | CSS unit for icon dimensions (e.g., `'em'`) |
 | `extraProperties` | `Record<string, string>` | — | Extra CSS properties for every icon |
@@ -112,7 +115,7 @@ This plugin augments `EngineConfig` with an `icons` field:
 
 1. The plugin registers a dynamic shortcut matching the regex pattern `/^(?:i-)([\w:-]+)(?:\?(mask|bg|auto))?$/`
 2. When a matching shortcut is resolved, it parses the icon name (`collection:name` format)
-3. The SVG is loaded via `@iconify/utils` and `@unocss/preset-icons` loaders
+3. The SVG is resolved in this order: custom collections, local Iconify JSON packages, then `cdn` fallback when configured
 4. The SVG is encoded as a CSS data URI and stored as a CSS variable (`--<prefix>svg-icon-...`) marked with `pruneUnused: true`
 5. Based on the resolved mode, it generates either mask-based or background-based CSS properties
 

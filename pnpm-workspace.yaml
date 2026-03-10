@@ -22,7 +22,6 @@ catalog:
   '@shikijs/vitepress-twoslash': ^3.23.0
   '@types/micromatch': ^4.0.10
   '@types/node': ^24.10.14
-  '@unocss/preset-icons': ^66.6.1
   '@vitejs/plugin-vue': ^6.0.4
   '@vitest/coverage-v8': ^4.0.18
   alien-signals: ^3.1.2

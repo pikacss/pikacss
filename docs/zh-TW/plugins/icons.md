@@ -1,16 +1,18 @@
 # Icons 插件
 
-`@pikacss/plugin-icons` 讓你可以使用 [Iconify](https://iconify.design/) 上的任何圖示作為原子化 CSS class——由 `@iconify/utils` 和 `@unocss/preset-icons` 提供支援。圖示在建置時期解析並以優化的 CSS data URI 嵌入，零執行期開銷。
+`@pikacss/plugin-icons` 讓你可以使用 [Iconify](https://iconify.design/) 上的任何圖示作為原子化 CSS class，並透過專為 PikaCSS 設計的原生 Iconify 整合來解析。圖示在建置時期解析並以優化的 CSS data URI 嵌入，零執行期開銷。
 
 ## 安裝
 
-此插件需要 `@iconify/utils` 作為 peer dependency：
+安裝插件後，另外加入至少一個本機 Iconify collection 供實際使用的圖示來源：
 
 ::: code-group
 <<< @/.examples/plugins/icons-install.sh [pnpm]
 <<< @/.examples/plugins/icons-install-npm.sh [npm]
 <<< @/.examples/plugins/icons-install-yarn.sh [yarn]
 :::
+
+本機 collection 會優先從 `node_modules` 解析；如果你想允許遠端抓取，再額外設定 `cdn` 作為 fallback。
 
 ## 基本設定
 
@@ -92,16 +94,17 @@
 
 <<< @/.examples/plugins/icons-engine-config-interface.ts
 
-`IconsConfig` 繼承 `@unocss/preset-icons` 的選項（排除 `warn`、`layer` 和 `customFetcher`），並加入 PikaCSS 特定的項目：
+`IconsConfig` 由 `@pikacss/plugin-icons` 自行定義，暴露以原生 Iconify 為中心的設定選項：
 
 | 選項 | 型別 | 預設值 | 說明 |
 | --- | --- | --- | --- |
 | `scale` | `number` | `1` | 圖示縮放係數 |
 | `mode` | `'auto' \| 'mask' \| 'bg'` | `'auto'` | 預設渲染模式 |
 | `prefix` | `string \| string[]` | `'i-'` | 圖示 shortcut 的 class 名稱前綴 |
-| `collections` | `Record<string, IconifyJSON \| (() => Awaitable<IconifyJSON>)>` | — | 自訂圖示 collection |
+| `collections` | `CustomCollections` | — | 自訂 SVG collection 或 loader |
 | `customizations` | `IconCustomizations` | — | 轉換圖示（旋轉、調整大小等） |
 | `autoInstall` | `boolean` | `false` | 依需求自動安裝圖示套件 |
+| `cwd` | `string \| string[]` | `process.cwd()` | 從指定路徑解析本機 Iconify JSON 套件 |
 | `cdn` | `string` | — | 載入圖示的 CDN 基底 URL |
 | `unit` | `string` | — | 圖示尺寸的 CSS 單位（例如 `'em'`） |
 | `extraProperties` | `Record<string, string>` | — | 每個圖示的額外 CSS 屬性 |
@@ -112,7 +115,7 @@
 
 1. 插件註冊一個符合 regex 模式 `/^(?:i-)([\w:-]+)(?:\?(mask|bg|auto))?$/` 的動態 shortcut
 2. 當符合的 shortcut 被解析時，它會解析圖示名稱（`collection:name` 格式）
-3. SVG 透過 `@iconify/utils` 和 `@unocss/preset-icons` 載入器載入
+3. SVG 會依序從自訂 collections、本機 Iconify JSON 套件，最後才是已設定的 `cdn` fallback 解析
 4. SVG 被編碼為 CSS data URI 並儲存為 CSS 變數（`--<prefix>svg-icon-...`），標記為 `pruneUnused: true`
 5. 根據解析的模式，產生以 mask 為基礎或以背景為基礎的 CSS 屬性
 

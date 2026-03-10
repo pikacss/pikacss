@@ -11,6 +11,8 @@ export default defineEngineConfig({
 		mode: 'mask',
 		// Shortcut prefix (default: 'i-')
 		prefix: 'i-',
+		// Resolve local Iconify JSON packages from the workspace root
+		cwd: process.cwd(),
 		// Auto-install icon packages on demand
 		autoInstall: true,
 		// Extra CSS properties applied to every icon
@@ -20,7 +22,7 @@ export default defineEngineConfig({
 		},
 		// CSS unit for width/height (e.g., 'em', 'rem')
 		unit: 'em',
-		// CDN URL for loading icons (optional)
-		// cdn: 'https://esm.sh/',
+		// CDN fallback for unresolved collections (optional)
+		// cdn: 'https://cdn.example.com/icons/{collection}.json',
 	},
 })

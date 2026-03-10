@@ -1,1 +1,1 @@
-yarn add @pikacss/plugin-icons @iconify/utils
+yarn add @pikacss/plugin-icons @iconify-json/mdi
