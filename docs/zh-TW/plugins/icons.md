@@ -49,6 +49,12 @@
 
 <<< @/.examples/zh-TW/plugins/icons-custom-collections.ts
 
+如果你想把自己的 SVG 檔案放在專案裡，也可以把 custom collection 指到指定目錄，並維持同樣的 `i-collection:name` 命名模型。
+
+這是透過 Iconify 的 filesystem loader 完成的，所以應該放在 Vite、Nuxt 或 PikaCSS CLI 這類 Node-based build environment 裡設定。
+
+<<< @/.examples/zh-TW/plugins/icons-directory-collection.ts
+
 ## Next
 
 - [Reset](/zh-TW/plugins/reset)

@@ -49,6 +49,12 @@ This is valuable because icons become part of the same static authoring surface 
 
 <<< @/.examples/plugins/icons-custom-collections.ts
 
+If you want to keep your own SVG files in the repository, you can point a custom collection at a directory and keep using the same `i-collection:name` naming model.
+
+This uses Iconify's filesystem loader, so it should be configured in a Node-based build environment such as Vite, Nuxt, or the PikaCSS CLI.
+
+<<< @/.examples/plugins/icons-directory-collection.ts
+
 ## Next
 
 - [Reset](/plugins/reset)
