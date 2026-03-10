@@ -7,7 +7,6 @@ export default defineConfig({
 			enabled: true,
 			exclude: [
 				'**/*.config.*',
-				'**/index.*',
 				'**/docs/**',
 				'**/scripts/**',
 				'**/dist/**',
