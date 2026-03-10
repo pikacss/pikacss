@@ -36,6 +36,7 @@
 	],
 	"scripts": {
 		"generate:csstype": "tsx ./scripts/generate-csstype.ts",
+		"generate:property-effects": "tsx ./scripts/generate-property-effects.ts",
 		"build": "tsdown && pnpm exec publint",
 		"build:watch": "tsdown --watch",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",

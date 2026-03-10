@@ -8,6 +8,7 @@ import { keyframes } from './plugins/keyframes'
 import { selectors } from './plugins/selectors'
 import { shortcuts } from './plugins/shortcuts'
 import { variables } from './plugins/variables'
+import { hasPropertyEffectOverlap } from './property-effects'
 import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	isPropertyValue,	log,	numberToChars,	renderCSSStyleBlocks,	serialize, toKebab } from './utils'
 
 export const DEFAULT_PREFLIGHTS_LAYER = 'preflights'
@@ -441,15 +442,20 @@ export function getAtomicStyleId({
 	prefix: string
 	stored: Map<string, string>
 }) {
-	const key = serialize([content.selector, content.property, content.value])
-	const cached = stored.get(key)
-	if (cached != null) {
-		log.debug(`Atomic style cached: ${cached}`)
-		return cached
+	const baseKey = serialize([content.selector, content.property, content.value])
+	if (content.orderSensitive !== true) {
+		const cached = stored.get(baseKey)
+		if (cached != null) {
+			log.debug(`Atomic style cached: ${cached}`)
+			return cached
+		}
 	}
 
 	const num = stored.size
 	const id = `${prefix}${numberToChars(num)}`
+	const key = content.orderSensitive === true
+		? serialize([baseKey, 'order-sensitive', num])
+		: baseKey
 	stored.set(key, id)
 	log.debug(`Generated new atomic style ID: ${id}`)
 	return id
@@ -457,15 +463,30 @@ export function getAtomicStyleId({
 
 export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
 	const map = new Map<string, StyleContent>()
+	const scopedEntries = new Map<string, Map<string, StyleContent>>()
 	list.forEach((content) => {
+		const scopeKey = serialize(content.selector)
 		const key = serialize([content.selector, content.property])
+		const scoped = scopedEntries.get(scopeKey) || new Map<string, StyleContent>()
+		scopedEntries.set(scopeKey, scoped)
 
 		map.delete(key)
+		scoped.delete(key)
 
 		if (content.value == null)
 			return
 
-		map.set(key, { ...content } as StyleContent)
+		const { selector, property, value } = content
+		const nextContent: StyleContent = { selector, property, value }
+		for (const existing of scoped.values()) {
+			if (hasPropertyEffectOverlap(existing.property, property)) {
+				nextContent.orderSensitive = true
+				break
+			}
+		}
+
+		map.set(key, nextContent)
+		scoped.set(key, nextContent)
 	})
 	return [...map.values()]
 }

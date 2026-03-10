@@ -369,6 +369,21 @@ describe('getAtomicStyleId', () => {
 		expect(id1).not.toBe(id3)
 		expect(id2).not.toBe(id3)
 	})
+
+	it('should always generate a fresh id for order-sensitive content', () => {
+		const stored = new Map<string, string>()
+		const content: StyleContent = {
+			selector: ['.%'],
+			property: 'padding-left',
+			value: ['8px'],
+			orderSensitive: true,
+		}
+		const id1 = getAtomicStyleId({ content, prefix: '', stored })
+		const id2 = getAtomicStyleId({ content, prefix: '', stored })
+		expect(id1).not.toBe(id2)
+		expect(stored.size)
+			.toBe(2)
+	})
 })
 
 // ─── optimizeAtomicStyleContents ─────────────────────────────────────────────
@@ -491,6 +506,117 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(2)
+	})
+
+	it('should mark later shorthand and longhand overlaps as order-sensitive', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'padding', value: ['16px'] },
+			{ selector: ['.%'], property: 'padding-left', value: ['8px'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(2)
+		expect(result[0]!.orderSensitive)
+			.toBeUndefined()
+		expect(result[1]!.orderSensitive)
+			.toBe(true)
+	})
+
+	it('should mark later shorthand overlaps for aggregate families', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'background-color', value: ['red'] },
+			{ selector: ['.%'], property: 'background', value: ['blue'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(2)
+		expect(result[1]!.orderSensitive)
+			.toBe(true)
+	})
+
+	it('should mark later overlaps for patched shorthand families', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'overflow-x', value: ['hidden'] },
+			{ selector: ['.%'], property: 'overflow', value: ['auto'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(2)
+		expect(result[1]!.orderSensitive)
+			.toBe(true)
+	})
+
+	it('should keep non-overlapping properties reusable', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'margin', value: ['16px'] },
+			{ selector: ['.%'], property: 'padding-left', value: ['8px'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(2)
+		expect(result.every(content => content.orderSensitive !== true))
+			.toBe(true)
+	})
+
+	it('should mark every later step in a shorthand chain as order-sensitive', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'border-top-width', value: ['1px'] },
+			{ selector: ['.%'], property: 'border-top', value: ['solid red'] },
+			{ selector: ['.%'], property: 'border', value: ['2px solid blue'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(3)
+		expect(result[0]!.orderSensitive)
+			.toBeUndefined()
+		expect(result[1]!.orderSensitive)
+			.toBe(true)
+		expect(result[2]!.orderSensitive)
+			.toBe(true)
+	})
+
+	it('should mark later steps in reverse shorthand chain as order-sensitive', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'border', value: ['2px solid blue'] },
+			{ selector: ['.%'], property: 'border-top', value: ['solid red'] },
+			{ selector: ['.%'], property: 'border-top-width', value: ['1px'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(3)
+		expect(result[0]!.orderSensitive)
+			.toBeUndefined()
+		expect(result[1]!.orderSensitive)
+			.toBe(true)
+		expect(result[2]!.orderSensitive)
+			.toBe(true)
+	})
+
+	it('should mark later declarations when all appears in the chain', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: 'color', value: ['red'] },
+			{ selector: ['.%'], property: 'all', value: ['unset'] },
+			{ selector: ['.%'], property: 'background-color', value: ['blue'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(3)
+		expect(result[1]!.orderSensitive)
+			.toBe(true)
+		expect(result[2]!.orderSensitive)
+			.toBe(true)
+	})
+
+	it('should keep custom properties exact-only in the same chain', () => {
+		const list: ExtractedStyleContent[] = [
+			{ selector: ['.%'], property: '--brand-color', value: ['red'] },
+			{ selector: ['.%'], property: 'color', value: ['blue'] },
+		]
+		const result = optimizeAtomicStyleContents(list)
+		expect(result)
+			.toHaveLength(2)
+		expect(result.every(content => content.orderSensitive !== true))
+			.toBe(true)
 	})
 })
 
@@ -881,6 +1007,65 @@ describe('engine.use', () => {
 		const ids1 = await engine.use({ color: 'red' })
 		const ids2 = await engine.use({ color: 'blue' })
 		expect(ids1).not.toEqual(ids2)
+	})
+
+	it('should not reuse later overlapping atomic styles across calls', async () => {
+		const engine = await createEngine()
+		const ids1 = await engine.use({ padding: '16px', paddingLeft: '8px' })
+		const ids2 = await engine.use({ padding: '24px', paddingLeft: '8px' })
+		expect(ids1)
+			.toHaveLength(2)
+		expect(ids2)
+			.toHaveLength(2)
+		expect(ids1[1]).not.toBe(ids2[1])
+	})
+
+	it('should keep reusing identical non-overlapping atomic styles across calls', async () => {
+		const engine = await createEngine()
+		const ids1 = await engine.use({ margin: '16px', paddingLeft: '8px' })
+		const ids2 = await engine.use({ margin: '24px', paddingLeft: '8px' })
+		expect(ids1)
+			.toHaveLength(2)
+		expect(ids2)
+			.toHaveLength(2)
+		expect(ids1[1])
+			.toBe(ids2[1])
+	})
+
+	it('should not reuse later chain declarations across calls', async () => {
+		const engine = await createEngine()
+		const ids1 = await engine.use({ borderTopWidth: '1px', borderTop: 'solid red', border: '2px solid blue' })
+		const ids2 = await engine.use({ borderTopWidth: '4px', borderTop: 'solid red', border: '2px solid blue' })
+		expect(ids1)
+			.toHaveLength(3)
+		expect(ids2)
+			.toHaveLength(3)
+		expect(ids1[1]).not.toBe(ids2[1])
+		expect(ids1[2]).not.toBe(ids2[2])
+	})
+
+	it('should keep collision detection scoped by selector shape across calls', async () => {
+		const engine = await createEngine()
+		const ids1 = await engine.use({ 'padding': '16px', '&:hover': { paddingLeft: '8px' } })
+		const ids2 = await engine.use({ 'padding': '24px', '&:hover': { paddingLeft: '8px' } })
+		expect(ids1)
+			.toHaveLength(2)
+		expect(ids2)
+			.toHaveLength(2)
+		expect(ids1[1])
+			.toBe(ids2[1])
+	})
+
+	it('should keep collision detection scoped by layer across calls', async () => {
+		const engine = await createEngine()
+		const ids1 = await engine.use({ padding: '16px', __layer: 'components' } as any, { paddingLeft: '8px' })
+		const ids2 = await engine.use({ padding: '24px', __layer: 'components' } as any, { paddingLeft: '8px' })
+		expect(ids1)
+			.toHaveLength(2)
+		expect(ids2)
+			.toHaveLength(2)
+		expect(ids1[1])
+			.toBe(ids2[1])
 	})
 
 	it('should handle multiple properties in one call', async () => {
