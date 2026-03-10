@@ -30,6 +30,8 @@ For source-level type accuracy, `VariableObject.value` is typed as `ResolvedCSSP
 
 For the same reason, `autocomplete.asValueOf` accepts a CSS property name, an array of property names, the wildcard `'*'`, or `'-'` to disable CSS value autocomplete for that variable entirely.
 
+`autocomplete.asProperty` controls whether the variable name is exposed as an extra CSS property suggestion in autocomplete. Set it to `false` for variables that should only be suggested as values.
+
 ## Basic Usage
 
 Define variables in your `pika.config.ts`. Top-level variables are placed under `:root` by default:
@@ -86,7 +88,7 @@ The `engine.variables.store` is a `Map<string, ResolvedVariable[]>` holding all 
 | Default selector | `:root` (for top-level variables) |
 | `pruneUnused` default | `true` |
 | `autocomplete.asValueOf` default | `['*']` |
-| `autocomplete.asProperty` default | `true` |
+| `autocomplete.asProperty` default | `true` — expose the variable name as an extra CSS property suggestion |
 | Null-value variables | Registered for autocomplete only, not emitted to CSS |
 | Detection | Scans atomic style values for `var(--name)` patterns (transitive) |
 

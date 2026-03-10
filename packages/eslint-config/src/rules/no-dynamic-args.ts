@@ -2,10 +2,11 @@ import type { Rule } from 'eslint'
 import { buildFnNamePatterns, getCalleeName } from '../utils/fn-names'
 
 /**
- * Check if a node is a statically analyzable expression.
- * PikaCSS requires all arguments to pika() to be evaluatable at build time
- * via `new Function('return ...')`. This means only literals, object/array
- * literals with static values, and specific patterns are allowed.
+ * Check whether a node belongs to the lint-safe subset enforced by this rule.
+ *
+ * The transformer evaluates matched arguments at build time, but this rule is
+ * intentionally stricter: it only allows literals and recursively static
+ * object/array structures so builds stay predictable and side-effect free.
  */
 function isStaticNode(node: any): boolean {
 	switch (node.type) {
@@ -86,18 +87,32 @@ function getDynamicReason(node: any): string {
 	}
 }
 
+function reportDynamicNode(
+	context: Rule.RuleContext,
+	node: any,
+	messageId: 'noDynamicArg' | 'noDynamicProperty' | 'noDynamicSpread' | 'noDynamicComputedKey',
+	fnName: string,
+	reason?: string,
+) {
+	context.report({
+		node,
+		messageId,
+		data: reason == null ? { fnName } : { fnName, reason },
+	})
+}
+
 const rule: Rule.RuleModule = {
 	meta: {
 		type: 'problem',
 		docs: {
-			description: 'Disallow dynamic (non-static) arguments in PikaCSS function calls. PikaCSS evaluates arguments at build time, so all values must be statically analyzable.',
+			description: 'Disallow dynamic arguments in PikaCSS calls when enforcing the predictable static subset recommended for build-time transforms.',
 			url: 'https://github.com/pikacss/pikacss/blob/main/packages/eslint-plugin/docs/rules/no-dynamic-args.md',
 		},
 		messages: {
-			noDynamicArg: 'PikaCSS build-time violation: {{ reason }}. All arguments to {{ fnName }}() must be static literals (strings, numbers, objects with literal values) that can be evaluated at build time.',
-			noDynamicProperty: 'PikaCSS build-time violation: {{ reason }}. All property values in {{ fnName }}() arguments must be static literals.',
-			noDynamicSpread: 'PikaCSS build-time violation: Spread of dynamic value is not allowed in {{ fnName }}() arguments. Only spread of static object literals is permitted.',
-			noDynamicComputedKey: 'PikaCSS build-time violation: Computed property key {{ reason }}. Only static computed keys are allowed in {{ fnName }}() arguments.',
+			noDynamicArg: 'PikaCSS static-subset violation: {{ reason }}. All arguments to {{ fnName }}() must stay within the predictable literal subset enforced by this rule.',
+			noDynamicProperty: 'PikaCSS static-subset violation: {{ reason }}. All property values in {{ fnName }}() arguments must stay within the predictable literal subset enforced by this rule.',
+			noDynamicSpread: 'PikaCSS static-subset violation: Spread of dynamic value is not allowed in {{ fnName }}() arguments. Only spread of static object literals is permitted.',
+			noDynamicComputedKey: 'PikaCSS static-subset violation: Computed property key {{ reason }}. Only static computed keys are allowed in {{ fnName }}() arguments.',
 		},
 		schema: [
 			{
@@ -105,7 +120,7 @@ const rule: Rule.RuleModule = {
 				properties: {
 					fnName: {
 						type: 'string',
-						description: 'The base function name to detect. Defaults to \'pika\'. All variants (pika, pika.str, pika.arr, pikap, pikap.str, pikap.arr, etc.) are automatically derived.',
+						description: 'The base function name to detect. Defaults to \'pika\'. Dot access and static bracket-access variants are derived automatically.',
 					},
 				},
 				additionalProperties: false,
@@ -117,6 +132,43 @@ const rule: Rule.RuleModule = {
 		const options = context.options[0] as { fnName?: string } | undefined
 		const { allNames } = buildFnNamePatterns(options?.fnName)
 
+		function validateObjectExpression(argNode: any, fnName: string): void {
+			for (const prop of argNode.properties) {
+				if (prop.type === 'SpreadElement') {
+					if (!isStaticNode(prop.argument))
+						reportDynamicNode(context, prop, 'noDynamicSpread', fnName)
+					continue
+				}
+
+				if (prop.computed && !isStaticNode(prop.key)) {
+					reportDynamicNode(context, prop.key, 'noDynamicComputedKey', fnName, getDynamicReason(prop.key))
+				}
+
+				if (!isStaticNode(prop.value)) {
+					if (prop.value.type === 'ObjectExpression' || prop.value.type === 'ArrayExpression') {
+						validateArg(prop.value, fnName)
+					}
+					else {
+						reportDynamicNode(context, prop.value, 'noDynamicProperty', fnName, getDynamicReason(prop.value))
+					}
+				}
+			}
+		}
+
+		function validateArrayExpression(argNode: any, fnName: string): void {
+			for (const el of argNode.elements) {
+				if (el === null)
+					continue
+				if (el.type === 'SpreadElement') {
+					if (!isStaticNode(el.argument))
+						reportDynamicNode(context, el, 'noDynamicSpread', fnName)
+					continue
+				}
+				if (!isStaticNode(el))
+					validateArg(el, fnName)
+			}
+		}
+
 		/**
 		 * Report non-static nodes within a pika() argument, with specific
 		 * messages depending on the position (top-level arg, property value,
@@ -126,82 +178,17 @@ const rule: Rule.RuleModule = {
 			if (isStaticNode(argNode))
 				return
 
-			// For object expressions, drill into properties to give specific reports
 			if (argNode.type === 'ObjectExpression') {
-				for (const prop of argNode.properties) {
-					if (prop.type === 'SpreadElement') {
-						if (!isStaticNode(prop.argument)) {
-							context.report({
-								node: prop,
-								messageId: 'noDynamicSpread',
-								data: { fnName },
-							})
-						}
-						continue
-					}
-					// Check computed key
-					if (prop.computed && !isStaticNode(prop.key)) {
-						context.report({
-							node: prop.key,
-							messageId: 'noDynamicComputedKey',
-							data: {
-								reason: getDynamicReason(prop.key),
-								fnName,
-							},
-						})
-					}
-					// Check property value
-					if (!isStaticNode(prop.value)) {
-						if (prop.value.type === 'ObjectExpression' || prop.value.type === 'ArrayExpression') {
-							// Recurse into nested objects/arrays
-							validateArg(prop.value, fnName)
-						}
-						else {
-							context.report({
-								node: prop.value,
-								messageId: 'noDynamicProperty',
-								data: {
-									reason: getDynamicReason(prop.value),
-									fnName,
-								},
-							})
-						}
-					}
-				}
+				validateObjectExpression(argNode, fnName)
 				return
 			}
 
-			// For array expressions, check each element
 			if (argNode.type === 'ArrayExpression') {
-				for (const el of argNode.elements) {
-					if (el === null)
-						continue
-					if (el.type === 'SpreadElement') {
-						if (!isStaticNode(el.argument)) {
-							context.report({
-								node: el,
-								messageId: 'noDynamicSpread',
-								data: { fnName },
-							})
-						}
-						continue
-					}
-					if (!isStaticNode(el)) {
-						validateArg(el, fnName)
-					}
-				}
+				validateArrayExpression(argNode, fnName)
 				return
 			}
 
-			// Top-level non-static argument
-			context.report({
-				node: argNode,
-				messageId: 'noDynamicArg',
-				data: {
-					reason: getDynamicReason(argNode),
-					fnName,
-				},
-			})
+			reportDynamicNode(context, argNode, 'noDynamicArg', fnName, getDynamicReason(argNode))
 		}
 
 		function checkCallExpression(node: any): void {
@@ -215,11 +202,7 @@ const rule: Rule.RuleModule = {
 			for (const arg of node.arguments) {
 				if (arg.type === 'SpreadElement') {
 					if (!isStaticNode(arg.argument)) {
-						context.report({
-							node: arg,
-							messageId: 'noDynamicSpread',
-							data: { fnName: displayFnName },
-						})
+						reportDynamicNode(context, arg, 'noDynamicSpread', displayFnName)
 					}
 					continue
 				}

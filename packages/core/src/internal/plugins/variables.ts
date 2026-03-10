@@ -13,7 +13,7 @@ export interface VariableAutocomplete {
 	 */
 	asValueOf?: Arrayable<UnionString | '*' | '-' | ResolvedCSSProperty>
 	/**
-	 * Whether to add the variable as a CSS property.
+	 * Whether to expose the variable name as an extra CSS property in autocomplete.
 	 *
 	 * @default true
 	 */
@@ -72,6 +72,11 @@ export interface VariablesConfig {
 	 * ```ts
 	 * {
 	 *   variables: {
+	 *     variables: {
+	 *       '--external-var': null,
+	 *       '--color-bg': '#fff',
+	 *       '--color-text': '#000',
+	 *     },
 	 *     safeList: ['--external-var', '--color-bg', '--color-text'],
 	 *   },
 	 * }

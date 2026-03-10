@@ -1,6 +1,6 @@
 # ESLint 設定
 
-PikaCSS 提供一個 ESLint 設定套件，用於強制執行 `pika()` 函式呼叫的建置時期限制。它確保所有引數都是**靜態可分析的**——防止使用執行期值、變數或動態表達式，以免破壞 PikaCSS 的建置時期編譯。
+PikaCSS 提供一個 ESLint 設定套件，用於強制執行 `pika()` 函式呼叫的「可預測靜態子集合」。轉換器會在建置時期求值符合條件的引數，而這條規則的目標，是把 `pika()` 的使用限制在 literal-only 的範圍內，讓建置流程更明確且避免副作用。
 
 此套件為 **ESLint 9+** 提供一個即用型 flat config 預設。它無法與舊版 `.eslintrc` 設定搭配使用。
 
@@ -23,7 +23,7 @@ PikaCSS 提供一個 ESLint 設定套件，用於強制執行 `pika()` 函式呼
 
 <<< @/.examples/integrations/eslint-basic-config.mjs
 
-這會自動套用 `pikacss/no-dynamic-args: 'error'` 規則，驗證所有 `pika()` 呼叫只使用靜態的、建置時期可求值的引數。
+這會自動套用 `pikacss/no-dynamic-args: 'error'` 規則，驗證所有 `pika()` 呼叫都維持在這條規則強制的可預測 literal 子集合中。
 
 ::: tip 簡潔性
 新的 flat config 格式將設定從 5+ 行精簡至僅 2 行。`pikacss()` 函式回傳一個預設定好的 ESLint 設定物件，可直接用於設定陣列。
@@ -56,9 +56,9 @@ PikaCSS 提供一個 ESLint 設定套件，用於強制執行 `pika()` 函式呼
 
 ### `pikacss/no-dynamic-args`
 
-**禁止在 PikaCSS 函式呼叫中使用動態（非靜態）引數。**
+**禁止在 ESLint 規則所要求的較嚴格靜態子集合中，使用動態引數。**
 
-PikaCSS 在建置時期使用 `new Function('return ...')` 求值所有 `pika()` 引數。這表示引數必須是**靜態可分析的**——只允許字面值、包含靜態值的物件/陣列字面值，以及靜態展開。
+PikaCSS 會在建置時期求值符合條件的 `pika()` 引數，而這條規則刻意採用更窄、更可預測的限制：字面值、包含靜態值的物件/陣列字面值、靜態展開，以及其他可遞迴驗證的靜態結構。
 
 **有效**（靜態）：
 
@@ -72,9 +72,9 @@ PikaCSS 在建置時期使用 `new Function('return ...')` 求值所有 `pika()`
 
 <<< @/.examples/integrations/eslint-error-output.txt
 
-### 何謂「靜態可分析」？
+### 這條規則允許什麼？
 
-一個表達式若可在建置時期求值而無需執行應用程式執行期程式碼，則為靜態可分析的。這包括：
+當一個表達式維持在可由 AST 直接判斷的 literal-only 子集合內時，就會被這條規則接受。這包括：
 
 - **字面值**：`'red'`、`16`、`-1`、`null`、`` `red` ``
 - **物件字面值**：`{ color: 'red', fontSize: 16 }`
@@ -83,7 +83,7 @@ PikaCSS 在建置時期使用 `new Function('return ...')` 求值所有 `pika()`
 - **靜態展開**：`{ ...{ color: 'red' } }`（靜態物件字面值的展開）
 - **一元表達式**：`-1`、`+2`
 
-以下**不是**靜態可分析的：
+以下會被這條規則拒絕：
 
 - **變數**：`pika({ color: myColor })`
 - **函式呼叫**：`pika({ color: getColor() })`
@@ -94,12 +94,12 @@ PikaCSS 在建置時期使用 `new Function('return ...')` 求值所有 `pika()`
 - **動態展開**：`pika({ ...baseStyles })`
 - **動態計算鍵**：`pika({ [key]: 'value' })`
 
-::: info Boolean 字面值
-`true` 與 `false` 在 JavaScript AST 層級確實屬於字面值，因此在語法上是靜態的。但它們不是文件化支援的 PikaCSS CSS 屬性值，因此不應把 boolean 視為受支援的樣式引數。這條規則主要檢查的是建置時可分析性，而不是完整的 CSS 值語意。
+::: info 規則的範圍
+這條規則刻意比轉換器本身更嚴格。它的目的不是列出轉換器在技術上「可能」於建置時求值的所有表達式，而是讓團隊與 CI 中的 `pika()` 使用維持可預測。
 :::
 
 ::: tip 為何有此限制？
-PikaCSS 在建置時期而非執行期編譯樣式。所有值都必須在打包期間已知，引擎才能提取並產生原子化 CSS class。概念性詳細說明請參閱[建置時期編譯](/zh-TW/principles/build-time-compile)。
+PikaCSS 在建置時期而非執行期編譯樣式。將引數限制在 literal-only 子集合中，可讓轉換更容易推理，也能避免意外的建置時期副作用。概念性詳細說明請參閱[建置時期編譯](/zh-TW/principles/build-time-compile)。
 :::
 
 ## 設定
@@ -114,6 +114,7 @@ PikaCSS 在建置時期而非執行期編譯樣式。所有值都必須在打包
 
 - `css()`、`cssp()`
 - `css.str()`、`css.arr()`
+- `css['str']()`、`css['arr']()`
 - `cssp.str()`、`cssp.arr()`
 
 使用 `recommended()` 函式時也可傳入選項：
@@ -121,20 +122,21 @@ PikaCSS 在建置時期而非執行期編譯樣式。所有值都必須在打包
 <<< @/.examples/integrations/eslint-recommended-with-options.mjs
 
 ::: info 預設值
-預設情況下，`fnName` 為 `'pika'`，可偵測 `pika()`、`pikap()`、`pika.str()`、`pika.arr()` 及預覽變體。
+預設情況下，`fnName` 為 `'pika'`，可偵測 `pika()`、`pikap()`、`pika.str()`、`pika.arr()`，以及對應的靜態 bracket-access 變體。
 :::
 
 ## 運作原理
 
-ESLint 設定套件分析原始碼的抽象語法樹（AST），以偵測對 `pika()`（或變體如 `pika.str()`、`pikap()` 等）的呼叫。對每個偵測到的呼叫：
+ESLint 設定套件分析原始碼的抽象語法樹（AST），以偵測對 `pika()`（或變體如 `pika.str()`、`pika['str']()`、`pikap()` 等）的呼叫。對每個偵測到的呼叫：
 
 1. **遍歷引數**：規則遞迴地檢查每個引數節點及其巢狀結構（物件屬性、陣列元素、展開操作）。
-2. **檢查靜態限制**：對每個值節點，規則驗證它是否符合允許的靜態規則之一（字面值、包含靜態值的物件字面值等）。
-3. **回報違規**：若發現非靜態表達式，規則會回報一個 ESLint 錯誤，說明該值不是靜態可分析的原因。
+2. **檢查 literal 子集合**：對每個值節點，規則驗證它是否符合允許的靜態規則之一（字面值、包含靜態值的物件字面值等）。
+3. **回報違規**：若發現非靜態表達式，規則會回報一個 ESLint 錯誤，說明該節點為何落在這條規則的靜態子集合之外。
 
 套件會根據基本 `fnName` 選項自動推導所有函式名稱變體：
 - 一般：`pika`、`pika.str`、`pika.arr`
 - 預覽：`pikap`、`pikap.str`、`pikap.arr`
+- 靜態 bracket access：`pika['str']`、`pika['arr']` 以及對應的預覽變體
 
 這確保了全面的覆蓋範圍，無需手動設定每個變體。
 

@@ -28,7 +28,7 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 
 | 工具 | 套件 | 用途 |
 |---|---|---|
-| **ESLint** | `@pikacss/eslint-config` | 強制執行 `pika()` 呼叫的建置時期限制 |
+| **ESLint** | `@pikacss/eslint-config` | 強制執行 `pika()` 呼叫建議使用的可預測靜態子集合 |
 
 [ESLint 插件 →](/zh-TW/integrations/eslint)
 
@@ -78,6 +78,8 @@ PikaCSS 也提供開發者工具，用於在開發期間強制執行最佳實踐
 - **`pika.gen.css`** — 包含所有提取的原子化 CSS 規則。這是虛擬模組所使用的實際 CSS 輸出。
 - **`pika.gen.ts`** — 提供 TypeScript 型別擴充，用於 `pika()` 呼叫的自動補齊和型別檢查（自訂選擇器、捷徑、變數等）。
 
+對標準 adapter 而言，這個工作目錄通常就是你的專案根目錄。若是像 Nuxt 這樣的 wrapper，或是基於 `createCtx()` 自行建立的整合，則可以改用不同的 `cwd`，因此產生檔案的位置會跟著整合上下文改變。
+
 你應該將這兩個檔案加入 `.gitignore`：
 
 <<< @/.examples/integrations/generated-files.gitignore
@@ -117,7 +119,7 @@ PikaCSS 提供一個名為 `pika.css` 的虛擬模組，它會解析至產生的
 
 - 自動以 `enforce: 'pre'` 註冊 Vite 插件
 - 透過 Nuxt 插件樣板注入 `import 'pika.css'`——無需手動匯入
-- 將 `scan.include` 預設為 `['**/*.vue', '**/*.tsx', '**/*.jsx']`
+- 在未明確覆寫時，使用與 unplugin 相同的預設 `scan.include`
 - 在 `nuxt.config.ts` 的 `pikacss` 設定鍵下公開選項
 
 <<< @/.examples/integrations/nuxt-setup.ts

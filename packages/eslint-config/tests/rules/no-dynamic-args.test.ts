@@ -52,6 +52,12 @@ describe('no-dynamic-args', () => {
 				// String variant
 				`pika.str({ color: 'red' })`,
 
+				// String variant with bracket access
+				`pika['str']({ color: 'red' })`,
+
+				// Array variant with template literal property access
+				'pika[`arr`]({ color: \'red\' })',
+
 				// Array variant
 				`pika.arr({ color: 'red' })`,
 
@@ -140,6 +146,12 @@ describe('no-dynamic-args', () => {
 					errors: [{ messageId: 'noDynamicProperty' }],
 				},
 
+				// ===== INVALID: pika['str'] variant =====
+				{
+					code: `pika['str']({ color: getColor() })`,
+					errors: [{ messageId: 'noDynamicProperty' }],
+				},
+
 				// ===== INVALID: pikap variant =====
 				{
 					code: `pikap({ color: someVar })`,
@@ -206,6 +218,10 @@ describe('no-dynamic-args', () => {
 					options: [{ fnName: 'css' }],
 				},
 				{
+					code: `css['str']({ color: 'red' })`,
+					options: [{ fnName: 'css' }],
+				},
+				{
 					code: `cssp({ color: 'red' })`,
 					options: [{ fnName: 'css' }],
 				},
@@ -232,6 +248,11 @@ describe('no-dynamic-args', () => {
 				},
 				{
 					code: `css.str({ color: someVar })`,
+					options: [{ fnName: 'css' }],
+					errors: [{ messageId: 'noDynamicProperty' }],
+				},
+				{
+					code: `css['str']({ color: someVar })`,
 					options: [{ fnName: 'css' }],
 					errors: [{ messageId: 'noDynamicProperty' }],
 				},

@@ -29,7 +29,7 @@ features:
     details: 以合理的預設值開箱即用。PikaCSS 會在需要時自動探索或建立設定檔 — 無需任何樣板程式碼。
   - icon: 🧠
     title: 靜態可分析性優先
-    details: 樣式引數在建置時期透過 `new Function(...)` 進行求值，因此必須是靜態可分析的。無需學習任何自訂語法。
+    details: 樣式引數會在建置時期透過 `new Function(...)` 進行求值，而建議的工作方式是將它們維持在 literal-only 的子集合中。團隊可透過 ESLint 套件強制執行這個子集合。
   - icon: 🤖
     title: TypeScript 自動補齊
     details: 完整型別化的樣式撰寫體驗，並附有產生的自動補齊支援。CSS 屬性、值、選擇器以及插件定義的 token 全都具備型別安全。

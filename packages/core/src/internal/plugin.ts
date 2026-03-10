@@ -25,51 +25,77 @@ type GetHooksNames<
 type SyncHooksNames = GetHooksNames<'sync'>
 type AsyncHooksNames = GetHooksNames<'async'>
 
+function getPluginHook(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) {
+	const pluginRecord = plugin as unknown as Record<string, unknown>
+	const hookFn = pluginRecord[hook]
+	return typeof hookFn === 'function'
+		? hookFn as (arg: unknown) => unknown
+		: null
+}
+
+function applyHookPayload(current: unknown, next: unknown) {
+	return next != null ? next : current
+}
+
+function logHookStart(kind: 'Sync' | 'Async', hook: keyof EngineHooksDefinition) {
+	log.debug(`Executing ${kind.toLowerCase()} hook: ${hook}`)
+}
+
+function logHookEnd(kind: 'Sync' | 'Async', hook: keyof EngineHooksDefinition) {
+	log.debug(`${kind} hook "${hook}" completed`)
+}
+
+function logPluginHookStart(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) {
+	log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
+}
+
+function logPluginHookEnd(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) {
+	log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
+}
+
+function logPluginHookError(plugin: EnginePlugin, hook: keyof EngineHooksDefinition, error: unknown) {
+	log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
+}
+
 export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: AsyncHooksNames, payload: P): Promise<P> {
-	log.debug(`Executing async hook: ${hook}`)
+	logHookStart('Async', hook)
 	let current: unknown = payload
 	for (const plugin of plugins) {
-		const pluginRecord = plugin as unknown as Record<string, unknown>
-		if (pluginRecord[hook] == null)
+		const hookFn = getPluginHook(plugin, hook)
+		if (hookFn == null)
 			continue
 
 		try {
-			log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
-			const hookFn = pluginRecord[hook] as (arg: unknown) => unknown
-			const newPayload = await hookFn(current)
-			if (newPayload != null)
-				current = newPayload
-			log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
+			logPluginHookStart(plugin, hook)
+			current = applyHookPayload(current, await hookFn(current))
+			logPluginHookEnd(plugin, hook)
 		}
 		catch (error: unknown) {
-			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
+			logPluginHookError(plugin, hook, error)
 		}
 	}
-	log.debug(`Async hook "${hook}" completed`)
+	logHookEnd('Async', hook)
 	return current as P
 }
 
 export function execSyncHook<P>(plugins: readonly EnginePlugin[], hook: SyncHooksNames, payload: P): P {
-	log.debug(`Executing sync hook: ${hook}`)
+	logHookStart('Sync', hook)
 	let current: unknown = payload
 	for (const plugin of plugins) {
-		const pluginRecord = plugin as unknown as Record<string, unknown>
-		if (pluginRecord[hook] == null)
+		const hookFn = getPluginHook(plugin, hook)
+		if (hookFn == null)
 			continue
 
 		try {
-			log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
-			const hookFn = pluginRecord[hook] as (arg: unknown) => unknown
-			const newPayload = hookFn(current)
-			if (newPayload != null)
-				current = newPayload
-			log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
+			logPluginHookStart(plugin, hook)
+			current = applyHookPayload(current, hookFn(current))
+			logPluginHookEnd(plugin, hook)
 		}
 		catch (error: unknown) {
-			log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
+			logPluginHookError(plugin, hook, error)
 		}
 	}
-	log.debug(`Sync hook "${hook}" completed`)
+	logHookEnd('Sync', hook)
 	return current as P
 }
 

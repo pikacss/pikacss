@@ -28,7 +28,7 @@ PikaCSS also provides developer tooling to enforce best practices and catch erro
 
 | Tool | Package | Purpose |
 |---|---|---|
-| **ESLint** | `@pikacss/eslint-config` | Enforce build-time constraints on `pika()` calls |
+| **ESLint** | `@pikacss/eslint-config` | Enforce the predictable static subset recommended for `pika()` calls |
 
 [ESLint Plugin →](/integrations/eslint)
 
@@ -78,6 +78,8 @@ The plugin generates two files in its working directory during build:
 - **`pika.gen.css`** — Contains all extracted atomic CSS rules. This is the actual CSS output consumed by the virtual module.
 - **`pika.gen.ts`** — Provides TypeScript type augmentation for autocomplete and type-checking of `pika()` calls (custom selectors, shortcuts, variables, etc.).
 
+For the standard adapters, the working directory is your project root. Wrappers such as Nuxt, or custom integrations built on `createCtx()`, can set a different `cwd`, so the generated files follow that integration context instead.
+
 You should add both files to your `.gitignore`:
 
 <<< @/.examples/integrations/generated-files.gitignore
@@ -117,7 +119,7 @@ The `@pikacss/nuxt-pikacss` package wraps the Vite plugin as a Nuxt module. It:
 
 - Automatically registers the Vite plugin with `enforce: 'pre'`
 - Injects `import 'pika.css'` via a Nuxt plugin template — no manual import needed
-- Defaults `scan.include` to `['**/*.vue', '**/*.tsx', '**/*.jsx']`
+- Uses the same default `scan.include` as unplugin unless you override it explicitly
 - Exposes options under the `pikacss` config key in `nuxt.config.ts`
 
 <<< @/.examples/integrations/nuxt-setup.ts

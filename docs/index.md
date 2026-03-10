@@ -28,8 +28,8 @@ features:
     title: Zero Config by Default
     details: Start with sensible defaults. PikaCSS auto-discovers or creates a config file when needed — no boilerplate required.
   - icon: 🧠
-    title: Static Analyzability First
-    details: Style arguments are evaluated at build time via `new Function(...)`, so they must be statically analyzable. No custom syntax to learn.
+    title: Predictable Build-time Input
+    details: Style arguments are evaluated at build time via `new Function(...)`, and the recommended workflow keeps them in a literal-only subset. The ESLint package can enforce that subset for teams.
   - icon: 🤖
     title: TypeScript Auto-Completion
     details: Full typed style authoring with generated autocomplete support. CSS properties, values, selectors, and plugin-defined tokens are all type-safe.

@@ -99,9 +99,10 @@ PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js
 它與 layer 設定的互動方式如下：
 
 - `config.layers` 定義有順序的已知 layer 名稱清單。PikaCSS 會將你的項目合併到內建預設值 `{ preflights: 1, utilities: 10 }` 之上。
-- `defaultUtilitiesLayer` 控制未指定 `__layer` 的原子化樣式會渲染到哪裡。預設為 `utilities`。
+- `defaultUtilitiesLayer` 控制未指定 `__layer` 的原子化樣式優先渲染到哪裡。預設為 `utilities`。
 - `__layer` 只會影響目前這個樣式定義，不會全域改變 `defaultUtilitiesLayer`。
 - 若 `__layer` 使用的名稱不存在於 `config.layers` 中，該樣式會回退為未分 layer 的輸出，而不會自動建立新的有序 layer。
+- 若 `defaultUtilitiesLayer` 指定的名稱不存在於 `config.layers` 中，未分 layer 的 utility 樣式會回退到最後一個已設定的 layer。
 
 若要改變未分 layer 的 utility 樣式預設輸出位置，請將 `defaultUtilitiesLayer` 設定為你已知 layer 名稱之一：
 
@@ -113,6 +114,7 @@ PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js
 - **預設值：** `'preflights'`
 
 未明確指定 `layer` 屬性的前置樣式（preflights）所放入的 CSS `@layer`。
+若此 layer 名稱不存在於 `config.layers` 中，這些前置樣式會保持未分 layer 的輸出。
 
 ### `defaultUtilitiesLayer`
 
@@ -120,6 +122,7 @@ PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js
 - **預設值：** `'utilities'`
 
 未明確指定 `__layer` 的原子化工具樣式，預設會放入的 CSS `@layer`。
+若此 layer 名稱不存在於 `config.layers` 中，引擎會回退到最後一個已設定的 layer。
 
 ## Core Plugin 設定
 
@@ -155,6 +158,8 @@ PikaCSS 會從整合的工作目錄自動偵測符合 `{pika,pikacss}.config.{js
 原始碼中的 `VariableObject.value` 型別是 `ResolvedCSSProperties[`--${string}`]`，因此變數值會與引擎解析後的 CSS 自訂屬性型別保持一致。
 
 `VariablesDefinition` 也支援巢狀選擇器鍵（例如 `'[data-theme="dark"]'`），可將變數作用域設定在 `:root` 之外。使用 `safeList` 時，每個項目都必須是像 `--color-text` 這樣的 CSS 變數名稱。原始碼型別中的 `& {}` 交集是為了避免 TypeScript 將自訂屬性名稱拓寬成一般 `string`。
+
+當你使用 `VariableObject.autocomplete.asProperty` 時，它控制的是是否要在自動補齊中，把變數名稱當作額外的 CSS 屬性建議顯示。若某個 token 希望像屬性捷徑一樣被使用，可保留 `true`；若它只應該作為值出現，則設為 `false`。
 
 <<< @/.examples/guide/config-variables.ts
 

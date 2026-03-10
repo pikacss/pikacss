@@ -75,5 +75,16 @@ describe('unpluginPika', () => {
 			expect(resolved)
 				.toBe('/tmp/pika.gen.custom.css')
 		})
+
+		it('should resolve virtual CSS module relative to the resolved vite root', async () => {
+			const plugin = unpluginFactory({ config: {}, cssCodegen: true }, { framework: 'vite' } as any) as UnpluginOptions & {
+				vite?: { configResolved?: (config: { root: string, command: 'build' | 'serve' }) => void }
+			}
+			plugin.vite?.configResolved?.({ root: '/tmp/app', command: 'build' })
+			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
+			const resolved = await resolveId?.call({}, 'pika.css')
+			expect(resolved)
+				.toBe('/tmp/app/pika.gen.css')
+		})
 	})
 })

@@ -1,5 +1,5 @@
 import type { Engine, EngineConfig, Nullish } from '@pikacss/core'
-import type { FnUtils, IntegrationContext, IntegrationContextOptions, UsageRecord } from './types'
+import type { FnUtils, IntegrationContext, IntegrationContextOptions, LoadedConfigResult, UsageRecord } from './types'
 import { statSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createEngine, defineEnginePlugin, log } from '@pikacss/core'
@@ -19,6 +19,57 @@ interface Signal<T> {
 
 interface Computed<T> {
 	(): T
+}
+
+function createConfigScaffoldContent({
+	currentPackageName,
+	resolvedConfigPath,
+	tsCodegenFilepath,
+}: {
+	currentPackageName: string
+	resolvedConfigPath: string
+	tsCodegenFilepath: string | Nullish
+}) {
+	const relativeTsCodegenFilepath = tsCodegenFilepath == null
+		? null
+		: `./${relative(dirname(resolvedConfigPath), tsCodegenFilepath)}`
+
+	return [
+		...relativeTsCodegenFilepath == null
+			? []
+			: [`/// <reference path="${relativeTsCodegenFilepath}" />`],
+		`import { defineEngineConfig } from '${currentPackageName}'`,
+		'',
+		'export default defineEngineConfig({',
+		'  // Add your PikaCSS engine config here',
+		'})',
+	].join('\n')
+}
+
+async function writeGeneratedFile(filepath: string, content: string) {
+	await mkdir(dirname(filepath), { recursive: true })
+		.catch(() => {})
+	await writeFile(filepath, content)
+}
+
+async function evaluateConfigModule(resolvedConfigPath: string): Promise<LoadedConfigResult> {
+	log.info(`Using config file: ${resolvedConfigPath}`)
+	const { createJiti } = await import('jiti')
+	const jiti = createJiti(
+		import.meta.url,
+		{
+			interopDefault: true,
+		},
+	)
+	const content = await readFile(resolvedConfigPath, 'utf-8')
+	const config = (await jiti.evalModule(
+		content,
+		{
+			id: resolvedConfigPath,
+			forceTranspile: true,
+		},
+	) as { default: EngineConfig }).default
+	return { config: klona(config), file: resolvedConfigPath, content }
 }
 
 function usePaths({
@@ -90,6 +141,26 @@ function useConfig({
 		}
 		return null
 	}
+	async function ensureConfigPath(candidatePath: string | null) {
+		if (candidatePath != null)
+			return candidatePath
+
+		if (autoCreateConfig === false) {
+			log.warn('Config file not found and autoCreateConfig is false')
+			return null
+		}
+
+		const resolvedConfigPath = specificConfigPath() ?? join(cwd(), 'pika.config.js')
+		await writeGeneratedFile(
+			resolvedConfigPath,
+			createConfigScaffoldContent({
+				currentPackageName,
+				resolvedConfigPath,
+				tsCodegenFilepath: tsCodegenFilepath(),
+			}),
+		)
+		return resolvedConfigPath
+	}
 	const inlineConfig = typeof configOrPath === 'object' ? configOrPath : null
 	async function _loadConfig() {
 		try {
@@ -99,52 +170,11 @@ function useConfig({
 				return { config: klona(inlineConfig), file: null, content: null }
 			}
 
-			let resolvedConfigPath = await findFirstExistingConfigPath()
+			const resolvedConfigPath = await ensureConfigPath(await findFirstExistingConfigPath())
+			if (resolvedConfigPath == null)
+				return { config: null, file: null, content: null }
 
-			const _cwd = cwd()
-			if (resolvedConfigPath == null) {
-				if (autoCreateConfig === false) {
-					log.warn('Config file not found and autoCreateConfig is false')
-					return { config: null, file: null, content: null }
-				}
-
-				const _specificConfigPath = specificConfigPath()
-				resolvedConfigPath = _specificConfigPath ?? join(_cwd, 'pika.config.js')
-				await mkdir(dirname(resolvedConfigPath), { recursive: true })
-					.catch(() => {})
-				const _tsCodegenFilepath = tsCodegenFilepath()
-				const relativeTsCodegenFilepath = _tsCodegenFilepath == null
-					? null
-					: `./${relative(dirname(resolvedConfigPath), _tsCodegenFilepath)}`
-				await writeFile(resolvedConfigPath, [
-					...relativeTsCodegenFilepath == null
-						? []
-						: [`/// <reference path="${relativeTsCodegenFilepath}" />`],
-					`import { defineEngineConfig } from '${currentPackageName}'`,
-					'',
-					'export default defineEngineConfig({',
-					'  // Add your PikaCSS engine config here',
-					'})',
-				].join('\n'))
-			}
-
-			log.info(`Using config file: ${resolvedConfigPath}`)
-			const { createJiti } = await import('jiti')
-			const jiti = createJiti(
-				import.meta.url,
-				{
-					interopDefault: true,
-				},
-			)
-			const content = await readFile(resolvedConfigPath, 'utf-8')
-			const config = (await jiti.evalModule(
-				content,
-				{
-					id: resolvedConfigPath,
-					forceTranspile: true,
-				},
-			) as { default: EngineConfig }).default
-			return { config: klona(config), file: resolvedConfigPath, content }
+			return await evaluateConfigModule(resolvedConfigPath)
 		}
 		catch (error: any) {
 			log.error(`Failed to load config file: ${error.message}`, error)
@@ -559,10 +589,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			if (content == null)
 				return
 
-			await mkdir(dirname(ctx.cssCodegenFilepath), { recursive: true })
-				.catch(() => {})
 			log.debug(`Writing CSS code generation file: ${ctx.cssCodegenFilepath}`)
-			await writeFile(ctx.cssCodegenFilepath, content)
+			await writeGeneratedFile(ctx.cssCodegenFilepath, content)
 		},
 		writeTsCodegenFile: async () => {
 			await ctx.setupPromise
@@ -573,10 +601,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			if (content == null)
 				return
 
-			await mkdir(dirname(ctx.tsCodegenFilepath!), { recursive: true })
-				.catch(() => {})
 			log.debug(`Writing TypeScript code generation file: ${ctx.tsCodegenFilepath}`)
-			await writeFile(ctx.tsCodegenFilepath, content)
+			await writeGeneratedFile(ctx.tsCodegenFilepath, content)
 		},
 		fullyCssCodegen: async () => {
 			await ctx.setupPromise

@@ -23,6 +23,48 @@ export interface TypographyPluginOptions {
 	variables?: Partial<typeof typographyVariables>
 }
 
+const proseShortcutModules = [
+	['prose-paragraphs', proseParagraphsStyle],
+	['prose-links', proseLinksStyle],
+	['prose-emphasis', proseEmphasisStyle],
+	['prose-kbd', proseKbdStyle],
+	['prose-lists', proseListsStyle],
+	['prose-hr', proseHrStyle],
+	['prose-headings', proseHeadingsStyle],
+	['prose-quotes', proseQuotesStyle],
+	['prose-media', proseMediaStyle],
+	['prose-code', proseCodeStyle],
+	['prose-tables', proseTablesStyle],
+] as const
+
+const proseSizeVariants = {
+	'sm': { fontSize: '0.875rem', lineHeight: '1.71' },
+	'lg': { fontSize: '1.125rem', lineHeight: '1.77' },
+	'xl': { fontSize: '1.25rem', lineHeight: '1.8' },
+	'2xl': { fontSize: '1.5rem', lineHeight: '1.66' },
+} as const
+
+function registerTypographyShortcuts(engine: Parameters<NonNullable<EnginePlugin['configureEngine']>>[0]) {
+	engine.shortcuts.add(['prose-base', proseBaseStyle])
+
+	proseShortcutModules.forEach(([name, style]) => {
+		engine.shortcuts.add([name, ['prose-base', style]])
+	})
+
+	engine.shortcuts.add([
+		'prose',
+		proseShortcutModules.map(([name]) => name),
+	])
+
+	Object.entries(proseSizeVariants)
+		.forEach(([size, overrides]) => {
+			engine.shortcuts.add([
+				`prose-${size}`,
+				['prose', overrides],
+			])
+		})
+}
+
 declare module '@pikacss/core' {
 	interface EngineConfig {
 		typography?: TypographyPluginOptions
@@ -44,52 +86,7 @@ export function typography(): EnginePlugin {
 				...typographyConfig.variables,
 			})
 
-			// Add modular shortcuts
-			engine.shortcuts.add(['prose-base', proseBaseStyle])
-			engine.shortcuts.add(['prose-paragraphs', ['prose-base', proseParagraphsStyle]])
-			engine.shortcuts.add(['prose-links', ['prose-base', proseLinksStyle]])
-			engine.shortcuts.add(['prose-emphasis', ['prose-base', proseEmphasisStyle]])
-			engine.shortcuts.add(['prose-kbd', ['prose-base', proseKbdStyle]])
-			engine.shortcuts.add(['prose-lists', ['prose-base', proseListsStyle]])
-			engine.shortcuts.add(['prose-hr', ['prose-base', proseHrStyle]])
-			engine.shortcuts.add(['prose-headings', ['prose-base', proseHeadingsStyle]])
-			engine.shortcuts.add(['prose-quotes', ['prose-base', proseQuotesStyle]])
-			engine.shortcuts.add(['prose-media', ['prose-base', proseMediaStyle]])
-			engine.shortcuts.add(['prose-code', ['prose-base', proseCodeStyle]])
-			engine.shortcuts.add(['prose-tables', ['prose-base', proseTablesStyle]])
-			engine.shortcuts.add([
-				'prose',
-				[
-					'prose-paragraphs',
-					'prose-links',
-					'prose-emphasis',
-					'prose-kbd',
-					'prose-lists',
-					'prose-hr',
-					'prose-headings',
-					'prose-quotes',
-					'prose-media',
-					'prose-code',
-					'prose-tables',
-				],
-			])
-			const sizes = {
-				'sm': { fontSize: '0.875rem', lineHeight: '1.71' },
-				'lg': { fontSize: '1.125rem', lineHeight: '1.77' },
-				'xl': { fontSize: '1.25rem', lineHeight: '1.8' },
-				'2xl': { fontSize: '1.5rem', lineHeight: '1.66' },
-			}
-
-			Object.entries(sizes)
-				.forEach(([size, overrides]) => {
-					engine.shortcuts.add([
-						`prose-${size}`,
-						[
-							'prose',
-							overrides,
-						],
-					])
-				})
+			registerTypographyShortcuts(engine)
 		},
 	})
 }

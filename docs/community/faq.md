@@ -16,9 +16,9 @@ Atomic CSS is a strategy where each CSS class contains exactly **one** CSS prope
 
 PikaCSS assigns each unique property-value-selector combination a short class name using a base-52 encoding (`a`–`z`, `A`–`Z`). By default, the engine prepends the `pk-` prefix, so the first atomic style becomes `pk-a`, the second `pk-b`, and so on. After 52 classes, names become `pk-aa`, `pk-ba`, etc. Set `prefix: ''` in your engine config if you want bare IDs such as `a`, `b`, and `c`.
 
-## Why must `pika(...)` arguments be statically analyzable?
+## Why does PikaCSS recommend static `pika(...)` arguments?
 
-PikaCSS works entirely at build time. The integration transform finds `pika(...)` calls via regex and evaluates their argument expressions using `new Function('return [...]')`. This means arguments must be resolvable without any runtime context — no variables, no function calls, no dynamic expressions.
+PikaCSS works entirely at build time. The integration transform finds `pika(...)` calls via regex and evaluates their argument expressions using `new Function('return [...]')`. In practice, the recommended usage is to keep arguments in a literal-only subset so the build stays predictable and side-effect free. That is also the subset enforced by `@pikacss/eslint-config`.
 
 **✅ This works:**
 
@@ -46,7 +46,7 @@ Yes. You can nest pseudo-classes, pseudo-elements, media queries, and custom sel
 
 ## Do I need to import `pika()`?
 
-No. `pika()` is a **global function** — you use it directly in any source file without importing it. The build plugin statically finds all `pika()` calls via regex and replaces them with generated class names at build time. The `pika.gen.ts` file provides TypeScript autocomplete through `declare global`, but it is not a module to import from. You should never write `import { pika } from '...'`.
+No. `pika()` is a **global function** — you use it directly in any source file without importing it. The build plugin finds all matched `pika()` calls via source transforms and replaces them with generated class names at build time. The `pika.gen.ts` file provides TypeScript autocomplete through `declare global`, but it is not a module to import from. You should never write `import { pika } from '...'`.
 
 ## Why do I need to import `pika.css`?
 

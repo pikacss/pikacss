@@ -34,12 +34,10 @@ Nuxt 模組會自動處理以下事項：
 1. **註冊 Nuxt 插件**，匯入 `pika.css`——你**無需**手動匯入產生的 CSS。
 2. **新增 Vite 插件**（`@pikacss/unplugin-pikacss/vite`），並設定 `enforce: 'pre'` 以確保正確的轉換順序。
 3. **轉送選項**，將 `nuxt.options.pikacss` 中的選項傳遞至底層 Vite 插件。
-4. **預設掃描規則**：只有在完全省略 `pikacss` 設定鍵時，預設才會掃描 `**/*.vue`、`**/*.tsx` 和 `**/*.jsx` 檔案。若你傳入 `pikacss: {}`，模組會改用 unplugin 的預設掃描模式：`**/*.{js,ts,jsx,tsx,vue}`。
+4. **預設掃描規則**：省略 `pikacss` 設定鍵時，模組會使用與 unplugin 相同的預設：`**/*.{js,ts,jsx,tsx,vue}`。若要縮小掃描範圍，請明確傳入 `pikacss.scan.include`。
 
-::: warning Nuxt 預設掃描排除了 `.ts` 與 `.js` 檔案
-Nuxt 模組的內建預設有意略過純 `.ts` 與 `.js` 檔案。在 Nuxt 中，建議將 `pika()` 呼叫放在元件檔案（`.vue`、`.tsx`、`.jsx`）中，而非放在 composables 或工具模組裡，因為伺服器端渲染與 Nuxt 的模組解析機制可能導致這些檔案在建置轉換未執行的環境中被求值。
-
-如果你確實需要在 `.ts` composables 中使用 `pika()`，請透過明確設定 `scan.include` 來恢復或自訂較廣泛的掃描模式：
+::: tip 僅在需要時縮小掃描範圍
+Nuxt 模組一開始採用標準 unplugin 掃描模式。若你想將掃描限制在元件檔案內，可明確指定 `scan.include`，例如：
 
 <<< @/.examples/integrations/nuxt.config.scan-all.ts
 :::

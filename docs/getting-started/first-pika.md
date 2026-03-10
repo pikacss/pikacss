@@ -16,7 +16,7 @@ Make sure you have already:
 `pika()` is a global function that accepts style objects with camelCase CSS properties. It returns class name(s) that you can bind to elements.
 
 ::: tip Global Function — No Import Needed
-`pika()` is registered as a **global function** by the build plugin. You do **not** need to import it — just use it directly in any source file. The build plugin finds all `pika()` calls via static analysis and replaces them with generated class names at build time. The `pika.gen.ts` file provides TypeScript type declarations (via `declare global`) for editor autocomplete, but it is not a module you import from.
+`pika()` is registered as a **global function** by the build plugin. You do **not** need to import it — just use it directly in any source file. The build plugin transforms matched `pika()` calls at build time and replaces them with generated class names. The `pika.gen.ts` file provides TypeScript type declarations (via `declare global`) for editor autocomplete, but it is not a module you import from.
 :::
 
 ::: code-group
@@ -29,7 +29,7 @@ Make sure you have already:
 PikaCSS works entirely at build time — there is **zero runtime overhead**. When you run your build, PikaCSS:
 
 1. **Scans** your source files for `pika(...)` calls.
-2. **Analyzes** the style objects statically (arguments must be analyzable at build time).
+2. **Evaluates** the matched style arguments at build time.
 3. **Generates atomic CSS classes** — each CSS property-value pair becomes its own class.
 4. **Replaces** every `pika(...)` call with the resulting class name string(s).
 5. **Writes** the atomic CSS rules into the generated stylesheet (`pika.gen.css`).
@@ -82,7 +82,7 @@ By default, `pika()` returns a space-separated string of class names (e.g. `"pk-
 
 ### IDE preview with `pikap`
 
-`pikap` is a preview variant of `pika`. It has the same API, but provides **CSS preview tooltips** directly in your IDE. Use `pikap` during development to see the generated CSS without running a build.
+`pikap` is a preview-oriented variant of `pika`. It supports the same call shapes as `pika()`, including `pikap.str()` and `pikap.arr()`, while enriching the generated TypeScript declarations with CSS preview tooltips in your IDE. At build time, `pikap(...)` calls are transformed away just like `pika(...)` calls, so they do not ship as runtime helpers.
 
 ## Configuration (optional)
 

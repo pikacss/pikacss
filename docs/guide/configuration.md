@@ -99,9 +99,10 @@ Configure the CSS `@layer` order. Keys are layer names; values are order numbers
 The interaction with layer config is:
 
 - `config.layers` defines the ordered list of known layer names. PikaCSS merges your entries on top of the built-in defaults `{ preflights: 1, utilities: 10 }`.
-- `defaultUtilitiesLayer` controls where atomic styles without `__layer` are rendered. By default, that is `utilities`.
+- `defaultUtilitiesLayer` controls the preferred destination for atomic styles without `__layer`. By default, that is `utilities`.
 - `__layer` only affects the current style definition. It does not change `defaultUtilitiesLayer` globally.
 - If `__layer` uses a name that is not present in `config.layers`, the style falls back to unlayered output instead of creating a new ordered layer automatically.
+- If `defaultUtilitiesLayer` is not present in `config.layers`, unlayered utilities fall back to the last configured layer.
 
 To change the default destination for unlayered utilities, configure `defaultUtilitiesLayer` to one of your known layer names:
 
@@ -112,14 +113,14 @@ To change the default destination for unlayered utilities, configure `defaultUti
 - **Type:** `string`
 - **Default:** `'preflights'`
 
-The CSS `@layer` that preflights without an explicit `layer` property are placed into.
+The CSS `@layer` that preflights without an explicit `layer` property are placed into. If this layer name is not present in `config.layers`, those preflights stay unlayered.
 
 ### `defaultUtilitiesLayer`
 
 - **Type:** `string`
 - **Default:** `'utilities'`
 
-The CSS `@layer` that atomic utility styles without an explicit `__layer` are placed into by default.
+The preferred CSS `@layer` for atomic utility styles without an explicit `__layer`. If this layer name is not present in `config.layers`, the engine falls back to the last configured layer.
 
 ## Core Plugin Config
 
@@ -155,6 +156,8 @@ Each variable value can be:
 `VariableObject.value` is typed as `ResolvedCSSProperties[`--${string}`]` in source, so variable values stay aligned with the engine's resolved CSS custom-property typing.
 
 `VariablesDefinition` also supports nested selector keys (for example, `'[data-theme="dark"]'`) to scope variables outside `:root`. When you use `safeList`, every entry must be a CSS variable name such as `--color-text`. The `& {}` intersection in the source type prevents TypeScript from widening the custom-property name to a plain `string`.
+
+When you use `VariableObject.autocomplete.asProperty`, it controls whether the variable name is exposed as an extra CSS property suggestion in autocomplete. Leave it at `true` for design tokens you want to use as property-like shorthands, or set it to `false` for variables that should only appear as values.
 
 <<< @/.examples/guide/config-variables.ts
 

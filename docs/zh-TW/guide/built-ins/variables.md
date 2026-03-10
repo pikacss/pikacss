@@ -30,6 +30,8 @@
 
 同樣地，`autocomplete.asValueOf` 可接受單一 CSS 屬性名稱、屬性名稱陣列、萬用字元 `'*'`，或用 `'-'` 完全停用該變數的 CSS 值自動補齊。
 
+`autocomplete.asProperty` 則控制是否要在自動補齊中，將變數名稱顯示為額外的 CSS 屬性建議。若某個變數只應該作為值被建議，可將它設為 `false`。
+
 ## 基本用法
 
 在你的 `pika.config.ts` 中定義變數。頂層變數預設放置於 `:root` 下：
@@ -86,7 +88,7 @@ PikaCSS 會傳遞性地追蹤變數依賴。若你的樣式參照了 `--color-pr
 | 預設選擇器 | `:root`（用於頂層變數） |
 | `pruneUnused` 預設值 | `true` |
 | `autocomplete.asValueOf` 預設值 | `['*']` |
-| `autocomplete.asProperty` 預設值 | `true` |
+| `autocomplete.asProperty` 預設值 | `true` — 將變數名稱作為額外的 CSS 屬性建議顯示 |
 | Null 值變數 | 僅供自動補齊使用，不輸出至 CSS |
 | 偵測方式 | 掃描原子化樣式值中的 `var(--name)` 模式（傳遞性）|
 

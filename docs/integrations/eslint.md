@@ -1,6 +1,6 @@
 # ESLint Configuration
 
-PikaCSS provides an ESLint configuration package that enforces build-time constraints on `pika()` function calls. It ensures all arguments are **statically analyzable** — preventing runtime values, variables, or dynamic expressions that would break PikaCSS's build-time compilation.
+PikaCSS provides an ESLint configuration package that enforces the predictable static subset recommended for `pika()` function calls. The transformer evaluates matched arguments at build time, and this rule keeps those arguments limited to literal-only shapes so builds stay explicit and side-effect free.
 
 This package provides a ready-to-use flat config preset for **ESLint 9+**. It will not work with legacy `.eslintrc` configurations.
 
@@ -23,7 +23,7 @@ Add the configuration to your `eslint.config.mjs` (or `.js`, `.ts`):
 
 <<< @/.examples/integrations/eslint-basic-config.mjs
 
-This automatically applies the `pikacss/no-dynamic-args: 'error'` rule, which validates that all `pika()` calls use only static, build-time evaluatable arguments.
+This automatically applies the `pikacss/no-dynamic-args: 'error'` rule, which validates that all `pika()` calls stay within the predictable literal subset enforced by the rule.
 
 ::: tip Simplicity
 The new flat config format reduces setup from 5+ lines to just 2 lines. The `pikacss()` function returns a pre-configured ESLint config object ready to use in your config array.
@@ -56,9 +56,9 @@ Manual configuration is useful when you need to:
 
 ### `pikacss/no-dynamic-args`
 
-**Disallows dynamic (non-static) arguments in PikaCSS function calls.**
+**Disallows dynamic arguments in the stricter static subset enforced by the ESLint rule.**
 
-PikaCSS evaluates all `pika()` arguments at build time using `new Function('return ...')`. This means arguments must be **statically analyzable** — only literal values, object/array literals with static values, and static spreads are allowed.
+PikaCSS evaluates matched `pika()` arguments at build time. This rule intentionally enforces a narrower, predictable subset: literal values, object/array literals with static values, static spreads, and other recursively static structures.
 
 **Valid** (static):
 
@@ -72,9 +72,9 @@ PikaCSS evaluates all `pika()` arguments at build time using `new Function('retu
 
 <<< @/.examples/integrations/eslint-error-output.txt
 
-### What is "Statically Analyzable"?
+### What does the rule allow?
 
-An expression is statically analyzable if it can be evaluated at build time without executing application runtime code. This includes:
+An expression is accepted by this rule when it stays inside the literal-only subset that can be checked directly from the AST. This includes:
 
 - **Literals**: `'red'`, `16`, `-1`, `null`, `` `red` ``
 - **Object literals**: `{ color: 'red', fontSize: 16 }`
@@ -83,7 +83,7 @@ An expression is statically analyzable if it can be evaluated at build time with
 - **Static spreads**: `{ ...{ color: 'red' } }` (spread of a static object literal)
 - **Unary expressions**: `-1`, `+2`
 
-These are **NOT** statically analyzable:
+These are rejected by the rule:
 
 - **Variables**: `pika({ color: myColor })`
 - **Function calls**: `pika({ color: getColor() })`
@@ -94,12 +94,12 @@ These are **NOT** statically analyzable:
 - **Dynamic spreads**: `pika({ ...baseStyles })`
 - **Dynamic computed keys**: `pika({ [key]: 'value' })`
 
-::: info Boolean Literals
-`true` and `false` are JavaScript literals, so they are static at the AST level. However, they are not documented PikaCSS CSS property values, so you should not treat boolean values as supported style arguments. The rule focuses on build-time analyzability, not full CSS value semantics.
+::: info Rule Scope
+The rule is intentionally stricter than the transformer. It exists to keep `pika()` usage predictable in teams and CI, not to document every build-time expression the transformer might technically evaluate.
 :::
 
 ::: tip Why This Restriction?
-PikaCSS compiles styles at build time, not runtime. All values must be known during bundling so the engine can extract and generate atomic CSS classes. See [Build-Time Compile](/principles/build-time-compile) for conceptual details.
+PikaCSS compiles styles at build time, not runtime. Keeping arguments in a literal-only subset makes transforms easier to reason about and avoids accidental build-time side effects. See [Build-Time Compile](/principles/build-time-compile) for conceptual details.
 :::
 
 ## Configuration
@@ -114,6 +114,7 @@ When `fnName` is set to `'css'`, the rule will detect:
 
 - `css()`, `cssp()`
 - `css.str()`, `css.arr()`
+- `css['str']()`, `css['arr']()`
 - `cssp.str()`, `cssp.arr()`
 
 You can also pass options when using the `recommended()` function:
@@ -121,20 +122,21 @@ You can also pass options when using the `recommended()` function:
 <<< @/.examples/integrations/eslint-recommended-with-options.mjs
 
 ::: info Default
-By default, `fnName` is `'pika'`, which detects `pika()`, `pikap()`, `pika.str()`, `pika.arr()`, and preview variants.
+By default, `fnName` is `'pika'`, which detects `pika()`, `pikap()`, `pika.str()`, `pika.arr()`, and their static bracket-access variants.
 :::
 
 ## How It Works
 
-The ESLint configuration package analyzes the Abstract Syntax Tree (AST) of your source code to detect calls to `pika()` (or variants like `pika.str()`, `pikap()`, etc.). For each detected call:
+The ESLint configuration package analyzes the Abstract Syntax Tree (AST) of your source code to detect calls to `pika()` (or variants like `pika.str()`, `pika['str']()`, `pikap()`, etc.). For each detected call:
 
 1. **Traverse arguments**: The rule recursively inspects each argument node and its nested structure (object properties, array elements, spread operations).
-2. **Check static constraints**: For each value node, the rule verifies it matches one of the allowed static patterns (literal, object literal with static values, etc.).
-3. **Report violations**: If a non-static expression is found, the rule reports an ESLint error with a specific message describing why the value is not statically analyzable.
+2. **Check the literal subset**: For each value node, the rule verifies it matches one of the allowed static patterns (literal, object literal with static values, etc.).
+3. **Report violations**: If a non-static expression is found, the rule reports an ESLint error with a specific message describing why that node falls outside the rule's static subset.
 
 The package derives all function name variants automatically from the base `fnName` option:
 - Normal: `pika`, `pika.str`, `pika.arr`
 - Preview: `pikap`, `pikap.str`, `pikap.arr`
+- Static bracket access: `pika['str']`, `pika['arr']`, and their preview equivalents
 
 This ensures comprehensive coverage without manual configuration of each variant.
 

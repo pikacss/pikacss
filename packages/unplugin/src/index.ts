@@ -56,6 +56,19 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		...resolvedOptions,
 	})
 
+	type RuntimeMode = 'build' | 'serve'
+
+	function syncCtxCwd() {
+		if (ctx.cwd !== cwd)
+			ctx.cwd = cwd
+	}
+
+	function applyRuntimeContext(nextCwd: string, nextMode: RuntimeMode) {
+		cwd = resolve(nextCwd)
+		mode = nextMode
+		syncCtxCwd()
+	}
+
 	const debouncedWriteCssCodegenFile = debounce(async () => {
 		await ctx.writeCssCodegenFile()
 	}, 300)
@@ -77,12 +90,19 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 
 	let setupPromise = Promise.resolve()
 	let setupCounter = 0
+	let lastSetupCwd: string | null = null
+	let pendingSetupCwd: string | null = null
 	function setup(reload = false) {
+		syncCtxCwd()
+		pendingSetupCwd = ctx.cwd
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
 			const currentSetup = ++setupCounter
 			const moduleIds = Array.from(ctx.usages.keys())
+			syncCtxCwd()
 			await ctx.setup()
+			lastSetupCwd = ctx.cwd
+			pendingSetupCwd = null
 			if (currentSetup !== setupCounter) {
 				log.debug('Setup outdated, skipping...')
 				return
@@ -131,34 +151,36 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 				}
 			}
 		})
+		return setupPromise
+	}
+	function ensureSetup(reload = false) {
+		syncCtxCwd()
+		if (!reload && (lastSetupCwd === ctx.cwd || pendingSetupCwd === ctx.cwd))
+			return setupPromise
+		return setup(reload)
 	}
 	const debouncedSetup = debounce(setup)
-	setup()
 
 	return {
 		name: PLUGIN_NAME,
 
 		vite: {
 			configResolved: (config) => {
-				cwd = resolve(config.root)
-				mode = config.command === 'serve' ? 'serve' : 'build'
+				applyRuntimeContext(config.root, config.command === 'serve' ? 'serve' : 'build')
 			},
 			configureServer(server) {
 				viteServers.push(server as any)
 			},
 		},
 		webpack: (compiler) => {
-			cwd = resolve(compiler.options.context || process.cwd())
-			mode = compiler.options.mode === 'development' ? 'serve' : 'build'
+			applyRuntimeContext(compiler.options.context || process.cwd(), compiler.options.mode === 'development' ? 'serve' : 'build')
 		},
 		rspack: (compiler) => {
-			cwd = resolve(compiler.options.context || process.cwd())
-			mode = compiler.options.mode === 'development' ? 'serve' : 'build'
+			applyRuntimeContext(compiler.options.context || process.cwd(), compiler.options.mode === 'development' ? 'serve' : 'build')
 		},
 		farm: {
 			configResolved: (config) => {
-				cwd = resolve(config.root || process.cwd())
-				mode = config.envMode === 'development' ? 'serve' : 'build'
+				applyRuntimeContext(config.root || process.cwd(), config.envMode === 'development' ? 'serve' : 'build')
 			},
 			configureDevServer(server) {
 				farmServers.push(server)
@@ -166,7 +188,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		},
 		esbuild: {
 			async setup(build) {
-				cwd = resolve(build.initialOptions.absWorkingDir || process.cwd())
+				applyRuntimeContext(build.initialOptions.absWorkingDir || process.cwd(), mode)
 
 				// Handle virtual module resolution
 				build.onResolve(
@@ -188,7 +210,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			log.debug('Plugin buildStart hook triggered')
 			log.debug(`Current mode: ${mode}, cwd: ${cwd}`)
 
-			await setupPromise
+			await ensureSetup()
 
 			if (mode === 'build') {
 				log.debug('Running full CSS code generation in build mode')
@@ -205,7 +227,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			? undefined
 			: async function (id: string) {
 				if (RE_VIRTUAL_PIKA_CSS_ID.test(id)) {
-					await setupPromise
+					await ensureSetup()
 					log.debug(`Resolved virtual CSS module: ${id} -> ${ctx.cssCodegenFilepath}`)
 					return ctx.cssCodegenFilepath
 				}
@@ -218,7 +240,8 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 					return ctx.transformFilter
 				},
 			},
-			handler(code: string, id: string) {
+			async handler(code: string, id: string) {
+				await ensureSetup()
 				if (meta.framework === 'webpack' && ctx.resolvedConfigPath != null) {
 					this.addWatchFile(ctx.resolvedConfigPath)
 					log.debug(`Added watch file: ${ctx.resolvedConfigPath}`)

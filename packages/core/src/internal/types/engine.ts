@@ -82,14 +82,17 @@ export interface EngineConfig {
 	layers?: Record<string, number>
 
 	/**
-	 * The layer name that unlayered preflights are automatically wrapped into.
+	 * The layer name used for unlayered preflights when that layer exists in `layers`.
+	 * If the named layer is not configured, unlayered preflights stay unlayered.
 	 *
 	 * @default 'preflights'
 	 */
 	defaultPreflightsLayer?: string
 
 	/**
-	 * The layer name that atomic styles without an explicit `__layer` are placed into.
+	 * The preferred layer for atomic styles without an explicit `__layer`.
+	 * When the named layer is not configured, they fall back to the last configured layer,
+	 * or remain unlayered if no layers exist.
 	 *
 	 * @default 'utilities'
 	 */

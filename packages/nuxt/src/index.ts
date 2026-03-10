@@ -24,7 +24,7 @@ export default (defineNuxtModule<ModuleOptions>({
 				...(
 					nuxt.options.pikacss || {
 						scan: {
-							include: ['**/*.vue', '**/*.tsx', '**/*.jsx'],
+							include: ['**/*.{js,ts,jsx,tsx,vue}'],
 						},
 					}
 				),

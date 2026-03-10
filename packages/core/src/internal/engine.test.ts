@@ -1575,6 +1575,31 @@ describe('engine.renderPreflights', () => {
 			expect(css)
 				.toContain('body { margin: 0; }')
 		})
+
+		it('should leave preflights unlayered when defaultPreflightsLayer is not configured in layers', async () => {
+			const engine = await createEngine({
+				preflights: ['body { margin: 0; }'],
+				layers: { components: 0 },
+				defaultPreflightsLayer: 'base',
+			})
+			const css = await engine.renderPreflights(false)
+			expect(css).not.toContain('@layer base {')
+			expect(css)
+				.toContain('body { margin: 0; }')
+		})
+
+		it('should fall back to the last configured layer when defaultUtilitiesLayer is missing', async () => {
+			const engine = await createEngine({
+				layers: { components: 0 },
+				defaultUtilitiesLayer: 'base',
+			})
+			await engine.use({ color: 'red' })
+			const css = await engine.renderAtomicStyles(true)
+			expect(css)
+				.toContain('@layer utilities {')
+			expect(css)
+				.not.toContain('@layer base {')
+		})
 	})
 })
 

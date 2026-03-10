@@ -26,7 +26,8 @@ export const plugin: ESLint.Plugin = {
 
 /**
  * Create a recommended ESLint configuration for PikaCSS.
- * This enables the `no-dynamic-args` rule to enforce build-time constraints.
+ * This enables the `no-dynamic-args` rule to enforce the predictable static
+ * subset recommended for build-time transforms.
  *
  * @param options - Configuration options
  * @returns An ESLint flat config object

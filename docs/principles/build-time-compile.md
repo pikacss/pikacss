@@ -11,12 +11,12 @@ When your build tool (Vite, Webpack, Rollup, esbuild, Rspack, or Rolldown) proce
 The plugin scans each source file using a regex to find all `pika()` calls, including format variants (`pika.str()`, `pika.arr()`) and preview variants (`pikap()`). It uses a bracket-depth parser to correctly extract the full function call, handling nested parentheses, strings, comments, and template literals.
 
 ::: info Global Function
-`pika()` is a global function — you do not import it. The build plugin finds and replaces these calls via static analysis. The generated `pika.gen.ts` provides TypeScript support through `declare global`, not through module exports.
+`pika()` is a global function — you do not import it. The build plugin detects and replaces these calls during source transforms. The generated `pika.gen.ts` provides TypeScript support through `declare global`, not through module exports.
 :::
 
 ### Stage 2: Argument Evaluation
 
-The extracted argument string is evaluated at build time using `new Function(...)`. For example, `pika({ color: 'red', fontSize: '16px' })` has its argument parsed as a JavaScript object literal and executed. This is why **all arguments must be statically analyzable** — they are literally executed during the build, not at runtime.
+The extracted argument string is evaluated at build time using `new Function(...)`. For example, `pika({ color: 'red', fontSize: '16px' })` has its argument parsed as a JavaScript object literal and executed. In practice, this means the safest usage is still the literal-only subset enforced by the ESLint rule, because those inputs remain predictable and side-effect free during the build.
 
 ### Stage 3: Atomic Style Extraction
 
@@ -68,15 +68,15 @@ PikaCSS supports two output formats for transformed `pika()` calls. The format c
 
 <<< @/.examples/principles/build-format-array.ts
 
-## Static Analyzability Constraint
+## Recommended Static Subset
 
-Because arguments are evaluated at build time with `new Function(...)`, they **must be statically analyzable**. This means the arguments can only contain values that are resolvable without running your application.
+Because arguments are evaluated at build time with `new Function(...)`, the recommended usage is to keep them in a literal-only subset that can be understood without application runtime state. This is the subset enforced by `@pikacss/eslint-config`.
 
 **Valid — static values the build can evaluate:**
 
 <<< @/.examples/principles/build-valid-usage.ts
 
-**Invalid — runtime values that cannot be evaluated during build:**
+**Avoid — runtime values and dynamic expressions that make builds harder to reason about:**
 
 <<< @/.examples/principles/build-invalid-usage.ts
 

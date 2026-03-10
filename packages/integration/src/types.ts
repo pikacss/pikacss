@@ -30,6 +30,11 @@ export interface IntegrationContextOptions {
 	autoCreateConfig: boolean
 }
 
+export type LoadedConfigResult
+	= | { config: EngineConfig, file: null, content: null }
+		| { config: null, file: null, content: null }
+		| { config: EngineConfig, file: string, content: string }
+
 export interface IntegrationContext {
 	cwd: string
 	currentPackageName: string
@@ -41,11 +46,7 @@ export interface IntegrationContext {
 	resolvedConfig: EngineConfig | Nullish
 	resolvedConfigPath: string | Nullish
 	resolvedConfigContent: string | Nullish
-	loadConfig: () => Promise<
-		| { config: EngineConfig, file: null }
-		| { config: null, file: null }
-		| { config: EngineConfig, file: string }
-	>
+	loadConfig: () => Promise<LoadedConfigResult>
 	usages: Map<string, UsageRecord[]>
 	hooks: {
 		styleUpdated: ReturnType<typeof createEventHook<void>>
