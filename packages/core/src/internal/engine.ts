@@ -110,6 +110,15 @@ export class Engine {
 			this.notifyAutocompleteConfigUpdated()
 	}
 
+	appendCssImport(cssImport: string) {
+		const normalized = normalizeCssImport(cssImport)
+		if (normalized == null || this.config.cssImports.includes(normalized))
+			return
+
+		this.config.cssImports.push(normalized)
+		this.notifyPreflightUpdated()
+	}
+
 	addPreflight(preflight: Preflight) {
 		log.debug('Adding preflight')
 		this.config.preflights.push(resolvePreflight(preflight))
@@ -151,17 +160,14 @@ export class Engine {
 		log.debug('Rendering preflights...')
 		const lineEnd = isFormatted ? '\n' : ''
 
-		const topLevelImports: string[] = []
 		const rendered: { layer?: string, css: string }[] = (await Promise.all(
 			this.config.preflights.map(async ({ layer, fn }) => {
 				const result = await fn(this, isFormatted)
-				const rawCss = (
+				const css = (
 					typeof result === 'string'
 						? result
 						: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
 				).trim()
-				const { imports, css } = extractImportAtRules(rawCss)
-				topLevelImports.push(...imports)
 				return { layer, css }
 			}),
 		)).filter(r => r.css)
@@ -170,8 +176,8 @@ export class Engine {
 		const { unlayeredParts, layerGroups } = groupRenderedPreflightsByLayer(rendered)
 
 		const outputParts: string[] = []
-		if (topLevelImports.length > 0)
-			outputParts.push(...topLevelImports)
+		if (this.config.cssImports.length > 0)
+			outputParts.push(...this.config.cssImports)
 		if (unlayeredParts.length > 0) {
 			const { defaultPreflightsLayer } = this.config
 			// Unlayered preflights are automatically wrapped inside the defaultPreflightsLayer
@@ -280,17 +286,11 @@ function renderLayerBlocks<T>({
 		})
 }
 
-// eslint-disable-next-line regexp/no-super-linear-backtracking
-const RE_IMPORT = /@import\s(?:url\([^;]+\)|[^;])+;/g
-
-function extractImportAtRules(css: string) {
-	const imports: string[] = []
-	const remainder = css.replace(RE_IMPORT, (matched) => {
-		imports.push(matched.trim())
-		return ''
-	})
-		.trim()
-	return { imports, css: remainder }
+function normalizeCssImport(cssImport: string) {
+	const normalized = cssImport.trim()
+	if (normalized.length === 0)
+		return null
+	return normalized.endsWith(';') ? normalized : `${normalized};`
 }
 
 function groupRenderedPreflightsByLayer(rendered: { layer?: string, css: string }[]) {
@@ -402,6 +402,7 @@ export async function resolveEngineConfig(config: EngineConfig): Promise<Resolve
 		prefix = DEFAULT_ATOMIC_STYLE_ID_PREFIX,
 		defaultSelector = `.${ATOMIC_STYLE_ID_PLACEHOLDER}`,
 		plugins = [],
+		cssImports = [],
 		preflights = [],
 	} = config
 	const layers: Record<string, number> = Object.assign({}, DEFAULT_LAYERS, config.layers)
@@ -415,6 +416,10 @@ export async function resolveEngineConfig(config: EngineConfig): Promise<Resolve
 		prefix,
 		defaultSelector,
 		preflights: [],
+		cssImports: [...new Set(
+			cssImports.map(normalizeCssImport)
+				.filter(isNotNullish),
+		)],
 		layers,
 		defaultPreflightsLayer,
 		defaultUtilitiesLayer,

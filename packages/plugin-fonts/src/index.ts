@@ -116,7 +116,11 @@ export function fonts(): EnginePlugin {
 		},
 		configureEngine: async (engine) => {
 			const resolved = resolveFontsConfig(fontsConfig)
+			const importRules = renderFontsImportRules(resolved)
 			const preflightCss = renderFontsPreflightCss(resolved)
+
+			for (const importRule of importRules)
+				engine.appendCssImport(importRule)
 
 			if (preflightCss.length > 0) {
 				engine.addPreflight({
@@ -246,6 +250,14 @@ function normalizeFamilyName(value: string) {
 }
 
 function renderFontsPreflightCss(config: ResolvedFontsConfig) {
+	const fontFaces = config.faces.map(renderFontFace)
+
+	return fontFaces
+		.filter(Boolean)
+		.join('\n')
+}
+
+function renderFontsImportRules(config: ResolvedFontsConfig) {
 	const providerImports = [...config.providerFonts.entries()]
 		.flatMap(([providerName, fonts]) => resolveProviderImportUrls({
 			providerName,
@@ -263,11 +275,7 @@ function renderFontsPreflightCss(config: ResolvedFontsConfig) {
 		...providerImports,
 	].map(url => `@import url(${JSON.stringify(url)});`)
 
-	const fontFaces = config.faces.map(renderFontFace)
-
-	return [...imports, ...fontFaces]
-		.filter(Boolean)
-		.join('\n')
+	return dedupeStrings(imports)
 }
 
 function renderFontFace(face: FontFaceDefinition) {

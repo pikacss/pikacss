@@ -24,7 +24,7 @@
 
 <<< @/.examples/zh-TW/plugin-system/hook-configure-engine.ts
 
-這個 hook 會讓你接觸到 selectors、shortcuts、variables、keyframes、preflights 與 autocomplete 的公開 engine APIs。
+這個 hook 會讓你接觸到 selectors、shortcuts、variables、keyframes、preflights、CSS imports 與 autocomplete 的公開 engine APIs。
 
 把 `engine.appendAutocomplete()` 當成唯一的 autocomplete 寫入 API。selectors、style item strings、extra properties、CSS property values 與 template-literal patterns，都應該透過同一個 payload 加進去，而不是再分散呼叫不同 bucket 的 helper。
 
@@ -51,6 +51,10 @@
 ## Preflights 既強大又是全域性的
 
 把 preflights 用在 resets、defaults，或共享的全域 rules。因為它們會影響整體 CSS 輸出，所以必須保持範圍清楚、意圖明確。
+
+像託管字體樣式表這類 top-level `@import` rules，請用 `engine.appendCssImport()`。`@import` 必須留在產生 CSS 的最上層，所以不應該透過 `engine.addPreflight()` 註冊。
+
+<<< @/.examples/zh-TW/plugin-system/css-import-api.ts
 
 <<< @/.examples/zh-TW/plugin-system/preflight-definition.ts
 

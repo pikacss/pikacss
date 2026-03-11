@@ -212,6 +212,8 @@ describe('resolveEngineConfig', () => {
 			.toBe(`.${ATOMIC_STYLE_ID_PLACEHOLDER}`)
 		expect(resolved.plugins)
 			.toEqual([])
+		expect(resolved.cssImports)
+			.toEqual([])
 		expect(resolved.preflights)
 			.toEqual([])
 	})
@@ -284,6 +286,17 @@ describe('resolveEngineConfig', () => {
 			.toHaveLength(3)
 		expect(resolved.preflights[1]!.fn)
 			.toBe(fn)
+	})
+
+	it('should normalize and dedupe css imports', async () => {
+		const resolved = await resolveEngineConfig({
+			cssImports: [
+				'@import url("https://example.com/a.css")',
+				'@import url("https://example.com/a.css");',
+			],
+		})
+		expect(resolved.cssImports)
+			.toEqual(['@import url("https://example.com/a.css");'])
 	})
 })
 
@@ -802,6 +815,29 @@ describe('engine.addPreflight', () => {
 	})
 })
 
+describe('engine.appendCssImport', () => {
+	it('should add a normalized css import rule', async () => {
+		const engine = await createEngine()
+		engine.appendCssImport('@import url("https://example.com/fonts.css")')
+		expect(engine.config.cssImports)
+			.toEqual(['@import url("https://example.com/fonts.css");'])
+	})
+
+	it('should render css imports before layered preflights', async () => {
+		const engine = await createEngine({
+			preflights: ['body { margin: 0; }'],
+		})
+		engine.appendCssImport('@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");')
+		const css = await engine.renderPreflights(false)
+		expect(css.startsWith('@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");'))
+			.toBe(true)
+		const importIdx = css.indexOf('@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");')
+		const layerIdx = css.indexOf('@layer preflights {')
+		expect(importIdx)
+			.toBeLessThan(layerIdx)
+	})
+})
+
 // ─── Engine autocomplete helpers ─────────────────────────────────────────────
 
 describe('engine autocomplete helpers', () => {
@@ -1218,10 +1254,12 @@ describe('engine.renderPreflights', () => {
 	})
 
 	describe('with layers', () => {
-		it('should emit top-level @import rules before layered preflights', async () => {
+		it('should emit configured css imports before layered preflights', async () => {
 			const engine = await createEngine({
-				preflights: [
+				cssImports: [
 					'@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");',
+				],
+				preflights: [
 					'body { margin: 0; }',
 				],
 			})

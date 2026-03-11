@@ -28,7 +28,7 @@ Plugins can influence raw config, resolved config, engine setup, style-item tran
 
 - use `configureRawConfig` when you need to alter user config before resolution
 - use `configureResolvedConfig` when you need defaults to be settled first
-- use `configureEngine` when you want to call engine APIs such as `engine.selectors.add()` or `engine.addPreflight()`
+- use `configureEngine` when you want to call engine APIs such as `engine.selectors.add()`, `engine.addPreflight()`, or `engine.appendCssImport()`
 - use transform hooks when you need to alter style processing itself
 - use notification hooks when you only need to observe changes
 

@@ -28,7 +28,7 @@ Plugins 可以影響 raw config、resolved config、engine setup、style-item tr
 
 - 當你需要在 resolution 之前修改 user config，請用 `configureRawConfig`
 - 當你需要先讓 defaults 穩定下來，再處理事情，請用 `configureResolvedConfig`
-- 當你想呼叫 `engine.selectors.add()` 或 `engine.addPreflight()` 這類 engine APIs，請用 `configureEngine`
+- 當你想呼叫 `engine.selectors.add()`、`engine.addPreflight()`，或 `engine.appendCssImport()` 這類 engine APIs，請用 `configureEngine`
 - 當你需要改寫 style processing 本身時，才使用 transform hooks
 - 當你只是需要觀察變化時，才使用 notification hooks
 

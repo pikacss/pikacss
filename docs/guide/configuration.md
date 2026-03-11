@@ -16,6 +16,7 @@ Use engine config for things that change styling behavior:
 - variables
 - keyframes
 - layers
+- cssImports
 - preflights
 - prefix and selector defaults
 
@@ -76,11 +77,15 @@ Use build plugin options for integration behavior such as scanning, config path 
 
 <<< @/.examples/integrations/plugin-options.ts
 
-## Layers, preflights, and ordering
+## Layers, CSS imports, preflights, and ordering
 
 For larger systems, layer control matters because it makes output order intentional instead of accidental.
 
+Use `cssImports` when you need top-level `@import` rules to stay ahead of layered preflights and generated utilities. This is the config-level equivalent of `engine.appendCssImport()`.
+
 <<< @/.examples/guide/config-layers.ts
+
+<<< @/.examples/guide/config-css-imports.ts
 
 <<< @/.examples/guide/config-preflights-with-layer.ts
 

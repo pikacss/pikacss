@@ -20,6 +20,7 @@ describe('engine types', () => {
 				plugins: [],
 				prefix: 'pika-',
 				defaultSelector: '.%',
+				cssImports: ['@import url("https://example.com/fonts.css");'],
 				preflights: [],
 				layers: { base: 0, utilities: 10 },
 				defaultPreflightsLayer: 'preflights',
@@ -51,6 +52,8 @@ describe('engine types', () => {
 				.toEqualTypeOf<EnginePlugin[]>()
 			expectTypeOf<ResolvedEngineConfig['preflights']>()
 				.toEqualTypeOf<ResolvedPreflight[]>()
+			expectTypeOf<ResolvedEngineConfig['cssImports']>()
+				.toEqualTypeOf<string[]>()
 			expectTypeOf<ResolvedEngineConfig['autocomplete']>()
 				.toEqualTypeOf<ResolvedAutocompleteConfig>()
 			expectTypeOf<ResolvedEngineConfig['layers']>()
@@ -130,6 +133,15 @@ describe('engine types', () => {
 			type AppendAutocompleteParams = Parameters<Engine['appendAutocomplete']>
 			expectTypeOf<AppendAutocompleteParams>()
 				.toEqualTypeOf<[AutocompleteContribution]>()
+		})
+
+		it('should expose appendCssImport with a string parameter', () => {
+			expectTypeOf<Engine['appendCssImport']>()
+				.toBeFunction()
+
+			type AppendCssImportParams = Parameters<Engine['appendCssImport']>
+			expectTypeOf<AppendCssImportParams>()
+				.toEqualTypeOf<[string]>()
 		})
 	})
 

@@ -24,6 +24,10 @@ export default defineEngineConfig({
 		},
 	},
 
+	cssImports: [
+		'@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");',
+	],
+
 	preflights: [
 		'*, *::before, *::after { box-sizing: border-box; }',
 	],

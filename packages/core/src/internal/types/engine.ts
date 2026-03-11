@@ -67,6 +67,21 @@ export interface EngineConfig {
 	preflights?: Preflight[]
 
 	/**
+	 * Register top-level CSS @import rules that must be emitted before preflight blocks.
+	 *
+	 * @default []
+	 * @example
+	 * ```ts
+	 * {
+	 *   cssImports: [
+	 *     '@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");'
+	 *   ]
+	 * }
+	 * ```
+	 */
+	cssImports?: string[]
+
+	/**
 	 * Configure CSS @layer order. Keys are layer names, values are order numbers (lower = earlier).
 	 * Merged on top of the default layers `{ preflights: 1, utilities: 10 }`, so any keys not
 	 * specified here will keep their default order values.
@@ -127,6 +142,7 @@ export interface ResolvedEngineConfig {
 	defaultSelector: string
 	plugins: EnginePlugin[]
 	preflights: ResolvedPreflight[]
+	cssImports: string[]
 	autocomplete: ResolvedAutocompleteConfig
 	/** Always contains at least the default layers (`preflights` and `utilities`). */
 	layers: Record<string, number>
