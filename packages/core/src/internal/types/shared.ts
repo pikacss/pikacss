@@ -22,6 +22,7 @@ export interface StyleContent {
 	property: string
 	value: string[]
 	orderSensitive?: boolean
+	orderSensitiveTo?: string[]
 }
 
 export interface AtomicStyle {

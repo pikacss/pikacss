@@ -1,5 +1,7 @@
+import type { EngineStore } from './atomic-style'
 import type { ExtractFn } from './extractor'
-import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight, StyleContent } from './types'
+import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
+import { createEngineStore, getAtomicStyleBaseKey, optimizeAtomicStyleContents, resolveAtomicStyle } from './atomic-style'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX, LAYER_SELECTOR_PREFIX } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
@@ -8,12 +10,25 @@ import { keyframes } from './plugins/keyframes'
 import { selectors } from './plugins/selectors'
 import { shortcuts } from './plugins/shortcuts'
 import { variables } from './plugins/variables'
-import { hasPropertyEffectOverlap } from './property-effects'
-import { appendAutocompleteCssPropertyValues, appendAutocompleteExtraCssProperties, appendAutocompleteExtraProperties,	appendAutocompletePropertyValues,	appendAutocompleteSelectors,	appendAutocompleteStyleItemStrings,	isNotNullish,	isPropertyValue,	log,	numberToChars,	renderCSSStyleBlocks,	serialize, toKebab } from './utils'
+import {
+	appendAutocompleteCssPropertyValues,
+	appendAutocompleteExtraCssProperties,
+	appendAutocompleteExtraProperties,
+	appendAutocompletePropertyValues,
+	appendAutocompleteSelectors,
+	appendAutocompleteStyleItemStrings,
+	isNotNullish,
+	isPropertyValue,
+	log,
+	renderCSSStyleBlocks,
+	toKebab,
+} from './utils'
 
 export const DEFAULT_PREFLIGHTS_LAYER = 'preflights'
 export const DEFAULT_UTILITIES_LAYER = 'utilities'
 export const DEFAULT_LAYERS: Record<string, number> = { [DEFAULT_PREFLIGHTS_LAYER]: 1, [DEFAULT_UTILITIES_LAYER]: 10 }
+
+export { getAtomicStyleId, optimizeAtomicStyleContents } from './atomic-style'
 
 export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	log.debug('Creating engine with config:', config)
@@ -68,10 +83,7 @@ export class Engine {
 
 	extract: ExtractFn
 
-	store = {
-		atomicStyleIds: new Map<string, string>(),
-		atomicStyles: new Map<string, AtomicStyle>(),
-	}
+	store: EngineStore = createEngineStore()
 
 	constructor(config: ResolvedEngineConfig) {
 		this.config = config
@@ -144,20 +156,21 @@ export class Engine {
 			extractStyleDefinition: styleDefinition => this.extract(styleDefinition),
 		})
 		const resolvedIds: string[] = []
-		contents.forEach((content) => {
-			const id = getAtomicStyleId({
+		const resolvedIdsByBaseKey = new Map<string, string>()
+		for (const content of contents) {
+			const { id, atomicStyle } = resolveAtomicStyle({
 				content,
 				prefix: this.config.prefix,
-				stored: this.store.atomicStyleIds,
+				store: this.store,
+				resolvedIdsByBaseKey,
 			})
 			resolvedIds.push(id)
-			if (!this.store.atomicStyles.has(id)) {
-				const atomicStyle: AtomicStyle = { id, content }
-				this.store.atomicStyles.set(id, atomicStyle)
+			resolvedIdsByBaseKey.set(getAtomicStyleBaseKey(content), id)
+			if (atomicStyle != null) {
 				log.debug(`Atomic style added: ${id}`)
 				this.notifyAtomicStyleAdded(atomicStyle)
 			}
-		})
+		}
 		log.debug(`Resolved ${resolvedIds.length} atomic styles, ${unknown.size} unknown items`)
 		return [...unknown, ...resolvedIds]
 	}
@@ -431,64 +444,6 @@ export async function resolveEngineConfig(config: EngineConfig): Promise<Resolve
 	log.debug(`Engine config resolved: ${resolvedPreflights.length} preflights processed`)
 
 	return resolvedConfig
-}
-
-export function getAtomicStyleId({
-	content,
-	prefix,
-	stored,
-}: {
-	content: StyleContent
-	prefix: string
-	stored: Map<string, string>
-}) {
-	const baseKey = serialize([content.selector, content.property, content.value])
-	if (content.orderSensitive !== true) {
-		const cached = stored.get(baseKey)
-		if (cached != null) {
-			log.debug(`Atomic style cached: ${cached}`)
-			return cached
-		}
-	}
-
-	const num = stored.size
-	const id = `${prefix}${numberToChars(num)}`
-	const key = content.orderSensitive === true
-		? serialize([baseKey, 'order-sensitive', num])
-		: baseKey
-	stored.set(key, id)
-	log.debug(`Generated new atomic style ID: ${id}`)
-	return id
-}
-
-export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
-	const map = new Map<string, StyleContent>()
-	const scopedEntries = new Map<string, Map<string, StyleContent>>()
-	list.forEach((content) => {
-		const scopeKey = serialize(content.selector)
-		const key = serialize([content.selector, content.property])
-		const scoped = scopedEntries.get(scopeKey) || new Map<string, StyleContent>()
-		scopedEntries.set(scopeKey, scoped)
-
-		map.delete(key)
-		scoped.delete(key)
-
-		if (content.value == null)
-			return
-
-		const { selector, property, value } = content
-		const nextContent: StyleContent = { selector, property, value }
-		for (const existing of scoped.values()) {
-			if (hasPropertyEffectOverlap(existing.property, property)) {
-				nextContent.orderSensitive = true
-				break
-			}
-		}
-
-		map.set(key, nextContent)
-		scoped.set(key, nextContent)
-	})
-	return [...map.values()]
 }
 
 function extractLayerFromStyleItem(item: InternalStyleDefinition): { layer: string | undefined, definition: InternalStyleDefinition } {
