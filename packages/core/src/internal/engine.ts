@@ -1,6 +1,6 @@
 import type { EngineStore } from './atomic-style'
 import type { ExtractFn } from './extractor'
-import type { AtomicStyle, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
+import type { AtomicStyle, AutocompleteContribution, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
 import { createEngineStore, getAtomicStyleBaseKey, optimizeAtomicStyleContents, resolveAtomicStyle } from './atomic-style'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX, LAYER_SELECTOR_PREFIX } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
@@ -11,12 +11,7 @@ import { selectors } from './plugins/selectors'
 import { shortcuts } from './plugins/shortcuts'
 import { variables } from './plugins/variables'
 import {
-	appendAutocompleteCssPropertyValues,
-	appendAutocompleteExtraCssProperties,
-	appendAutocompleteExtraProperties,
-	appendAutocompletePropertyValues,
-	appendAutocompleteSelectors,
-	appendAutocompleteStyleItemStrings,
+	appendAutocomplete,
 	isNotNullish,
 	isPropertyValue,
 	log,
@@ -64,8 +59,10 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 
 	let engine = new Engine(resolvedConfig)
 
-	engine.appendAutocompleteExtraProperties('__layer')
-	engine.appendAutocompletePropertyValues('__layer', 'Autocomplete[\'Layer\']')
+	engine.appendAutocomplete({
+		extraProperties: '__layer',
+		properties: { __layer: 'Autocomplete[\'Layer\']' },
+	})
 
 	log.debug('Engine instance created')
 	engine = await hooks.configureEngine(
@@ -108,34 +105,9 @@ export class Engine {
 		hooks.autocompleteConfigUpdated(this.config.plugins)
 	}
 
-	appendAutocompleteSelectors(...selectors: string[]) {
-		appendAutocompleteSelectors(this.config, ...selectors)
-		this.notifyAutocompleteConfigUpdated()
-	}
-
-	appendAutocompleteStyleItemStrings(...styleItemStrings: string[]) {
-		appendAutocompleteStyleItemStrings(this.config, ...styleItemStrings)
-		this.notifyAutocompleteConfigUpdated()
-	}
-
-	appendAutocompleteExtraProperties(...properties: string[]) {
-		appendAutocompleteExtraProperties(this.config, ...properties)
-		this.notifyAutocompleteConfigUpdated()
-	}
-
-	appendAutocompleteExtraCssProperties(...properties: string[]) {
-		appendAutocompleteExtraCssProperties(this.config, ...properties)
-		this.notifyAutocompleteConfigUpdated()
-	}
-
-	appendAutocompletePropertyValues(property: string, ...tsTypes: string[]) {
-		appendAutocompletePropertyValues(this.config, property, ...tsTypes)
-		this.notifyAutocompleteConfigUpdated()
-	}
-
-	appendAutocompleteCssPropertyValues(property: string, ...values: string[]) {
-		appendAutocompleteCssPropertyValues(this.config, property, ...values)
-		this.notifyAutocompleteConfigUpdated()
+	appendAutocomplete(contribution: AutocompleteContribution) {
+		if (appendAutocomplete(this.config, contribution))
+			this.notifyAutocompleteConfigUpdated()
 	}
 
 	addPreflight(preflight: Preflight) {
@@ -435,8 +407,16 @@ export async function resolveEngineConfig(config: EngineConfig): Promise<Resolve
 			extraCssProperties: new Set(),
 			properties: new Map(),
 			cssProperties: new Map(),
+			patterns: {
+				selectors: new Set(),
+				styleItemStrings: new Set(),
+				properties: new Map(),
+				cssProperties: new Map(),
+			},
 		},
 	}
+
+	appendAutocomplete(resolvedConfig, config.autocomplete ?? {})
 
 	// process preflights
 	const resolvedPreflights = preflights.map(resolvePreflight)

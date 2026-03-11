@@ -10,7 +10,7 @@ PikaCSS uses generated artifacts on purpose. You should know what they are so yo
 
 ## `pika.gen.ts`
 
-This file provides generated typing and autocomplete support. It may augment the global `pika()` function, plugin-defined selectors, shortcuts, variables, and more.
+This file provides generated typing and autocomplete support. It may augment the global `pika()` function, selectors, shortcuts, variables, and other tokens coming from engine config or plugins.
 
 ## `pika.gen.css`
 
@@ -26,7 +26,7 @@ Generated files are excellent for debugging:
 
 - confirm whether a `pika()` call was transformed
 - inspect which selectors or declarations were emitted
-- verify that autocomplete includes expected plugin data
+- verify that autocomplete includes expected engine config and plugin data
 
 ## When generated files are not the solution
 

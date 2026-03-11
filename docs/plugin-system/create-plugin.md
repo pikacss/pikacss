@@ -26,6 +26,10 @@ Most first plugins should start in `configureEngine`.
 
 That hook gives you access to the public engine APIs for selectors, shortcuts, variables, keyframes, preflights, and autocomplete.
 
+Use `engine.appendAutocomplete()` as the single autocomplete mutation API. Add selectors, style item strings, extra properties, CSS property values, and template-literal patterns through one payload instead of calling separate per-bucket helpers.
+
+<<< @/.examples/plugin-system/autocomplete-api.ts
+
 ## When to use other hooks
 
 - use `configureRawConfig` to add or adjust config before resolution

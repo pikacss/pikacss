@@ -38,8 +38,10 @@ export function important() {
 			defaultValue = config.important?.default ?? false
 		},
 		configureEngine(engine) {
-			engine.appendAutocompleteExtraProperties('__important')
-			engine.appendAutocompletePropertyValues('__important', 'boolean')
+			engine.appendAutocomplete({
+				extraProperties: '__important',
+				properties: { __important: 'boolean' },
+			})
 		},
 		transformStyleDefinitions(styleDefinitions) {
 			return styleDefinitions.map<InternalStyleDefinition>((styleDefinition) => {

@@ -10,6 +10,7 @@ PikaCSS configuration has two layers, and confusing them is one of the easiest w
 Use engine config for things that change styling behavior:
 
 - plugins
+- autocomplete
 - selectors
 - shortcuts
 - variables
@@ -21,6 +22,14 @@ Use engine config for things that change styling behavior:
 <<< @/.examples/guide/config-basic.ts
 
 <<< @/.examples/guide/config-full-example.ts
+
+## Custom autocomplete
+
+Use `autocomplete` when your app or design system has stable custom style tokens that do not come from a plugin.
+
+These entries are merged with built-in and external plugin autocomplete, then written into the generated TypeScript types.
+
+<<< @/.examples/guide/config-autocomplete.ts
 
 ## Built-in plugins are configured by top-level keys
 

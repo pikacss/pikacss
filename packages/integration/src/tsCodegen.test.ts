@@ -1,8 +1,16 @@
+/* eslint-disable no-template-curly-in-string */
 import type { IntegrationContext } from './types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { generateTsCodegenContent } from './tsCodegen'
 
 function createMockCtx(overrides: Partial<Pick<IntegrationContext, 'currentPackageName' | 'fnName' | 'transformedFormat' | 'hasVue' | 'engine' | 'usages'>> = {}): IntegrationContext {
+	const patterns = {
+		selectors: new Set<string>(),
+		styleItemStrings: new Set<string>(),
+		properties: new Map<string, string[]>(),
+		cssProperties: new Map<string, string[]>(),
+	}
+
 	return {
 		currentPackageName: '@pikacss/core',
 		fnName: 'pika',
@@ -17,6 +25,7 @@ function createMockCtx(overrides: Partial<Pick<IntegrationContext, 'currentPacka
 					extraCssProperties: new Set(['--color']),
 					properties: new Map([['__important', ['boolean']]]),
 					cssProperties: new Map([['color', ['red', 'blue']]]),
+					patterns,
 				},
 				layers: {},
 			},
@@ -31,6 +40,13 @@ function createMockCtx(overrides: Partial<Pick<IntegrationContext, 'currentPacka
 function createMockCtxForTsCodegen(overrides: {
 	layers?: Record<string, number>
 } = {}): IntegrationContext {
+	const patterns = {
+		selectors: new Set<string>(),
+		styleItemStrings: new Set<string>(),
+		properties: new Map<string, string[]>(),
+		cssProperties: new Map<string, string[]>(),
+	}
+
 	return {
 		currentPackageName: '@pikacss/test',
 		fnName: 'pika',
@@ -45,6 +61,7 @@ function createMockCtxForTsCodegen(overrides: {
 					extraCssProperties: new Set(),
 					properties: new Map(),
 					cssProperties: new Map(),
+					patterns,
 				},
 				layers: overrides.layers ?? {},
 			},
@@ -102,6 +119,12 @@ describe('generateTsCodegenContent', () => {
 						extraCssProperties: new Set(),
 						properties: new Map(),
 						cssProperties: new Map(),
+						patterns: {
+							selectors: new Set(),
+							styleItemStrings: new Set(),
+							properties: new Map(),
+							cssProperties: new Map(),
+						},
 					},
 					layers: {},
 				},
@@ -118,6 +141,41 @@ describe('generateTsCodegenContent', () => {
 			.toContain('PropertyValue: never')
 		expect(result)
 			.toContain('CSSPropertyValue: never')
+	})
+
+	it('should include pattern unions in autocomplete output', async () => {
+		const ctx = createMockCtx({
+			engine: {
+				config: {
+					autocomplete: {
+						selectors: new Set(['hover']),
+						styleItemStrings: new Set(['flex-center']),
+						extraProperties: new Set(['__icon']),
+						extraCssProperties: new Set(['mask-image']),
+						properties: new Map([['__icon', ['boolean']]]),
+						cssProperties: new Map([['mask-image', ['none']]]),
+						patterns: {
+							selectors: new Set(['screen-${number}']),
+							styleItemStrings: new Set(['i-${string}:${string}']),
+							properties: new Map([['__icon', ['`i-${string}:${string}`']]]),
+							cssProperties: new Map([['mask-image', ['`var(--icon-${string})`']]]),
+						},
+					},
+					layers: {},
+				},
+				renderAtomicStyles: vi.fn()
+					.mockResolvedValue(''),
+			} as unknown as IntegrationContext['engine'],
+		})
+		const result = await generateTsCodegenContent(ctx)
+		expect(result)
+			.toContain('Selector: "hover" | screen-${number}')
+		expect(result)
+			.toContain('StyleItemString: "flex-center" | i-${string}:${string}')
+		expect(result)
+			.toContain('PropertyValue: { "__icon": boolean | `i-${string}:${string}` }')
+		expect(result)
+			.toContain('CSSPropertyValue: { "mask-image": "none" | `var(--icon-${string})` }')
 	})
 
 	it('should generate StyleFn types for string format', async () => {

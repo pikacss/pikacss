@@ -24,6 +24,9 @@ export type * from './internal/plugins/shortcuts'
 export type * from './internal/plugins/variables'
 
 export type {
+	AutocompleteConfig,
+	AutocompleteContribution,
+	AutocompletePatternsConfig,
 	CSSStyleBlockBody,
 	CSSStyleBlocks,
 	DefineAutocomplete,
@@ -39,12 +42,7 @@ export type {
 export type * from './internal/types/utils'
 
 export {
-	appendAutocompleteCssPropertyValues,
-	appendAutocompleteExtraCssProperties,
-	appendAutocompleteExtraProperties,
-	appendAutocompletePropertyValues,
-	appendAutocompleteSelectors,
-	appendAutocompleteStyleItemStrings,
+	appendAutocomplete,
 	createLogger,
 	log,
 	renderCSSStyleBlocks,

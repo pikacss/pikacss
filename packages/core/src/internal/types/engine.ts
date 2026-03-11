@@ -1,5 +1,5 @@
 import type { EnginePlugin } from '../plugin'
-import type { ResolvedAutocompleteConfig } from './autocomplete'
+import type { AutocompleteConfig, ResolvedAutocompleteConfig } from './autocomplete'
 import type { Preflight, ResolvedPreflight } from './preflight'
 
 // #region EngineConfig
@@ -97,6 +97,27 @@ export interface EngineConfig {
 	 * @default 'utilities'
 	 */
 	defaultUtilitiesLayer?: string
+
+	/**
+	 * Register custom autocomplete entries directly from engine config.
+	 * This is merged with built-in plugins and plugin-provided autocomplete.
+	 *
+	 * @example
+	 * ```ts
+	 * {
+	 *   autocomplete: {
+	 *     styleItemStrings: ['btn-primary'],
+	 *     properties: {
+	 *       variant: ['"solid"', '"ghost"']
+	 *     },
+	 *     patterns: {
+	 *       selectors: ['screen-${number}']
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 */
+	autocomplete?: AutocompleteConfig
 }
 // #endregion EngineConfig
 

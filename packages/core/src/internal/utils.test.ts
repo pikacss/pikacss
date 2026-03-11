@@ -1,13 +1,9 @@
+/* eslint-disable no-template-curly-in-string */
 import type { CSSStyleBlocks, ResolvedEngineConfig } from './types'
 import { describe, expect, it, vi } from 'vitest'
 import {
 	addToSet,
-	appendAutocompleteCssPropertyValues,
-	appendAutocompleteExtraCssProperties,
-	appendAutocompleteExtraProperties,
-	appendAutocompletePropertyValues,
-	appendAutocompleteSelectors,
-	appendAutocompleteStyleItemStrings,
+	appendAutocomplete,
 	createLogger,
 	isNotNullish,
 	isNotString,
@@ -560,125 +556,65 @@ function createMockAutocompleteConfig(): Pick<ResolvedEngineConfig, 'autocomplet
 			extraCssProperties: new Set<string>(),
 			properties: new Map<string, string[]>(),
 			cssProperties: new Map<string, string[]>(),
+			patterns: {
+				selectors: new Set<string>(),
+				styleItemStrings: new Set<string>(),
+				properties: new Map<string, string[]>(),
+				cssProperties: new Map<string, string[]>(),
+			},
 		},
 	}
 }
 
-describe('appendAutocompleteSelectors', () => {
-	it('should add selectors to the autocomplete config', () => {
+describe('appendAutocomplete', () => {
+	it('should append multiple autocomplete sections in one call', () => {
 		const config = createMockAutocompleteConfig()
-		appendAutocompleteSelectors(config, '.foo', '.bar')
+		appendAutocomplete(config, {
+			selectors: ['.foo', '.bar'],
+			styleItemStrings: 'text-red',
+			extraProperties: '__test',
+			cssProperties: {
+				color: ['red', 'blue'],
+			},
+			patterns: {
+				styleItemStrings: 'i-${string}:${string}',
+			},
+		})
+
 		expect(config.autocomplete.selectors.has('.foo'))
 			.toBe(true)
 		expect(config.autocomplete.selectors.has('.bar'))
 			.toBe(true)
-		expect(config.autocomplete.selectors.size)
-			.toBe(2)
-	})
-
-	it('should not add duplicate selectors', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteSelectors(config, '.foo', '.foo')
-		expect(config.autocomplete.selectors.size)
-			.toBe(1)
-	})
-})
-
-describe('appendAutocompleteStyleItemStrings', () => {
-	it('should add style item strings to the autocomplete config', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteStyleItemStrings(config, 'color-red', 'bg-blue')
-		expect(config.autocomplete.styleItemStrings.has('color-red'))
+		expect(config.autocomplete.styleItemStrings.has('text-red'))
 			.toBe(true)
-		expect(config.autocomplete.styleItemStrings.has('bg-blue'))
+		expect(config.autocomplete.extraProperties.has('__test'))
 			.toBe(true)
-	})
-
-	it('should not add duplicates', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteStyleItemStrings(config, 'a', 'a')
-		expect(config.autocomplete.styleItemStrings.size)
-			.toBe(1)
-	})
-})
-
-describe('appendAutocompleteExtraProperties', () => {
-	it('should add extra properties', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteExtraProperties(config, 'myProp', 'anotherProp')
-		expect(config.autocomplete.extraProperties.has('myProp'))
-			.toBe(true)
-		expect(config.autocomplete.extraProperties.has('anotherProp'))
-			.toBe(true)
-	})
-})
-
-describe('appendAutocompleteExtraCssProperties', () => {
-	it('should add extra CSS properties', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteExtraCssProperties(config, 'accent-color', '--custom')
-		expect(config.autocomplete.extraCssProperties.has('accent-color'))
-			.toBe(true)
-		expect(config.autocomplete.extraCssProperties.has('--custom'))
-			.toBe(true)
-	})
-})
-
-describe('appendAutocompletePropertyValues', () => {
-	it('should add property values for a new property', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompletePropertyValues(config, 'color', '"red"', '"blue"')
-		expect(config.autocomplete.properties.get('color'))
-			.toEqual(['"red"', '"blue"'])
-	})
-
-	it('should append to existing property values', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompletePropertyValues(config, 'color', '"red"')
-		appendAutocompletePropertyValues(config, 'color', '"blue"')
-		expect(config.autocomplete.properties.get('color'))
-			.toEqual(['"red"', '"blue"'])
-	})
-
-	it('should handle multiple properties independently', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompletePropertyValues(config, 'color', '"red"')
-		appendAutocompletePropertyValues(config, 'size', '"sm"')
-		expect(config.autocomplete.properties.get('color'))
-			.toEqual(['"red"'])
-		expect(config.autocomplete.properties.get('size'))
-			.toEqual(['"sm"'])
-	})
-})
-
-describe('appendAutocompleteCssPropertyValues', () => {
-	it('should add CSS property values for a new property', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteCssPropertyValues(config, 'color', 'red', 'blue')
 		expect(config.autocomplete.cssProperties.get('color'))
+			.toEqual(['red', 'blue'])
+		expect(config.autocomplete.patterns.styleItemStrings.has('i-${string}:${string}'))
+			.toBe(true)
+	})
+
+	it('should normalize tuple-based property entries', () => {
+		const config = createMockAutocompleteConfig()
+		appendAutocomplete(config, {
+			properties: [['variant', ['"solid"', '"ghost"']]],
+			cssProperties: [['--brand-color', ['red', 'blue']]],
+		})
+
+		expect(config.autocomplete.properties.get('variant'))
+			.toEqual(['"solid"', '"ghost"'])
+		expect(config.autocomplete.cssProperties.get('--brand-color'))
 			.toEqual(['red', 'blue'])
 	})
 
-	it('should append to existing CSS property values', () => {
+	it('should report whether anything changed', () => {
 		const config = createMockAutocompleteConfig()
-		appendAutocompleteCssPropertyValues(config, 'color', 'red')
-		appendAutocompleteCssPropertyValues(config, 'color', 'blue')
-		expect(config.autocomplete.cssProperties.get('color'))
-			.toEqual(['red', 'blue'])
-	})
 
-	it('should handle numeric string values', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteCssPropertyValues(config, 'z-index', '1', '10', '100')
-		expect(config.autocomplete.cssProperties.get('z-index'))
-			.toEqual(['1', '10', '100'])
-	})
-
-	it('should handle mixed string values', () => {
-		const config = createMockAutocompleteConfig()
-		appendAutocompleteCssPropertyValues(config, 'font-weight', 'bold', '400', '700')
-		expect(config.autocomplete.cssProperties.get('font-weight'))
-			.toEqual(['bold', '400', '700'])
+		expect(appendAutocomplete(config, {}))
+			.toBe(false)
+		expect(appendAutocomplete(config, { selectors: '.foo' }))
+			.toBe(true)
 	})
 })
 

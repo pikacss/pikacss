@@ -26,6 +26,10 @@
 
 這個 hook 會讓你接觸到 selectors、shortcuts、variables、keyframes、preflights 與 autocomplete 的公開 engine APIs。
 
+把 `engine.appendAutocomplete()` 當成唯一的 autocomplete 寫入 API。selectors、style item strings、extra properties、CSS property values 與 template-literal patterns，都應該透過同一個 payload 加進去，而不是再分散呼叫不同 bucket 的 helper。
+
+<<< @/.examples/zh-TW/plugin-system/autocomplete-api.ts
+
 ## 什麼時候該用其他 hooks
 
 - 在 resolution 前加入或調整 config 時，使用 `configureRawConfig`

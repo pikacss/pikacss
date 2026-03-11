@@ -119,14 +119,16 @@ export function variables() {
 					const list = resolveVariables(variables)
 					list.forEach((resolved) => {
 						const { name, value, autocomplete: { asValueOf, asProperty } } = resolved
+						const cssProperties = Object.fromEntries(
+							asValueOf
+								.filter(p => p !== '-')
+								.map(p => [p, `var(${name})`]),
+						)
 
-						asValueOf.forEach((p) => {
-							if (p !== '-')
-								engine.appendAutocompleteCssPropertyValues(p, `var(${name})`)
+						engine.appendAutocomplete({
+							cssProperties,
+							extraCssProperties: asProperty ? name : undefined,
 						})
-
-						if (asProperty)
-							engine.appendAutocompleteExtraCssProperties(name)
 
 						if (value != null) {
 							const list = engine.variables.store.get(name) ?? []

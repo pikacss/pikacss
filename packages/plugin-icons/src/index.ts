@@ -146,6 +146,15 @@ function createAutocomplete(prefixes: string[], autocomplete: string[] = []) {
 	]
 }
 
+function createAutocompletePatterns(prefixes: string[]) {
+	return prefixes.flatMap(prefix => [
+		`\`${prefix}\${string}:\${string}\``,
+		`\`${prefix}\${string}:\${string}?mask\``,
+		`\`${prefix}\${string}:\${string}?bg\``,
+		`\`${prefix}\${string}:\${string}?auto\``,
+	])
+}
+
 function resolveCdnCollectionUrl(cdn: string, collection: string) {
 	if (cdn.includes('{collection}'))
 		return cdn.replaceAll('{collection}', collection)
@@ -296,6 +305,13 @@ function createIconsPlugin(): EnginePlugin {
 			} = iconsConfig
 			const prefixes = normalizePrefixes(prefix)
 			const autocomplete = createAutocomplete(prefixes, _autocomplete)
+			const autocompletePatterns = createAutocompletePatterns(prefixes)
+
+			engine.appendAutocomplete({
+				patterns: {
+					styleItemStrings: autocompletePatterns,
+				},
+			})
 
 			engine.shortcuts.add({
 				shortcut: createShortcutRegExp(prefixes),

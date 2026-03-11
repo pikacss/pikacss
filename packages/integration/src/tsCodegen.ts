@@ -1,39 +1,59 @@
 import type { IntegrationContext } from './types'
 import { log, sortLayerNames } from '@pikacss/core'
 
-function formatUnionStringType(list: string[]) {
-	return list.length > 0
-		? list.map(i => JSON.stringify(i))
-				.join(' | ')
+function formatUnionType(parts: string[]) {
+	return parts.length > 0
+		? parts.join(' | ')
 		: 'never'
+}
+
+function formatUnionStringType(list: string[]) {
+	return formatUnionType(list.map(i => JSON.stringify(i)))
+}
+
+function formatAutocompleteUnion(literals: Iterable<string>, patterns?: Iterable<string>) {
+	return formatUnionType([
+		...Array.from(literals, value => JSON.stringify(value)),
+		...(patterns == null ? [] : [...patterns]),
+	])
 }
 
 function formatAutocompleteValueMap(
 	keys: Iterable<string>,
 	entries: Map<string, string[]>,
-	formatValue: (values: string[]) => string,
+	patternEntries: Map<string, string[]>,
+	formatValue: (values: string[], patterns: string[]) => string,
 ) {
 	const mergedKeys = new Set<string>(keys)
 	for (const key of entries.keys()) {
 		mergedKeys.add(key)
 	}
+	for (const key of patternEntries.keys()) {
+		mergedKeys.add(key)
+	}
 
 	return mergedKeys.size > 0
-		? `{ ${Array.from(mergedKeys, key => `${JSON.stringify(key)}: ${formatValue(entries.get(key) || [])}`)
+		? `{ ${Array.from(mergedKeys, key => `${JSON.stringify(key)}: ${formatValue(entries.get(key) || [], patternEntries.get(key) || [])}`)
 			.join(', ')} }`
 		: 'never'
 }
 
 function generateAutocomplete(ctx: IntegrationContext) {
 	const autocomplete = ctx.engine.config.autocomplete
+	const patterns = autocomplete.patterns ?? {
+		selectors: new Set<string>(),
+		styleItemStrings: new Set<string>(),
+		properties: new Map<string, string[]>(),
+		cssProperties: new Map<string, string[]>(),
+	}
 	const { layers } = ctx.engine.config
 	const layerNames = sortLayerNames(layers)
 	return [
 		'export type Autocomplete = DefineAutocomplete<{',
-		`  Selector: ${formatUnionStringType([...autocomplete.selectors])}`,
-		`  StyleItemString: ${formatUnionStringType([...autocomplete.styleItemStrings])}`,
-		`  PropertyValue: ${formatAutocompleteValueMap(autocomplete.extraProperties, autocomplete.properties, values => values.length > 0 ? values.join(' | ') : 'never')}`,
-		`  CSSPropertyValue: ${formatAutocompleteValueMap(autocomplete.extraCssProperties, autocomplete.cssProperties, values => formatUnionStringType(values))}`,
+		`  Selector: ${formatAutocompleteUnion(autocomplete.selectors, patterns.selectors)}`,
+		`  StyleItemString: ${formatAutocompleteUnion(autocomplete.styleItemStrings, patterns.styleItemStrings)}`,
+		`  PropertyValue: ${formatAutocompleteValueMap(autocomplete.extraProperties, autocomplete.properties, patterns.properties, (values, patterns) => formatUnionType([...values, ...patterns]))}`,
+		`  CSSPropertyValue: ${formatAutocompleteValueMap(autocomplete.extraCssProperties, autocomplete.cssProperties, patterns.cssProperties, (values, patterns) => formatAutocompleteUnion(values, patterns))}`,
 		`  Layer: ${formatUnionStringType(layerNames)}`,
 		'}>',
 		'',

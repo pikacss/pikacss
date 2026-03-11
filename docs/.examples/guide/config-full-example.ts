@@ -12,6 +12,16 @@ export default defineEngineConfig({
 	prefix: 'pk-',
 	defaultSelector: '.%',
 
+	autocomplete: {
+		styleItemStrings: ['btn-primary'],
+		properties: {
+			variant: ['"solid"', '"ghost"'],
+		},
+		patterns: {
+			selectors: ['screen-${number}'],
+		},
+	},
+
 	preflights: [
 		'*, *::before, *::after { box-sizing: border-box; }',
 	],

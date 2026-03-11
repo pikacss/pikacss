@@ -85,10 +85,14 @@ export function keyframes() {
 						if (frames != null)
 							engine.keyframes.store.set(name, resolved)
 
-						engine.appendAutocompleteCssPropertyValues('animationName', name)
-						engine.appendAutocompleteCssPropertyValues('animation', `${name} `)
-						if (autocompleteAnimation != null)
-							engine.appendAutocompleteCssPropertyValues('animation', ...autocompleteAnimation)
+						engine.appendAutocomplete({
+							cssProperties: {
+								animationName: name,
+								animation: autocompleteAnimation != null
+									? [`${name} `, ...autocompleteAnimation]
+									: `${name} `,
+							},
+						})
 					})
 					engine.notifyPreflightUpdated()
 				},

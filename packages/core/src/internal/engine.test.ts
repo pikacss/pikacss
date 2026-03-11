@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import type { AtomicStyle, ExtractedStyleContent, InternalStyleItem } from './types'
 import { describe, expect, it, vi } from 'vitest'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, DEFAULT_ATOMIC_STYLE_ID_PREFIX } from './constants'
@@ -256,6 +257,14 @@ describe('resolveEngineConfig', () => {
 		expect(resolved.autocomplete.properties)
 			.toBeInstanceOf(Map)
 		expect(resolved.autocomplete.cssProperties)
+			.toBeInstanceOf(Map)
+		expect(resolved.autocomplete.patterns.selectors)
+			.toBeInstanceOf(Set)
+		expect(resolved.autocomplete.patterns.styleItemStrings)
+			.toBeInstanceOf(Set)
+		expect(resolved.autocomplete.patterns.properties)
+			.toBeInstanceOf(Map)
+		expect(resolved.autocomplete.patterns.cssProperties)
 			.toBeInstanceOf(Map)
 	})
 
@@ -796,48 +805,48 @@ describe('engine.addPreflight', () => {
 // ─── Engine autocomplete helpers ─────────────────────────────────────────────
 
 describe('engine autocomplete helpers', () => {
-	it('should append autocomplete selectors', async () => {
+	it('should merge autocomplete from engine config', async () => {
+		const engine = await createEngine({
+			autocomplete: {
+				selectors: '.custom',
+				styleItemStrings: 'btn-primary',
+				properties: {
+					variant: ['"solid"', '"ghost"'],
+				},
+				patterns: {
+					styleItemStrings: 'icon-${string}',
+				},
+			},
+		})
+
+		expect(engine.config.autocomplete.selectors.has('.custom'))
+			.toBe(true)
+		expect(engine.config.autocomplete.styleItemStrings.has('btn-primary'))
+			.toBe(true)
+		expect(engine.config.autocomplete.properties.get('variant'))
+			.toEqual(['"solid"', '"ghost"'])
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('icon-${string}'))
+			.toBe(true)
+	})
+
+	it('should append multiple autocomplete sections through canonical method', async () => {
 		const engine = await createEngine()
-		engine.appendAutocompleteSelectors('.foo', '.bar')
+		engine.appendAutocomplete({
+			selectors: '.foo',
+			styleItemStrings: 'txt-red',
+			properties: { color: ['"red"', '"blue"'] },
+			patterns: {
+				selectors: 'screen-${number}',
+			},
+		})
 		expect(engine.config.autocomplete.selectors.has('.foo'))
 			.toBe(true)
-		expect(engine.config.autocomplete.selectors.has('.bar'))
-			.toBe(true)
-	})
-
-	it('should append autocomplete style item strings', async () => {
-		const engine = await createEngine()
-		engine.appendAutocompleteStyleItemStrings('txt-red')
 		expect(engine.config.autocomplete.styleItemStrings.has('txt-red'))
 			.toBe(true)
-	})
-
-	it('should append autocomplete extra properties', async () => {
-		const engine = await createEngine()
-		engine.appendAutocompleteExtraProperties('myProp')
-		expect(engine.config.autocomplete.extraProperties.has('myProp'))
-			.toBe(true)
-	})
-
-	it('should append autocomplete extra CSS properties', async () => {
-		const engine = await createEngine()
-		engine.appendAutocompleteExtraCssProperties('accent-color')
-		expect(engine.config.autocomplete.extraCssProperties.has('accent-color'))
-			.toBe(true)
-	})
-
-	it('should append autocomplete property values', async () => {
-		const engine = await createEngine()
-		engine.appendAutocompletePropertyValues('color', '"red"', '"blue"')
 		expect(engine.config.autocomplete.properties.get('color'))
 			.toEqual(['"red"', '"blue"'])
-	})
-
-	it('should append autocomplete CSS property values', async () => {
-		const engine = await createEngine()
-		engine.appendAutocompleteCssPropertyValues('z-index', '1', '10')
-		expect(engine.config.autocomplete.cssProperties.get('z-index'))
-			.toEqual(['1', '10'])
+		expect(engine.config.autocomplete.patterns.selectors.has('screen-${number}'))
+			.toBe(true)
 	})
 })
 

@@ -72,7 +72,7 @@ export function selectors() {
 							return
 
 						if (typeof resolved === 'string') {
-							engine.appendAutocompleteSelectors(resolved)
+							engine.appendAutocomplete({ selectors: resolved })
 							return
 						}
 
@@ -81,7 +81,7 @@ export function selectors() {
 						else if (resolved.type === 'dynamic')
 							engine.selectors.resolver.addDynamicRule(resolved.rule)
 
-						engine.appendAutocompleteSelectors(...resolved.autocomplete)
+						engine.appendAutocomplete({ selectors: resolved.autocomplete })
 					})
 				},
 			}
@@ -90,7 +90,7 @@ export function selectors() {
 
 			engine.selectors.resolver.onResolved = (string, type) => {
 				if (type === 'dynamic') {
-					engine.appendAutocompleteSelectors(string)
+					engine.appendAutocomplete({ selectors: string })
 				}
 			}
 		},

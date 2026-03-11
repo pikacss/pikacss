@@ -1,4 +1,4 @@
-import type { CSSStyleBlocks, InternalPropertyValue, ResolvedEngineConfig } from './types'
+import type { Arrayable, AutocompleteConfig, AutocompleteContribution, CSSStyleBlocks, InternalPropertyValue, ResolvedEngineConfig } from './types'
 
 export function createLogger(prefix: string) {
 	let currentPrefix = prefix
@@ -117,33 +117,64 @@ export function serialize(value: unknown): string {
 }
 
 export function addToSet<T>(set: Set<T>, ...values: T[]) {
+	const before = set.size
 	values.forEach(value => set.add(value))
+	return set.size !== before
 }
 
-export function appendAutocompleteSelectors(config: Pick<ResolvedEngineConfig, 'autocomplete'>, ...selectors: string[]) {
-	addToSet(config.autocomplete.selectors, ...selectors)
+export function appendAutocompleteEntries(set: Set<string>, values?: Arrayable<string>) {
+	if (values == null)
+		return false
+
+	return addToSet(set, ...[values].flat())
 }
 
-export function appendAutocompleteStyleItemStrings(config: Pick<ResolvedEngineConfig, 'autocomplete'>, ...styleItemStrings: string[]) {
-	addToSet(config.autocomplete.styleItemStrings, ...styleItemStrings)
+export function appendAutocompleteRecordEntries(map: Map<string, string[]>, entries?: Record<string, Arrayable<string>>) {
+	if (entries == null)
+		return false
+
+	let changed = false
+	for (const [key, value] of Object.entries(entries)) {
+		const nextValues = [value].flat()
+		if (nextValues.length === 0)
+			continue
+
+		const current = map.get(key) || []
+		map.set(key, [...current, ...nextValues])
+		changed = true
+	}
+
+	return changed
 }
 
-export function appendAutocompleteExtraProperties(config: Pick<ResolvedEngineConfig, 'autocomplete'>, ...properties: string[]) {
-	addToSet(config.autocomplete.extraProperties, ...properties)
+function normalizeAutocompleteRecordEntries(
+	entries?: Record<string, Arrayable<string>> | [key: string, value: Arrayable<string>][],
+) {
+	if (entries == null)
+		return undefined
+
+	return Array.isArray(entries)
+		? Object.fromEntries(entries)
+		: entries
 }
 
-export function appendAutocompleteExtraCssProperties(config: Pick<ResolvedEngineConfig, 'autocomplete'>, ...properties: string[]) {
-	addToSet(config.autocomplete.extraCssProperties, ...properties)
-}
-
-export function appendAutocompletePropertyValues(config: Pick<ResolvedEngineConfig, 'autocomplete'>, property: string, ...tsTypes: string[]) {
-	const current = config.autocomplete.properties.get(property) || []
-	config.autocomplete.properties.set(property, [...current, ...tsTypes])
-}
-
-export function appendAutocompleteCssPropertyValues(config: Pick<ResolvedEngineConfig, 'autocomplete'>, property: string, ...values: string[]) {
-	const current = config.autocomplete.cssProperties.get(property) || []
-	config.autocomplete.cssProperties.set(property, [...current, ...values])
+export function appendAutocomplete(
+	config: Pick<ResolvedEngineConfig, 'autocomplete'>,
+	contribution: AutocompleteContribution | AutocompleteConfig,
+) {
+	const { patterns, properties, cssProperties, ...literals } = contribution
+	return [
+		appendAutocompleteEntries(config.autocomplete.selectors, literals.selectors),
+		appendAutocompleteEntries(config.autocomplete.styleItemStrings, literals.styleItemStrings),
+		appendAutocompleteEntries(config.autocomplete.extraProperties, literals.extraProperties),
+		appendAutocompleteEntries(config.autocomplete.extraCssProperties, literals.extraCssProperties),
+		appendAutocompleteRecordEntries(config.autocomplete.properties, normalizeAutocompleteRecordEntries(properties)),
+		appendAutocompleteRecordEntries(config.autocomplete.cssProperties, normalizeAutocompleteRecordEntries(cssProperties)),
+		appendAutocompleteEntries(config.autocomplete.patterns.selectors, patterns?.selectors),
+		appendAutocompleteEntries(config.autocomplete.patterns.styleItemStrings, patterns?.styleItemStrings),
+		appendAutocompleteRecordEntries(config.autocomplete.patterns.properties, patterns?.properties),
+		appendAutocompleteRecordEntries(config.autocomplete.patterns.cssProperties, patterns?.cssProperties),
+	].some(Boolean)
 }
 
 export function renderCSSStyleBlocks(blocks: CSSStyleBlocks, isFormatted: boolean, depth = 0) {

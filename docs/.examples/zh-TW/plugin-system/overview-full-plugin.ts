@@ -7,21 +7,21 @@ export function createMyPlugin(options: { prefix?: string } = {}) {
 		name: `${prefix}-plugin`,
 		order: 'pre',
 
-		// --- Async hooks (transform) ---
+		// --- 非同步 hooks（transform）---
 
 		configureRawConfig(config) {
-			// Modify raw config before resolution
+			// 在 config resolve 前修改 raw config
 			config.prefix = config.prefix || prefix
 			return config
 		},
 
 		configureResolvedConfig(resolvedConfig) {
-			// Modify resolved config after resolution
+			// 在 resolved config 建立後再調整
 			return resolvedConfig
 		},
 
 		async configureEngine(engine) {
-			// Set up engine features, add preflights, etc.
+			// 設定 engine 功能、加入 preflights 等
 			engine.addPreflight('/* my-plugin preflight */')
 			engine.appendAutocomplete({
 				extraProperties: '__myProp',
@@ -29,36 +29,36 @@ export function createMyPlugin(options: { prefix?: string } = {}) {
 		},
 
 		transformSelectors(selectors) {
-			// Transform selectors during style extraction
+			// 在 style extraction 期間轉換 selectors
 			return selectors
 		},
 
 		transformStyleItems(styleItems) {
-			// Transform style items during engine.use()
+			// 在 engine.use() 期間轉換 style items
 			return styleItems
 		},
 
 		transformStyleDefinitions(styleDefinitions) {
-			// Transform style definitions during style extraction
+			// 在 style extraction 期間轉換 style definitions
 			return styleDefinitions
 		},
 
-		// --- Sync hooks (notification) ---
+		// --- 同步 hooks（notification）---
 
 		rawConfigConfigured(_config) {
-			// Read-only access to settled raw config
+			// 讀取已定案的 raw config
 		},
 
 		preflightUpdated() {
-			// React to preflight changes
+			// 回應 preflight 變更
 		},
 
 		atomicStyleAdded(_atomicStyle) {
-			// React to new atomic styles
+			// 回應新的 atomic style
 		},
 
 		autocompleteConfigUpdated() {
-			// React to autocomplete config changes
+			// 回應 autocomplete config 變更
 		},
 	})
 }

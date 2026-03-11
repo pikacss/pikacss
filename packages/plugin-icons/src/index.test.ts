@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import { promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
@@ -291,6 +292,32 @@ describe('icons plugin', () => {
 		expect(ids)
 			.toHaveLength(0)
 		expect(warnings.some(message => message.includes('failed to load icon "i-custom:missing"')))
+			.toBe(true)
+	})
+
+	it('should register autocomplete patterns for icon shortcuts', async () => {
+		const engine = await createIconsEngine()
+
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('`i-${string}:${string}`'))
+			.toBe(true)
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('`i-${string}:${string}?mask`'))
+			.toBe(true)
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('`i-${string}:${string}?bg`'))
+			.toBe(true)
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('`i-${string}:${string}?auto`'))
+			.toBe(true)
+	})
+
+	it('should register autocomplete patterns for all configured prefixes', async () => {
+		const engine = await createIconsEngine({
+			icons: {
+				prefix: ['i-', 'icon-'],
+			},
+		})
+
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('`i-${string}:${string}`'))
+			.toBe(true)
+		expect(engine.config.autocomplete.patterns.styleItemStrings.has('`icon-${string}:${string}`'))
 			.toBe(true)
 	})
 })

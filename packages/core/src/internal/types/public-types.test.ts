@@ -1,8 +1,50 @@
+/* eslint-disable no-template-curly-in-string */
 import type * as CSS from '../../csstype'
-import type { CSSProperty, CSSSelector, Properties, PropertyValue, Selector, StyleDefinition, StyleDefinitionMap, StyleItem } from '../../index'
+import type { AutocompleteContribution, AutocompletePatternsConfig, CSSProperty, CSSSelector, Engine, Properties, PropertyValue, Selector, StyleDefinition, StyleDefinitionMap, StyleItem } from '../../index'
 import { describe, expectTypeOf, it } from 'vitest'
 
 describe('public types - types.ts', () => {
+	describe('autocompleteContribution', () => {
+		it('should expose the stable appendAutocomplete payload type', () => {
+			const contribution: AutocompleteContribution = {
+				selectors: ['hover', 'focus'],
+				styleItemStrings: 'flex-center',
+				extraProperties: '__shortcut',
+				cssProperties: {
+					color: ['red', 'blue'],
+				},
+				patterns: {
+					styleItemStrings: '`i-${string}:${string}`',
+				},
+			}
+
+			expectTypeOf(contribution)
+				.toExtend<AutocompleteContribution>()
+		})
+
+		it('should expose autocomplete pattern buckets as a separate public type', () => {
+			const patterns: AutocompletePatternsConfig = {
+				selectors: 'screen-${number}',
+				styleItemStrings: ['`i-${string}:${string}`'],
+				properties: {
+					__icon: '`i-${string}:${string}`',
+				},
+			}
+
+			expectTypeOf(patterns)
+				.toExtend<AutocompletePatternsConfig>()
+		})
+
+		it('should expose engine.appendAutocomplete as the public mutation entry point', () => {
+			expectTypeOf<Engine['appendAutocomplete']>()
+				.toBeFunction()
+
+			type AppendAutocompleteParams = Parameters<Engine['appendAutocomplete']>
+			expectTypeOf<AppendAutocompleteParams>()
+				.toEqualTypeOf<[AutocompleteContribution]>()
+		})
+	})
+
 	describe('propertyValue', () => {
 		it('should accept plain value', () => {
 			expectTypeOf<'red'>()

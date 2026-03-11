@@ -1,6 +1,7 @@
+/* eslint-disable no-template-curly-in-string */
 import type { Engine } from '../engine'
 import type { EnginePlugin } from '../plugin'
-import type { ResolvedAutocompleteConfig } from './autocomplete'
+import type { AutocompleteConfig, AutocompleteContribution, ResolvedAutocompleteConfig } from './autocomplete'
 import type { EngineConfig, ResolvedEngineConfig } from './engine'
 import type { ResolvedPreflight } from './preflight'
 import type { AtomicStyle } from './shared'
@@ -23,9 +24,20 @@ describe('engine types', () => {
 				layers: { base: 0, utilities: 10 },
 				defaultPreflightsLayer: 'preflights',
 				defaultUtilitiesLayer: 'utilities',
+				autocomplete: {
+					styleItemStrings: ['btn-primary'],
+					patterns: {
+						selectors: ['screen-${number}'],
+					},
+				},
 			}
 			expectTypeOf(config)
 				.toMatchTypeOf<EngineConfig>()
+		})
+
+		it('should expose autocomplete config input type', () => {
+			expectTypeOf<EngineConfig['autocomplete']>()
+				.toEqualTypeOf<AutocompleteConfig | undefined>()
 		})
 	})
 
@@ -109,6 +121,15 @@ describe('engine types', () => {
 				.toBeFunction()
 			expectTypeOf<Engine['renderLayerOrderDeclaration']>()
 				.toBeFunction()
+		})
+
+		it('should expose appendAutocomplete with the public contribution type', () => {
+			expectTypeOf<Engine['appendAutocomplete']>()
+				.toBeFunction()
+
+			type AppendAutocompleteParams = Parameters<Engine['appendAutocomplete']>
+			expectTypeOf<AppendAutocompleteParams>()
+				.toEqualTypeOf<[AutocompleteContribution]>()
 		})
 	})
 

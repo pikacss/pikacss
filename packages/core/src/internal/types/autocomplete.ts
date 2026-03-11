@@ -2,13 +2,38 @@ import type { Arrayable, UnionString } from './utils'
 
 export type AutocompleteKeys<T> = [T] extends [never] ? never : Extract<keyof T, string>
 
+export interface AutocompletePatternsConfig {
+	selectors?: Arrayable<string>
+	styleItemStrings?: Arrayable<string>
+	properties?: Record<string, Arrayable<string>>
+	cssProperties?: Record<string, Arrayable<string>>
+}
+
+export interface AutocompleteContribution {
+	selectors?: Arrayable<string>
+	styleItemStrings?: Arrayable<string>
+	extraProperties?: Arrayable<string>
+	extraCssProperties?: Arrayable<string>
+	properties?: Record<string, Arrayable<string>>
+	cssProperties?: Record<string, Arrayable<string>>
+	patterns?: AutocompletePatternsConfig
+}
+
 export interface AutocompleteConfig {
-	selectors?: string[]
-	styleItemStrings?: string[]
-	extraProperties?: string[]
-	extraCssProperties?: string[]
-	properties?: [property: string, tsType: Arrayable<string>][]
-	cssProperties?: [property: string, value: Arrayable<string>][]
+	selectors?: Arrayable<string>
+	styleItemStrings?: Arrayable<string>
+	extraProperties?: Arrayable<string>
+	extraCssProperties?: Arrayable<string>
+	properties?: [property: string, tsType: Arrayable<string>][] | Record<string, Arrayable<string>>
+	cssProperties?: [property: string, value: Arrayable<string>][] | Record<string, Arrayable<string>>
+	patterns?: AutocompletePatternsConfig
+}
+
+export interface ResolvedAutocompletePatternsConfig {
+	selectors: Set<string>
+	styleItemStrings: Set<string>
+	properties: Map<string, string[]>
+	cssProperties: Map<string, string[]>
 }
 
 export interface ResolvedAutocompleteConfig {
@@ -18,6 +43,7 @@ export interface ResolvedAutocompleteConfig {
 	extraCssProperties: Set<string>
 	properties: Map<string, string[]>
 	cssProperties: Map<string, string[]>
+	patterns: ResolvedAutocompletePatternsConfig
 }
 
 export interface _Autocomplete {
