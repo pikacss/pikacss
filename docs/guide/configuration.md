@@ -67,7 +67,7 @@ This is important because built-in plugin configuration does not live inside `pl
 <<< @/.examples/guide/config-plugins.ts
 
 ::: warning Common misunderstanding
-If you put official external plugins under built-in config keys, nothing useful happens. Built-in plugin config and external plugin registration are two different mechanisms.
+If you put official external plugins such as reset, fonts, icons, or typography under built-in config keys, nothing useful happens. Built-in plugin config and external plugin registration are two different mechanisms.
 :::
 
 ## Build plugin options

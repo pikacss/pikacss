@@ -64,6 +64,7 @@ const englishSidebar = [
 	{
 		text: 'Official Plugins',
 		items: [
+			{ text: 'Fonts', link: '/plugins/fonts' },
 			{ text: 'Icons', link: '/plugins/icons' },
 			{ text: 'Reset', link: '/plugins/reset' },
 			{ text: 'Typography', link: '/plugins/typography' },
@@ -147,6 +148,7 @@ const zhTwSidebar = [
 	{
 		text: '官方 Plugins',
 		items: [
+			{ text: 'Fonts', link: '/zh-TW/plugins/fonts' },
 			{ text: 'Icons', link: '/zh-TW/plugins/icons' },
 			{ text: 'Reset', link: '/zh-TW/plugins/reset' },
 			{ text: 'Typography', link: '/zh-TW/plugins/typography' },

@@ -1,11 +1,13 @@
 // pika.config.ts
 import { defineEngineConfig } from '@pikacss/core'
+import { fonts } from '@pikacss/plugin-fonts'
 import { icons } from '@pikacss/plugin-icons'
 import { reset } from '@pikacss/plugin-reset'
 
 export default defineEngineConfig({
 	plugins: [
 		reset(),
+		fonts(),
 		icons(),
 	],
 
@@ -25,6 +27,12 @@ export default defineEngineConfig({
 	preflights: [
 		'*, *::before, *::after { box-sizing: border-box; }',
 	],
+
+	fonts: {
+		fonts: {
+			sans: 'Roboto:400,700',
+		},
+	},
 
 	important: {
 		default: false,

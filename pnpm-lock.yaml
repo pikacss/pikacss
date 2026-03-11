@@ -416,6 +416,12 @@ importers:
         specifier: 'catalog:'
         version: 4.3.1
 
+  packages/plugin-fonts:
+    devDependencies:
+      '@pikacss/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/plugin-icons:
     dependencies:
       '@iconify/utils':

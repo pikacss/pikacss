@@ -151,14 +151,17 @@ export class Engine {
 		log.debug('Rendering preflights...')
 		const lineEnd = isFormatted ? '\n' : ''
 
+		const topLevelImports: string[] = []
 		const rendered: { layer?: string, css: string }[] = (await Promise.all(
 			this.config.preflights.map(async ({ layer, fn }) => {
 				const result = await fn(this, isFormatted)
-				const css = (
+				const rawCss = (
 					typeof result === 'string'
 						? result
 						: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
 				).trim()
+				const { imports, css } = extractImportAtRules(rawCss)
+				topLevelImports.push(...imports)
 				return { layer, css }
 			}),
 		)).filter(r => r.css)
@@ -167,6 +170,8 @@ export class Engine {
 		const { unlayeredParts, layerGroups } = groupRenderedPreflightsByLayer(rendered)
 
 		const outputParts: string[] = []
+		if (topLevelImports.length > 0)
+			outputParts.push(...topLevelImports)
 		if (unlayeredParts.length > 0) {
 			const { defaultPreflightsLayer } = this.config
 			// Unlayered preflights are automatically wrapped inside the defaultPreflightsLayer
@@ -273,6 +278,19 @@ function renderLayerBlocks<T>({
 				: render(items)
 			return `@layer ${layerName} {${lineEnd}${content}${lineEnd}}`
 		})
+}
+
+// eslint-disable-next-line regexp/no-super-linear-backtracking
+const RE_IMPORT = /@import\s(?:url\([^;]+\)|[^;])+;/g
+
+function extractImportAtRules(css: string) {
+	const imports: string[] = []
+	const remainder = css.replace(RE_IMPORT, (matched) => {
+		imports.push(matched.trim())
+		return ''
+	})
+		.trim()
+	return { imports, css: remainder }
 }
 
 function groupRenderedPreflightsByLayer(rendered: { layer?: string, css: string }[]) {

@@ -1218,6 +1218,24 @@ describe('engine.renderPreflights', () => {
 	})
 
 	describe('with layers', () => {
+		it('should emit top-level @import rules before layered preflights', async () => {
+			const engine = await createEngine({
+				preflights: [
+					'@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");',
+					'body { margin: 0; }',
+				],
+			})
+			const css = await engine.renderPreflights(false)
+			expect(css.startsWith('@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");'))
+				.toBe(true)
+			const importIdx = css.indexOf('@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");')
+			const layerIdx = css.indexOf('@layer preflights {')
+			expect(importIdx)
+				.toBeLessThan(layerIdx)
+			expect(css)
+				.toContain('body { margin: 0; }')
+		})
+
 		it('should wrap preflights in @layer preflights block when layers not explicitly configured (uses DEFAULT_LAYERS)', async () => {
 			const engine = await createEngine({
 				preflights: ['body { margin: 0; }'],
