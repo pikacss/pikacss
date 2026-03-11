@@ -31,6 +31,23 @@ These entries are merged with built-in and external plugin autocomplete, then wr
 
 <<< @/.examples/guide/config-autocomplete.ts
 
+## Semantic variable autocomplete
+
+Use `variables.*.semanticType` when a CSS variable represents a stable value family and you want PikaCSS to attach `var(--token)` only to matching CSS property autocomplete.
+
+Current built-in semantic families with runtime expansion are:
+
+- `color`
+- `length`
+- `time`
+- `number`
+- `easing`
+- `font-family`
+
+`semanticType` expands to the built-in property set first, then unions with any explicit `autocomplete.asValueOf` entries you add for project-specific outliers.
+
+<<< @/.examples/guide/config-variables-semantic-type.ts
+
 ## Built-in plugins are configured by top-level keys
 
 This is important because built-in plugin configuration does not live inside `plugins`.

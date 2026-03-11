@@ -355,6 +355,7 @@ describe('define functions', () => {
 			const v = defineVariables({
 				'--color-primary': {
 					value: 'blue',
+					semanticType: 'color',
 					autocomplete: {
 						asValueOf: ['color', 'background-color'],
 						asProperty: true,

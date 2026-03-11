@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createEngine } from '../engine'
+import { VARIABLE_SEMANTIC_FAMILY_PROPERTIES } from '../generated-property-semantics'
 import { log } from '../utils'
 import { extractUsedVarNames, extractUsedVarNamesFromPreflightResult, normalizeVariableName } from './variables'
 
@@ -419,6 +420,102 @@ describe('variables plugin (engine integration)', () => {
 				.toEqual(['var(--color-token)'])
 			expect([...engine.config.autocomplete.cssProperties.values()].flat())
 				.not.toContain('var(--icon-token)')
+		})
+
+		it('should expand semanticType to generated CSS property autocomplete targets', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--color-token': {
+							value: 'red',
+							semanticType: 'color',
+							autocomplete: {
+								asProperty: false,
+							},
+						},
+					},
+					pruneUnused: false,
+				},
+			})
+
+			expect(engine.config.autocomplete.cssProperties.get('color'))
+				.toEqual(['var(--color-token)'])
+			expect(engine.config.autocomplete.cssProperties.get('background-color'))
+				.toEqual(['var(--color-token)'])
+			expect(engine.config.autocomplete.cssProperties.get('*'))
+				.toBeUndefined()
+			expect(VARIABLE_SEMANTIC_FAMILY_PROPERTIES.color)
+				.toContain('background-color')
+		})
+
+		it('should union semanticType expansion with explicit asValueOf targets', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--brand-token': {
+							value: 'red',
+							semanticType: 'color',
+							autocomplete: {
+								asValueOf: 'mask-image',
+								asProperty: false,
+							},
+						},
+					},
+					pruneUnused: false,
+				},
+			})
+
+			expect(engine.config.autocomplete.cssProperties.get('color'))
+				.toEqual(['var(--brand-token)'])
+			expect(engine.config.autocomplete.cssProperties.get('mask-image'))
+				.toEqual(['var(--brand-token)'])
+		})
+
+		it('should let explicit disable override semanticType expansion', async () => {
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--disabled-token': {
+							value: 'red',
+							semanticType: 'color',
+							autocomplete: {
+								asValueOf: '-',
+								asProperty: false,
+							},
+						},
+					},
+					pruneUnused: false,
+				},
+			})
+
+			expect([...engine.config.autocomplete.cssProperties.values()].flat())
+				.not.toContain('var(--disabled-token)')
+		})
+
+		it('should warn and skip unknown semanticType expansion', async () => {
+			const warnSpy = vi.spyOn(log, 'warn')
+
+			const engine = await createEngine({
+				variables: {
+					variables: {
+						'--custom-token': {
+							value: 'red',
+							semanticType: 'brand-scale',
+							autocomplete: {
+								asProperty: false,
+							},
+						},
+					},
+					pruneUnused: false,
+				},
+			})
+
+			expect([...engine.config.autocomplete.cssProperties.values()].flat())
+				.not.toContain('var(--custom-token)')
+			expect(warnSpy)
+				.toHaveBeenCalledWith('Unknown semanticType "brand-scale" for variable "--custom-token". Skipping semantic autocomplete expansion.')
+
+			warnSpy.mockRestore()
 		})
 	})
 

@@ -10,6 +10,10 @@ You can scope variable definitions under selectors to create theme-specific valu
 
 <<< @/.examples/guide/config-variables-transitive.ts
 
+If a token also belongs to a stable value family such as color or length, add `semanticType` so autocomplete stays scoped to matching CSS properties instead of appearing everywhere.
+
+<<< @/.examples/guide/config-variables-semantic-type.ts
+
 ## Use variables in components
 
 <<< @/.examples/guide/variables-usage.ts

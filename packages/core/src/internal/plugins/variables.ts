@@ -1,8 +1,13 @@
+import type { VariableSemanticFamily } from '../generated-property-semantics'
 import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
+import { VARIABLE_SEMANTIC_FAMILIES, VARIABLE_SEMANTIC_FAMILY_PROPERTIES } from '../generated-property-semantics'
 import { defineEnginePlugin } from '../plugin'
 import { log } from '../utils'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
+const KNOWN_VARIABLE_SEMANTIC_FAMILIES = new Set<string>(VARIABLE_SEMANTIC_FAMILIES)
+
+export type VariableSemanticType = VariableSemanticFamily | UnionString
 
 export interface VariableAutocomplete {
 	/**
@@ -22,6 +27,7 @@ export interface VariableAutocomplete {
 
 export interface VariableObject {
 	value?: ResolvedCSSProperties[`--${string}`]
+	semanticType?: Arrayable<VariableSemanticType>
 	autocomplete?: VariableAutocomplete
 	pruneUnused?: boolean
 }
@@ -240,6 +246,7 @@ function createResolveVariablesFn({
 				const isObject = typeof value === 'object' && value !== null && !Array.isArray(value)
 				const {
 					value: varValue,
+					semanticType,
 					autocomplete = {},
 					pruneUnused = defaultPruneUnused,
 				} = (isObject ? value : { value }) as VariableObject
@@ -248,7 +255,11 @@ function createResolveVariablesFn({
 					value: varValue,
 					selector: levels.length > 0 ? levels : [':root'],
 					autocomplete: {
-						asValueOf: (autocomplete.asValueOf ? [autocomplete.asValueOf].flat() : ['*']) as string[],
+						asValueOf: resolveAutocompleteValueTargets({
+							name: key,
+							asValueOf: autocomplete.asValueOf,
+							semanticType,
+						}),
 						asProperty: autocomplete.asProperty ?? true,
 					},
 					pruneUnused,
@@ -267,6 +278,55 @@ function createResolveVariablesFn({
 	return function resolveVariables(variables: VariablesDefinition): ResolvedVariable[] {
 		return _resolveVariables(variables, [], [])
 	}
+}
+
+function resolveAutocompleteValueTargets({
+	name,
+	asValueOf,
+	semanticType,
+}: {
+	name: string
+	asValueOf?: Arrayable<UnionString | '*' | '-' | ResolvedCSSProperty>
+	semanticType?: Arrayable<VariableSemanticType>
+}) {
+	const explicitTargets = asValueOf == null
+		? []
+		: [asValueOf].flat()
+				.map(value => String(value))
+	const semanticTypes = semanticType == null
+		? []
+		: [semanticType].flat()
+				.map(value => String(value))
+
+	if (explicitTargets.includes('-'))
+		return []
+
+	const targets = new Set<string>()
+
+	if (asValueOf == null && semanticTypes.length === 0)
+		targets.add('*')
+
+	explicitTargets.forEach((target) => {
+		if (target !== '-')
+			targets.add(target)
+	})
+
+	semanticTypes.forEach((family) => {
+		const properties = VARIABLE_SEMANTIC_FAMILY_PROPERTIES[family as VariableSemanticFamily]
+		if (properties != null) {
+			properties.forEach(property => targets.add(property))
+			return
+		}
+
+		if (KNOWN_VARIABLE_SEMANTIC_FAMILIES.has(family) === false) {
+			log.warn(`Unknown semanticType "${family}" for variable "${name}". Skipping semantic autocomplete expansion.`)
+		}
+	})
+
+	if (targets.has('*'))
+		return ['*']
+
+	return [...targets]
 }
 
 const VAR_NAME_RE = /var\((--[\w-]+)/g

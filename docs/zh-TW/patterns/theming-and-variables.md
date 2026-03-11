@@ -10,6 +10,10 @@
 
 <<< @/.examples/zh-TW/guide/config-variables-transitive.ts
 
+如果某個 token 也屬於穩定的值類型，例如 color 或 length，可以加上 `semanticType`，讓 autocomplete 只出現在對應的 CSS properties，而不是到處都出現。
+
+<<< @/.examples/zh-TW/guide/config-variables-semantic-type.ts
+
 ## 在 components 中使用 variables
 
 <<< @/.examples/zh-TW/guide/variables-usage.ts
