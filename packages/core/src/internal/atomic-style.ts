@@ -101,10 +101,8 @@ export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
 		const { selector, property, value } = content
 		const nextContent: StyleContent = { selector, property, value }
 		const dependencyKeys = getOrderSensitiveDependencyKeys(scoped, property)
-		if (dependencyKeys.length > 0) {
-			nextContent.orderSensitive = true
+		if (dependencyKeys.length > 0)
 			nextContent.orderSensitiveTo = dependencyKeys
-		}
 
 		map.set(key, nextContent)
 		scoped.set(key, nextContent)
@@ -131,7 +129,7 @@ function getAtomicStyleStoredKey({
 }
 
 function isOrderSensitiveContent(content: StyleContent) {
-	return content.orderSensitive === true
+	return (content.orderSensitiveTo?.length ?? 0) > 0
 }
 
 function registerAtomicStyle(

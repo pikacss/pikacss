@@ -100,7 +100,7 @@ describe('getAtomicStyleId', () => {
 			selector: ['.%'],
 			property: 'padding-left',
 			value: ['8px'],
-			orderSensitive: true,
+			orderSensitiveTo: ['dependency'],
 		}
 		const id1 = getAtomicStyleId({ content, prefix: '', stored })
 		const id2 = getAtomicStyleId({ content, prefix: '', stored })
@@ -239,10 +239,8 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(2)
-		expect(result[0]!.orderSensitive)
+		expect(result[0]!.orderSensitiveTo)
 			.toBeUndefined()
-		expect(result[1]!.orderSensitive)
-			.toBe(true)
 		expect(result[1]!.orderSensitiveTo)
 			.toEqual([JSON.stringify([['.%'], 'padding', ['16px']])])
 	})
@@ -255,8 +253,8 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(2)
-		expect(result[1]!.orderSensitive)
-			.toBe(true)
+		expect(result[1]!.orderSensitiveTo)
+			.toEqual([JSON.stringify([['.%'], 'background-color', ['red']])])
 	})
 
 	it('should mark later overlaps for patched shorthand families', () => {
@@ -267,8 +265,8 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(2)
-		expect(result[1]!.orderSensitive)
-			.toBe(true)
+		expect(result[1]!.orderSensitiveTo)
+			.toEqual([JSON.stringify([['.%'], 'overflow-x', ['hidden']])])
 	})
 
 	it('should keep non-overlapping properties reusable', () => {
@@ -279,7 +277,7 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(2)
-		expect(result.every(content => content.orderSensitive !== true))
+		expect(result.every(content => content.orderSensitiveTo == null))
 			.toBe(true)
 	})
 
@@ -292,12 +290,15 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(3)
-		expect(result[0]!.orderSensitive)
+		expect(result[0]!.orderSensitiveTo)
 			.toBeUndefined()
-		expect(result[1]!.orderSensitive)
-			.toBe(true)
-		expect(result[2]!.orderSensitive)
-			.toBe(true)
+		expect(result[1]!.orderSensitiveTo)
+			.toEqual([JSON.stringify([['.%'], 'border-top-width', ['1px']])])
+		expect(result[2]!.orderSensitiveTo)
+			.toEqual([
+				JSON.stringify([['.%'], 'border-top-width', ['1px']]),
+				JSON.stringify([['.%'], 'border-top', ['solid red']]),
+			])
 	})
 
 	it('should mark later steps in reverse shorthand chain as order-sensitive', () => {
@@ -309,12 +310,15 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(3)
-		expect(result[0]!.orderSensitive)
+		expect(result[0]!.orderSensitiveTo)
 			.toBeUndefined()
-		expect(result[1]!.orderSensitive)
-			.toBe(true)
-		expect(result[2]!.orderSensitive)
-			.toBe(true)
+		expect(result[1]!.orderSensitiveTo)
+			.toEqual([JSON.stringify([['.%'], 'border', ['2px solid blue']])])
+		expect(result[2]!.orderSensitiveTo)
+			.toEqual([
+				JSON.stringify([['.%'], 'border', ['2px solid blue']]),
+				JSON.stringify([['.%'], 'border-top', ['solid red']]),
+			])
 	})
 
 	it('should mark later declarations when all appears in the chain', () => {
@@ -326,10 +330,10 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(3)
-		expect(result[1]!.orderSensitive)
-			.toBe(true)
-		expect(result[2]!.orderSensitive)
-			.toBe(true)
+		expect(result[1]!.orderSensitiveTo)
+			.toEqual([JSON.stringify([['.%'], 'color', ['red']])])
+		expect(result[2]!.orderSensitiveTo)
+			.toEqual([JSON.stringify([['.%'], 'all', ['unset']])])
 	})
 
 	it('should keep custom properties exact-only in the same chain', () => {
@@ -340,7 +344,7 @@ describe('optimizeAtomicStyleContents', () => {
 		const result = optimizeAtomicStyleContents(list)
 		expect(result)
 			.toHaveLength(2)
-		expect(result.every(content => content.orderSensitive !== true))
+		expect(result.every(content => content.orderSensitiveTo == null))
 			.toBe(true)
 	})
 })

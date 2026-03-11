@@ -21,7 +21,6 @@ export interface StyleContent {
 	selector: string[]
 	property: string
 	value: string[]
-	orderSensitive?: boolean
 	orderSensitiveTo?: string[]
 }
 
