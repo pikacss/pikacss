@@ -26,7 +26,14 @@ pnpm docs:dev                          # VitePress dev server
 
 ## Development Workflow
 
-**IMPORTANT: Never run `pnpm build` during iterative development.** Use `pnpm vitest run --project <name>` and `pnpm typecheck` instead.
+**IMPORTANT: Never run workspace-wide `pnpm build` during iterative development.** Use `pnpm vitest run --project <name>` and `pnpm typecheck` instead.
+
+**IMPORTANT: If a task touches an upstream package (for example, changing `core` while working on a plugin), immediately run a scoped build for that upstream package so tests and downstream packages consume the latest types and public interfaces.**
+
+```bash
+pnpm --filter <upstream-package> build
+# example: pnpm --filter @pikacss/core build
+```
 
 **IMPORTANT: After modifying `core`, ALWAYS verify ALL downstream packages:**
 
