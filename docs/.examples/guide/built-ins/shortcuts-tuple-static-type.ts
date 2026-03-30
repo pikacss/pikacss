@@ -1,1 +1,0 @@
-type TupleFormStatic = [shortcut: string, value: Arrayable<ResolvedStyleItem>]

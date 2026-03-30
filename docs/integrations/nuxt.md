@@ -1,35 +1,77 @@
+---
+title: Nuxt
+description: Zero-config PikaCSS integration for Nuxt applications.
+relatedPackages:
+  - '@pikacss/nuxt-pikacss'
+relatedSources:
+  - 'packages/nuxt/src/index.ts'
+category: integrations
+order: 20
+---
+
 # Nuxt
 
-Nuxt has its own PikaCSS module path, but the same core rules still apply: import the generated CSS entry, keep style input static, and move reusable patterns into config.
-
-## Install
+The PikaCSS Nuxt module provides zero-config integration for Nuxt applications.
 
 ::: code-group
-<<< @/.examples/integrations/install-nuxt.sh [pnpm]
-<<< @/.examples/integrations/install-nuxt-npm.sh [npm]
-<<< @/.examples/integrations/install-nuxt-yarn.sh [yarn]
+
+```sh [pnpm]
+pnpm add -D @pikacss/nuxt-pikacss
+```
+
+```sh [npm]
+npm install -D @pikacss/nuxt-pikacss
+```
+
+```sh [yarn]
+yarn add -D @pikacss/nuxt-pikacss
+```
+
 :::
 
-## Minimal setup
+Add the module to `nuxt.config.ts`:
 
-<<< @/.examples/integrations/nuxt.config.ts
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ['@pikacss/nuxt-pikacss'],
+  pikacss: {
+    // options
+  },
+})
+```
 
-## When to customize scanning
+## What the Module Does
 
-If your project has non-standard source locations, customize scanning deliberately instead of assuming Nuxt module defaults will discover everything.
+### Vite Plugin Registration
 
-<<< @/.examples/integrations/nuxt.config.scan-all.ts
+The module automatically registers the PikaCSS Vite plugin with `enforce: 'pre'`, ensuring style extraction runs before other transformations.
 
-## What usually goes wrong
+### CSS Auto-Import
 
-- missing CSS entry import
-- styles authored outside scanned files
-- runtime expressions inside `pika()`
-- assuming zero-config should cover all team-wide conventions
+A Nuxt plugin template is generated that imports `pika.css`, so you do not need to manually import the generated CSS file.
+
+### Default Scan Patterns
+
+By default, the module scans `**/*.{js,ts,jsx,tsx,vue}` files. Configure the `scan` option to customize file patterns.
+
+## Config
+
+The Nuxt module accepts all [Unplugin options](/integrations/unplugin#config) with Nuxt-specific defaults applied automatically.
+
+| Property | Description |
+|---|---|
+| scan | File glob patterns controlling which source files are scanned for `pika()` call sites. |
+| config | PikaCSS engine configuration, either as an inline object or a path to a config module. |
+| autoCreateConfig | When `true`, auto-creates a PikaCSS config file if none is found. |
+| fnName | Function identifier the scanner looks for when extracting call sites. Default: `'pika'`. |
+| transformedFormat | Output shape of transformed `pika()` calls: `'string'` or `'array'`. |
+| tsCodegen | Controls TypeScript type-definition code generation. |
+| cssCodegen | Controls CSS code-generation output. |
+
+> See [API Reference — Nuxt](/api/nuxt) for full type signatures and defaults.
 
 ## Next
 
-- [Static Arguments](/getting-started/static-arguments)
-- [Integrations Overview](/integrations/overview)
-- [Generated Files](/guide/generated-files)
-- [Common Problems](/troubleshooting/common-problems)
+- [Unplugin](/integrations/unplugin) — use PikaCSS with other bundlers.
+- [Setup](/getting-started/setup) — basic project setup.

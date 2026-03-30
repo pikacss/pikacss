@@ -196,3 +196,5 @@ $RECYCLE.BIN/
 repomix/
 
 .audit
+.maintain-jsdocs/
+.maintain-docs/

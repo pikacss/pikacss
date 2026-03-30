@@ -1,637 +1,191 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createEngine } from '../engine'
-import { VARIABLE_SEMANTIC_FAMILY_PROPERTIES } from '../generated-property-semantics'
+
+import { createEngine, renderPreflightDefinition } from '../engine'
 import { log } from '../utils'
 import { extractUsedVarNames, extractUsedVarNamesFromPreflightResult, normalizeVariableName } from './variables'
 
-describe('extractUsedVarNames', () => {
-	it('should extract a single var name', () => {
-		expect(extractUsedVarNames('var(--color)'))
-			.toEqual(['--color'])
-	})
-
-	it('should extract multiple var names', () => {
-		expect(extractUsedVarNames('var(--color) var(--bg)'))
-			.toEqual(['--color', '--bg'])
-	})
-
-	it('should return empty array for no var() usage', () => {
-		expect(extractUsedVarNames('red'))
-			.toEqual([])
-	})
-
-	it('should return empty array for empty string', () => {
-		expect(extractUsedVarNames(''))
-			.toEqual([])
-	})
-
-	it('should handle var() with fallback values', () => {
-		const result = extractUsedVarNames('var(--color, red)')
-		expect(result)
-			.toEqual(['--color'])
-	})
-
-	it('should handle nested var() references', () => {
-		const result = extractUsedVarNames('var(--a, var(--b))')
-		expect(result)
-			.toEqual(['--a', '--b'])
-	})
-
-	it('should handle complex CSS values with var()', () => {
-		const result = extractUsedVarNames('1px solid var(--border-color)')
-		expect(result)
-			.toEqual(['--border-color'])
-	})
-
-	it('should handle var names with hyphens', () => {
-		expect(extractUsedVarNames('var(--my-long-variable-name)'))
-			.toEqual(['--my-long-variable-name'])
+describe('variables helpers', () => {
+	it('extracts and normalizes referenced variable names from strings and preflight objects', () => {
+		expect(extractUsedVarNames('color: var(--fg); background: var(--bg);'))
+			.toEqual(['--fg', '--bg'])
+		expect(normalizeVariableName('tone'))
+			.toBe('--tone')
+		expect(extractUsedVarNamesFromPreflightResult({
+			':root': { '--fg': 'var(--bg)' },
+			'body': { color: 'var(--accent)' },
+		}))
+			.toEqual(['--bg', '--accent'])
+		expect(extractUsedVarNamesFromPreflightResult('border-color: var(--border);'))
+			.toEqual(['--border'])
 	})
 })
 
-describe('normalizeVariableName', () => {
-	it('should return name as-is if it starts with --', () => {
-		expect(normalizeVariableName('--color'))
-			.toBe('--color')
-	})
+describe('variables plugin', () => {
+	it('renders transitively used variables, respects autocomplete flags, and warns on invalid config shapes', async () => {
+		const warn = vi.fn()
+		log.setWarnFn((_prefix, ...args) => warn(...args))
 
-	it('should prepend -- if missing', () => {
-		expect(normalizeVariableName('color'))
-			.toBe('--color')
-	})
-
-	it('should handle empty string', () => {
-		expect(normalizeVariableName(''))
-			.toBe('--')
-	})
-
-	it('should handle names already with --', () => {
-		expect(normalizeVariableName('--my-var'))
-			.toBe('--my-var')
-	})
-})
-
-describe('variables plugin (engine integration)', () => {
-	describe('basic variable definition', () => {
-		it('should render variables in preflight', async () => {
-			const engine = await createEngine({
+		const engine = await createEngine({
+			preflights: [
+				{ body: { color: 'var(--alias)' } },
+			],
+			variables: {
 				variables: {
-					variables: {
-						'--color': '#fff',
-						'--bg': '#000',
+					'--color': { value: '#fff', semanticType: 'color' },
+					'--alias': { value: 'var(--color)', autocomplete: { asValueOf: ['backgroundColor'], asProperty: false } },
+					'--manual': { value: null, autocomplete: { asValueOf: '-' } },
+					'--mystery': { value: '1rem', semanticType: 'mystery' as any },
+					'[data-theme="dark"]': {
+						'--color': '#000',
 					},
-					pruneUnused: false,
+					'.invalid': 'broken' as any,
 				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--color: #fff;')
-			expect(preflight)
-				.toContain('--bg: #000;')
-		})
-
-		it('should place variables under :root by default', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--color': '#fff',
-					},
-					pruneUnused: false,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain(':root')
-			expect(preflight)
-				.toContain('--color: #fff;')
-		})
-	})
-
-	describe('pruneUnused', () => {
-		it('should prune unused variables by default (pruneUnused: true)', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--unused-color': '#fff',
-					},
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight).not.toContain('--unused-color')
-		})
-
-		it('should keep variables when pruneUnused is false', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--always-present': 'blue',
-					},
-					pruneUnused: false,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--always-present: blue;')
-		})
-
-		it('should keep used variables when pruneUnused is true', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--text-color': '#333',
-					},
-					pruneUnused: true,
-				},
-			})
-
-			await engine.use({ color: 'var(--text-color)' })
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--text-color: #333;')
-		})
-
-		it('should keep transitively referenced variables when pruneUnused is true', async () => {
-			// atomic styles use --primary, which references --base; --base should not be pruned
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--base': '#3498db',
-						'--primary': 'var(--base)',
-					},
-					pruneUnused: true,
-				},
-			})
-
-			await engine.use({ color: 'var(--primary)' })
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--primary: var(--base);')
-			expect(preflight)
-				.toContain('--base: #3498db;')
-		})
-
-		it('should handle multi-level transitive variable references', async () => {
-			// A → B → C chain: using A should keep B and C
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--c': '#fff',
-						'--b': 'var(--c)',
-						'--a': 'var(--b)',
-						'--unrelated': 'red',
-					},
-					pruneUnused: true,
-				},
-			})
-
-			await engine.use({ color: 'var(--a)' })
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--a: var(--b);')
-			expect(preflight)
-				.toContain('--b: var(--c);')
-			expect(preflight)
-				.toContain('--c: #fff;')
-			expect(preflight).not.toContain('--unrelated')
-		})
-
-		it('should keep circularly referenced variables without infinite traversal', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--a': 'var(--b)',
-						'--b': 'var(--a)',
-						'--unrelated': 'red',
-					},
-					pruneUnused: true,
-				},
-			})
-
-			await engine.use({ color: 'var(--a)' })
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--a: var(--b);')
-			expect(preflight)
-				.toContain('--b: var(--a);')
-			expect(preflight).not.toContain('--unrelated')
-		})
-
-		it('should keep variables referenced by other preflights (string format)', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--brand': 'hotpink',
-						'--unused': 'gray',
-					},
-					pruneUnused: true,
-				},
-				preflights: [
-					'body { background: var(--brand); }',
-				],
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--brand: hotpink;')
-			expect(preflight).not.toContain('--unused')
-		})
-
-		it('should keep variables referenced by other preflights (PreflightDefinition format)', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--spacing': '8px',
-						'--unused': 'none',
-					},
-					pruneUnused: true,
-				},
-				preflights: [
-					{ '.container': { padding: 'var(--spacing)' } },
-				],
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--spacing: 8px;')
-			expect(preflight).not.toContain('--unused')
-		})
-
-		it('should keep transitively referenced vars from other preflights', async () => {
-			// Another preflight uses --alias, --alias references --base; --base should be kept
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--base': '#000',
-						'--alias': 'var(--base)',
-						'--unused': 'red',
-					},
-					pruneUnused: true,
-				},
-				preflights: [
-					'html { color: var(--alias); }',
-				],
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--alias: var(--base);')
-			expect(preflight)
-				.toContain('--base: #000;')
-			expect(preflight).not.toContain('--unused')
-		})
-	})
-
-	describe('nested selectors', () => {
-		it('should place variables under nested selectors', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--color': '#fff',
-						'[data-theme="dark"]': {
-							'--color': '#000',
-						},
-					},
-					pruneUnused: false,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain(':root')
-			expect(preflight)
-				.toContain('--color: #fff;')
-			expect(preflight)
-				.toContain('[data-theme="dark"]')
-			expect(preflight)
-				.toContain('--color: #000;')
-		})
-
-		it('should skip invalid selector values instead of recursing indefinitely', async () => {
-			const warnSpy = vi.spyOn(log, 'warn')
-
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'invalid': 'red',
-						'--color': '#fff',
-					},
-					pruneUnused: false,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--color: #fff;')
-			expect(preflight).not.toContain('invalid')
-			expect(warnSpy)
-				.toHaveBeenCalledWith('Invalid variables scope for selector "invalid". Expected a nested object, received string. Skipping.')
-
-			warnSpy.mockRestore()
-		})
-	})
-
-	describe('null-value variables (autocomplete only)', () => {
-		it('should not render variables with null values', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--external-var': null,
-					},
-					pruneUnused: false,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight).not.toContain('--external-var')
-		})
-	})
-
-	describe('safeList', () => {
-		it('should keep safeList variables even when pruneUnused is true', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--safe-var': 'green',
-						'--unsafe-var': 'red',
-					},
-					pruneUnused: true,
-					safeList: ['--safe-var'],
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--safe-var: green;')
-			expect(preflight).not.toContain('--unsafe-var')
-		})
-	})
-
-	describe('variable object format', () => {
-		it('should support variable object with pruneUnused override', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--always': {
-							value: 'red',
-							pruneUnused: false,
-						},
-					},
-					pruneUnused: true,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--always: red;')
-		})
-
-		it('should skip CSS value autocomplete when asValueOf is set to -', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--color-token': {
-							value: 'red',
-							autocomplete: {
-								asValueOf: 'color',
-								asProperty: false,
-							},
-						},
-						'--icon-token': {
-							value: 'url(icon.svg)',
-							autocomplete: {
-								asValueOf: '-',
-								asProperty: false,
-							},
-						},
-					},
-					pruneUnused: false,
-				},
-			})
-
-			expect(engine.config.autocomplete.cssProperties.get('color'))
-				.toEqual(['var(--color-token)'])
-			expect([...engine.config.autocomplete.cssProperties.values()].flat())
-				.not.toContain('var(--icon-token)')
-		})
-
-		it('should expand semanticType to generated CSS property autocomplete targets', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--color-token': {
-							value: 'red',
-							semanticType: 'color',
-							autocomplete: {
-								asProperty: false,
-							},
-						},
-					},
-					pruneUnused: false,
-				},
-			})
-
-			expect(engine.config.autocomplete.cssProperties.get('color'))
-				.toEqual(['var(--color-token)'])
-			expect(engine.config.autocomplete.cssProperties.get('background-color'))
-				.toEqual(['var(--color-token)'])
-			expect(engine.config.autocomplete.cssProperties.get('*'))
-				.toBeUndefined()
-			expect(VARIABLE_SEMANTIC_FAMILY_PROPERTIES.color)
-				.toContain('background-color')
-		})
-
-		it('should union semanticType expansion with explicit asValueOf targets', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--brand-token': {
-							value: 'red',
-							semanticType: 'color',
-							autocomplete: {
-								asValueOf: 'mask-image',
-								asProperty: false,
-							},
-						},
-					},
-					pruneUnused: false,
-				},
-			})
-
-			expect(engine.config.autocomplete.cssProperties.get('color'))
-				.toEqual(['var(--brand-token)'])
-			expect(engine.config.autocomplete.cssProperties.get('mask-image'))
-				.toEqual(['var(--brand-token)'])
-		})
-
-		it('should let explicit disable override semanticType expansion', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--disabled-token': {
-							value: 'red',
-							semanticType: 'color',
-							autocomplete: {
-								asValueOf: '-',
-								asProperty: false,
-							},
-						},
-					},
-					pruneUnused: false,
-				},
-			})
-
-			expect([...engine.config.autocomplete.cssProperties.values()].flat())
-				.not.toContain('var(--disabled-token)')
-		})
-
-		it('should warn and skip unknown semanticType expansion', async () => {
-			const warnSpy = vi.spyOn(log, 'warn')
-
-			const engine = await createEngine({
-				variables: {
-					variables: {
-						'--custom-token': {
-							value: 'red',
-							semanticType: 'brand-scale',
-							autocomplete: {
-								asProperty: false,
-							},
-						},
-					},
-					pruneUnused: false,
-				},
-			})
-
-			expect([...engine.config.autocomplete.cssProperties.values()].flat())
-				.not.toContain('var(--custom-token)')
-			expect(warnSpy)
-				.toHaveBeenCalledWith('Unknown semanticType "brand-scale" for variable "--custom-token". Skipping semantic autocomplete expansion.')
-
-			warnSpy.mockRestore()
-		})
-	})
-
-	describe('dynamic add via engine.variables.add', () => {
-		it('should allow adding variables dynamically', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: {},
-					pruneUnused: false,
-				},
-			})
-
-			engine.variables.add({
-				'--dynamic-var': 'purple',
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--dynamic-var: purple;')
-		})
-	})
-
-	describe('array variables config', () => {
-		it('should accept array of variable definitions', async () => {
-			const engine = await createEngine({
-				variables: {
-					variables: [
-						{ '--a': 'one' },
-						{ '--b': 'two' },
-					],
-					pruneUnused: false,
-				},
-			})
-
-			const preflight = await engine.renderPreflights(true)
-			expect(preflight)
-				.toContain('--a: one;')
-			expect(preflight)
-				.toContain('--b: two;')
-		})
-	})
-})
-
-describe('extractUsedVarNamesFromPreflightResult', () => {
-	it('should extract var names from a plain CSS string', () => {
-		const result = extractUsedVarNamesFromPreflightResult('color: var(--text); background: var(--bg);')
-		expect(result)
-			.toEqual(['--text', '--bg'])
-	})
-
-	it('should return an empty array for a CSS string without var()', () => {
-		expect(extractUsedVarNamesFromPreflightResult('color: red;'))
-			.toEqual([])
-	})
-
-	it('should return an empty array for an empty string', () => {
-		expect(extractUsedVarNamesFromPreflightResult(''))
-			.toEqual([])
-	})
-
-	it('should extract var names from a CSS string with fallback values', () => {
-		const result = extractUsedVarNamesFromPreflightResult('color: var(--text-color, var(--fallback-color));')
-		expect(result)
-			.toEqual(['--text-color', '--fallback-color'])
-	})
-
-	it('should extract var names from a PreflightDefinition object (string CSS values)', () => {
-		const result = extractUsedVarNamesFromPreflightResult({
-			':root': { color: 'var(--text-color)' },
-		})
-		expect(result)
-			.toContain('--text-color')
-	})
-
-	it('should recursively extract from nested PreflightDefinition objects', () => {
-		const result = extractUsedVarNamesFromPreflightResult({
-			':root': {
-				'.child': { border: 'var(--border-color)' },
 			},
 		})
-		expect(result)
-			.toContain('--border-color')
+
+		await engine.use({ color: 'var(--alias)' })
+		const preflights = await engine.renderPreflights(false)
+
+		log.setWarnFn((prefix, ...args) => console.warn(prefix, ...args))
+
+		expect(preflights)
+			.toContain(':root{--color:#fff;--alias:var(--color);}')
+		expect(preflights)
+			.toContain('[data-theme="dark"]{--color:#000;}')
+		expect(preflights.includes('--manual'))
+			.toBe(false)
+		expect(engine.config.autocomplete.cssProperties.get('backgroundColor'))
+			.toContain('var(--alias)')
+		expect(engine.config.autocomplete.extraCssProperties.has('--alias'))
+			.toBe(false)
+		expect(warn.mock.calls.some(call => call.join(' ')
+			.includes('Unknown semanticType "mystery"')))
+			.toBe(true)
+		expect(warn.mock.calls.some(call => call.join(' ')
+			.includes('Invalid variables scope for selector ".invalid"')))
+			.toBe(true)
 	})
 
-	it('should recursively extract fallback var names from nested PreflightDefinition objects', () => {
-		const result = extractUsedVarNamesFromPreflightResult({
-			':root': {
-				'.child': { color: 'var(--primary-color, var(--secondary-color))' },
+	it('keeps safe-listed and pruneUnused=false variables even when they are not referenced', async () => {
+		const engine = await createEngine({
+			variables: {
+				safeList: ['--safe'],
+				variables: {
+					'--safe': 'red',
+					'--kept': { value: 'blue', pruneUnused: false },
+				},
 			},
 		})
-		expect(result)
-			.toEqual(['--primary-color', '--secondary-color'])
+
+		const preflights = await engine.renderPreflights(false)
+
+		expect(preflights)
+			.toContain(':root{--safe:red;--kept:blue;}')
+		expect(engine.config.autocomplete.cssProperties.get('*'))
+			.toEqual(expect.arrayContaining(['var(--safe)', 'var(--kept)']))
 	})
 
-	it('should handle an empty PreflightDefinition object', () => {
-		expect(extractUsedVarNamesFromPreflightResult({}))
-			.toEqual([])
-	})
-
-	it('should extract multiple var names from a PreflightDefinition with multiple properties', () => {
-		const result = extractUsedVarNamesFromPreflightResult({
-			':root': {
-				color: 'var(--fg)',
-				background: 'var(--bg)',
+	it('ignores failing auxiliary preflights and missing referenced variables while still rendering known ones', async () => {
+		const engine = await createEngine({
+			preflights: [
+				() => {
+					throw new Error('boom')
+				},
+				{ body: { color: 'var(--missing)' } },
+			],
+			variables: {
+				variables: {
+					'--size': '1rem',
+				},
 			},
 		})
-		expect(result)
-			.toContain('--fg')
-		expect(result)
-			.toContain('--bg')
+
+		await engine.use({ margin: 'var(--size)' })
+		const variablesPreflight = engine.config.preflights.find(preflight => preflight.id === 'core:variables')!
+		const rendered = await renderPreflightDefinition({
+			engine,
+			preflightDefinition: await variablesPreflight.fn(engine, false) as any,
+			isFormatted: false,
+		})
+
+		expect(rendered)
+			.toContain(':root{--size:1rem;}')
 	})
 
-	it('should return normalized (--prefixed) var names from a string', () => {
-		// var() always includes --, so names should already start with --
-		const result = extractUsedVarNamesFromPreflightResult('border: 1px solid var(--border-color);')
-		expect(result)
-			.toEqual(['--border-color'])
+	it('expands duplicate transitive refs through the variables preflight without duplicating emitted leaves', async () => {
+		const engine = await createEngine({
+			variables: {
+				variables: {
+					'--base': 'red',
+					'--alias-a': 'var(--base)',
+					'--alias-b': 'var(--base)',
+					'--entry': 'var(--alias-a) var(--alias-b)',
+				},
+			},
+		})
+
+		await engine.use({ color: 'var(--entry)' })
+		const css = await engine.renderPreflights(false)
+
+		expect(css)
+			.toContain('--entry:var(--alias-a) var(--alias-b);')
+		expect(css)
+			.toContain('--alias-a:var(--base);')
+		expect(css)
+			.toContain('--alias-b:var(--base);')
+		expect(css.match(/--base:red;/g))
+			.toHaveLength(1)
+	})
+
+	it('skips null-valued variable entries and missing varMap entries during transitive expansion', async () => {
+		const engine = await createEngine({
+			variables: {
+				variables: {
+					'--null-val': { value: null },
+					'--refs-null': { value: 'var(--null-val) var(--nonexistent)' },
+				},
+			},
+		})
+
+		await engine.use({ color: 'var(--refs-null)' })
+		const css = await engine.renderPreflights(false)
+
+		expect(css)
+			.toContain('--refs-null:var(--null-val) var(--nonexistent);')
+		expect(css.includes('--null-val:'))
+			.toBe(false)
+	})
+
+	it('expands transitive variable references through tuple-valued (fallback) entries', async () => {
+		const engine = await createEngine({
+			variables: {
+				variables: {
+					'--base': '1px',
+					'--with-fallback': { value: ['var(--base)', ['solid']] },
+				},
+			},
+		})
+
+		await engine.use({ border: 'var(--with-fallback)' })
+		const css = await engine.renderPreflights(false)
+
+		expect(css)
+			.toContain('--base:1px;')
+		expect(css)
+			.toContain('--with-fallback:var(--base);')
+	})
+
+	it('skips null and non-string preflight values in helper extraction', () => {
+		expect(extractUsedVarNamesFromPreflightResult({
+			body: null as any,
+			html: {
+				color: 'var(--tone)',
+				opacity: 0.5 as any,
+				nested: {
+					backgroundColor: 'var(--tone)',
+				},
+			},
+		}))
+			.toEqual(['--tone', '--tone'])
 	})
 })

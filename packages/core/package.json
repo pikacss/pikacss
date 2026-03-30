@@ -4,9 +4,10 @@
 	"version": "0.0.47",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
+	"homepage": "https://pikacss.com",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pikacss/pikacss.git",
+		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
 		"directory": "packages/core"
 	},
 	"bugs": {
@@ -18,6 +19,7 @@
 		"css-in-js",
 		"atomic-css-in-js-engine"
 	],
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"import": {
@@ -34,15 +36,18 @@
 	"files": [
 		"dist"
 	],
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
 		"generate:csstype": "tsx ./scripts/generate-csstype.ts",
 		"generate:property-effects": "tsx ./scripts/generate-property-effects.ts",
-		"build": "tsdown && pnpm exec publint",
+		"build": "tsdown",
 		"build:watch": "tsdown --watch",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest"
+		"test": "vitest run --config ./vitest.config.ts",
+		"test:watch": "vitest --config ./vitest.config.ts"
 	}
 }

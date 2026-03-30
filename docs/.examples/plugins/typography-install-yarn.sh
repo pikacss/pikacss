@@ -1,1 +1,0 @@
-yarn add @pikacss/plugin-typography

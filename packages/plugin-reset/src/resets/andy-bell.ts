@@ -1,4 +1,14 @@
 /* REF: https://piccalil.li/blog/a-modern-css-reset/ */
+/**
+ * Andy Bell's "A Modern CSS Reset" stylesheet as a raw CSS string.
+ *
+ * Provides opinionated defaults: border-box sizing, margin removal, smooth
+ * scroll, reduced-motion media query, and inheritable fonts on form elements.
+ *
+ * @see {@link https://piccalil.li/blog/a-modern-css-reset/}
+ *
+ * @internal
+ */
 export default `
 /* Box sizing rules */
 *,

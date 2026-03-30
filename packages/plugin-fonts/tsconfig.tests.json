@@ -4,6 +4,8 @@
 		"composite": true
 	},
 	"include": [
-		"./src/**/*.ts"
+		"./src/**/*.ts",
+		"./vitest.config.ts",
+		"../_shared/vitest.ts"
 	]
 }

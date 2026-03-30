@@ -1,10 +1,23 @@
 import type { Engine } from '../engine'
+import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, ResolvedStyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { RecursiveResolver, resolveRuleConfig } from '../resolver'
 import { isNotString } from '../utils'
 
-// #region ShortcutConfig
+/**
+ * User-facing shortcut rule configuration. Accepts string redirects, tuple shorthands, or object forms.
+ *
+ * @remarks Shortcuts expand a single name into one or more style items, allowing reusable composition of atomic styles. The configuration shapes mirror `Selector`: string redirect, `[string, value]` static, `[RegExp, fn, autocomplete?]` dynamic, or object equivalents.
+ *
+ * @example
+ * ```ts
+ * const rules: Shortcut[] = [
+ *   ['btn', [{ padding: '0.5rem 1rem' }, { borderRadius: '0.25rem' }]],
+ *   [/^btn-(.+)$/, m => ({ backgroundColor: m[1] }), 'btn-${color}'],
+ * ]
+ * ```
+ */
 export type Shortcut
 	= | string
 		| [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>, autocomplete?: Arrayable<string>]
@@ -19,38 +32,35 @@ export type Shortcut
 			value: Arrayable<ResolvedStyleItem>
 		}
 
+/**
+ * Configuration object for the `shortcuts` engine option.
+ *
+ * @remarks Passed via `EngineConfig.shortcuts` to register shortcut rules at engine creation time.
+ *
+ * @example
+ * ```ts
+ * const config: ShortcutsConfig = {
+ *   shortcuts: [['btn', { padding: '0.5rem 1rem' }]],
+ * }
+ * ```
+ */
 export interface ShortcutsConfig {
-	/**
-	 * Define style shortcuts for reusable style combinations.
-	 *
-	 * @default []
-	 * @example
-	 * ```ts
-	 * {
-	 *   shortcuts: [
-	 *     // Static shortcut
-	 *     ['flex-center', {
-	 *       display: 'flex',
-	 *       alignItems: 'center',
-	 *       justifyContent: 'center'
-	 *     }],
-	 *     // Dynamic shortcut
-	 *     [/^m-(\d+)$/, m => ({ margin: `${m[1]}px` }),
-	 *       ['m-4', 'm-8']] // Autocomplete suggestions
-	 *   ]
-	 * }
-	 * ```
-	 */
+	/** Array of shortcut rule definitions to register. */
 	shortcuts: Shortcut[]
 }
-// #endregion ShortcutConfig
 
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * Shortcut rules configuration.
+		 *
+		 * @default undefined
+		 */
 		shortcuts?: ShortcutsConfig
 	}
 
 	interface Engine {
+		/** Runtime shortcut management: resolver instance and `add` method for registering shortcuts after engine creation. */
 		shortcuts: {
 			resolver: ShortcutResolver
 			add: (...list: Shortcut[]) => void
@@ -58,6 +68,18 @@ declare module '@pikacss/core' {
 	}
 }
 
+/**
+ * Built-in engine plugin that provides the shortcut resolution system.
+ *
+ * @returns An `EnginePlugin` that registers the `shortcuts` resolver on the engine and hooks into `transformStyleItems` and `transformStyleDefinitions` to expand shortcut names into style items.
+ *
+ * @remarks Reads `EngineConfig.shortcuts` during `rawConfigConfigured`, attaches a `RecursiveResolver` to `engine.shortcuts` during `configureEngine`, and expands shortcut references in both `transformStyleItems` (string style items) and `transformStyleDefinitions` (the `__shortcut` pseudo-property).
+ *
+ * @example
+ * ```ts
+ * createEngine({ plugins: [shortcuts()] })
+ * ```
+ */
 export function shortcuts() {
 	let engine: Engine
 	let configList: Shortcut[]
@@ -78,16 +100,17 @@ export function shortcuts() {
 							return
 
 						if (typeof resolved === 'string') {
-							engine.appendAutocomplete({ styleItemStrings: resolved })
+							engine.appendAutocomplete({ shortcuts: resolved })
 							return
 						}
 
-						if (resolved.type === 'static')
-							engine.shortcuts.resolver.addStaticRule(resolved.rule)
-						else if (resolved.type === 'dynamic')
-							engine.shortcuts.resolver.addDynamicRule(resolved.rule)
+						const addRule = {
+							static: () => engine.shortcuts.resolver.addStaticRule(resolved.rule as StaticRule<InternalStyleItem[]>),
+							dynamic: () => engine.shortcuts.resolver.addDynamicRule(resolved.rule as DynamicRule<InternalStyleItem[]>),
+						}[resolved.type]
+						addRule?.()
 
-						engine.appendAutocomplete({ styleItemStrings: resolved.autocomplete })
+						engine.appendAutocomplete({ shortcuts: resolved.autocomplete })
 					})
 				},
 			}
@@ -96,11 +119,11 @@ export function shortcuts() {
 
 			engine.shortcuts.resolver.onResolved = (string, type) => {
 				if (type === 'dynamic') {
-					engine.appendAutocomplete({ styleItemStrings: string })
+					engine.appendAutocomplete({ shortcuts: string })
 				}
 			}
 
-			const unionType = ['(string & {})', 'Autocomplete[\'StyleItemString\']'].join(' | ')
+			const unionType = ['(string & {})', 'Autocomplete[\'Shortcut\']'].join(' | ')
 			engine.appendAutocomplete({
 				extraProperties: '__shortcut',
 				properties: {

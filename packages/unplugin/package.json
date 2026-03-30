@@ -4,9 +4,10 @@
 	"version": "0.0.47",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
+	"homepage": "https://pikacss.com",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pikacss/pikacss.git",
+		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
 		"directory": "packages/unplugin"
 	},
 	"bugs": {
@@ -25,6 +26,7 @@
 		"rspack-plugin",
 		"rolldown-plugin"
 	],
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"import": {
@@ -74,6 +76,9 @@
 	"files": [
 		"dist"
 	],
+	"engines": {
+		"node": ">=20"
+	},
 	"publishConfig": {
 		"access": "public"
 	},
@@ -83,11 +88,11 @@
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest"
+		"test": "vitest run --config ./vitest.config.ts",
+		"test:watch": "vitest --config ./vitest.config.ts"
 	},
 	"peerDependencies": {
-		"vite": "^5.0.0 || ^6.0.0"
+		"vite": "^5.0.0 || ^6.0.0 || ^7.0.0"
 	},
 	"peerDependenciesMeta": {
 		"vite": {

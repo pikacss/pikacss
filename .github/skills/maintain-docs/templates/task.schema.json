@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Docs Task File",
+  "description": "Task file produced by the analyze script for a single documentation page.",
+  "type": "object",
+  "required": ["templatePath", "docsPath", "status", "section"],
+  "properties": {
+    "templatePath": {
+      "type": "string",
+      "description": "Relative path from workspace root to the page template file."
+    },
+    "docsPath": {
+      "type": "string",
+      "description": "Relative path from workspace root to the target docs page."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["missing", "outdated", "ok"],
+      "description": "missing = no docs page exists; outdated = page exists but fails checks; ok = all checks pass."
+    },
+    "section": {
+      "type": "string",
+      "description": "Section name from content-architecture.md (e.g. 'Getting Started', 'Customizations')."
+    },
+    "issues": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of specific issues found by analyze (empty when status is ok)."
+    },
+    "relatedSources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Source code files that are the ground truth for this page's content."
+    }
+  },
+  "additionalProperties": false
+}

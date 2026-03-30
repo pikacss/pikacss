@@ -1,350 +1,271 @@
-import type { ExtractedStyleContent, StyleContent } from './types'
 import { describe, expect, it } from 'vitest'
-import { getAtomicStyleId, optimizeAtomicStyleContents } from './atomic-style'
 
-function withLayerSelector(layer: string, ...selector: string[]) {
-	return [`@layer ${layer}`, ...selector]
-}
+import {
+	createEngineStore,
+	getAtomicStyleBaseKey,
+	getAtomicStyleId,
+	optimizeAtomicStyleContents,
+	resolveAtomicStyle,
+} from './atomic-style'
 
-// ─── getAtomicStyleId ────────────────────────────────────────────────────────
+describe('createEngineStore', () => {
+	it('creates empty registries for new atomic-style state', () => {
+		const store = createEngineStore()
+
+		expect(store.atomicStyleIds.size)
+			.toBe(0)
+		expect(store.atomicStyles.size)
+			.toBe(0)
+		expect(store.atomicStyleIdsByBaseKey.size)
+			.toBe(0)
+		expect(store.atomicStyleOrder.size)
+			.toBe(0)
+	})
+})
 
 describe('getAtomicStyleId', () => {
-	it('should generate an id from content hash', () => {
+	it('reuses the same id for order-insensitive content that already has a stored key', () => {
 		const stored = new Map<string, string>()
-		const content: StyleContent = {
-			selector: ['.%'],
+		const content = {
+			selector: ['.button'],
 			property: 'color',
 			value: ['red'],
 		}
-		const id = getAtomicStyleId({ content, prefix: '', stored })
-		expect(typeof id)
-			.toBe('string')
-		expect(id.length)
-			.toBeGreaterThan(0)
-	})
 
-	it('should cache and return the same id for the same content', () => {
-		const stored = new Map<string, string>()
-		const content: StyleContent = {
-			selector: ['.%'],
-			property: 'color',
-			value: ['red'],
-		}
-		const id1 = getAtomicStyleId({ content, prefix: '', stored })
-		const id2 = getAtomicStyleId({ content, prefix: '', stored })
-		expect(id1)
-			.toBe(id2)
+		const firstId = getAtomicStyleId({ content, prefix: 'p-', stored })
+		const secondId = getAtomicStyleId({ content, prefix: 'p-', stored })
+
+		expect(firstId)
+			.toBe('p-a')
+		expect(secondId)
+			.toBe(firstId)
 		expect(stored.size)
 			.toBe(1)
 	})
 
-	it('should generate different ids for different content', () => {
+	it('generates distinct ids when order-sensitive content shares the same base key', () => {
 		const stored = new Map<string, string>()
-		const c1: StyleContent = { selector: ['.%'], property: 'color', value: ['red'] }
-		const c2: StyleContent = { selector: ['.%'], property: 'color', value: ['blue'] }
-		const id1 = getAtomicStyleId({ content: c1, prefix: '', stored })
-		const id2 = getAtomicStyleId({ content: c2, prefix: '', stored })
-		expect(id1).not.toBe(id2)
-	})
-
-	it('should prepend prefix to the id', () => {
-		const stored = new Map<string, string>()
-		const content: StyleContent = { selector: ['.%'], property: 'color', value: ['red'] }
-		const id = getAtomicStyleId({ content, prefix: 'pk-', stored })
-		expect(id.startsWith('pk-'))
-			.toBe(true)
-	})
-
-	it('should generate incremental names based on stored size', () => {
-		const stored = new Map<string, string>()
-		const ids: string[] = []
-		for (let i = 0; i < 5; i++) {
-			const content: StyleContent = {
-				selector: ['.%'],
-				property: 'color',
-				value: [`val${i}`],
-			}
-			ids.push(getAtomicStyleId({ content, prefix: '', stored }))
+		const content = {
+			selector: ['.button'],
+			property: 'color',
+			value: ['red'],
+			orderSensitiveTo: ['dependency-key'],
 		}
-		expect(new Set(ids).size)
-			.toBe(5)
-		expect(ids[0])
-			.toBe('a')
-	})
 
-	it('should differentiate by selector', () => {
-		const stored = new Map<string, string>()
-		const c1: StyleContent = { selector: ['.%'], property: 'color', value: ['red'] }
-		const c2: StyleContent = { selector: ['&:hover', '.%'], property: 'color', value: ['red'] }
-		const id1 = getAtomicStyleId({ content: c1, prefix: '', stored })
-		const id2 = getAtomicStyleId({ content: c2, prefix: '', stored })
-		expect(id1).not.toBe(id2)
-	})
+		const firstId = getAtomicStyleId({ content, prefix: 'p-', stored })
+		const secondId = getAtomicStyleId({ content, prefix: 'p-', stored })
 
-	it('should differentiate by layer', () => {
-		const stored = new Map<string, string>()
-		const c1: StyleContent = { selector: withLayerSelector('a', '.%'), property: 'color', value: ['red'] }
-		const c2: StyleContent = { selector: withLayerSelector('b', '.%'), property: 'color', value: ['red'] }
-		const c3: StyleContent = { selector: ['.%'], property: 'color', value: ['red'] }
-		const id1 = getAtomicStyleId({ content: c1, prefix: '', stored })
-		const id2 = getAtomicStyleId({ content: c2, prefix: '', stored })
-		const id3 = getAtomicStyleId({ content: c3, prefix: '', stored })
-		expect(id1).not.toBe(id2)
-		expect(id1).not.toBe(id3)
-		expect(id2).not.toBe(id3)
-	})
-
-	it('should always generate a fresh id for order-sensitive content', () => {
-		const stored = new Map<string, string>()
-		const content: StyleContent = {
-			selector: ['.%'],
-			property: 'padding-left',
-			value: ['8px'],
-			orderSensitiveTo: ['dependency'],
-		}
-		const id1 = getAtomicStyleId({ content, prefix: '', stored })
-		const id2 = getAtomicStyleId({ content, prefix: '', stored })
-		expect(id1).not.toBe(id2)
+		expect(firstId)
+			.toBe('p-a')
+		expect(secondId)
+			.toBe('p-b')
+		expect(secondId).not.toBe(firstId)
 		expect(stored.size)
 			.toBe(2)
 	})
 })
 
-// ─── optimizeAtomicStyleContents ─────────────────────────────────────────────
+describe('resolveAtomicStyle', () => {
+	it('registers a new atomic style when the store does not already contain the generated id', () => {
+		const store = createEngineStore()
+		const content = {
+			selector: ['.button'],
+			property: 'color',
+			value: ['red'],
+		}
+
+		const result = resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>(),
+		})
+
+		expect(result.atomicStyle)
+			.toEqual({ id: result.id, content })
+		expect(store.atomicStyles.get(result.id))
+			.toEqual({ id: result.id, content })
+		expect(store.atomicStyleIdsByBaseKey.get(getAtomicStyleBaseKey(content)))
+			.toEqual([result.id])
+	})
+
+	it('reuses an existing order-sensitive id when dependency order already allows the same declaration', () => {
+		const store = createEngineStore()
+		const resolvedIdsByBaseKey = new Map<string, string>()
+		const dependencyContent = {
+			selector: ['.button'],
+			property: 'color',
+			value: ['red'],
+		}
+
+		const dependency = resolveAtomicStyle({
+			content: dependencyContent,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey,
+		})
+		resolvedIdsByBaseKey.set(getAtomicStyleBaseKey(dependencyContent), dependency.id)
+
+		const content = {
+			selector: ['.button'],
+			property: 'background-color',
+			value: ['blue'],
+			orderSensitiveTo: [getAtomicStyleBaseKey(dependencyContent)],
+		}
+
+		const firstResolution = resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey,
+		})
+		const secondResolution = resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey,
+		})
+
+		expect(firstResolution.atomicStyle)
+			.toEqual({ id: firstResolution.id, content })
+		expect(secondResolution)
+			.toEqual({ id: firstResolution.id })
+	})
+
+	it('returns an existing id without re-registering when the generated id is already present in the store', () => {
+		const store = createEngineStore()
+		const content = {
+			selector: ['.button'],
+			property: 'color',
+			value: ['red'],
+		}
+		const existingId = getAtomicStyleId({ content, prefix: 'p-', stored: store.atomicStyleIds })
+		store.atomicStyles.set(existingId, { id: existingId, content })
+
+		expect(resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>(),
+		}))
+			.toEqual({ id: existingId })
+		expect(store.atomicStyleIdsByBaseKey.size)
+			.toBe(0)
+	})
+
+	it('creates a new order-sensitive id when an existing candidate appears before the required dependency order', () => {
+		const store = createEngineStore()
+		const content = {
+			selector: ['.button'],
+			property: 'background-color',
+			value: ['blue'],
+			orderSensitiveTo: ['dependency-key'],
+		}
+
+		const firstId = getAtomicStyleId({ content, prefix: 'p-', stored: store.atomicStyleIds })
+		store.atomicStyles.set(firstId, { id: firstId, content })
+		store.atomicStyleIdsByBaseKey.set(getAtomicStyleBaseKey(content), [firstId])
+		store.atomicStyleOrder.set(firstId, 0)
+		store.atomicStyleOrder.set('p-dependency', 1)
+
+		const result = resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>([['dependency-key', 'p-dependency']]),
+		})
+
+		expect(result.id)
+			.toBe('p-b')
+		expect(result.atomicStyle)
+			.toEqual({ id: 'p-b', content })
+	})
+
+	it('reuses an order-sensitive candidate when dependencies are missing or have no recorded order', () => {
+		const store = createEngineStore()
+		const content = {
+			selector: ['.button'],
+			property: 'background-color',
+			value: ['blue'],
+			orderSensitiveTo: ['missing-key', 'unordered-key'],
+		}
+
+		const firstId = getAtomicStyleId({ content, prefix: 'p-', stored: store.atomicStyleIds })
+		store.atomicStyles.set(firstId, { id: firstId, content })
+		store.atomicStyleIdsByBaseKey.set(getAtomicStyleBaseKey(content), [firstId])
+		store.atomicStyleOrder.set(firstId, 0)
+
+		expect(resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>([['unordered-key', 'p-x']]),
+		}))
+			.toEqual({ id: firstId })
+	})
+
+	it('skips candidate ids with no recorded order when searching for reusable order-sensitive styles', () => {
+		const store = createEngineStore()
+		const content = {
+			selector: ['.button'],
+			property: 'background-color',
+			value: ['blue'],
+			orderSensitiveTo: ['dependency-key'],
+		}
+
+		const firstId = getAtomicStyleId({ content, prefix: 'p-', stored: store.atomicStyleIds })
+		store.atomicStyles.set(firstId, { id: firstId, content })
+		store.atomicStyleIdsByBaseKey.set(getAtomicStyleBaseKey(content), [firstId])
+		// Do NOT set atomicStyleOrder for firstId — candidateOrder will be undefined
+
+		const result = resolveAtomicStyle({
+			content,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>(),
+		})
+
+		expect(result.id).not.toBe(firstId)
+		expect(result.atomicStyle)
+			.toEqual({ id: result.id, content })
+	})
+})
 
 describe('optimizeAtomicStyleContents', () => {
-	it('should keep unique selector+property combinations', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'font-size', value: ['16px'] },
+	it('records order-sensitive dependencies when later declarations overlap earlier ones in the same selector scope', () => {
+		const list = [
+			{ selector: ['.button'], property: 'padding-top', value: ['1rem'] },
+			{ selector: ['.button'], property: 'padding', value: ['2rem'] },
 		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-	})
 
-	it('should let later entries override earlier ones for same selector+property', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(1)
-		expect(result[0]!.value)
-			.toEqual(['blue'])
-	})
-
-	it('should remove entry when null value is used', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'color', value: null },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(0)
-	})
-
-	it('should remove entry when undefined value is used', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'color', value: undefined },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(0)
-	})
-
-	it('should treat different selectors as separate entries', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['&:hover', '.%'], property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-	})
-
-	it('should handle empty list', () => {
-		const result = optimizeAtomicStyleContents([])
-		expect(result)
-			.toEqual([])
-	})
-
-	it('should handle complex override then re-add scenario', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'color', value: null },
-			{ selector: ['.%'], property: 'color', value: ['green'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(1)
-		expect(result[0]!.value)
-			.toEqual(['green'])
-	})
-
-	it('should preserve order based on last occurrence', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'font-size', value: ['14px'] },
-			{ selector: ['.%'], property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-		expect(result[0]!.property)
-			.toBe('font-size')
-		expect(result[1]!.property)
-			.toBe('color')
-	})
-
-	it('should treat same selector+property with different layers as separate entries', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['red'] },
-			{ selector: withLayerSelector('b', '.%'), property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-	})
-
-	it('should override entry with same selector+property+layer', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['red'] },
-			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(1)
-		expect(result[0]!.value)
-			.toEqual(['blue'])
-	})
-
-	it('should treat entry without layer and entry with layer as separate entries for same selector+property', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: withLayerSelector('a', '.%'), property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-	})
-
-	it('should mark later shorthand and longhand overlaps as order-sensitive', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'padding', value: ['16px'] },
-			{ selector: ['.%'], property: 'padding-left', value: ['8px'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-		expect(result[0]!.orderSensitiveTo)
-			.toBeUndefined()
-		expect(result[1]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'padding', ['16px']])])
-	})
-
-	it('should mark later shorthand overlaps for aggregate families', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'background-color', value: ['red'] },
-			{ selector: ['.%'], property: 'background', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-		expect(result[1]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'background-color', ['red']])])
-	})
-
-	it('should mark later overlaps for patched shorthand families', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'overflow-x', value: ['hidden'] },
-			{ selector: ['.%'], property: 'overflow', value: ['auto'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-		expect(result[1]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'overflow-x', ['hidden']])])
-	})
-
-	it('should keep non-overlapping properties reusable', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'margin', value: ['16px'] },
-			{ selector: ['.%'], property: 'padding-left', value: ['8px'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-		expect(result.every(content => content.orderSensitiveTo == null))
-			.toBe(true)
-	})
-
-	it('should mark every later step in a shorthand chain as order-sensitive', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'border-top-width', value: ['1px'] },
-			{ selector: ['.%'], property: 'border-top', value: ['solid red'] },
-			{ selector: ['.%'], property: 'border', value: ['2px solid blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(3)
-		expect(result[0]!.orderSensitiveTo)
-			.toBeUndefined()
-		expect(result[1]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'border-top-width', ['1px']])])
-		expect(result[2]!.orderSensitiveTo)
+		expect(optimizeAtomicStyleContents(list))
 			.toEqual([
-				JSON.stringify([['.%'], 'border-top-width', ['1px']]),
-				JSON.stringify([['.%'], 'border-top', ['solid red']]),
+				{ selector: ['.button'], property: 'padding-top', value: ['1rem'] },
+				{
+					selector: ['.button'],
+					property: 'padding',
+					value: ['2rem'],
+					orderSensitiveTo: [
+						getAtomicStyleBaseKey({
+							selector: ['.button'],
+							property: 'padding-top',
+							value: ['1rem'],
+						}),
+					],
+				},
 			])
 	})
 
-	it('should mark later steps in reverse shorthand chain as order-sensitive', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'border', value: ['2px solid blue'] },
-			{ selector: ['.%'], property: 'border-top', value: ['solid red'] },
-			{ selector: ['.%'], property: 'border-top-width', value: ['1px'] },
+	it('drops deleted declarations without affecting other selector scopes', () => {
+		const list = [
+			{ selector: ['.button'], property: 'color', value: ['red'] },
+			{ selector: ['.card'], property: 'color', value: ['blue'] },
+			{ selector: ['.button'], property: 'color', value: null },
 		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(3)
-		expect(result[0]!.orderSensitiveTo)
-			.toBeUndefined()
-		expect(result[1]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'border', ['2px solid blue']])])
-		expect(result[2]!.orderSensitiveTo)
+
+		expect(optimizeAtomicStyleContents(list))
 			.toEqual([
-				JSON.stringify([['.%'], 'border', ['2px solid blue']]),
-				JSON.stringify([['.%'], 'border-top', ['solid red']]),
+				{ selector: ['.card'], property: 'color', value: ['blue'] },
 			])
-	})
-
-	it('should mark later declarations when all appears in the chain', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: 'color', value: ['red'] },
-			{ selector: ['.%'], property: 'all', value: ['unset'] },
-			{ selector: ['.%'], property: 'background-color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(3)
-		expect(result[1]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'color', ['red']])])
-		expect(result[2]!.orderSensitiveTo)
-			.toEqual([JSON.stringify([['.%'], 'all', ['unset']])])
-	})
-
-	it('should keep custom properties exact-only in the same chain', () => {
-		const list: ExtractedStyleContent[] = [
-			{ selector: ['.%'], property: '--brand-color', value: ['red'] },
-			{ selector: ['.%'], property: 'color', value: ['blue'] },
-		]
-		const result = optimizeAtomicStyleContents(list)
-		expect(result)
-			.toHaveLength(2)
-		expect(result.every(content => content.orderSensitiveTo == null))
-			.toBe(true)
 	})
 })

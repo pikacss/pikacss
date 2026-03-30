@@ -2,19 +2,41 @@ import type { ESLint, Linter } from 'eslint'
 import { rules } from './rules'
 
 /**
- * Options for configuring PikaCSS ESLint rules.
+ * Options accepted by the PikaCSS ESLint configuration factory functions.
+ *
+ * @remarks
+ * Pass these options to `recommended()` or the default export to customise
+ * which base function name the rules match. When omitted, all rules default
+ * to detecting `pika`.
+ *
+ * @example
+ * ```ts
+ * import pikacss from '@pikacss/eslint-config'
+ * export default [pikacss({ fnName: 'css' })]
+ * ```
  */
 export interface PikacssConfigOptions {
 	/**
-	 * The base function name to detect (default: 'pika').
-	 * All variants (pika, pika.str, pikap, etc.) are automatically derived.
+	 * Base PikaCSS function name the rules should detect.
+	 *
+	 * @default `'pika'`
 	 */
 	fnName?: string
 }
 
 /**
- * The ESLint plugin object containing all PikaCSS rules.
- * Use this when you need fine-grained control over configuration.
+ * ESLint plugin object exposing all PikaCSS rules.
+ *
+ * @remarks
+ * Register this plugin under the `pikacss` namespace in your ESLint flat
+ * config. In most cases you should use the `recommended()` preset instead
+ * of wiring rules manually.
+ *
+ * @example
+ * ```ts
+ * import { plugin } from '@pikacss/eslint-config'
+ * export default [{ plugins: { pikacss: plugin } }]
+ * ```
  */
 export const plugin: ESLint.Plugin = {
 	meta: {
@@ -25,20 +47,20 @@ export const plugin: ESLint.Plugin = {
 }
 
 /**
- * Create a recommended ESLint configuration for PikaCSS.
- * This enables the `no-dynamic-args` rule to enforce the predictable static
- * subset recommended for build-time transforms.
+ * Returns the recommended PikaCSS ESLint flat-config object with all rules enabled at error level.
  *
- * @param options - Configuration options
- * @returns An ESLint flat config object
+ * @param options - Configuration options to customise which function name the rules detect.
+ * @returns A flat-config entry with the PikaCSS plugin registered and all recommended rules enabled.
+ *
+ * @remarks
+ * This is the preferred way to add PikaCSS linting to a project. It registers
+ * the plugin under the `pikacss` namespace and turns on `no-dynamic-args` at
+ * `'error'` severity.
  *
  * @example
- * ```js
+ * ```ts
  * import { recommended } from '@pikacss/eslint-config'
- *
- * export default [
- *   recommended(),
- * ]
+ * export default [recommended()]
  * ```
  */
 export function recommended(options?: PikacssConfigOptions): Linter.Config {
@@ -53,19 +75,19 @@ export function recommended(options?: PikacssConfigOptions): Linter.Config {
 }
 
 /**
- * Create a PikaCSS ESLint configuration (default export).
- * This is an alias for `recommended()` for convenience.
+ * Default export that returns the recommended PikaCSS ESLint flat-config.
  *
- * @param options - Configuration options
- * @returns An ESLint flat config object
+ * @param options - Configuration options to customise which function name the rules detect.
+ * @returns A flat-config entry identical to what `recommended()` produces.
+ *
+ * @remarks
+ * This is a convenience alias for `recommended()` so consumers can write a
+ * simple default import.
  *
  * @example
- * ```js
+ * ```ts
  * import pikacss from '@pikacss/eslint-config'
- *
- * export default [
- *   pikacss(),
- * ]
+ * export default [pikacss()]
  * ```
  */
 export default function pikacss(options?: PikacssConfigOptions): Linter.Config {

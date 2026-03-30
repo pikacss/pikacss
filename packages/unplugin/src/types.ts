@@ -1,18 +1,32 @@
 import type { EngineConfig, IntegrationContextOptions, Nullish } from '@pikacss/integration'
 
+/**
+ * User-facing configuration options for the PikaCSS bundler plugin.
+ *
+ * @remarks
+ * Passed to the unplugin factory when creating a Vite, webpack, Rollup, or esbuild plugin.
+ * All properties are optional — sensible defaults are applied for zero-config setups.
+ *
+ * @example
+ * ```ts
+ * import pika from '@pikacss/unplugin-pikacss/vite'
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     pika({
+ *       config: './pika.config.ts',
+ *       fnName: 'css',
+ *       transformedFormat: 'array',
+ *     }),
+ *   ],
+ * })
+ * ```
+ */
 export interface PluginOptions {
 	/**
-	 * Specify file patterns to scan for detecting pika() function calls and generating atomic styles.
+	 * Glob patterns controlling which source files are scanned for `pika()` calls.
 	 *
-	 * Default values:
-	 * - `include`: `['**\/*.{js,ts,jsx,tsx,vue}']` - Scans all JS/TS/Vue files by default
-	 * - `exclude`: `['node_modules/**', 'dist/**']` - Excludes dependency and build output folders by default
-	 * Different wrappers may further narrow or extend these defaults before they reach unplugin.
-	 * @example
-	 * scan: {
-	 *   include: ['src/**\/{*.ts,*.tsx,*.vue}'],
-	 *   exclude: ['node_modules/**', 'dist/**']
-	 * }
+	 * @default `{ include: ['**\/*.{js,ts,jsx,tsx,vue}'], exclude: ['node_modules/**', 'dist/**'] }`
 	 */
 	scan?: {
 		/**
@@ -28,81 +42,84 @@ export interface PluginOptions {
 	}
 
 	/**
-	 * Configuration object or path to a configuration file for the PikaCSS engine.
-	 * Can pass a config object directly to define engine options, or a config file path (e.g., 'pika.config.js').
+	 * Engine configuration object or a path to a `pika.config.*` file. When omitted, the plugin
+	 * auto-discovers a config file in the project root.
 	 *
-	 * Behavior:
-	 * - If a file path is specified but the file doesn't exist and autoCreateConfig is true, a config file will be generated at the specified path.
-	 * - If an inline config object is passed, autoCreateConfig will be ignored.
-	 * - If not provided and autoCreateConfig is true, a default config file will be created.
-	 * @example
-	 * config: { prefix: 'pika-', defaultSelector: '.%' }
-	 * // or
-	 * config: './pika.config.js'
+	 * @default `undefined` (auto-discover)
 	 */
 	config?: EngineConfig | string
 
 	/**
-	 * Whether to automatically create a configuration file when needed.
+	 * When `true`, automatically scaffolds a default `pika.config.js` file if no existing config is found.
 	 *
-	 * Behavior:
-	 * - If config is not provided: Creates a default 'pika.config.js' in the project root.
-	 * - If config is a file path that doesn't exist: Creates a config file at the specified path.
-	 * - If config is an inline config object: This option is ignored (no file will be created).
-	 * @default true
+	 * @default `true`
 	 */
 	autoCreateConfig?: boolean
 
 	/**
-	 * The name of the PikaCSS function in source code. Used to identify function calls that need to be transformed.
-	 * @default 'pika'
-	 * @example
-	 * fnName: 'classname' // Transform classname() function calls to atomic styles
+	 * Base function name to recognize in source code. All variants (`.str`, `.arr`, preview) are
+	 * derived from this name.
+	 *
+	 * @default `'pika'`
 	 */
 	fnName?: string
 
 	/**
-	 * The format of the generated atomic style class names.
-	 * - `'string'`: Returns a space-separated string of class names (e.g., "a b c")
-	 * - `'array'`: Returns an array of class names (e.g., ['a', 'b', 'c'])
-	 * @default 'string'
+	 * Default output format for normal `pika()` calls. `'string'` produces a space-joined class string;
+	 * `'array'` produces a string array of class names.
+	 *
+	 * @default `'string'`
 	 */
 	transformedFormat?: 'string' | 'array'
 
 	/**
-	 * Configuration for TypeScript code generation file.
-	 * - `true`: Auto-generate as 'pika.gen.ts'
-	 * - string: Use the specified file path
-	 * - `false`: Disable TypeScript code generation
-	 * The generated TypeScript file provides type hints and auto-completion support.
-	 * @default true
-	 * @example
-	 * tsCodegen: 'src/pika.gen.ts' // Generate to a custom location
+	 * Controls TypeScript declaration codegen. `true` writes to `'pika.gen.ts'`, a string sets a custom
+	 * output path, and `false` disables codegen entirely.
+	 *
+	 * @default `true`
 	 */
 	tsCodegen?: boolean | string
 
 	/**
-	 * Configuration for CSS code generation file.
-	 * - `true`: Auto-generate as 'pika.gen.css'
-	 * - string: Use the specified file path
-	 * The generated CSS file contains all scanned atomic styles.
-	 * @default true
-	 * @example
-	 * cssCodegen: 'src/styles/generated.css' // Generate to a custom location
+	 * Controls CSS output file generation. `true` writes to `'pika.gen.css'`; a string sets a custom
+	 * output path.
+	 *
+	 * @default `true`
 	 */
 	cssCodegen?: true | string
 
-	/** @internal */
+	/**
+	 * npm package name of the plugin consumer, embedded in generated file headers and import paths.
+	 * Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt`).
+	 *
+	 * @default `'@pikacss/unplugin-pikacss'`
+	 */
 	currentPackageName?: string
 }
 
+/**
+ * Normalized plugin configuration with all defaults applied and boolean shorthands expanded.
+ *
+ * @remarks
+ * Produced internally by the unplugin factory from `PluginOptions`. Consumers should not
+ * construct this type directly — it exists so that internal helpers receive fully resolved,
+ * non-optional values.
+ */
 export interface ResolvedPluginOptions {
+	/** npm package name of the integration consumer, used in generated file headers and import paths. */
 	currentPackageName: string
+	/** Engine configuration object, a path to a config file, or `null`/`undefined` for auto-discovery. */
 	configOrPath: EngineConfig | string | Nullish
+	/** Resolved TypeScript codegen output path, or `false` when codegen is disabled. */
 	tsCodegen: false | string
+	/** Resolved CSS output file path (always a string after defaults are applied). */
 	cssCodegen: string
+	/** Normalized include/exclude glob arrays controlling source file scanning. */
 	scan: IntegrationContextOptions['scan']
+	/** Base function name to recognize in source transforms (e.g., `'pika'`). */
 	fnName: string
+	/** Default output format for normal `pika()` calls: `'string'` or `'array'`. */
 	transformedFormat: 'string' | 'array'
+	/** Whether to scaffold a default config file when none is found. */
 	autoCreateConfig: boolean
 }

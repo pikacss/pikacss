@@ -1,1 +1,0 @@
-npm install @pikacss/plugin-icons @iconify-json/mdi

@@ -1,8 +1,0 @@
-/* Using __shortcut: 'flex-center' with gap: '1rem' */
-.pk-a { display: flex; }
-.pk-b { align-items: center; }
-.pk-c { justify-content: center; }
-.pk-d { gap: 1rem; }
-
-/* Using __shortcut: 'm-4' */
-.e { margin: 1rem; }

@@ -1,90 +1,399 @@
-import type { UnpluginOptions } from 'unplugin'
-import process from 'node:process'
-import { resolve } from 'pathe'
-import { describe, expect, it } from 'vitest'
-import { unpluginPika as plugin, unpluginFactory } from './index'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-describe('unpluginPika', () => {
-	it('should export unpluginFactory as a function', () => {
-		expect(typeof unpluginFactory)
-			.toBe('function')
+const mockReadFileSync = vi.fn()
+const mockCreateCtx = vi.fn()
+const mockCreateUnplugin = vi.fn(factory => ({ factory }))
+const mockDebounce = vi.fn((fn: (...args: any[]) => any) => {
+	const wrapped = (...args: any[]) => fn(...args)
+	return wrapped
+})
+const mockLog = {
+	debug: vi.fn(),
+	info: vi.fn(),
+}
+
+vi.mock('node:fs', () => ({
+	readFileSync: mockReadFileSync,
+}))
+
+vi.mock('@pikacss/integration', () => ({
+	createCtx: mockCreateCtx,
+	log: mockLog,
+}))
+
+vi.mock('perfect-debounce', () => ({
+	debounce: mockDebounce,
+}))
+
+vi.mock('unplugin', () => ({
+	createUnplugin: mockCreateUnplugin,
+}))
+
+function createHook() {
+	const listeners: Array<() => unknown> = []
+
+	return {
+		listeners,
+		on: vi.fn((listener: () => unknown) => {
+			listeners.push(listener)
+		}),
+		async emit() {
+			for (const listener of listeners)
+				await listener()
+		},
+	}
+}
+
+function createCtxStub() {
+	const hooks = {
+		styleUpdated: createHook(),
+		tsCodegenUpdated: createHook(),
+	}
+	return {
+		cwd: '/initial',
+		usages: new Map([
+			['src/demo.ts', [{ atomicStyleIds: ['pk-a'] }]],
+		]),
+		setup: vi.fn(async () => {
+			hooks.styleUpdated.listeners.length = 0
+			hooks.tsCodegenUpdated.listeners.length = 0
+		}),
+		fullyCssCodegen: vi.fn(async () => {}),
+		writeCssCodegenFile: vi.fn(async () => {}),
+		writeTsCodegenFile: vi.fn(async () => {}),
+		transform: vi.fn(async () => ({ code: 'transformed' })),
+		transformFilter: {
+			include: ['src/**/*.ts'],
+			exclude: [],
+		},
+		cssCodegenFilepath: '/tmp/pika.gen.css',
+		tsCodegenFilepath: '/tmp/pika.gen.ts',
+		resolvedConfigPath: '/tmp/pika.config.ts' as string | null,
+		resolvedConfigContent: 'before',
+		hooks,
+		engine: {
+			store: {
+				atomicStyleIds: {
+					size: 2,
+				},
+			},
+		},
+	}
+}
+
+async function flushAsyncWork() {
+	await Promise.resolve()
+	await Promise.resolve()
+	await new Promise(resolve => setTimeout(resolve, 0))
+}
+
+beforeEach(() => {
+	vi.clearAllMocks()
+	mockReadFileSync.mockReturnValue('before')
+})
+
+describe('unpluginFactory', () => {
+	it('resolves default options, wires vite lifecycle hooks, and keeps generated assets in sync', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+		const viteServer = {
+			moduleGraph: {
+				getModuleById: vi.fn(() => ({ id: 'src/demo.ts' })),
+				invalidateModule: vi.fn(),
+			},
+			reloadModule: vi.fn(async () => {}),
+		}
+
+		expect(mockCreateCtx)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				currentPackageName: '@pikacss/unplugin-pikacss',
+				tsCodegen: 'pika.gen.ts',
+				cssCodegen: 'pika.gen.css',
+				fnName: 'pika',
+				transformedFormat: 'string',
+				autoCreateConfig: true,
+				scan: {
+					include: ['**/*.{js,ts,jsx,tsx,vue}'],
+					exclude: ['node_modules/**', 'dist/**'],
+				},
+			}))
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		plugin.vite.configureServer?.(viteServer as any)
+
+		const buildContext = { addWatchFile: vi.fn() }
+		await plugin.buildStart.call(buildContext as any)
+		await plugin.buildStart.call(buildContext as any)
+
+		expect(ctx.cwd)
+			.toBe('/app')
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(1)
+		expect(ctx.fullyCssCodegen)
+			.not.toHaveBeenCalled()
+		expect(buildContext.addWatchFile)
+			.toHaveBeenCalledWith('/tmp/pika.config.ts')
+		expect(await plugin.resolveId?.call({}, 'pika.css'))
+			.toBe('/tmp/pika.gen.css')
+		expect(await plugin.resolveId?.call({}, 'plain.css'))
+			.toBeNull()
+		expect(plugin.transform.filter.id)
+			.toEqual(ctx.transformFilter)
+		expect(await plugin.transform.handler.call({}, 'code', 'src/demo.ts'))
+			.toEqual({ code: 'transformed' })
+
+		await ctx.hooks.styleUpdated.emit()
+		await ctx.hooks.tsCodegenUpdated.emit()
+
+		expect(ctx.writeCssCodegenFile)
+			.toHaveBeenCalled()
+		expect(ctx.writeTsCodegenFile)
+			.toHaveBeenCalled()
+
+		mockReadFileSync.mockReturnValue('after')
+		plugin.watchChange?.('/tmp/pika.config.ts')
+		await flushAsyncWork()
+
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(2)
+		expect(viteServer.moduleGraph.getModuleById)
+			.toHaveBeenCalledWith('src/demo.ts')
+		expect(viteServer.moduleGraph.invalidateModule)
+			.toHaveBeenCalledWith({ id: 'src/demo.ts' })
+		expect(viteServer.reloadModule)
+			.toHaveBeenCalledWith({ id: 'src/demo.ts' })
+
+		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
+		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
+
+		await ctx.hooks.styleUpdated.emit()
+		await ctx.hooks.tsCodegenUpdated.emit()
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(1)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(1)
 	})
 
-	it('should export plugin as default', () => {
-		expect(plugin)
-			.toBeDefined()
+	it('treats missing vite modules as a no-op during reload invalidation', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+		const viteServer = {
+			moduleGraph: {
+				getModuleById: vi.fn(() => undefined),
+				invalidateModule: vi.fn(),
+			},
+			reloadModule: vi.fn(async () => {}),
+		}
+
+		plugin.vite.configResolved?.({ root: '/no-module-app', command: 'serve' } as any)
+		plugin.vite.configureServer?.(viteServer as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		mockReadFileSync.mockReturnValue('changed')
+		plugin.watchChange?.('/tmp/pika.config.ts')
+		await flushAsyncWork()
+
+		expect(viteServer.moduleGraph.invalidateModule)
+			.not.toHaveBeenCalled()
+		expect(viteServer.reloadModule)
+			.not.toHaveBeenCalled()
 	})
 
-	describe('unpluginFactory', () => {
-		it('should create a plugin with the correct name', () => {
-			const plugin = unpluginFactory(undefined, { framework: 'vite' } as any) as UnpluginOptions
-			expect(plugin.name)
-				.toBe('unplugin-pikacss')
-		})
+	it('supports webpack build mode, watches config changes, and adds config files during transform', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory({
+			config: 'pika.config.js',
+			tsCodegen: false,
+			cssCodegen: 'generated/styles.css',
+			scan: {
+				include: 'src/**/*.vue',
+				exclude: 'fixtures/**',
+			},
+			fnName: 'styled',
+			transformedFormat: 'array',
+			autoCreateConfig: false,
+		}, { framework: 'webpack' } as any) as any
 
-		it('should handle empty options', () => {
-			const plugin = unpluginFactory(undefined, { framework: 'vite' } as any) as UnpluginOptions
-			expect(plugin)
-				.toBeDefined()
-			expect(plugin.name)
-				.toBe('unplugin-pikacss')
-		})
+		plugin.webpack?.({
+			options: {
+				context: '/webpack-app',
+				mode: 'production',
+			},
+		} as any)
 
-		it('should handle custom options', () => {
-			const plugin = unpluginFactory({
-				fnName: 'css',
+		const buildContext = { addWatchFile: vi.fn() }
+		await plugin.buildStart.call(buildContext as any)
+
+		expect(mockCreateCtx)
+			.toHaveBeenLastCalledWith(expect.objectContaining({
+				configOrPath: 'pika.config.js',
+				tsCodegen: false,
+				cssCodegen: 'generated/styles.css',
+				fnName: 'styled',
 				transformedFormat: 'array',
-				scan: { include: ['**/*.tsx'], exclude: ['dist/**'] },
-			}, { framework: 'vite' } as any) as UnpluginOptions
-			expect(plugin)
-				.toBeDefined()
-			expect(plugin.name)
-				.toBe('unplugin-pikacss')
-		})
+				autoCreateConfig: false,
+				scan: {
+					include: ['src/**/*.vue'],
+					exclude: ['fixtures/**'],
+				},
+			}))
+		expect(ctx.cwd)
+			.toBe('/webpack-app')
+		expect(ctx.fullyCssCodegen)
+			.toHaveBeenCalledTimes(1)
 
-		it('should set up watchChange handler', () => {
-			const plugin = unpluginFactory(undefined, { framework: 'vite' } as any) as UnpluginOptions
-			expect(typeof plugin.watchChange)
-				.toBe('function')
-		})
+		const transformContext = { addWatchFile: vi.fn() }
+		await plugin.transform.handler.call(transformContext as any, 'code', 'src/component.vue')
+		expect(transformContext.addWatchFile)
+			.toHaveBeenCalledWith('/tmp/pika.config.ts')
 
-		it('should have transform handler', () => {
-			const plugin = unpluginFactory(undefined, { framework: 'vite' } as any) as UnpluginOptions
-			expect(plugin.transform)
-				.toBeDefined()
-		})
+		mockReadFileSync.mockReturnValue('before')
+		plugin.watchChange?.('/tmp/pika.config.ts')
+		plugin.watchChange?.('/tmp/other.config.ts')
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(1)
+	})
 
-		it('should have buildStart handler', () => {
-			const plugin = unpluginFactory(undefined, { framework: 'vite' } as any) as UnpluginOptions
-			expect(typeof plugin.buildStart)
-				.toBe('function')
-		})
+	it('skips watch registration when no resolved config path is available', async () => {
+		const ctx = createCtxStub()
+		ctx.resolvedConfigPath = null
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'webpack' } as any) as any
 
-		it('should resolve virtual CSS module to the default filename when cssCodegen is true', async () => {
-			const plugin = unpluginFactory({ config: {}, cssCodegen: true }, { framework: 'vite' } as any) as UnpluginOptions
-			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
-			const resolved = await resolveId?.call({}, 'pika.css')
-			expect(resolved)
-				.toBe(resolve(process.cwd(), 'pika.gen.css'))
-		})
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		const transformContext = { addWatchFile: vi.fn() }
+		await plugin.transform.handler.call(transformContext as any, 'code', 'src/entry.ts')
 
-		it('should resolve virtual CSS module to custom cssCodegen path', async () => {
-			const plugin = unpluginFactory({ config: {}, cssCodegen: '/tmp/pika.gen.custom.css' }, { framework: 'vite' } as any) as UnpluginOptions
-			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
-			const resolved = await resolveId?.call({}, 'pika.css')
-			expect(resolved)
-				.toBe('/tmp/pika.gen.custom.css')
-		})
+		expect(transformContext.addWatchFile)
+			.not.toHaveBeenCalled()
+	})
 
-		it('should resolve virtual CSS module relative to the resolved vite root', async () => {
-			const plugin = unpluginFactory({ config: {}, cssCodegen: true }, { framework: 'vite' } as any) as UnpluginOptions & {
-				vite?: { configResolved?: (config: { root: string, command: 'build' | 'serve' }) => void }
-			}
-			plugin.vite?.configResolved?.({ root: '/tmp/app', command: 'build' })
-			const resolveId = plugin.resolveId as ((id: string) => Promise<string | null>) | undefined
-			const resolved = await resolveId?.call({}, 'pika.css')
-			expect(resolved)
-				.toBe('/tmp/app/pika.gen.css')
-		})
+	it('invalidates rspack and farm runtimes during reload setup and maps the esbuild virtual module', async () => {
+		const mod = await import('./index')
+
+		const rspackCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(rspackCtx)
+		const rspackPlugin = mod.unpluginFactory(undefined, { framework: 'rspack' } as any) as any
+		const rspackCompiler = {
+			options: {
+				context: '/rspack-app',
+				mode: 'development',
+			},
+			watching: {
+				invalidateWithChangesAndRemovals: vi.fn(),
+				invalidate: vi.fn(),
+			},
+		}
+
+		rspackPlugin.rspack?.(rspackCompiler as any)
+		await rspackPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		mockReadFileSync.mockReturnValue('changed')
+		rspackPlugin.watchChange?.('/tmp/pika.config.ts')
+		await flushAsyncWork()
+
+		expect(rspackCompiler.watching.invalidateWithChangesAndRemovals)
+			.toHaveBeenCalledWith(new Set(['src/demo.ts']))
+		expect(rspackCompiler.watching.invalidate)
+			.toHaveBeenCalled()
+
+		const silentRspackCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(silentRspackCtx)
+		const silentRspackPlugin = mod.unpluginFactory(undefined, { framework: 'rspack' } as any) as any
+		silentRspackPlugin.rspack?.({ options: {} } as any)
+		await silentRspackPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		mockReadFileSync.mockReturnValue('changed-rspack')
+		silentRspackPlugin.watchChange?.('/tmp/pika.config.ts')
+
+		const farmCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(farmCtx)
+		const farmPlugin = mod.unpluginFactory(undefined, { framework: 'farm' } as any) as any
+		const farmServer = {
+			hmrEngine: {
+				recompileAndSendResult: vi.fn(async () => {}),
+			},
+		}
+
+		farmPlugin.farm.configResolved?.({ root: '/farm-app', envMode: 'development' } as any)
+		farmPlugin.farm.configureDevServer?.(farmServer as any)
+		await farmPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		mockReadFileSync.mockReturnValue('changed-again')
+		farmPlugin.watchChange?.('/tmp/pika.config.ts')
+		await flushAsyncWork()
+
+		expect(farmServer.hmrEngine.recompileAndSendResult)
+			.toHaveBeenCalled()
+
+		const silentFarmCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(silentFarmCtx)
+		const silentFarmPlugin = mod.unpluginFactory(undefined, { framework: 'farm' } as any) as any
+		silentFarmPlugin.farm.configureDevServer?.({} as any)
+		await silentFarmPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		mockReadFileSync.mockReturnValue('changed-farm')
+		silentFarmPlugin.watchChange?.('/tmp/pika.config.ts')
+
+		const esbuildCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(esbuildCtx)
+		const esbuildPlugin = mod.unpluginFactory(undefined, { framework: 'esbuild' } as any) as any
+		const onResolve = vi.fn()
+
+		await esbuildPlugin.esbuild.setup({
+			initialOptions: {
+				absWorkingDir: '/esbuild-app',
+			},
+			onResolve,
+		} as any)
+
+		expect(esbuildCtx.cwd)
+			.toBe('/esbuild-app')
+		const resolver = onResolve.mock.calls[0]![1]
+		expect(await resolver({ path: 'pika.css' }))
+			.toEqual({
+				path: '/tmp/pika.gen.css',
+				namespace: 'file',
+			})
+		expect(esbuildPlugin.resolveId)
+			.toBeUndefined()
+	})
+
+	it('covers alternative framework configurations: vite build, webpack dev with reload, farm production, and esbuild without cwd', async () => {
+		const mod = await import('./index')
+
+		// Vite build mode
+		const viteCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(viteCtx)
+		const vitePlugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+		vitePlugin.vite.configResolved?.({ root: '/app', command: 'build' } as any)
+
+		// Webpack with no context and development mode, triggers config reload
+		const webpackCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(webpackCtx)
+		const webpackPlugin = mod.unpluginFactory(undefined, { framework: 'webpack' } as any) as any
+		webpackPlugin.webpack?.({ options: { mode: 'development' } } as any)
+		await webpackPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		mockReadFileSync.mockReturnValue('changed-wp')
+		webpackPlugin.watchChange?.('/tmp/pika.config.ts')
+		await flushAsyncWork()
+		expect(webpackCtx.setup)
+			.toHaveBeenCalledTimes(2)
+
+		// Farm with no root and production mode
+		const farmCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(farmCtx)
+		const farmPlugin = mod.unpluginFactory(undefined, { framework: 'farm' } as any) as any
+		farmPlugin.farm.configResolved?.({ envMode: 'production' } as any)
+
+		// Esbuild with no absWorkingDir
+		const esbuildCtx = createCtxStub()
+		mockCreateCtx.mockReturnValueOnce(esbuildCtx)
+		const esbuildPlugin = mod.unpluginFactory(undefined, { framework: 'esbuild' } as any) as any
+		await esbuildPlugin.esbuild.setup({ initialOptions: {}, onResolve: vi.fn() } as any)
 	})
 })

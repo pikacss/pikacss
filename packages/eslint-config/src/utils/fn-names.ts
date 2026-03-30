@@ -1,23 +1,42 @@
 /**
- * Options for configuring which function names should be detected by the ESLint rule.
+ * Options for configuring which function name the ESLint rules match against.
+ * @internal
+ *
+ * @remarks
+ * By default the rules detect `pika` and its derived variants. Pass a custom
+ * `fnName` to match a renamed import or wrapper function instead.
+ *
+ * @example
+ * ```ts
+ * const opts: FnNameOptions = { fnName: 'css' }
+ * ```
  */
 export interface FnNameOptions {
 	/**
-	 * The base function name to detect.
-	 * @default 'pika'
+	 * Base PikaCSS function name the ESLint rules should detect.
+	 *
+	 * @default `'pika'`
 	 */
 	fnName?: string
 }
 
 /**
- * Given a base function name (e.g. 'pika'), returns an object with sets
- * of all the function name patterns that should be detected.
+ * Builds the set of callee name patterns derived from a base function name.
+ * @internal
  *
- * Patterns:
- * - Normal: fnName (e.g. 'pika')
- * - Preview: fnName + 'p' (e.g. 'pikap')
- * - Force string sub: .str or ['str']
- * - Force array sub: .arr or ['arr']
+ * @param fnName - Base function name to derive patterns from.
+ * @returns An object containing the base name, preview name, and `Set`s of normal, preview, and combined callee strings.
+ *
+ * @remarks
+ * For a base name `pika`, the derived normal names are `pika`, `pika.str`,
+ * and `pika.arr`. Preview variants use the `p` suffix (`pikap`, `pikap.str`,
+ * `pikap.arr`). `allNames` is the union of both sets.
+ *
+ * @example
+ * ```ts
+ * const patterns = buildFnNamePatterns('pika')
+ * patterns.allNames.has('pika.str') // true
+ * ```
  */
 export function buildFnNamePatterns(fnName: string = 'pika') {
 	const previewFnName = `${fnName}p`
@@ -47,11 +66,23 @@ export function buildFnNamePatterns(fnName: string = 'pika') {
 }
 
 /**
- * Extract the callee name string from a CallExpression node.
- * Supports:
- * - Simple identifier: pika(...)  → 'pika'
- * - Member expression: pika.str(...)  → 'pika.str'
- * - Computed member expression with static string: pika['str'](...)  → 'pika.str'
+ * Extracts the full callee name from a call-expression AST node.
+ * @internal
+ *
+ * @param node - EST call-expression node with a `callee` property.
+ * @returns The dot-joined callee string (e.g. `'pika.str'`), or `null` if the callee shape is unsupported.
+ *
+ * @remarks
+ * Handles plain identifiers (`pika`), non-computed member expressions
+ * (`pika.str`), computed literal keys (`pika['str']`), and static
+ * template-literal keys (`` pika[`str`] ``). Returns `null` for anything
+ * more complex.
+ *
+ * @example
+ * ```ts
+ * // Given an AST node for `pika.str('...')`
+ * getCalleeName(node) // 'pika.str'
+ * ```
  */
 export function getCalleeName(node: {
 	type: string

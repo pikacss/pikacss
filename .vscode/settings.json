@@ -25,6 +25,22 @@
 		"jsonc",
 		"yaml"
 	],
+	"chat.useAgentsMdFile": true,
+	"chat.includeApplyingInstructions": true,
+	"chat.includeReferencedInstructions": true,
+	"chat.instructionsFilesLocations": {
+		".github/instructions": true,
+		".claude/rules": true,
+		"~/.copilot/instructions": false,
+		"~/.claude/rules": false
+	},
+	"chat.promptFilesLocations": {
+		".github/prompts": true
+	},
+	"chat.agentFilesLocations": {
+		".github/agents": true,
+		".claude/agents": true
+	},
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"references.preferredLocation": "peek",
 	"testing.automaticallyOpenPeekView": "never",

@@ -1,9 +1,0 @@
-example.ts:3:17  error  PikaCSS build-time violation: Variable reference 'color' is not statically analyzable.
-                        All property values in pika() arguments must be static literals  pikacss/no-dynamic-args
-
-example.ts:7:6   error  PikaCSS build-time violation: Variable reference 'styles' is not statically analyzable.
-                        All arguments to pika() must be static literals (strings, numbers, objects with literal values)
-                        that can be evaluated at build time  pikacss/no-dynamic-args
-
-example.ts:10:17 error  PikaCSS build-time violation: Function calls are not statically analyzable.
-                        All property values in pika() arguments must be static literals  pikacss/no-dynamic-args

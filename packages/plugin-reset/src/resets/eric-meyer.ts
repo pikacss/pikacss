@@ -1,4 +1,15 @@
 /* REF: https://meyerweb.com/eric/tools/css/reset/ */
+/**
+ * Eric Meyer's CSS Reset v5.0.2 stylesheet as a raw CSS string.
+ *
+ * A classic aggressive reset that zeroes out margin, padding, border, and
+ * font-size on nearly all HTML elements, removes list styles, resets quotes,
+ * and collapses table borders. Public domain.
+ *
+ * @see {@link https://meyerweb.com/eric/tools/css/reset/}
+ *
+ * @internal
+ */
 export default `
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v5.0.2 | 20191019

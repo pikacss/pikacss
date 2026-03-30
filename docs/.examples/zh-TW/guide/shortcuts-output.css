@@ -1,8 +1,0 @@
-/* 使用 __shortcut: 'flex-center'，並搭配 gap: '1rem' */
-.pk-a { display: flex; }
-.pk-b { align-items: center; }
-.pk-c { justify-content: center; }
-.pk-d { gap: 1rem; }
-
-/* 使用 __shortcut: 'm-4' */
-.e { margin: 1rem; }

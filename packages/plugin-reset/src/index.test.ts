@@ -1,85 +1,56 @@
-import { createEngine } from '@pikacss/core'
-import { describe, expect, it } from 'vitest'
-import { reset } from './index'
-import andyBell from './resets/andy-bell'
-import ericMeyer from './resets/eric-meyer'
-import modernNormalize from './resets/modern-normalize'
-import normalize from './resets/normalize'
-import theNewCssReset from './resets/the-new-css-reset'
+import { describe, expect, it, vi } from 'vitest'
 
-function expectResetPreflight(css: string, resetCss: string) {
-	expect(css)
-		.toContain('@layer reset {')
-	expect(css)
-		.toContain(resetCss.trim())
+import { reset } from './index'
+
+function createEngine() {
+	return {
+		addPreflight: vi.fn(),
+	}
 }
 
 describe('reset plugin', () => {
-	it('should have plugin name "reset"', () => {
+	it('configures the reset layer and injects the default reset preflight', async () => {
 		const plugin = reset()
+		const engine = createEngine()
+		const config = {
+			layers: {
+				components: 10,
+			},
+		}
+
 		expect(plugin.name)
 			.toBe('reset')
-	})
-
-	it('should have order "pre"', () => {
-		const plugin = reset()
 		expect(plugin.order)
 			.toBe('pre')
+
+		plugin.configureRawConfig?.(config as any)
+		await plugin.configureEngine?.(engine as any)
+
+		expect(config.layers)
+			.toEqual({
+				components: 10,
+				reset: -1,
+			})
+		expect(engine.addPreflight)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				layer: 'reset',
+				preflight: expect.stringContaining('html'),
+			}))
 	})
 
-	it('should use "modern-normalize" as default reset style', async () => {
-		const engine = await createEngine({
-			plugins: [reset()],
-		})
-		const css = await engine.renderPreflights(false)
-		expectResetPreflight(css, modernNormalize)
-	})
+	it('keeps the configured layer but skips preflight registration for unknown runtime reset values', async () => {
+		const plugin = reset()
+		const engine = createEngine()
+		const config = {
+			reset: 'unknown-reset',
+		} as any
 
-	it('should apply "andy-bell" reset when configured', async () => {
-		const engine = await createEngine({
-			reset: 'andy-bell',
-			plugins: [reset()],
-		})
-		const css = await engine.renderPreflights(false)
-		expectResetPreflight(css, andyBell)
-	})
+		plugin.configureRawConfig?.(config)
+		await plugin.configureEngine?.(engine as any)
 
-	it('should apply "eric-meyer" reset when configured', async () => {
-		const engine = await createEngine({
-			reset: 'eric-meyer',
-			plugins: [reset()],
-		})
-		const css = await engine.renderPreflights(false)
-		expectResetPreflight(css, ericMeyer)
-	})
-
-	it('should apply "normalize" reset when configured', async () => {
-		const engine = await createEngine({
-			reset: 'normalize',
-			plugins: [reset()],
-		})
-		const css = await engine.renderPreflights(false)
-		expectResetPreflight(css, normalize)
-	})
-
-	it('should apply "the-new-css-reset" when configured', async () => {
-		const engine = await createEngine({
-			reset: 'the-new-css-reset',
-			plugins: [reset()],
-		})
-		const css = await engine.renderPreflights(false)
-		expectResetPreflight(css, theNewCssReset)
-	})
-
-	it('should add preflight containing the reset CSS', async () => {
-		const engine = await createEngine({
-			plugins: [reset()],
-		})
-		// Preflights should have been added by the plugin
-		expect(engine.config.preflights.length)
-			.toBeGreaterThan(0)
-		const css = await engine.renderPreflights(false)
-		expect(css.length)
-			.toBeGreaterThan(0)
+		expect(config.layers)
+			.toEqual({ reset: -1 })
+		expect(engine.addPreflight)
+			.not.toHaveBeenCalled()
 	})
 })

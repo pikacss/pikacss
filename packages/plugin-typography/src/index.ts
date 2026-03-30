@@ -16,9 +16,26 @@ import {
 	typographyVariables,
 } from './styles'
 
+/**
+ * Configuration options for the typography plugin.
+ *
+ * @remarks Pass this object under the `typography` key in your engine config
+ * to customize prose color variables.
+ *
+ * @example
+ * ```ts
+ * const config = {
+ *   typography: {
+ *     variables: { '--pk-prose-color-links': '#3b82f6' },
+ *   },
+ * }
+ * ```
+ */
 export interface TypographyPluginOptions {
 	/**
-	 * Custom variables to override the default typography variables.
+	 * Partial overrides for the default prose CSS custom properties.
+	 *
+	 * @default `{}`
 	 */
 	variables?: Partial<typeof typographyVariables>
 }
@@ -67,10 +84,38 @@ function registerTypographyShortcuts(engine: Parameters<NonNullable<EnginePlugin
 
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * Typography plugin options forwarded from the engine config.
+		 *
+		 * @default `undefined`
+		 */
 		typography?: TypographyPluginOptions
 	}
 }
 
+/**
+ * Creates the PikaCSS typography engine plugin.
+ *
+ * @returns An engine plugin that registers prose CSS variables and shortcut
+ * utilities (`prose`, `prose-sm`, `prose-lg`, `prose-xl`, `prose-2xl`).
+ *
+ * @remarks The plugin reads the `typography` key from the engine config,
+ * merges user-provided variable overrides with the defaults, and registers
+ * a full set of typography shortcuts covering paragraphs, links, headings,
+ * lists, code, tables, and more.
+ *
+ * @example
+ * ```ts
+ * import { typography } from '@pikacss/plugin-typography'
+ *
+ * export default defineEngineConfig({
+ *   plugins: [typography()],
+ *   typography: {
+ *     variables: { '--pk-prose-color-links': '#3b82f6' },
+ *   },
+ * })
+ * ```
+ */
 export function typography(): EnginePlugin {
 	let typographyConfig: TypographyPluginOptions = {}
 	return defineEnginePlugin({

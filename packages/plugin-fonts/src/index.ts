@@ -25,34 +25,181 @@ export type {
 	FontsProviderOptions,
 }
 
+/**
+ * Detailed metadata for a font family entry.
+ *
+ * @remarks Use this form instead of a plain string when you need to specify weights, italic variants, or a per-font provider override.
+ *
+ * @example
+ * ```ts
+ * const font: FontMeta = {
+ *   name: 'Inter',
+ *   weights: [400, 600, 700],
+ *   italic: true,
+ *   provider: 'bunny',
+ * }
+ * ```
+ */
 export interface FontMeta {
+	/** Font family name as expected by the provider (e.g. `'Inter'`). */
 	name: string
+	/**
+	 * Font weight values to load from the provider.
+	 *
+	 * @default []
+	 */
 	weights?: Array<string | number>
+	/**
+	 * Whether to include italic variants for the requested weights.
+	 *
+	 * @default false
+	 */
 	italic?: boolean
+	/**
+	 * Provider override for this font, taking precedence over the global `provider` option.
+	 *
+	 * @default undefined
+	 */
 	provider?: FontsProvider
+	/**
+	 * Provider-specific options for this font, merged with global provider options.
+	 *
+	 * @default undefined
+	 */
 	providerOptions?: FontsProviderOptions
 }
 
+/**
+ * A font entry — either a shorthand string or a full metadata object.
+ *
+ * @remarks Strings are parsed as `'Name'` or `'Name:weight1,weight2'`. Use `FontMeta` when you need italic or provider overrides.
+ *
+ * @example
+ * ```ts
+ * const simple: FontFamilyEntry = 'Roboto'
+ * const withWeights: FontFamilyEntry = 'Roboto:400,700'
+ * const detailed: FontFamilyEntry = { name: 'Roboto', weights: [400, 700], italic: true }
+ * ```
+ */
 export type FontFamilyEntry = string | FontMeta
 
+/**
+ * Describes a raw CSS `@font-face` declaration injected as a preflight.
+ *
+ * @remarks Each definition produces one `@font-face` block. Use this for self-hosted fonts or fonts that do not come from a provider URL.
+ *
+ * @example
+ * ```ts
+ * const face: FontFaceDefinition = {
+ *   fontFamily: 'MyFont',
+ *   src: 'url(/fonts/MyFont.woff2) format("woff2")',
+ *   fontWeight: '400 700',
+ *   fontDisplay: 'swap',
+ * }
+ * ```
+ */
 export interface FontFaceDefinition {
+	/** The `font-family` name for the `@font-face` rule. */
 	fontFamily: string
+	/** One or more `src` descriptors (e.g. `url(...)` expressions). */
 	src: string | string[]
+	/**
+	 * CSS `font-display` descriptor for this face.
+	 *
+	 * @default undefined
+	 */
 	fontDisplay?: string
+	/**
+	 * CSS `font-weight` descriptor, such as `'400'` or `'100 900'` for variable fonts.
+	 *
+	 * @default undefined
+	 */
 	fontWeight?: string | number
+	/**
+	 * CSS `font-style` descriptor (e.g. `'normal'`, `'italic'`).
+	 *
+	 * @default undefined
+	 */
 	fontStyle?: string
+	/**
+	 * CSS `font-stretch` descriptor (e.g. `'condensed'`, `'75% 125%'`).
+	 *
+	 * @default undefined
+	 */
 	fontStretch?: string
+	/**
+	 * CSS `unicode-range` descriptor to limit the character set.
+	 *
+	 * @default undefined
+	 */
 	unicodeRange?: string | string[]
 }
 
+/**
+ * Configuration options for the fonts plugin.
+ *
+ * @remarks Set these under the `fonts` key in your engine config. The plugin resolves font entries, builds provider import URLs, generates `@font-face` rules, and registers `font-<token>` shortcuts.
+ *
+ * @example
+ * ```ts
+ * const options: FontsPluginOptions = {
+ *   provider: 'google',
+ *   display: 'swap',
+ *   fonts: {
+ *     sans: 'Inter:400,600,700',
+ *     mono: 'Fira Code:400,700',
+ *   },
+ * }
+ * ```
+ */
 export interface FontsPluginOptions {
+	/**
+	 * Default font provider used for all font entries that do not specify their own.
+	 *
+	 * @default `'google'`
+	 */
 	provider?: FontsProvider
+	/**
+	 * Font families grouped by shortcut token. Each token produces a `font-<token>` CSS shortcut.
+	 *
+	 * @default `{}`
+	 */
 	fonts?: Record<string, FontFamilyEntry | FontFamilyEntry[]>
+	/**
+	 * Raw `font-family` CSS stacks grouped by shortcut token; no provider loading is performed.
+	 *
+	 * @default `{}`
+	 */
 	families?: Record<string, string | string[]>
+	/**
+	 * Additional CSS `@import url(...)` rules injected before provider-generated imports.
+	 *
+	 * @default `[]`
+	 */
 	imports?: string | string[]
+	/**
+	 * Custom `@font-face` definitions injected as preflight CSS.
+	 *
+	 * @default `[]`
+	 */
 	faces?: FontFaceDefinition[]
+	/**
+	 * CSS `font-display` value applied to all provider-generated imports.
+	 *
+	 * @default `'swap'`
+	 */
 	display?: string
+	/**
+	 * Custom font provider implementations keyed by provider name.
+	 *
+	 * @default `{}`
+	 */
 	providers?: Record<string, FontsProviderDefinition>
+	/**
+	 * Provider-level options keyed by provider name, forwarded to `buildImportUrls`.
+	 *
+	 * @default `{}`
+	 */
 	providerOptions?: Record<string, FontsProviderOptions>
 }
 
@@ -102,10 +249,35 @@ const defaultFallbacks: Record<string, string[]> = {
 
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * Configuration for the fonts plugin.
+		 *
+		 * @default undefined
+		 */
 		fonts?: FontsPluginOptions
 	}
 }
 
+/**
+ * Creates the fonts engine plugin for web-font integration.
+ *
+ * @returns An engine plugin that registers font imports, `@font-face` preflights, CSS variables, and `font-<token>` shortcuts.
+ *
+ * @remarks Reads its configuration from the `fonts` key in the engine config. Supports Google Fonts, Bunny Fonts, Fontshare, Coollabs, and custom providers.
+ *
+ * @example
+ * ```ts
+ * import { fonts } from '@pikacss/plugin-fonts'
+ *
+ * export default defineEngineConfig({
+ *   plugins: [fonts()],
+ *   fonts: {
+ *     provider: 'google',
+ *     fonts: { sans: 'Inter:400,600,700' },
+ *   },
+ * })
+ * ```
+ */
 export function fonts(): EnginePlugin {
 	let fontsConfig: FontsPluginOptions = {}
 
@@ -230,8 +402,8 @@ function parseFontString(value: string): ParsedFontString {
 		return { name: value, weights: [] }
 	}
 
-	const name = matched[1] ?? value
-	const weights = matched[2] ?? ''
+	const name = matched[1]!
+	const weights = matched[2]!
 	return {
 		name,
 		weights: weights.split(',')
@@ -328,7 +500,7 @@ function dedupeProviderFonts(providerFonts: Map<FontsProvider, NormalizedFontEnt
 				font.italic,
 				dedupeStrings(font.weights)
 					.join(','),
-				serializeProviderOptions(font.options),
+				serializeProviderOptions(font.options ?? {}),
 			].join(':')
 			if (map.has(key) === false) {
 				map.set(key, {
@@ -346,10 +518,7 @@ function dedupeStrings(values: string[]) {
 	return [...new Set(values.filter(Boolean))]
 }
 
-function serializeProviderOptions(options?: FontsProviderOptions) {
-	if (options == null)
-		return ''
-
+function serializeProviderOptions(options: FontsProviderOptions) {
 	const normalized = Object.keys(options)
 		.sort()
 		.map(key => [key, options[key]])
