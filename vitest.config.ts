@@ -2,24 +2,19 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
 	test: {
-		projects: ['packages/*'],
+		projects: ['packages/*/vitest.config.ts', 'docs/vitest.config.ts'],
 		coverage: {
-			enabled: true,
 			exclude: [
 				'**/*.config.*',
+				'**/*.gen.*',
 				'**/docs/**',
 				'**/scripts/**',
 				'**/dist/**',
 				'**/coverage/**',
+				'**/src/**/generated-*.ts',
+				'**/src/csstype.ts',
 				'**/*.bench.*',
 			],
-		},
-		typecheck: {
-			enabled: true,
-		},
-		benchmark: {
-			include: ['**/*.bench.ts'],
-			exclude: ['**/node_modules/**', '**/dist/**'],
 		},
 	},
 })

@@ -1,4 +1,16 @@
 /* REF: https://github.com/elad2412/the-new-css-reset/blob/main/css/reset.css */
+/**
+ * The New CSS Reset v1.11.3 stylesheet as a raw CSS string.
+ *
+ * Uses `all: unset` with `display: revert` to strip all User-Agent styles
+ * except `display`, then re-applies specific opinionated defaults for
+ * box-sizing, text-size-adjust, cursors, list styles, tables, textareas,
+ * and media elements.
+ *
+ * @see {@link https://github.com/elad2412/the-new-css-reset}
+ *
+ * @internal
+ */
 export default `
 /***
     The new CSS reset - version 1.11.3 (last updated 25.08.2024)

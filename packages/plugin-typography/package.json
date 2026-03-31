@@ -7,9 +7,10 @@
 	"version": "0.0.47",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
+	"homepage": "https://pikacss.com",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pikacss/pikacss.git",
+		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
 		"directory": "packages/plugin-typography"
 	},
 	"bugs": {
@@ -20,6 +21,7 @@
 		"pikacss-plugin",
 		"typography"
 	],
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"import": {
@@ -33,14 +35,17 @@
 	"files": [
 		"dist"
 	],
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
 		"build": "tsdown",
-		"build:pack": "pnpm build && pnpm pack",
+		"build:watch": "tsdown --watch",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
 		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest"
+		"test": "vitest run --config ./vitest.config.ts",
+		"test:watch": "vitest --config ./vitest.config.ts"
 	},
 	"peerDependencies": {
 		"@pikacss/core": "workspace:*"

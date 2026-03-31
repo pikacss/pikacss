@@ -1,102 +1,165 @@
 import type { VariableSemanticFamily } from '../generated-property-semantics'
 import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
-import { VARIABLE_SEMANTIC_FAMILIES, VARIABLE_SEMANTIC_FAMILY_PROPERTIES } from '../generated-property-semantics'
+import { VARIABLE_SEMANTIC_FAMILY_PROPERTIES } from '../generated-property-semantics'
 import { defineEnginePlugin } from '../plugin'
 import { log } from '../utils'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
-const KNOWN_VARIABLE_SEMANTIC_FAMILIES = new Set<string>(VARIABLE_SEMANTIC_FAMILIES)
 
+/**
+ * Semantic type label for a CSS variable, used to derive which CSS properties it can auto-complete as a value for.
+ *
+ * @remarks Accepts any known `VariableSemanticFamily` (e.g. `'color'`, `'length'`) or an arbitrary string. Known families are expanded to their associated CSS property list at registration time.
+ *
+ * @example
+ * ```ts
+ * const type: VariableSemanticType = 'color'
+ * ```
+ */
 export type VariableSemanticType = VariableSemanticFamily | UnionString
 
+/**
+ * Controls how a CSS variable participates in the autocomplete type surface.
+ *
+ * @remarks When `asValueOf` includes `'*'`, the variable appears as a value option for every CSS property. Use `'-'` to suppress value-of suggestions entirely.
+ *
+ * @example
+ * ```ts
+ * const auto: VariableAutocomplete = { asValueOf: ['color', 'background-color'], asProperty: true }
+ * ```
+ */
 export interface VariableAutocomplete {
 	/**
-	 * Specify the properties that the variable can be used as a value of.
-	 * Use '-' to disable CSS value autocomplete for this variable.
+	 * CSS properties (or `'*'` for all, `'-'` for none) where this variable should appear as a `var()` value suggestion.
 	 *
-	 * @default ['*']
+	 * @default undefined (inferred from `semanticType`, or `'*'` if neither is set)
 	 */
 	asValueOf?: Arrayable<UnionString | '*' | '-' | ResolvedCSSProperty>
 	/**
-	 * Whether to expose the variable name as an extra CSS property in autocomplete.
+	 * Whether this variable name should appear as an extra CSS property in the autocomplete surface.
 	 *
 	 * @default true
 	 */
 	asProperty?: boolean
 }
 
+/**
+ * Expanded object form of a CSS variable definition with optional metadata.
+ *
+ * @remarks Use this form when the variable needs semantic typing, custom autocomplete behaviour, or opt-out of unused-pruning.
+ *
+ * @example
+ * ```ts
+ * const v: VariableObject = {
+ *   value: '#3b82f6',
+ *   semanticType: 'color',
+ *   autocomplete: { asValueOf: '*' },
+ *   pruneUnused: false,
+ * }
+ * ```
+ */
 export interface VariableObject {
+	/**
+	 * The CSS value assigned to this variable.
+	 *
+	 * @default undefined (variable is registered for autocomplete only, no value emitted)
+	 */
 	value?: ResolvedCSSProperties[`--${string}`]
+	/**
+	 * Semantic family labels controlling which CSS properties this variable auto-completes as a value for.
+	 *
+	 * @default undefined (all properties when `autocomplete.asValueOf` is also unset)
+	 */
 	semanticType?: Arrayable<VariableSemanticType>
+	/**
+	 * Fine-grained control over this variable's autocomplete behaviour.
+	 *
+	 * @default undefined (inferred from `semanticType`)
+	 */
 	autocomplete?: VariableAutocomplete
+	/**
+	 * Whether this variable should be pruned from the output when it is not referenced by any atomic style or preflight.
+	 *
+	 * @default true (inherits from `VariablesConfig.pruneUnused`)
+	 */
 	pruneUnused?: boolean
 }
 
+/**
+ * A CSS variable value, either a plain CSS value string/number or a `VariableObject` with metadata.
+ *
+ * @remarks Use the short form for simple values. Use `VariableObject` when semantic typing, autocomplete control, or pruning opt-out is needed.
+ *
+ * @example
+ * ```ts
+ * const simple: Variable = '#fff'
+ * const rich: Variable = { value: '#fff', semanticType: 'color' }
+ * ```
+ */
 export type Variable = ResolvedCSSProperties[`--${string}`] | VariableObject
 
+/**
+ * A nested record mapping CSS variable names (`--*`) and optional selector scopes to variable definitions.
+ *
+ * @remarks Non-`--` keys are treated as selector scopes (e.g. `'.dark'`, `'@media ...'`) that nest the enclosed variables under that selector. Keys starting with `--` define actual CSS variables.
+ *
+ * @example
+ * ```ts
+ * const def: VariablesDefinition = {
+ *   '--color-primary': '#3b82f6',
+ *   '.dark': { '--color-primary': '#60a5fa' },
+ * }
+ * ```
+ */
 export type VariablesDefinition = {
 	[key in UnionString | ResolvedSelector]?: Variable | VariablesDefinition
 }
 
+/**
+ * Configuration object for the `variables` engine option.
+ *
+ * @remarks Passed via `EngineConfig.variables` to define CSS custom properties, control pruning, and specify a safe list.
+ *
+ * @example
+ * ```ts
+ * const config: VariablesConfig = {
+ *   variables: { '--color-primary': '#3b82f6' },
+ *   pruneUnused: true,
+ *   safeList: ['--color-primary'],
+ * }
+ * ```
+ */
 export interface VariablesConfig {
-	/**
-	 * Define CSS variables with support for static values and autocomplete configuration.
-	 *
-	 * @default {}
-	 * @example
-	 * ```ts
-	 * {
-	 *   variables: {
-	 *     // The variable with value "null" will not be included in the final CSS, but can be used in autocompletion.
-	 *     '--external-var': null,
-	 *
-	 *     '--color-bg': '#fff',
-	 *     '--color-text': '#000',
-	 *
-	 *     '[data-theme="dark"]': {
-	 *       '--color-bg': '#000',
-	 *       '--color-text': '#fff',
-	 *     },
-	 *   },
-	 * }
-	 * ```
-	 */
+	/** One or more variable definition objects to register. */
 	variables: Arrayable<VariablesDefinition>
 
 	/**
-	 * Whether to prune unused variables from the final CSS.
+	 * Default pruning policy for variables that are not referenced by any atomic style or preflight.
 	 *
 	 * @default true
 	 */
 	pruneUnused?: boolean
 
 	/**
-	 * A list of CSS variables that should always be included in the final CSS, you can use this to prevent certain variables from being pruned.
+	 * Variable names that should always be emitted regardless of usage.
 	 *
 	 * @default []
-	 * @example
-	 * ```ts
-	 * {
-	 *   variables: {
-	 *     variables: {
-	 *       '--external-var': null,
-	 *       '--color-bg': '#fff',
-	 *       '--color-text': '#000',
-	 *     },
-	 *     safeList: ['--external-var', '--color-bg', '--color-text'],
-	 *   },
-	 * }
-	 * ```
 	 */
 	safeList?: (`--${string}` & {})[]
 }
 
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * CSS custom properties (variables) configuration.
+		 *
+		 * @default undefined
+		 */
 		variables?: VariablesConfig
 	}
 
 	interface Engine {
+		/** Runtime variable management: resolved variable store and `add` method for registering variables after engine creation. */
 		variables: {
 			store: Map<string, ResolvedVariable[]>
 			add: (variables: VariablesDefinition) => void
@@ -104,6 +167,18 @@ declare module '@pikacss/core' {
 	}
 }
 
+/**
+ * Built-in engine plugin that provides CSS custom properties (variables) with smart pruning and autocomplete integration.
+ *
+ * @returns An `EnginePlugin` that registers variable definitions, manages a preflight for emitting `:root` / scoped variables, and prunes unused variables from the output.
+ *
+ * @remarks Reads `EngineConfig.variables` during `rawConfigConfigured` and attaches the `engine.variables` management interface during `configureEngine`. A preflight is registered that collects variable references from atomic styles and other preflights, transitively expands dependencies, and emits only used (or safe-listed) variables.
+ *
+ * @example
+ * ```ts
+ * createEngine({ plugins: [variables()] })
+ * ```
+ */
 export function variables() {
 	let resolveVariables: (variables: VariablesDefinition) => ResolvedVariable[]
 	let rawVariables: VariablesDefinition[]
@@ -162,7 +237,8 @@ export function variables() {
 					// 2. Collect vars referenced by other preflights (skip self to avoid recursion).
 					const otherPreflights = engine.config.preflights.filter(p => p.id !== 'core:variables')
 					const preflightResults = await Promise.all(
-						otherPreflights.map(({ fn }) => Promise.resolve(fn(engine, false))
+						otherPreflights.map(({ fn }) => Promise.resolve()
+							.then(() => fn(engine, false))
 							.catch(() => null)),
 					)
 					preflightResults.forEach((result) => {
@@ -187,9 +263,8 @@ export function variables() {
 						if (!entries)
 							continue
 						for (const { value } of entries) {
-							if (value == null)
-								continue
-							for (const refName of extractUsedVarNames(String(value))
+							const referencedValue = Array.isArray(value) ? value.join(' ') : String(value)
+							for (const refName of extractUsedVarNames(referencedValue)
 								.map(normalizeVariableName)) {
 								if (!used.has(refName)) {
 									used.add(refName)
@@ -307,8 +382,7 @@ function resolveAutocompleteValueTargets({
 		targets.add('*')
 
 	explicitTargets.forEach((target) => {
-		if (target !== '-')
-			targets.add(target)
+		targets.add(target)
 	})
 
 	semanticTypes.forEach((family) => {
@@ -318,9 +392,7 @@ function resolveAutocompleteValueTargets({
 			return
 		}
 
-		if (KNOWN_VARIABLE_SEMANTIC_FAMILIES.has(family) === false) {
-			log.warn(`Unknown semanticType "${family}" for variable "${name}". Skipping semantic autocomplete expansion.`)
-		}
+		log.warn(`Unknown semanticType "${family}" for variable "${name}". Skipping semantic autocomplete expansion.`)
 	})
 
 	if (targets.has('*'))
@@ -331,10 +403,38 @@ function resolveAutocompleteValueTargets({
 
 const VAR_NAME_RE = /var\((--[\w-]+)/g
 
+/**
+ * Extracts all CSS variable names referenced via `var(--*)` calls in a string.
+ *
+ * @param input - The CSS value string to scan.
+ * @returns An array of variable names (including the `--` prefix) found in `var()` expressions.
+ *
+ * @remarks Uses a global regex to find all `var(--name)` occurrences. Nested `var()` calls are matched independently.
+ *
+ * @example
+ * ```ts
+ * extractUsedVarNames('color: var(--primary)')  // ['--primary']
+ * extractUsedVarNames('var(--a) var(--b)')       // ['--a', '--b']
+ * ```
+ */
 export function extractUsedVarNames(input: string): string[] {
 	return Array.from(input.matchAll(VAR_NAME_RE), m => m[1]!)
 }
 
+/**
+ * Ensures a variable name has the `--` prefix.
+ *
+ * @param name - The variable name, with or without the `--` prefix.
+ * @returns The name with a guaranteed `--` prefix.
+ *
+ * @remarks A no-op when the name already starts with `--`.
+ *
+ * @example
+ * ```ts
+ * normalizeVariableName('color')     // '--color'
+ * normalizeVariableName('--color')   // '--color'
+ * ```
+ */
 export function normalizeVariableName(name: string) {
 	if (name.startsWith('--'))
 		return name
@@ -342,8 +442,18 @@ export function normalizeVariableName(name: string) {
 }
 
 /**
- * Recursively extract all CSS variable names referenced inside a preflight
- * result (either a plain CSS string or a `PreflightDefinition` object).
+ * Recursively extracts all CSS variable names referenced in a preflight result.
+ *
+ * @param result - A preflight output: either a raw CSS string or a nested `PreflightDefinition` object.
+ * @returns A flat array of normalized variable names found in the result.
+ *
+ * @remarks For string results, scans for `var(--*)` references. For object results, recursively traverses selector scopes and string/number values. All returned names are normalized with the `--` prefix.
+ *
+ * @example
+ * ```ts
+ * extractUsedVarNamesFromPreflightResult({ ':root': { color: 'var(--primary)' } })
+ * // ['--primary']
+ * ```
  */
 export function extractUsedVarNamesFromPreflightResult(
 	result: string | PreflightDefinition,
@@ -359,11 +469,10 @@ export function extractUsedVarNamesFromPreflightResult(
 		if (typeof value === 'string' || typeof value === 'number') {
 			extractUsedVarNames(String(value))
 				.forEach(n => names.push(normalizeVariableName(n)))
+			continue
 		}
-		else if (typeof value === 'object') {
-			extractUsedVarNamesFromPreflightResult(value as PreflightDefinition)
-				.forEach(n => names.push(n))
-		}
+		extractUsedVarNamesFromPreflightResult(value as PreflightDefinition)
+			.forEach(n => names.push(n))
 	}
 	return names
 }

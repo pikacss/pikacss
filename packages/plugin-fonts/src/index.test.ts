@@ -1,192 +1,369 @@
-import { createEngine } from '@pikacss/core'
-import { describe, expect, it } from 'vitest'
-import { defineFontsProvider, fonts } from './index'
+import { log } from '@pikacss/core'
 
-async function createFontsEngine(config: Parameters<typeof createEngine>[0] = {}) {
-	return createEngine({
-		...config,
-		plugins: [fonts()],
-	})
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { fonts } from './index'
+
+function createEngine() {
+	const imports: string[] = []
+	const preflights: unknown[] = []
+	const variableDefinitions: Array<Record<string, unknown>> = []
+	const shortcutDefinitions: Array<[string, unknown]> = []
+	const autocompleteEntries: unknown[] = []
+
+	return {
+		imports,
+		preflights,
+		variableDefinitions,
+		shortcutDefinitions,
+		autocompleteEntries,
+		appendCssImport(rule: string) {
+			imports.push(rule)
+		},
+		addPreflight(preflight: unknown) {
+			preflights.push(preflight)
+		},
+		variables: {
+			add(definition: Record<string, unknown>) {
+				variableDefinitions.push(definition)
+			},
+		},
+		shortcuts: {
+			add(definition: [string, unknown]) {
+				shortcutDefinitions.push(definition)
+			},
+		},
+		appendAutocomplete(definition: unknown) {
+			autocompleteEntries.push(definition)
+		},
+	}
 }
 
+afterEach(() => {
+	log.setWarnFn(console.warn.bind(console))
+})
+
 describe('fonts plugin', () => {
-	it('should have plugin name "fonts"', () => {
+	it('registers imports, preflights, variables, shortcuts, and autocomplete from the resolved config', async () => {
 		const plugin = fonts()
-		expect(plugin.name)
-			.toBe('fonts')
-	})
+		const engine = createEngine()
 
-	it('should generate a Google Fonts import before layered preflights', async () => {
-		const engine = await createFontsEngine({
+		plugin.configureRawConfig?.({
 			fonts: {
+				imports: ['https://cdn.example.com/base.css', 'https://cdn.example.com/base.css'],
 				fonts: {
-					sans: 'Roboto',
+					sans: ['Inter:400,700', { name: 'Roboto Flex', weights: [400], italic: true }],
+					mono: 'monospace',
 				},
-			},
-		})
-
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain('@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");')
-		expect(css)
-			.not.toContain('fonts.bunny.net')
-	})
-
-	it('should register font variables and shortcuts', async () => {
-		const engine = await createFontsEngine({
-			fonts: {
-				fonts: {
-					sans: 'Roboto',
+				families: {
+					brand: ['Avenir Next', 'sans-serif'],
 				},
-			},
-		})
-
-		expect(engine.variables.store.has('--pk-font-sans'))
-			.toBe(true)
-
-		const ids = await engine.use('font-sans')
-		expect(ids.length)
-			.toBeGreaterThan(0)
-
-		const css = await engine.renderAtomicStyles(false)
-		expect(css)
-			.toContain('font-family:var(--pk-font-sans)')
-		expect(engine.config.autocomplete.styleItemStrings.has('font-sans'))
-			.toBe(true)
-		expect(engine.config.autocomplete.cssProperties.get('font-family'))
-			.toContain('"Roboto", ui-sans-serif, system-ui, sans-serif')
-	})
-
-	it('should not generate a Google Fonts import for none provider entries', async () => {
-		const engine = await createFontsEngine({
-			fonts: {
-				fonts: {
-					brand: [
-						{ name: 'Clash Display', provider: 'none' },
-						'sans-serif',
-					],
-				},
-			},
-		})
-
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.not.toContain('fonts.googleapis.com')
-		const ids = await engine.use('font-brand')
-		expect(ids.length)
-			.toBeGreaterThan(0)
-	})
-
-	it('should generate Bunny imports through the provider registry', async () => {
-		const engine = await createFontsEngine({
-			fonts: {
-				provider: 'bunny',
-				fonts: {
-					sans: [
-						'Roboto:400,700',
-						'Open Sans:400,600',
-					],
-				},
-			},
-		})
-
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain('@import url("https://fonts.bunny.net/css?family=Roboto:400,700|Open+Sans:400,600&display=swap");')
-	})
-
-	it('should generate Fontshare imports through the provider registry', async () => {
-		const engine = await createFontsEngine({
-			fonts: {
-				provider: 'fontshare',
-				fonts: {
-					display: [{ name: 'Clash Display', weights: [400, 600] }],
-				},
-			},
-		})
-
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain('@import url("https://api.fontshare.com/v2/css?f[]=clash-display%40400%2C600&display=swap");')
-	})
-
-	it('should generate Coollabs imports through the provider registry', async () => {
-		const engine = await createFontsEngine({
-			fonts: {
-				provider: 'coollabs',
+				faces: [
+					{
+						fontFamily: 'Acme Sans',
+						src: 'url("/fonts/acme.woff2") format("woff2")',
+						fontWeight: 400,
+						unicodeRange: ['U+000-5FF'],
+					},
+				],
+				display: 'fallback',
 				providerOptions: {
-					coollabs: {
-						text: 'PikaCSS',
+					google: {
+						text: 'UI',
 					},
 				},
-				fonts: {
-					sans: 'Roboto:400,700',
-				},
 			},
-		})
+		} as any)
 
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain('@import url("https://api.fonts.coollabs.io/css2?family=Roboto:wght@400;700&display=swap&text=PikaCSS");')
+		await plugin.configureEngine?.(engine as any)
+
+		expect(engine.imports)
+			.toEqual(expect.arrayContaining([
+				'@import url("https://cdn.example.com/base.css");',
+			]))
+		expect(engine.imports.some(rule => rule.includes('fonts.googleapis.com/css2?')))
+			.toBe(true)
+		expect(engine.imports.some(rule => rule.includes('display=fallback')))
+			.toBe(true)
+		expect(engine.preflights)
+			.toEqual([
+				expect.objectContaining({
+					id: 'fonts:preflight',
+					preflight: expect.stringContaining('@font-face'),
+				}),
+			])
+		expect(engine.variableDefinitions)
+			.toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					'--pk-font-sans': expect.objectContaining({
+						value: expect.stringContaining('Inter'),
+					}),
+				}),
+				expect.objectContaining({
+					'--pk-font-brand': expect.objectContaining({
+						value: '"Avenir Next", sans-serif',
+					}),
+				}),
+			]))
+		expect(engine.shortcutDefinitions)
+			.toEqual(expect.arrayContaining([
+				['font-sans', { fontFamily: 'var(--pk-font-sans)' }],
+				['font-brand', { fontFamily: 'var(--pk-font-brand)' }],
+			]))
+		expect(engine.autocompleteEntries)
+			.toEqual([
+				expect.objectContaining({
+					cssProperties: {
+						'font-family': expect.arrayContaining([
+							expect.stringContaining('Inter'),
+							'"Avenir Next", sans-serif',
+						]),
+					},
+				}),
+			])
 	})
 
-	it('should allow registering custom providers from config', async () => {
-		const engine = await createFontsEngine({
+	it('dedupes provider fonts, skips generic-family imports, and preserves family normalization for custom providers', async () => {
+		const plugin = fonts()
+		const engine = createEngine()
+		const customProvider = vi.fn(() => ['https://fonts.example.com/custom.css', ''])
+
+		plugin.configureRawConfig?.({
 			fonts: {
-				provider: 'acme',
+				fonts: {
+					body: [
+						'Inter:400,400',
+						{ name: 'Inter', weights: ['400'], providerOptions: { subset: 'latin' } },
+						{ name: 'serif' },
+						'serif',
+					],
+					display: [
+						{ name: 'Cabinet Grotesk', provider: 'custom', weights: [500], italic: true, providerOptions: { family: 'display' } },
+						{ name: 'Cabinet Grotesk', provider: 'custom', weights: ['500'], italic: true, providerOptions: { family: 'display' } },
+					],
+					mono: 'system-ui',
+				},
+				families: {
+					brand: ['var(--font-brand)', '"Already Quoted"', 'system-ui'],
+				},
+				providers: {
+					custom: {
+						buildImportUrls: customProvider,
+					},
+				},
 				providerOptions: {
-					acme: {
-						text: 'PikaCSS',
+					custom: { text: 'Display' },
+				},
+			},
+		} as any)
+
+		await plugin.configureEngine?.(engine as any)
+
+		expect(customProvider)
+			.toHaveBeenCalledWith(
+				[
+					{
+						name: 'Cabinet Grotesk',
+						provider: 'custom',
+						weights: ['500'],
+						italic: true,
+						options: { family: 'display' },
+					},
+				],
+				expect.objectContaining({
+					provider: 'custom',
+					options: { text: 'Display' },
+				}),
+			)
+		expect(engine.imports.filter(rule => rule.includes('Cabinet')))
+			.toEqual([])
+		expect(engine.imports)
+			.toEqual(expect.arrayContaining([
+				'@import url("https://fonts.example.com/custom.css");',
+			]))
+		expect(engine.imports.filter(rule => rule.includes('fonts.googleapis.com/css2?')))
+			.toHaveLength(1)
+		expect(engine.preflights)
+			.toEqual([])
+		expect(engine.variableDefinitions)
+			.toEqual(expect.arrayContaining([
+				expect.objectContaining({
+					'--pk-font-body': expect.objectContaining({
+						value: expect.stringContaining('serif'),
+					}),
+				}),
+				expect.objectContaining({
+					'--pk-font-brand': expect.objectContaining({
+						value: 'var(--font-brand), "Already Quoted", system-ui',
+					}),
+				}),
+				expect.objectContaining({
+					'--pk-font-mono': expect.objectContaining({
+						value: 'system-ui, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+					}),
+				}),
+			]))
+	})
+
+	it('renders complete font-face declarations and avoids provider imports for generic-only tokens', async () => {
+		const plugin = fonts()
+		const engine = createEngine()
+
+		plugin.configureRawConfig?.({
+			fonts: {
+				fonts: {
+					ui: ['system-ui', 'sans-serif'],
+				},
+				faces: [
+					{
+						fontFamily: 'Source Serif 4',
+						src: [
+							'url("/fonts/source-serif.woff2") format("woff2")',
+							'url("/fonts/source-serif.woff") format("woff")',
+						],
+						fontDisplay: 'optional',
+						fontWeight: '600',
+						fontStyle: 'italic',
+						fontStretch: 'condensed',
+						unicodeRange: 'U+000-5FF',
+					},
+					{
+						fontFamily: 'Source Serif 4 Fallback',
+						src: 'url("/fonts/source-serif-fallback.woff2") format("woff2")',
+						fontDisplay: 'swap',
+					},
+				],
+			},
+		} as any)
+
+		await plugin.configureEngine?.(engine as any)
+
+		expect(engine.imports)
+			.toEqual([])
+		expect(engine.preflights)
+			.toHaveLength(1)
+		expect(engine.preflights[0])
+			.toEqual(expect.objectContaining({
+				id: 'fonts:preflight',
+				preflight: expect.any(String),
+			}))
+
+		const preflightCss = (engine.preflights[0] as { preflight: string }).preflight
+		expect(preflightCss.match(/@font-face/g))
+			.toHaveLength(2)
+		expect(preflightCss)
+			.toContain('font-family: "Source Serif 4";')
+		expect(preflightCss)
+			.toContain('url("/fonts/source-serif.woff2") format("woff2"), url("/fonts/source-serif.woff") format("woff")')
+		expect(preflightCss)
+			.toContain('font-display: optional;')
+		expect(preflightCss)
+			.toContain('font-weight: 600;')
+		expect(preflightCss)
+			.toContain('font-style: italic;')
+		expect(preflightCss)
+			.toContain('font-stretch: condensed;')
+		expect(preflightCss)
+			.toContain('unicode-range: U+000-5FF;')
+		expect(preflightCss)
+			.toContain('font-family: "Source Serif 4 Fallback";')
+		expect(preflightCss)
+			.toContain('url("/fonts/source-serif-fallback.woff2") format("woff2")')
+		expect(engine.shortcutDefinitions)
+			.toContainEqual(['font-ui', { fontFamily: 'var(--pk-font-ui)' }])
+	})
+
+	it('keeps setup side effects minimal when the fonts config is omitted', async () => {
+		const plugin = fonts()
+		const engine = createEngine()
+
+		plugin.configureRawConfig?.({} as any)
+
+		await plugin.configureEngine?.(engine as any)
+
+		expect(engine.imports)
+			.toEqual([])
+		expect(engine.preflights)
+			.toEqual([])
+		expect(engine.variableDefinitions)
+			.toEqual([])
+		expect(engine.shortcutDefinitions)
+			.toEqual([])
+		expect(engine.autocompleteEntries)
+			.toEqual([
+				{
+					cssProperties: {
+						'font-family': [],
+					},
+				},
+			])
+	})
+
+	it('keeps token registration while skipping import rules when a provider returns null', async () => {
+		const plugin = fonts()
+		const engine = createEngine()
+		const silentProvider = vi.fn(() => null)
+
+		plugin.configureRawConfig?.({
+			fonts: {
+				fonts: {
+					accent: {
+						name: 'Acme Sans',
+						provider: 'silent',
 					},
 				},
 				providers: {
-					acme: defineFontsProvider({
-						buildImportUrls(fonts, context) {
-							return `https://cdn.example.com/fonts.css?family=${fonts.map(font => font.name)
-								.join(',')}&display=${context.display}&text=${context.options.text}&subset=${fonts[0]?.options?.subset}`
-						},
-					}),
-				},
-				fonts: {
-					brand: {
-						name: 'Acme Sans',
-						providerOptions: {
-							subset: 'latin',
-						},
+					silent: {
+						buildImportUrls: silentProvider,
 					},
 				},
 			},
-		})
+		} as any)
 
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain('@import url("https://cdn.example.com/fonts.css?family=Acme Sans&display=swap&text=PikaCSS&subset=latin");')
+		await plugin.configureEngine?.(engine as any)
+
+		expect(silentProvider)
+			.toHaveBeenCalledWith(
+				[
+					{
+						name: 'Acme Sans',
+						provider: 'silent',
+						weights: [],
+						italic: false,
+						options: {},
+					},
+				],
+				expect.objectContaining({
+					provider: 'silent',
+					options: {},
+				}),
+			)
+		expect(engine.imports)
+			.toEqual([])
+		expect(engine.shortcutDefinitions)
+			.toContainEqual(['font-accent', { fontFamily: 'var(--pk-font-accent)' }])
 	})
 
-	it('should render custom imports and @font-face declarations', async () => {
-		const engine = await createFontsEngine({
+	it('warns and skips provider imports when a runtime provider definition is missing', async () => {
+		const plugin = fonts()
+		const engine = createEngine()
+		const warn = vi.fn()
+
+		log.setWarnFn((_prefix, ...args) => warn(...args))
+
+		plugin.configureRawConfig?.({
 			fonts: {
-				imports: 'https://example.com/fonts.css',
-				faces: [{
-					fontFamily: 'Clash Display',
-					src: 'url("/fonts/clash-display.woff2") format("woff2")',
-					fontWeight: 600,
-					fontStyle: 'normal',
-				}],
-				families: {
-					display: ['Clash Display', 'sans-serif'],
+				provider: 'custom-missing',
+				fonts: {
+					body: 'Inter',
 				},
 			},
-		})
+		} as any)
 
-		const css = await engine.renderPreflights(false)
-		expect(css)
-			.toContain('@import url("https://example.com/fonts.css");')
-		expect(css)
-			.toContain('@font-face { font-family: "Clash Display"; src: url("/fonts/clash-display.woff2") format("woff2"); font-weight: 600; font-style: normal; }')
+		await plugin.configureEngine?.(engine as any)
 
-		const ids = await engine.use('font-display')
-		expect(ids.length)
-			.toBeGreaterThan(0)
+		expect(warn)
+			.toHaveBeenCalledWith('Unknown fonts provider "custom-missing". Skipping import generation.')
+		expect(engine.imports)
+			.toEqual([])
 	})
 })

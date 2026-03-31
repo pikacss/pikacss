@@ -1,1 +1,0 @@
-type TupleFormStatic = [selector: string, value: string | string[]]

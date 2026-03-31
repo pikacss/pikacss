@@ -1,3 +1,5 @@
-import { defineProject } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 
-export default defineProject({})
+import { createPackageVitestConfig } from '../_shared/vitest'
+
+export default defineConfig(createPackageVitestConfig())

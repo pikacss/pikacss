@@ -51,7 +51,7 @@ const templates = {
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pikacss/pikacss.git",
+		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
 		"directory": "packages/${pkgDirname}"
 	},
 	"bugs": {
@@ -104,13 +104,51 @@ export default defineConfig({
 	clean: true,
 })
 	`.trim(),
+	'vitest.config.ts': `
+import { defineConfig } from 'vitest/config'
+
+import { createPackageVitestConfig } from '../_shared/vitest'
+
+export default defineConfig(createPackageVitestConfig())
+	`.trim(),
 	'src/index.ts': `
 import type { EnginePlugin } from '@pikacss/core'
 import { defineEnginePlugin } from '@pikacss/core'
 
+/**
+ * User-facing configuration for the ${pluginPascalName} plugin.
+ *
+ * @remarks
+ * Add field-level JSDoc directly above each option with @default and
+ * @example tags when omission behavior or nested config shapes are
+ * observable from the public contract.
+ */
 export interface ${pluginPascalName}PluginOptions {
 }
 
+/**
+ * Creates the PikaCSS ${pluginSlug} engine plugin.
+ *
+ * @remarks
+ * Registered hooks:
+ * - \`configureEngine\` registers the plugin's engine-facing behavior.
+ *
+ * Extend this comment with additional hook semantics when the plugin starts
+ * using \`configureRawConfig\`, \`rawConfigConfigured\`, or other engine hooks.
+ *
+ * @param options - Plugin configuration. Document semantic meaning,
+ * accepted values, defaults, and omission behavior as fields are added.
+ * @returns An {@link EnginePlugin} providing the ${pluginSlug} integration.
+ *
+ * @example
+ * \`\`\`ts
+ * import { ${pluginFactoryName} } from '@pikacss/${pkgName}'
+ *
+ * export default {
+ *   plugins: [${pluginFactoryName}()],
+ * }
+ * \`\`\`
+ */
 export function ${pluginFactoryName}(options: ${pluginPascalName}PluginOptions = {}): EnginePlugin {
 	return defineEnginePlugin({
 		name: '${pluginSlug}',

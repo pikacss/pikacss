@@ -7,7 +7,7 @@ import { $ } from 'zx'
 
 const segmentPattern = /^[a-z0-9-]+$/
 
-export function validatePackageSegment(value: string) {
+export function validatePackageSegment(value?: string) {
 	if (!value)
 		return 'Required.'
 	if (segmentPattern.test(value) === false)

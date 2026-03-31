@@ -2,150 +2,116 @@ import type { EnginePlugin } from '../plugin'
 import type { AutocompleteConfig, ResolvedAutocompleteConfig } from './autocomplete'
 import type { Preflight, ResolvedPreflight } from './preflight'
 
-// #region EngineConfig
+/**
+ * User-facing configuration object for creating a PikaCSS engine instance via `createEngine()`.
+ *
+ * @remarks All fields are optional and fall back to sensible defaults. Plugins can further modify this config through the `configureRawConfig` hook before resolution.
+ *
+ * @example
+ * ```ts
+ * const config: EngineConfig = {
+ *   prefix: 'pk-',
+ *   plugins: [myPlugin()],
+ *   layers: { base: 0, components: 5, utilities: 10 },
+ * }
+ * ```
+ */
 export interface EngineConfig {
 	/**
-	 * Register plugins to extend PikaCSS functionality.
+	 * Engine plugins that extend the engine with additional functionality (selectors, shortcuts, variables, etc.).
 	 *
-	 * @example
-	 * ```ts
-	 * {
-	 *   plugins: [
-	 *     icons(), // Add icon support
-	 *     customPlugin() // Custom plugin
-	 *   ]
-	 * }
-	 * ```
+	 * @default `[]`
 	 */
 	plugins?: EnginePlugin[]
 
 	/**
-	 * Set the prefix for generated atomic style id.
+	 * String prefix prepended to every generated atomic CSS class name.
 	 *
-	 * @default 'pk-'
-	 * @example
-	 * ```ts
-	 * {
-	 *   prefix: 'pk-' // Generated atomic id will be 'pk-xxx'
-	 * }
-	 * ```
+	 * @default `'pk-'`
 	 */
 	prefix?: string
 
 	/**
-	 * Set the default selector format. '%' will be replaced with the atomic style id.
+	 * Default CSS selector template for atomic rules. The `%` placeholder is replaced with the generated class ID.
 	 *
-	 * @default '.%'
-	 * @example
-	 * ```ts
-	 * {
-	 *   defaultSelector: '.%' // Use with class attribute: <div class="a b c">
-	 *   // or
-	 *   defaultSelector: '[data-pika~="%"]' // Use with attribute selector: <div data-pika="a b c">
-	 * }
-	 * ```
+	 * @default `'.%'`
 	 */
 	defaultSelector?: string
 
 	/**
-	 * Define global CSS styles that will be injected before atomic styles.
-	 * Can be used for CSS variables, global animations, base styles, etc.
+	 * Global preflight styles injected before atomic rules. Accepts raw CSS strings, definition objects, functions, or wrapped variants with layer/id metadata.
 	 *
-	 * @default []
-	 * @example
-	 * ```ts
-	 * {
-	 *   preflights: [
-	 *     // Use CSS string directly
-	 *     ':root { --color: blue }',
-	 *     // Or use function to generate dynamically
-	 *     (engine) => ':root { --theme: dark }'
-	 *   ]
-	 * }
-	 * ```
+	 * @default `[]`
 	 */
 	preflights?: Preflight[]
 
 	/**
-	 * Register top-level CSS @import rules that must be emitted before preflight blocks.
+	 * CSS `@import` statements prepended to the generated stylesheet output.
 	 *
-	 * @default []
-	 * @example
-	 * ```ts
-	 * {
-	 *   cssImports: [
-	 *     '@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");'
-	 *   ]
-	 * }
-	 * ```
+	 * @default `[]`
 	 */
 	cssImports?: string[]
 
 	/**
-	 * Configure CSS @layer order. Keys are layer names, values are order numbers (lower = earlier).
-	 * Merged on top of the default layers `{ preflights: 1, utilities: 10 }`, so any keys not
-	 * specified here will keep their default order values.
+	 * Named CSS layers and their numeric sort order. Lower numbers appear first in the `@layer` declaration.
 	 *
-	 * @default { preflights: 1, utilities: 10 }
-	 * @example
-	 * ```ts
-	 * {
-	 *   layers: { base: 0, components: 5, utilities: 10 }
-	 * }
-	 * ```
+	 * @default `{ preflights: 1, utilities: 10 }`
 	 */
 	layers?: Record<string, number>
 
 	/**
-	 * The layer name used for unlayered preflights when that layer exists in `layers`.
-	 * If the named layer is not configured, unlayered preflights stay unlayered.
+	 * Name of the CSS `@layer` used for preflight styles that do not specify an explicit layer.
 	 *
-	 * @default 'preflights'
+	 * @default `'preflights'`
 	 */
 	defaultPreflightsLayer?: string
 
 	/**
-	 * The preferred layer for atomic styles without an explicit `__layer`.
-	 * When the named layer is not configured, they fall back to the last configured layer,
-	 * or remain unlayered if no layers exist.
+	 * Name of the CSS `@layer` used for atomic utility styles that do not specify an explicit layer.
 	 *
-	 * @default 'utilities'
+	 * @default `'utilities'`
 	 */
 	defaultUtilitiesLayer?: string
 
 	/**
-	 * Register custom autocomplete entries directly from engine config.
-	 * This is merged with built-in plugins and plugin-provided autocomplete.
+	 * Autocomplete configuration for IDE integration and code generation type narrowing.
 	 *
-	 * @example
-	 * ```ts
-	 * {
-	 *   autocomplete: {
-	 *     styleItemStrings: ['btn-primary'],
-	 *     properties: {
-	 *       variant: ['"solid"', '"ghost"']
-	 *     },
-	 *     patterns: {
-	 *       selectors: ['screen-${number}']
-	 *     }
-	 *   }
-	 * }
-	 * ```
+	 * @default `{}`
 	 */
 	autocomplete?: AutocompleteConfig
 }
-// #endregion EngineConfig
 
+/**
+ * Fully resolved engine configuration produced after plugin hooks have processed the raw config.
+ * @internal
+ *
+ * @remarks Created by `resolveEngineConfig()` and further refined by the `configureResolvedConfig` hook. All optional fields from `EngineConfig` have been populated with defaults, and collections are normalized into `Set`/`Map` structures where appropriate.
+ *
+ * @example
+ * ```ts
+ * const resolved: ResolvedEngineConfig = await resolveEngineConfig(userConfig)
+ * console.log(resolved.prefix) // 'pk-'
+ * ```
+ */
 export interface ResolvedEngineConfig {
+	/** The original user-supplied `EngineConfig` before resolution, preserved for introspection. */
 	rawConfig: EngineConfig
+	/** Resolved class name prefix for atomic style IDs. */
 	prefix: string
+	/** Resolved default CSS selector template with `%` as the ID placeholder. */
 	defaultSelector: string
+	/** Sorted list of engine plugins after order resolution (`pre` → default → `post`). */
 	plugins: EnginePlugin[]
+	/** Normalized preflight entries ready for rendering. */
 	preflights: ResolvedPreflight[]
+	/** Deduplicated and semicolon-terminated CSS `@import` statements. */
 	cssImports: string[]
+	/** Resolved autocomplete configuration with `Set`/`Map` collections for efficient incremental appending. */
 	autocomplete: ResolvedAutocompleteConfig
-	/** Always contains at least the default layers (`preflights` and `utilities`). */
+	/** CSS `@layer` name-to-order mapping used for ordering layer blocks in output. */
 	layers: Record<string, number>
+	/** Name of the default `@layer` for preflight styles. */
 	defaultPreflightsLayer: string
+	/** Name of the default `@layer` for atomic utility styles. */
 	defaultUtilitiesLayer: string
 }

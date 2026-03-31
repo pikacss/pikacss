@@ -1,7 +1,0 @@
-/* Background mode: icon retains its original SVG colors */
-.pika-xxxx {
-  --svg-icon: var(--pika-svg-icon-mdi-home);
-  background: var(--svg-icon) no-repeat;
-  background-size: 100% 100%;
-  background-color: transparent;
-}

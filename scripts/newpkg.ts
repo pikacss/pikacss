@@ -62,7 +62,7 @@ const templates = {
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pikacss/pikacss.git",
+		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
 		"directory": "packages/${pkgDirname}"
 	},
 	"bugs": {
@@ -102,6 +102,13 @@ export default defineConfig({
 	},
 	clean: true,
 })
+	`.trim(),
+	'vitest.config.ts': `
+import { defineConfig } from 'vitest/config'
+
+import { createPackageVitestConfig } from '../_shared/vitest'
+
+export default defineConfig(createPackageVitestConfig())
 	`.trim(),
 	'src/index.ts': `
 export {}

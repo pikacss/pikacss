@@ -1,105 +1,96 @@
 import { describe, expect, it } from 'vitest'
-import { createEngine } from '../engine'
+
+import { important } from './important'
 
 describe('important plugin', () => {
-	describe('default config (important defaults to false)', () => {
-		it('should not add !important when default is false', async () => {
-			const engine = await createEngine()
-			const ids = await engine.use({ color: 'red' })
-			expect(ids.length)
-				.toBe(1)
+	it('registers the __important autocomplete contract during engine configuration', async () => {
+		const plugin = important()
+		const contributions: unknown[] = []
 
-			const css = await engine.renderAtomicStyles(true)
-			expect(css).not.toContain('!important')
-			expect(css)
-				.toContain('color: red;')
-		})
+		await plugin.configureEngine?.({
+			appendAutocomplete(contribution: unknown) {
+				contributions.push(contribution)
+			},
+		} as any)
+
+		expect(contributions)
+			.toEqual([
+				{
+					extraProperties: '__important',
+					properties: { __important: 'boolean' },
+				},
+			])
 	})
 
-	describe('important default: true', () => {
-		it('should add !important to all property values when default is true', async () => {
-			const engine = await createEngine({
-				important: { default: true },
-			})
-			const ids = await engine.use({ color: 'red', display: 'flex' })
-			expect(ids.length)
-				.toBe(2)
+	it('leaves style definitions unchanged when important is disabled by default', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({})
 
-			const css = await engine.renderAtomicStyles(true)
-			expect(css)
-				.toContain('color: red !important;')
-			expect(css)
-				.toContain('display: flex !important;')
-		})
+		const styleDefinitions = [
+			{ color: 'red', nested: { color: 'blue' } },
+		]
+
+		expect(plugin.transformStyleDefinitions?.(styleDefinitions as any))
+			.toEqual(styleDefinitions)
 	})
 
-	describe('__important property override', () => {
-		it('should add !important when __important is true even if default is false', async () => {
-			const engine = await createEngine({
-				important: { default: false },
-			})
-			const ids = await engine.use({ __important: true, color: 'red' } as any)
-			expect(ids.length)
-				.toBe(1)
+	it('appends !important to string, tuple, and nullish property values when the global default is enabled', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: true } })
 
-			const css = await engine.renderAtomicStyles(true)
-			expect(css)
-				.toContain('color: red !important;')
-		})
+		const styleDefinitions = [
+			{
+				color: 'red',
+				margin: ['1rem', ['2rem', '3rem']],
+				padding: null,
+				nested: { color: 'blue' },
+			},
+		]
 
-		it('should not add !important when __important is false even if default is true', async () => {
-			const engine = await createEngine({
-				important: { default: true },
-			})
-			const ids = await engine.use({ __important: false, color: 'red' } as any)
-			expect(ids.length)
-				.toBe(1)
-
-			const css = await engine.renderAtomicStyles(true)
-			expect(css).not.toContain('!important')
-			expect(css)
-				.toContain('color: red;')
-		})
+		expect(plugin.transformStyleDefinitions?.(styleDefinitions as any))
+			.toEqual([
+				{
+					color: 'red !important',
+					margin: ['1rem !important', ['2rem !important', '3rem !important']],
+					padding: null,
+					nested: { color: 'blue' },
+				},
+			])
 	})
 
-	describe('__important property stripping', () => {
-		it('should strip __important from the output and not produce a CSS property for it', async () => {
-			const engine = await createEngine()
-			await engine.use({ __important: true, color: 'blue' } as any)
+	it('lets a style definition opt out of the global default with __important set to false', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: true } })
 
-			const css = await engine.renderAtomicStyles(true)
-			expect(css).not.toContain('__important')
-			expect(css)
-				.toContain('color: blue !important;')
-		})
+		expect(plugin.transformStyleDefinitions?.([
+			{ color: 'red', __important: false },
+		] as any))
+			.toEqual([
+				{ color: 'red' },
+			])
 	})
 
-	describe('tuple property values with !important', () => {
-		it('should add !important to tuple [value, fallbacks[]] format', async () => {
-			const engine = await createEngine({
-				important: { default: true },
-			})
-			await engine.use({ color: ['red', ['blue']] })
+	it('adds !important for one style definition when __important is true even if the global default is disabled', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: false } })
 
-			const css = await engine.renderAtomicStyles(true)
-			expect(css)
-				.toContain('color: blue !important;')
-			expect(css)
-				.toContain('color: red !important;')
-		})
+		expect(plugin.transformStyleDefinitions?.([
+			{ color: 'red', __important: true },
+		] as any))
+			.toEqual([
+				{ color: 'red !important' },
+			])
 	})
 
-	describe('null property values', () => {
-		it('should handle null values gracefully', async () => {
-			const engine = await createEngine({
-				important: { default: true },
-			})
-			await engine.use({ color: null })
+	it('does not duplicate !important markers that are already present in property values', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: true } })
 
-			const css = await engine.renderAtomicStyles(true)
-			// null property values should be stripped, no output
-			expect(css)
-				.toBe('')
-		})
+		expect(plugin.transformStyleDefinitions?.([
+			{ color: 'red !important', margin: ['1rem !important', ['2rem !important']] },
+		] as any))
+			.toEqual([
+				{ color: 'red !important', margin: ['1rem !important', ['2rem !important']] },
+			])
 	})
 })

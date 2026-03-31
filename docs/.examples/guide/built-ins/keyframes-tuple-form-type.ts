@@ -1,1 +1,0 @@
-type TupleForm = [name: string, frames?: KeyframesProgress, autocomplete?: string[], pruneUnused?: boolean]

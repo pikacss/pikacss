@@ -27,85 +27,167 @@ interface IconMeta {
 type IconSource = 'custom' | 'local' | 'cdn'
 type ValidatedIconSet = NonNullable<ReturnType<typeof quicklyValidateIconSet>>
 
+/**
+ * Configuration options for the PikaCSS icons plugin.
+ *
+ * @remarks Controls how icon utilities are resolved, loaded, and rendered as CSS.
+ * Icons are loaded from custom collections first, then from locally installed
+ * Iconify packages, and finally from a CDN if configured.
+ *
+ * @example
+ * ```ts
+ * import { defineEngineConfig } from '@pikacss/core'
+ * import { icons } from '@pikacss/plugin-icons'
+ *
+ * export default defineEngineConfig({
+ *   plugins: [icons()],
+ *   icons: {
+ *     prefix: 'i-',
+ *     mode: 'auto',
+ *     scale: 1,
+ *     cdn: 'https://esm.sh/@iconify-json/{collection}/icons.json',
+ *   },
+ * })
+ * ```
+ */
 export interface IconsConfig {
 	/**
-	 * Class name prefix for icon shortcuts.
+	 * One or more prefixes used to match icon utility names. When a utility
+	 * matches `<prefix><collection>:<name>`, it resolves to an icon style.
 	 *
-	 * @default 'i-'
+	 * @default `'i-'`
 	 */
 	prefix?: string | string[]
 
 	/**
-	 * Default rendering mode.
+	 * Rendering strategy for icon SVGs. `'mask'` uses a CSS mask with
+	 * `currentColor` as the fill, allowing color inheritance. `'bg'` renders
+	 * the SVG as a background image with its original colors. `'auto'`
+	 * chooses `'mask'` when the SVG contains `currentColor`, otherwise `'bg'`.
 	 *
-	 * @default 'auto'
+	 * @default `'auto'`
 	 */
 	mode?: 'auto' | 'mask' | 'bg'
 
 	/**
-	 * Scale icons against 1em.
+	 * Multiplier applied to the icon's intrinsic width and height.
+	 * Combined with `unit` to produce the final CSS dimensions.
 	 *
-	 * @default 1
+	 * @default `1`
 	 */
 	scale?: number
 
 	/**
-	 * Native Iconify custom collections.
+	 * Custom icon collections keyed by collection name. Each entry maps
+	 * icon names to SVG strings or async loaders, checked before local
+	 * packages and the CDN.
+	 *
+	 * @default `undefined`
 	 */
 	collections?: CustomCollections
 
 	/**
-	 * Native Iconify SVG customizations.
+	 * Iconify customization hooks applied when loading icons. Allows
+	 * transforming SVG attributes, trimming whitespace, and running
+	 * per-icon logic via `iconCustomizer`.
+	 *
+	 * @default `{}`
 	 */
 	customizations?: IconCustomizations
 
 	/**
-	 * Auto install missing Iconify JSON packages when supported by the runtime.
+	 * When enabled, automatically installs missing `@iconify-json/*`
+	 * packages on demand during local icon resolution.
 	 *
-	 * @default false
+	 * @default `false`
 	 */
 	autoInstall?: IconifyLoaderOptions['autoInstall']
 
 	/**
-	 * Current working directory used to resolve local Iconify JSON packages.
+	 * Working directory used by the Iconify node loader when resolving
+	 * locally installed icon packages.
 	 *
-	 * @default process.cwd()
+	 * @default `undefined`
 	 */
 	cwd?: IconifyLoaderOptions['cwd']
 
 	/**
-	 * Optional CDN base URL or URL template for collection JSON.
-	 * Use `{collection}` as a placeholder to fully control the final URL.
+	 * CDN URL template for fetching remote icon sets. Use `{collection}`
+	 * as a placeholder for the collection name, or provide a base URL
+	 * and the collection name will be appended as `<url>/<collection>.json`.
+	 *
+	 * @default `undefined`
 	 */
 	cdn?: string
 
 	/**
-	 * CSS unit used when width or height need to be synthesized.
+	 * CSS unit appended to the icon's width and height (e.g. `'em'`, `'rem'`).
+	 * When set, produces explicit dimension values like `1em` based on `scale`.
+	 * When omitted, dimensions are left to the SVG's intrinsic size.
+	 *
+	 * @default `undefined`
 	 */
 	unit?: string
 
 	/**
-	 * Additional CSS properties applied to every resolved icon.
+	 * Additional CSS properties merged into every generated icon style item.
+	 * Useful for adding `display`, `vertical-align`, or other layout properties.
+	 *
+	 * @default `{}`
 	 */
 	extraProperties?: Record<string, string>
 
 	/**
-	 * Processor for the CSS object before stringify
+	 * Post-processing callback invoked on each generated icon style item before
+	 * it is returned. Receives the mutable style item and resolved icon metadata,
+	 * allowing custom property injection or conditional transformations.
+	 *
+	 * @default `undefined`
 	 */
 	processor?: (styleItem: StyleItem, meta: Required<IconMeta>) => void
 
 	/**
-	 * Specify the icons for auto-completion.
+	 * Explicit list of icon identifiers (e.g. `'mdi:home'`) to include in
+	 * editor autocomplete suggestions. Each entry is combined with every
+	 * configured prefix.
+	 *
+	 * @default `undefined`
 	 */
 	autocomplete?: string[]
 }
 
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * Configuration for the icons plugin. Requires the `icons()` plugin
+		 * to be registered in `plugins` for this configuration to take effect.
+		 *
+		 * @default `undefined`
+		 */
 		icons?: IconsConfig
 	}
 }
 
+/**
+ * Creates the PikaCSS icons engine plugin.
+ *
+ * @returns An engine plugin that registers icon shortcut rules and autocomplete entries.
+ *
+ * @remarks Resolves icon SVGs from custom collections, locally installed
+ * `@iconify-json/*` packages, or a remote CDN. Each matched utility is
+ * expanded into a CSS style item using either mask or background rendering.
+ * Configure behavior through the `icons` key in your engine config.
+ *
+ * @example
+ * ```ts
+ * import { icons } from '@pikacss/plugin-icons'
+ *
+ * export default defineEngineConfig({
+ *   plugins: [icons()],
+ *   icons: { prefix: 'i-', mode: 'auto' },
+ * })
+ * ```
+ */
 export function icons(): EnginePlugin {
 	return createIconsPlugin()
 }
@@ -113,8 +195,8 @@ export function icons(): EnginePlugin {
 const globalColonRE = /:/g
 const currentColorRE = /currentColor/
 
-function normalizePrefixes(prefix: IconsConfig['prefix']) {
-	const prefixes = [prefix ?? 'i-'].flat()
+function normalizePrefixes(prefix: Exclude<IconsConfig['prefix'], undefined>) {
+	const prefixes = [prefix].flat()
 		.filter(Boolean)
 	return [...new Set(prefixes)]
 }
@@ -190,12 +272,12 @@ function createLoaderOptions(config: IconsConfig, usedProps?: Record<string, str
 			trimCustomSvg: customizations.trimCustomSvg ?? true,
 			async iconCustomizer(collection, icon, props) {
 				await iconCustomizer?.(collection, icon, props)
-				if (unit) {
-					if (!props.width)
-						props.width = `${scale}${unit}`
-					if (!props.height)
-						props.height = `${scale}${unit}`
-				}
+				if (!unit)
+					return
+				if (!props.width)
+					props.width = `${scale}${unit}`
+				if (!props.height)
+					props.height = `${scale}${unit}`
 			},
 		},
 	}
@@ -292,7 +374,7 @@ function createIconsPlugin(): EnginePlugin {
 		name: 'icons',
 
 		configureRawConfig: async (config) => {
-			iconsConfig = config.icons || {}
+			iconsConfig = config.icons ?? {}
 		},
 
 		configureEngine: async (_engine) => {
@@ -309,7 +391,7 @@ function createIconsPlugin(): EnginePlugin {
 
 			engine.appendAutocomplete({
 				patterns: {
-					styleItemStrings: autocompletePatterns,
+					shortcuts: autocompletePatterns,
 				},
 			})
 

@@ -1,1 +1,0 @@
-pnpm add @pikacss/plugin-reset

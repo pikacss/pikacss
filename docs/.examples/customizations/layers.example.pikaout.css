@@ -1,0 +1,10 @@
+@layer preflights, components, utilities;
+
+@layer components {
+  .pk-a {
+    display: flex;
+  }
+  .pk-b {
+    padding: 1rem;
+  }
+}

@@ -1,4 +1,15 @@
 /* REF: https://github.com/necolas/normalize.css/blob/master/normalize.css */
+/**
+ * normalize.css v8.0.1 stylesheet as a raw CSS string.
+ *
+ * Preserves useful browser defaults while normalizing cross-browser
+ * inconsistencies in line-height, font-size, margins, form elements, and
+ * HTML5 display roles. MIT licensed.
+ *
+ * @see {@link https://github.com/necolas/normalize.css}
+ *
+ * @internal
+ */
 export default `
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 

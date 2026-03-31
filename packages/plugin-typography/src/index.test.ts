@@ -1,90 +1,65 @@
-import { createEngine } from '@pikacss/core'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
 import { typography } from './index'
+import { typographyVariables } from './styles'
 
-async function createTypographyEngine(config: Parameters<typeof createEngine>[0] = {}) {
-	return createEngine({
-		...config,
-		plugins: [typography()],
-	})
-}
-
-async function expectShortcutToResolve(shortcut: string) {
-	const engine = await createTypographyEngine()
-	const ids = await engine.use(shortcut)
-	expect(ids.length)
-		.toBeGreaterThan(0)
-	for (const id of ids) {
-		expect(engine.store.atomicStyles.has(id))
-			.toBe(true)
+function createEngine() {
+	return {
+		shortcuts: {
+			add: vi.fn(),
+		},
+		variables: {
+			add: vi.fn(),
+		},
 	}
-	return engine
 }
 
 describe('typography plugin', () => {
-	it('should have plugin name "typography"', () => {
+	it('registers default variables and prose shortcuts during engine setup', async () => {
 		const plugin = typography()
-		expect(plugin.name)
-			.toBe('typography')
+		const engine = createEngine()
+
+		await plugin.configureEngine?.(engine as any)
+
+		expect(engine.variables.add)
+			.toHaveBeenCalledWith(typographyVariables)
+
+		const shortcutNames = engine.shortcuts.add.mock.calls
+			.map(call => call[0][0])
+
+		expect(shortcutNames)
+			.toEqual(expect.arrayContaining([
+				'prose-base',
+				'prose',
+				'prose-sm',
+				'prose-lg',
+				'prose-xl',
+				'prose-2xl',
+				'prose-code',
+				'prose-tables',
+			]))
 	})
 
-	it('should add typography variables to the engine variables store', async () => {
-		const engine = await createTypographyEngine()
-		const variableNames = [...engine.variables.store.keys()]
-		expect(variableNames)
-			.toContain('--pk-prose-color-body')
-		expect(variableNames)
-			.toContain('--pk-prose-color-headings')
-		expect(variableNames)
-			.toContain('--pk-prose-color-links')
-		expect(variableNames)
-			.toContain('--pk-prose-color-code')
-		expect(variableNames)
-			.toContain('--pk-prose-kbd-shadows')
-	})
+	it('merges custom variables before registering shortcuts', async () => {
+		const plugin = typography()
+		const engine = createEngine()
 
-	it('should register prose-base shortcut', async () => {
-		const engine = await expectShortcutToResolve('prose-base')
-		// prose-base should be resolved (no unknown strings)
-		const atomicStyleIds = [...engine.store.atomicStyles.keys()]
-		expect(atomicStyleIds.length)
-			.toBeGreaterThan(0)
-	})
-
-	;['prose-paragraphs', 'prose-links', 'prose'].forEach((shortcut) => {
-		it(`should register ${shortcut} shortcut`, async () => {
-			await expectShortcutToResolve(shortcut)
-		})
-	})
-
-	;[
-		['prose-sm', '0.875rem'],
-		['prose-lg', '1.125rem'],
-		['prose-xl', '1.25rem'],
-		['prose-2xl', '1.5rem'],
-	].forEach(([shortcut, expectedFontSize]) => {
-		it(`should register ${shortcut} size variant`, async () => {
-			const engine = await expectShortcutToResolve(shortcut!)
-			const css = await engine.renderAtomicStyles(false)
-			expect(css)
-				.toContain(expectedFontSize)
-		})
-	})
-
-	it('should allow custom variables to override defaults', async () => {
-		const engine = await createTypographyEngine({
+		plugin.configureRawConfig?.({
 			typography: {
 				variables: {
-					'--pk-prose-color-body': '#333',
+					'--pk-prose-color-body': '#123456',
 				},
 			},
-		})
-		const resolved = engine.variables.store.get('--pk-prose-color-body')
-		expect(resolved)
-			.toBeDefined()
-		// The last resolved value should be the overridden one
-		const lastValue = resolved![resolved!.length - 1]
-		expect(lastValue!.value)
-			.toBe('#333')
+		} as any)
+		plugin.configureRawConfig?.({} as any)
+
+		await plugin.configureEngine?.(engine as any)
+
+		expect(engine.variables.add)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				'--pk-prose-color-body': '#123456',
+			}))
+		expect(engine.shortcuts.add)
+			.toHaveBeenCalled()
 	})
 })

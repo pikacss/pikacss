@@ -1,3 +1,0 @@
-interface ImportantConfig {
-	default?: boolean
-}

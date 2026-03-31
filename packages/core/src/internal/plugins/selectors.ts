@@ -1,9 +1,26 @@
 import type { Engine } from '../engine'
+import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { RecursiveResolver, resolveRuleConfig } from '../resolver'
 
-// #region SelectorConfig
+/**
+ * User-facing selector rule configuration. Accepts string redirects, tuple shorthands, or object forms.
+ *
+ * @remarks
+ * - **String**: a redirect to another named selector.
+ * - **Tuple `[string, value]`**: a static rule mapping an exact selector name to one or more resolved CSS selectors.
+ * - **Tuple `[RegExp, fn, autocomplete?]`**: a dynamic rule matching a pattern and lazily computing resolved CSS selectors.
+ * - **Object `{ selector, value, autocomplete? }`**: an explicit form of either static or dynamic rule.
+ *
+ * @example
+ * ```ts
+ * const rules: Selector[] = [
+ *   ['hover', '&:hover'],
+ *   [/^media-(\d+)$/, m => `@media (min-width: ${m[1]}px)`, 'media-${breakpoint}'],
+ * ]
+ * ```
+ */
 export type Selector
 	= | string
 		| [selector: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>, autocomplete?: Arrayable<string>]
@@ -18,33 +35,34 @@ export type Selector
 			value: Arrayable<UnionString | ResolvedSelector>
 		}
 
+/**
+ * Configuration object for the `selectors` engine option.
+ *
+ * @remarks Passed via `EngineConfig.selectors` to register selector rules at engine creation time.
+ *
+ * @example
+ * ```ts
+ * const config: SelectorsConfig = {
+ *   selectors: [['hover', '&:hover'], ['focus', '&:focus']],
+ * }
+ * ```
+ */
 export interface SelectorsConfig {
-	/**
-	 * Define custom selectors with support for dynamic and static selectors.
-	 *
-	 * @default []
-	 * @example
-	 * ```ts
-	 * {
-	 *   selectors: [
-	 *     // Static selector
-	 *     ['hover', '$:hover'],
-	 *     // Dynamic selector
-	 *     [/^screen-(\d+)$/, m => `@media (min-width: ${m[1]}px)`,
-	 *       ['screen-768', 'screen-1024']], // Autocomplete suggestions
-	 *   ]
-	 * }
-	 * ```
-	 */
+	/** Array of selector rule definitions to register. */
 	selectors: Selector[]
 }
-// #endregion SelectorConfig
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * Selector rules configuration.
+		 *
+		 * @default undefined
+		 */
 		selectors?: SelectorsConfig
 	}
 
 	interface Engine {
+		/** Runtime selector management: resolver instance and `add` method for registering selectors after engine creation. */
 		selectors: {
 			resolver: SelectorResolver
 			add: (...list: Selector[]) => void
@@ -52,6 +70,18 @@ declare module '@pikacss/core' {
 	}
 }
 
+/**
+ * Built-in engine plugin that provides the selector resolution system.
+ *
+ * @returns An `EnginePlugin` that registers the `selectors` resolver on the engine and hooks into `transformSelectors` to expand selector names into resolved CSS selectors.
+ *
+ * @remarks Reads `EngineConfig.selectors` during `rawConfigConfigured`, attaches a `RecursiveResolver` to `engine.selectors` during `configureEngine`, and resolves all selector strings in the `transformSelectors` hook.
+ *
+ * @example
+ * ```ts
+ * createEngine({ plugins: [selectors()] })
+ * ```
+ */
 export function selectors() {
 	let engine: Engine
 	let configList: Selector[]
@@ -76,10 +106,11 @@ export function selectors() {
 							return
 						}
 
-						if (resolved.type === 'static')
-							engine.selectors.resolver.addStaticRule(resolved.rule)
-						else if (resolved.type === 'dynamic')
-							engine.selectors.resolver.addDynamicRule(resolved.rule)
+						const addRule = {
+							static: () => engine.selectors.resolver.addStaticRule(resolved.rule as StaticRule<string[]>),
+							dynamic: () => engine.selectors.resolver.addDynamicRule(resolved.rule as DynamicRule<string[]>),
+						}[resolved.type]
+						addRule?.()
 
 						engine.appendAutocomplete({ selectors: resolved.autocomplete })
 					})
@@ -106,6 +137,19 @@ export function selectors() {
 
 class SelectorResolver extends RecursiveResolver<string> {}
 
+/**
+ * Normalizes a `Selector` configuration into a `ResolvedRuleConfig`, a redirect string, or `undefined`.
+ *
+ * @param config - The selector rule configuration to resolve.
+ * @returns A resolved static/dynamic rule config, a redirect string, or `undefined` if the shape is unrecognized.
+ *
+ * @remarks Delegates to the generic `resolveRuleConfig` with `'selector'` as the key name.
+ *
+ * @example
+ * ```ts
+ * const resolved = resolveSelectorConfig(['hover', '&:hover'])
+ * ```
+ */
 export function resolveSelectorConfig(config: Selector) {
 	return resolveRuleConfig<string>(config, 'selector')
 }

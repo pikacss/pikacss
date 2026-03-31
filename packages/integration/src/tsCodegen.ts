@@ -11,10 +11,10 @@ function formatUnionStringType(list: string[]) {
 	return formatUnionType(list.map(i => JSON.stringify(i)))
 }
 
-function formatAutocompleteUnion(literals: Iterable<string>, patterns?: Iterable<string>) {
+function formatAutocompleteUnion(literals: Iterable<string>, patterns: Iterable<string>) {
 	return formatUnionType([
 		...Array.from(literals, value => JSON.stringify(value)),
-		...(patterns == null ? [] : [...patterns]),
+		...patterns,
 	])
 }
 
@@ -42,7 +42,7 @@ function generateAutocomplete(ctx: IntegrationContext) {
 	const autocomplete = ctx.engine.config.autocomplete
 	const patterns = autocomplete.patterns ?? {
 		selectors: new Set<string>(),
-		styleItemStrings: new Set<string>(),
+		shortcuts: new Set<string>(),
 		properties: new Map<string, string[]>(),
 		cssProperties: new Map<string, string[]>(),
 	}
@@ -51,7 +51,7 @@ function generateAutocomplete(ctx: IntegrationContext) {
 	return [
 		'export type Autocomplete = DefineAutocomplete<{',
 		`  Selector: ${formatAutocompleteUnion(autocomplete.selectors, patterns.selectors)}`,
-		`  StyleItemString: ${formatAutocompleteUnion(autocomplete.styleItemStrings, patterns.styleItemStrings)}`,
+		`  Shortcut: ${formatAutocompleteUnion(autocomplete.shortcuts, patterns.shortcuts)}`,
 		`  PropertyValue: ${formatAutocompleteValueMap(autocomplete.extraProperties, autocomplete.properties, patterns.properties, (values, patterns) => formatUnionType([...values, ...patterns]))}`,
 		`  CSSPropertyValue: ${formatAutocompleteValueMap(autocomplete.extraCssProperties, autocomplete.cssProperties, patterns.cssProperties, (values, patterns) => formatAutocompleteUnion(values, patterns))}`,
 		`  Layer: ${formatUnionStringType(layerNames)}`,
@@ -174,6 +174,19 @@ async function generateOverloadContent(ctx: IntegrationContext) {
 	]
 }
 
+/**
+ * Generates the full content of the `pika.gen.ts` TypeScript declaration file from the current engine and usage state.
+ * @internal
+ *
+ * @param ctx - The integration context providing engine config, usage records, and codegen settings.
+ * @returns The complete TypeScript source string for the generated declaration file.
+ *
+ * @remarks
+ * The output includes module augmentation for `PikaAugment`, autocomplete type literals
+ * derived from selectors/shortcuts/properties, style function type overloads (respecting
+ * `transformedFormat`), global declarations, optional Vue component property declarations,
+ * and per-usage preview overloads with inline CSS previews.
+ */
 export async function generateTsCodegenContent(ctx: IntegrationContext) {
 	log.debug('Generating TypeScript code generation content')
 

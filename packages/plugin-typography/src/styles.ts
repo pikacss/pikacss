@@ -1,6 +1,23 @@
 import type { StyleDefinition, VariablesDefinition } from '@pikacss/core'
 import { defineStyleDefinition } from '@pikacss/core'
 
+/**
+ * Default CSS custom property values for prose typography colors and accents.
+ * @internal
+ *
+ * @remarks Each variable controls a specific color role within prose content
+ * (body text, headings, links, code, borders, etc.). All default to
+ * `currentColor` or `transparent`, allowing consumers to override them
+ * through the plugin's `variables` option.
+ *
+ * @example
+ * ```ts
+ * engine.variables.add({
+ *   ...typographyVariables,
+ *   '--pk-prose-color-links': '#3b82f6',
+ * })
+ * ```
+ */
 export const typographyVariables = {
 	'--pk-prose-color-body': 'currentColor',
 	'--pk-prose-color-headings': 'currentColor',
@@ -23,6 +40,18 @@ export const typographyVariables = {
 } satisfies VariablesDefinition
 
 // Base prose styles
+/**
+ * Base prose container styles that set color, max-width, font size, and line height.
+ * @internal
+ *
+ * @remarks Also collapses margins on the first and last child elements to
+ * prevent unwanted spacing at the edges of the prose container.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-base', proseBaseStyle])
+ * ```
+ */
 export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 	'color': 'var(--pk-prose-color-body)',
 	'maxWidth': '65ch',
@@ -37,6 +66,18 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Paragraph styles
+/**
+ * Paragraph and lead-text styles for prose content.
+ * @internal
+ *
+ * @remarks Applies vertical margins to `<p>` elements and additional size,
+ * color, and spacing overrides for elements carrying the `lead` class.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-paragraphs', ['prose-base', proseParagraphsStyle]])
+ * ```
+ */
 export const proseParagraphsStyle: StyleDefinition = defineStyleDefinition({
 	'$ p': {
 		marginTop: '1.25em',
@@ -52,6 +93,18 @@ export const proseParagraphsStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Link styles
+/**
+ * Anchor link styles for prose content.
+ * @internal
+ *
+ * @remarks Sets link color, underline decoration, and medium font weight.
+ * Nested `<strong>` and `<code>` inside links inherit the link color.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-links', ['prose-base', proseLinksStyle]])
+ * ```
+ */
 export const proseLinksStyle: StyleDefinition = defineStyleDefinition({
 	'$ a': {
 		color: 'var(--pk-prose-color-links)',
@@ -67,6 +120,19 @@ export const proseLinksStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Emphasis styles (strong, em)
+/**
+ * Strong and italic emphasis styles for prose content.
+ * @internal
+ *
+ * @remarks Bold text receives a dedicated color variable and semi-bold weight.
+ * When `<strong>` appears inside links, blockquotes, or table headers the
+ * color inherits from the parent to avoid clashing with contextual colors.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-emphasis', ['prose-base', proseEmphasisStyle]])
+ * ```
+ */
 export const proseEmphasisStyle: StyleDefinition = defineStyleDefinition({
 	'$ strong': {
 		color: 'var(--pk-prose-color-bold)',
@@ -87,6 +153,18 @@ export const proseEmphasisStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Keyboard styles
+/**
+ * Keyboard input (`<kbd>`) styles for prose content.
+ * @internal
+ *
+ * @remarks Renders `<kbd>` elements with a subtle raised appearance using
+ * box-shadow borders. Color and shadow are driven by dedicated CSS variables.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-kbd', ['prose-base', proseKbdStyle]])
+ * ```
+ */
 export const proseKbdStyle: StyleDefinition = defineStyleDefinition({
 	'$ kbd': {
 		color: 'var(--pk-prose-color-kbd)',
@@ -103,6 +181,19 @@ export const proseKbdStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Lists styles
+/**
+ * Ordered list, unordered list, and definition list styles for prose content.
+ * @internal
+ *
+ * @remarks Handles list markers (decimal, alpha, roman), nested list bullet
+ * progression (disc → circle → square), item spacing, and definition list
+ * (`<dl>`, `<dt>`, `<dd>`) layout.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-lists', ['prose-base', proseListsStyle]])
+ * ```
+ */
 export const proseListsStyle: StyleDefinition = defineStyleDefinition({
 	'$ ol': {
 		listStyleType: 'decimal',
@@ -195,6 +286,19 @@ export const proseListsStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Horizontal rule styles
+/**
+ * Horizontal rule (`<hr>`) styles for prose content.
+ * @internal
+ *
+ * @remarks Applies generous vertical margins and a single-pixel top border
+ * colored by the `--pk-prose-color-hr` variable. The element immediately
+ * following an `<hr>` has its top margin collapsed.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-hr', ['prose-base', proseHrStyle]])
+ * ```
+ */
 export const proseHrStyle: StyleDefinition = defineStyleDefinition({
 	'$ hr': {
 		borderColor: 'var(--pk-prose-color-hr)',
@@ -208,6 +312,20 @@ export const proseHrStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Headings styles
+/**
+ * Heading (h1–h4) styles for prose content.
+ * @internal
+ *
+ * @remarks Each heading level gets a distinct font size, weight, line height,
+ * and vertical margin. Nested `<strong>` receives a heavier weight and
+ * `<code>` inherits the heading color. Sibling elements after h2/h3/h4
+ * have their top margin collapsed.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-headings', ['prose-base', proseHeadingsStyle]])
+ * ```
+ */
 export const proseHeadingsStyle: StyleDefinition = defineStyleDefinition({
 	'$ h1': {
 		color: 'var(--pk-prose-color-headings)',
@@ -276,6 +394,19 @@ export const proseHeadingsStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Blockquote styles
+/**
+ * Blockquote styles for prose content.
+ * @internal
+ *
+ * @remarks Renders blockquotes with italic text, a left border accent,
+ * and automatic open/close curly quotes via CSS `content`. Nested
+ * `<code>` inherits the quote color.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-quotes', ['prose-base', proseQuotesStyle]])
+ * ```
+ */
 export const proseQuotesStyle: StyleDefinition = defineStyleDefinition({
 	'$ blockquote': {
 		fontWeight: '500',
@@ -300,6 +431,19 @@ export const proseQuotesStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Media styles (images, video, figure)
+/**
+ * Image, video, picture, figure, and figcaption styles for prose content.
+ * @internal
+ *
+ * @remarks Applies consistent vertical margins to media elements and
+ * collapses inner margins within `<figure>`. Figcaptions receive a
+ * smaller font size and the captions color variable.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-media', ['prose-base', proseMediaStyle]])
+ * ```
+ */
 export const proseMediaStyle: StyleDefinition = defineStyleDefinition({
 	'$ img': {
 		marginTop: '2em',
@@ -331,6 +475,20 @@ export const proseMediaStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Code styles
+/**
+ * Inline code and preformatted code block styles for prose content.
+ * @internal
+ *
+ * @remarks Inline `<code>` receives backtick-style pseudo-element wrappers
+ * and bold weight. `<pre>` blocks get background color, rounded corners,
+ * horizontal scroll, and padding. Code inside `<pre>` resets to inherit
+ * parent styles and removes the backtick wrappers.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-code', ['prose-base', proseCodeStyle]])
+ * ```
+ */
 export const proseCodeStyle: StyleDefinition = defineStyleDefinition({
 	'$ code': {
 		color: 'var(--pk-prose-color-code)',
@@ -378,6 +536,20 @@ export const proseCodeStyle: StyleDefinition = defineStyleDefinition({
 })
 
 // Table styles
+/**
+ * Table, thead, tbody, and tfoot styles for prose content.
+ * @internal
+ *
+ * @remarks Tables span the full width with auto layout. Header cells receive
+ * the headings color and bottom border; body rows get per-row bottom
+ * borders (removed on the last row). First and last cell padding is
+ * collapsed flush with the table edges.
+ *
+ * @example
+ * ```ts
+ * engine.shortcuts.add(['prose-tables', ['prose-base', proseTablesStyle]])
+ * ```
+ */
 export const proseTablesStyle: StyleDefinition = defineStyleDefinition({
 	'$ table': {
 		width: '100%',

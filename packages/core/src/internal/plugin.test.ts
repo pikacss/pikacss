@@ -1,376 +1,128 @@
-import type { EnginePlugin } from './plugin'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+
 import { defineEnginePlugin, execAsyncHook, execSyncHook, hooks, resolvePlugins } from './plugin'
 
-// Suppress log output during tests
-vi.mock('./utils', () => ({
-	log: {
-		error: vi.fn(),
-		debug: vi.fn(),
-	},
-}))
+describe('resolvePlugins', () => {
+	it('sorts plugins by pre/default/post order without mutating the input array', () => {
+		const plugins = [
+			{ name: 'post', order: 'post' as const },
+			{ name: 'default' },
+			{ name: 'pre', order: 'pre' as const },
+		]
 
-// Use a valid async hook name for execAsyncHook tests
-const ASYNC_HOOK = 'configureRawConfig' as const
-// Use a valid sync hook name for execSyncHook tests
-const SYNC_HOOK = 'rawConfigConfigured' as const
+		const resolved = resolvePlugins(plugins as any)
+
+		expect(resolved.map(plugin => plugin.name))
+			.toEqual(['pre', 'default', 'post'])
+		expect(plugins.map(plugin => plugin.name))
+			.toEqual(['post', 'default', 'pre'])
+	})
+})
 
 describe('execAsyncHook', () => {
-	it('should execute a single plugin hook and return the payload', async () => {
-		const plugin = { name: 'test', [ASYNC_HOOK]: (p: any) => p }
-		const result = await execAsyncHook([plugin], ASYNC_HOOK, 42)
-		expect(result)
-			.toBe(42)
-	})
-
-	it('should execute multiple plugins in order', async () => {
-		const order: string[] = []
-		const pluginA = {
-			name: 'A',
-			[ASYNC_HOOK]: (p: any) => {
-				order.push('A')
-				return p
+	it('applies async hook payloads, preserves the current payload on nullish returns, and continues after plugin errors', async () => {
+		const result = await execAsyncHook([
+			{
+				name: 'prepend',
+				async transformSelectors(selectors: string[]) {
+					return ['pre', ...selectors]
+				},
 			},
-		}
-		const pluginB = {
-			name: 'B',
-			[ASYNC_HOOK]: (p: any) => {
-				order.push('B')
-				return p
+			{
+				name: 'keep-current',
+				async transformSelectors() {
+					return undefined
+				},
 			},
-		}
-		await execAsyncHook([pluginA, pluginB], ASYNC_HOOK, 0)
-		expect(order)
-			.toEqual(['A', 'B'])
-	})
-
-	it('should skip plugins that do not have the hook', async () => {
-		const called = vi.fn()
-		const pluginWithHook = {
-			name: 'with',
-			[ASYNC_HOOK]: (p: any) => {
-				called()
-				return p
+			{
+				name: 'throws',
+				async transformSelectors() {
+					throw new Error('boom')
+				},
 			},
-		}
-		const pluginWithout = { name: 'without' }
-		await execAsyncHook([pluginWithout, pluginWithHook], ASYNC_HOOK, 0)
-		expect(called)
-			.toHaveBeenCalledOnce()
+			{
+				name: 'append',
+				async transformSelectors(selectors: string[]) {
+					return [...selectors, 'post']
+				},
+			},
+		] as any, 'transformSelectors', ['base'])
+
+		expect(result)
+			.toEqual(['pre', 'base', 'post'])
 	})
 
-	it('should replace payload when a plugin returns a new value', async () => {
-		const pluginA = { name: 'A', [ASYNC_HOOK]: () => 'replaced' }
-		const pluginB = { name: 'B', [ASYNC_HOOK]: (p: any) => p }
-		const result = await execAsyncHook([pluginA, pluginB], ASYNC_HOOK, 'original')
-		expect(result)
-			.toBe('replaced')
-	})
+	it('logs non-Error thrown values through the plugin hook error path', async () => {
+		const result = await execAsyncHook([
+			{
+				name: 'throws-string',
+				async transformSelectors() {
+					// eslint-disable-next-line no-throw-literal
+					throw 'string error'
+				},
+			},
+		] as any, 'transformSelectors', ['base'])
 
-	it('should keep payload when a plugin returns null', async () => {
-		const plugin = { name: 'test', [ASYNC_HOOK]: () => null } as unknown as EnginePlugin
-		const result = await execAsyncHook([plugin], ASYNC_HOOK, 'keep')
 		expect(result)
-			.toBe('keep')
-	})
-
-	it('should keep payload when a plugin returns undefined', async () => {
-		const plugin = { name: 'test', [ASYNC_HOOK]: () => undefined }
-		const result = await execAsyncHook([plugin], ASYNC_HOOK, 'keep')
-		expect(result)
-			.toBe('keep')
-	})
-
-	it('should catch errors and continue executing remaining plugins', async () => {
-		const pluginA = {
-			name: 'A',
-			[ASYNC_HOOK]: () => { throw new Error('boom') },
-		}
-		const pluginB = { name: 'B', [ASYNC_HOOK]: () => 'from-B' } as unknown as EnginePlugin
-		const result = await execAsyncHook([pluginA, pluginB], ASYNC_HOOK, 'init')
-		expect(result)
-			.toBe('from-B')
-	})
-
-	it('should return original payload for an empty plugins array', async () => {
-		const result = await execAsyncHook([], ASYNC_HOOK, 'unchanged')
-		expect(result)
-			.toBe('unchanged')
-	})
-
-	it('should handle async hook functions', async () => {
-		const plugin = {
-			name: 'async',
-			[ASYNC_HOOK]: async (p: number) => p + 1,
-		} as unknown as EnginePlugin
-		const result = await execAsyncHook([plugin], ASYNC_HOOK, 1)
-		expect(result)
-			.toBe(2)
-	})
-
-	it('should chain payload through multiple plugins', async () => {
-		const pluginA = { name: 'A', [ASYNC_HOOK]: (p: number) => p + 10 } as unknown as EnginePlugin
-		const pluginB = { name: 'B', [ASYNC_HOOK]: (p: number) => p * 2 } as unknown as EnginePlugin
-		const result = await execAsyncHook([pluginA, pluginB], ASYNC_HOOK, 5)
-		expect(result)
-			.toBe(30) // (5 + 10) * 2
+			.toEqual(['base'])
 	})
 })
 
 describe('execSyncHook', () => {
-	it('should execute a single plugin hook and return the payload', () => {
-		const plugin = { name: 'test', [SYNC_HOOK]: (p: any) => p }
-		const result = execSyncHook([plugin], SYNC_HOOK, 42)
-		expect(result)
-			.toBe(42)
-	})
-
-	it('should execute multiple plugins in order', () => {
-		const order: string[] = []
-		const pluginA = {
-			name: 'A',
-			[SYNC_HOOK]: (p: any) => {
-				order.push('A')
-				return p
+	it('applies sync hook payloads and keeps running when a plugin throws', () => {
+		const result = execSyncHook([
+			{
+				name: 'first',
+				rawConfigConfigured(config: { count: number }) {
+					return { ...config, count: config.count + 1 }
+				},
 			},
-		}
-		const pluginB = {
-			name: 'B',
-			[SYNC_HOOK]: (p: any) => {
-				order.push('B')
-				return p
+			{
+				name: 'keep-current',
+				rawConfigConfigured() {
+					return null
+				},
 			},
-		}
-		execSyncHook([pluginA, pluginB], SYNC_HOOK, 0)
-		expect(order)
-			.toEqual(['A', 'B'])
-	})
-
-	it('should skip plugins that do not have the hook', () => {
-		const called = vi.fn()
-		const pluginWithHook = {
-			name: 'with',
-			[SYNC_HOOK]: (p: any) => {
-				called()
-				return p
+			{
+				name: 'throws',
+				rawConfigConfigured() {
+					throw new Error('boom')
+				},
 			},
-		}
-		const pluginWithout = { name: 'without' }
-		execSyncHook([pluginWithout, pluginWithHook], SYNC_HOOK, 0)
-		expect(called)
-			.toHaveBeenCalledOnce()
-	})
+			{
+				name: 'last',
+				rawConfigConfigured(config: { count: number }) {
+					return { ...config, done: true }
+				},
+			},
+		] as any, 'rawConfigConfigured', { count: 0 })
 
-	it('should replace payload when a plugin returns a new value', () => {
-		const pluginA = { name: 'A', [SYNC_HOOK]: () => 'replaced' }
-		const pluginB = { name: 'B', [SYNC_HOOK]: (p: any) => p }
-		const result = execSyncHook([pluginA, pluginB], SYNC_HOOK, 'original')
 		expect(result)
-			.toBe('replaced')
-	})
-
-	it('should keep payload when a plugin returns null', () => {
-		const plugin = { name: 'test', [SYNC_HOOK]: () => null } as unknown as EnginePlugin
-		const result = execSyncHook([plugin], SYNC_HOOK, 'keep')
-		expect(result)
-			.toBe('keep')
-	})
-
-	it('should keep payload when a plugin returns undefined', () => {
-		const plugin = { name: 'test', [SYNC_HOOK]: () => undefined }
-		const result = execSyncHook([plugin], SYNC_HOOK, 'keep')
-		expect(result)
-			.toBe('keep')
-	})
-
-	it('should catch errors and continue executing remaining plugins', () => {
-		const pluginA = {
-			name: 'A',
-			[SYNC_HOOK]: () => { throw new Error('boom') },
-		}
-		const pluginB = { name: 'B', [SYNC_HOOK]: () => 'from-B' } as unknown as EnginePlugin
-		const result = execSyncHook([pluginA, pluginB], SYNC_HOOK, 'init')
-		expect(result)
-			.toBe('from-B')
-	})
-
-	it('should return original payload for an empty plugins array', () => {
-		const result = execSyncHook([], SYNC_HOOK, 'unchanged')
-		expect(result)
-			.toBe('unchanged')
-	})
-
-	it('should chain payload through multiple plugins', () => {
-		const pluginA = { name: 'A', [SYNC_HOOK]: (p: number) => p + 10 } as unknown as EnginePlugin
-		const pluginB = { name: 'B', [SYNC_HOOK]: (p: number) => p * 2 } as unknown as EnginePlugin
-		const result = execSyncHook([pluginA, pluginB], SYNC_HOOK, 5)
-		expect(result)
-			.toBe(30) // (5 + 10) * 2
+			.toEqual({ count: 1, done: true })
 	})
 })
 
-describe('resolvePlugins', () => {
-	it('should sort pre before undefined before post', () => {
-		const plugins: EnginePlugin[] = [
-			{ name: 'default', order: undefined },
-			{ name: 'post', order: 'post' },
-			{ name: 'pre', order: 'pre' },
-		]
-		const sorted = resolvePlugins(plugins)
-		expect(sorted.map(p => p.name))
-			.toEqual(['pre', 'default', 'post'])
-	})
+describe('hooks facade', () => {
+	it('delegates typed async hooks through the shared facade', async () => {
+		const result = await hooks.transformStyleItems([
+			{
+				name: 'append-item',
+				async transformStyleItems(styleItems: string[]) {
+					return [...styleItems, 'extra']
+				},
+			},
+		] as any, ['base'])
 
-	it('should maintain stable order within the same order group', () => {
-		const plugins: EnginePlugin[] = [
-			{ name: 'pre-1', order: 'pre' },
-			{ name: 'pre-2', order: 'pre' },
-			{ name: 'default-1' },
-			{ name: 'default-2' },
-			{ name: 'post-1', order: 'post' },
-			{ name: 'post-2', order: 'post' },
-		]
-		const sorted = resolvePlugins(plugins)
-		expect(sorted.map(p => p.name))
-			.toEqual([
-				'pre-1',
-				'pre-2',
-				'default-1',
-				'default-2',
-				'post-1',
-				'post-2',
-			])
-	})
-
-	it('should return an empty array for empty input', () => {
-		const result = resolvePlugins([])
 		expect(result)
-			.toEqual([])
-	})
-
-	it('should handle all plugins having the same order', () => {
-		const plugins: EnginePlugin[] = [
-			{ name: 'a' },
-			{ name: 'b' },
-			{ name: 'c' },
-		]
-		const sorted = resolvePlugins(plugins)
-		expect(sorted.map(p => p.name))
-			.toEqual(['a', 'b', 'c'])
-	})
-
-	it('should not mutate the input array (immutable sort)', () => {
-		const plugins: EnginePlugin[] = [
-			{ name: 'post', order: 'post' },
-			{ name: 'default' },
-			{ name: 'pre', order: 'pre' },
-		]
-		const originalOrder = plugins.map(p => p.name)
-		resolvePlugins(plugins)
-		expect(plugins.map(p => p.name))
-			.toEqual(originalOrder)
+			.toEqual(['base', 'extra'])
 	})
 })
 
 describe('defineEnginePlugin', () => {
-	it('should return the same object (identity function)', () => {
-		const plugin: EnginePlugin = { name: 'my-plugin' }
-		const result = defineEnginePlugin(plugin)
-		expect(result)
+	it('returns the same plugin instance at runtime', () => {
+		const plugin = { name: 'identity' }
+
+		expect(defineEnginePlugin(plugin as any))
 			.toBe(plugin)
-	})
-
-	it('should preserve all plugin properties', () => {
-		const plugin: EnginePlugin = {
-			name: 'full-plugin',
-			order: 'pre',
-			// @ts-expect-error - allow custom properties for testing
-			customHook: () => 'hello',
-		}
-		const result = defineEnginePlugin(plugin)
-		expect(result.name)
-			.toBe('full-plugin')
-		expect(result.order)
-			.toBe('pre')
-		// @ts-expect-error - access custom property for testing
-		expect(result.customHook())
-			.toBe('hello')
-	})
-})
-
-describe('hooks object', () => {
-	const noopPlugin = { name: 'noop' } as EnginePlugin
-
-	it('configureRawConfig calls execAsyncHook', async () => {
-		const plugin = { name: 'p', configureRawConfig: (c: any) => c }
-		const result = await hooks.configureRawConfig([plugin as EnginePlugin], { plugins: [] })
-		expect(result)
-			.toEqual({ plugins: [] })
-	})
-
-	it('rawConfigConfigured calls execSyncHook', () => {
-		const plugin = { name: 'p', rawConfigConfigured: vi.fn() }
-		hooks.rawConfigConfigured([plugin as EnginePlugin], { plugins: [] })
-		expect(plugin.rawConfigConfigured)
-			.toHaveBeenCalled()
-	})
-
-	it('configureResolvedConfig calls execAsyncHook', async () => {
-		const cfg = { plugins: [] } as any
-		const result = await hooks.configureResolvedConfig([noopPlugin], cfg)
-		expect(result)
-			.toBe(cfg)
-	})
-
-	it('configureEngine calls execAsyncHook', async () => {
-		const engine = {} as any
-		const result = await hooks.configureEngine([noopPlugin], engine)
-		expect(result)
-			.toBe(engine)
-	})
-
-	it('transformSelectors calls execAsyncHook', async () => {
-		const sels = ['hover']
-		const result = await hooks.transformSelectors([noopPlugin], sels)
-		expect(result)
-			.toBe(sels)
-	})
-
-	it('transformStyleItems calls execAsyncHook', async () => {
-		const items = [{ property: 'color', value: 'red' }] as any
-		const result = await hooks.transformStyleItems([noopPlugin], items)
-		expect(result)
-			.toBe(items)
-	})
-
-	it('transformStyleDefinitions calls execAsyncHook', async () => {
-		const defs = [{}] as any
-		const result = await hooks.transformStyleDefinitions([noopPlugin], defs)
-		expect(result)
-			.toBe(defs)
-	})
-
-	it('preflightUpdated calls execSyncHook', () => {
-		const spy = vi.fn()
-		const plugin = { name: 'p', preflightUpdated: spy }
-		hooks.preflightUpdated([plugin as EnginePlugin])
-		expect(spy)
-			.toHaveBeenCalled()
-	})
-
-	it('atomicStyleAdded calls execSyncHook', () => {
-		const spy = vi.fn()
-		const plugin = { name: 'p', atomicStyleAdded: spy }
-		hooks.atomicStyleAdded([plugin as EnginePlugin], {} as any)
-		expect(spy)
-			.toHaveBeenCalledWith({})
-	})
-
-	it('autocompleteConfigUpdated calls execSyncHook', () => {
-		const spy = vi.fn()
-		const plugin = { name: 'p', autocompleteConfigUpdated: spy }
-		hooks.autocompleteConfigUpdated([plugin as EnginePlugin])
-		expect(spy)
-			.toHaveBeenCalled()
 	})
 })

@@ -59,10 +59,7 @@ function getDynamicReason(node: any): string {
 		case 'CallExpression':
 			return 'Function calls are not statically analyzable'
 		case 'TemplateLiteral':
-			if (node.expressions.length > 0) {
-				return 'Template literals with expressions are not statically analyzable'
-			}
-			return 'Unknown dynamic value'
+			return 'Template literals with expressions are not statically analyzable'
 		case 'ConditionalExpression':
 			return 'Conditional expressions are not statically analyzable'
 		case 'BinaryExpression':
@@ -101,6 +98,24 @@ function reportDynamicNode(
 	})
 }
 
+/**
+ * ESLint rule that disallows dynamic arguments in PikaCSS function calls.
+ *
+ * Enforces a strict static-subset constraint: every argument passed to the
+ * configured PikaCSS callee (and its `.str`, `.arr`, and preview variants)
+ * must be a literal, a recursively static object/array, or a static
+ * template literal with no expressions. This ensures build-time transforms
+ * can evaluate the call site without runtime information.
+ *
+ * Reports four distinct message IDs depending on violation location:
+ * `noDynamicArg`, `noDynamicProperty`, `noDynamicSpread`, and
+ * `noDynamicComputedKey`.
+ *
+ * When `vue-eslint-parser` is active, the rule also inspects `<template>`
+ * call expressions via `defineTemplateBodyVisitor`.
+ *
+ * @internal
+ */
 const rule: Rule.RuleModule = {
 	meta: {
 		type: 'problem',

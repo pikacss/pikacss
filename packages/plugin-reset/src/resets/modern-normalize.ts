@@ -1,4 +1,16 @@
 /* REF: https://github.com/sindresorhus/modern-normalize/blob/main/modern-normalize.css */
+/**
+ * modern-normalize v3.0.1 stylesheet as a raw CSS string.
+ *
+ * Normalizes browser defaults with modern sensibilities: border-box sizing,
+ * system-ui font stack, consistent `hr`/`abbr`/`table`/`form` rendering,
+ * and improved defaults for interactive and embedded elements.
+ * This is the default reset variant used by the `reset()` plugin.
+ *
+ * @see {@link https://github.com/sindresorhus/modern-normalize}
+ *
+ * @internal
+ */
 export default `
 /*! modern-normalize v3.0.1 | MIT License | https://github.com/sindresorhus/modern-normalize */
 

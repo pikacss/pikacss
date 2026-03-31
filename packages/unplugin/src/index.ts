@@ -16,6 +16,26 @@ const RE_VIRTUAL_PIKA_CSS_ID = /^pika\.css$/
 
 const PLUGIN_NAME = 'unplugin-pikacss'
 
+/**
+ * Factory function that produces the bundler-agnostic PikaCSS plugin hooks.
+ *
+ * @param options - User-supplied plugin configuration. When `undefined`, all defaults apply.
+ * @param meta - Unplugin metadata providing the target bundler framework name.
+ * @returns An unplugin hooks object consumed by Vite, webpack, Rollup, esbuild, Rspack, and Farm.
+ *
+ * @remarks
+ * This is the core entry-point called by `createUnplugin`. It resolves user options,
+ * creates an integration context via `createCtx`, and wires bundler-specific lifecycle
+ * hooks (config resolution, dev-server HMR, build transforms, and config file watching).
+ *
+ * @example
+ * ```ts
+ * import { unpluginFactory } from '@pikacss/unplugin-pikacss'
+ * import { createUnplugin } from 'unplugin'
+ *
+ * const plugin = createUnplugin(unpluginFactory)
+ * ```
+ */
 export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (options, meta) => {
 	const {
 		currentPackageName = '@pikacss/unplugin-pikacss',
@@ -77,7 +97,12 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		await ctx.writeTsCodegenFile()
 	}, 300)
 
+	let hooksBound = false
 	function bindHooks() {
+		if (hooksBound)
+			return
+		hooksBound = true
+
 		ctx.hooks.styleUpdated.on(() => {
 			log.debug(`Style updated, ${ctx.engine.store.atomicStyleIds.size} atomic styles generated`)
 			debouncedWriteCssCodegenFile()
@@ -89,7 +114,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	}
 
 	let setupPromise = Promise.resolve()
-	let setupCounter = 0
 	let lastSetupCwd: string | null = null
 	let pendingSetupCwd: string | null = null
 	function setup(reload = false) {
@@ -97,16 +121,12 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		pendingSetupCwd = ctx.cwd
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
-			const currentSetup = ++setupCounter
 			const moduleIds = Array.from(ctx.usages.keys())
 			syncCtxCwd()
+			hooksBound = false
 			await ctx.setup()
 			lastSetupCwd = ctx.cwd
 			pendingSetupCwd = null
-			if (currentSetup !== setupCounter) {
-				log.debug('Setup outdated, skipping...')
-				return
-			}
 			await debouncedWriteCssCodegenFile()
 			await debouncedWriteTsCodegenFile()
 			bindHooks()
@@ -176,6 +196,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			applyRuntimeContext(compiler.options.context || process.cwd(), compiler.options.mode === 'development' ? 'serve' : 'build')
 		},
 		rspack: (compiler) => {
+			rspackCompilers.push(compiler)
 			applyRuntimeContext(compiler.options.context || process.cwd(), compiler.options.mode === 'development' ? 'serve' : 'build')
 		},
 		farm: {
@@ -259,6 +280,28 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	}
 }
 
+/**
+ * Pre-built universal bundler plugin for PikaCSS.
+ *
+ * @remarks
+ * Created by passing `unpluginFactory` to `createUnplugin`. Import the bundler-specific
+ * sub-path (e.g., `@pikacss/unplugin-pikacss/vite`) for a ready-to-use plugin instance.
+ *
+ * @example
+ * ```ts
+ * // vite.config.ts
+ * import pika from '@pikacss/unplugin-pikacss/vite'
+ *
+ * export default defineConfig({
+ *   plugins: [pika()],
+ * })
+ * ```
+ */
 export const unpluginPika = /* #__PURE__ */ createUnplugin(unpluginFactory)
 
+/**
+ * Default export — the pre-built {@link unpluginPika} instance.
+ *
+ * Allows `import pika from 'unplugin-pikacss/<bundler>'` usage.
+ */
 export default unpluginPika

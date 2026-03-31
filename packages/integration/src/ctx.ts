@@ -1,5 +1,5 @@
 import type { Engine, EngineConfig, Nullish } from '@pikacss/core'
-import type { FnUtils, IntegrationContext, IntegrationContextOptions, LoadedConfigResult, UsageRecord } from './types'
+import type { IntegrationContext, IntegrationContextOptions, LoadedConfigResult, UsageRecord } from './types'
 import { statSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { createEngine, defineEnginePlugin, log } from '@pikacss/core'
@@ -9,6 +9,7 @@ import { klona } from 'klona'
 import { isPackageExists } from 'local-pkg'
 import MagicString from 'magic-string'
 import { dirname, isAbsolute, join, relative, resolve } from 'pathe'
+import { createFnUtils, findFunctionCalls } from './ctx.transform-utils'
 import { createEventHook } from './eventHook'
 import { generateTsCodegenContent } from './tsCodegen'
 
@@ -227,182 +228,7 @@ function useTransform({
 	triggerStyleUpdated: () => void
 	triggerTsCodegenUpdated: () => void
 }) {
-	const ESCAPE_REPLACE_RE = /[.*+?^${}()|[\]\\/]/g
-	function createFnUtils(fnName: string): FnUtils {
-		const available = {
-			normal: new Set([fnName]),
-			forceString: new Set([`${fnName}.str`, `${fnName}['str']`, `${fnName}["str"]`, `${fnName}[\`str\`]`]),
-			forceArray: new Set([`${fnName}.arr`, `${fnName}['arr']`, `${fnName}["arr"]`, `${fnName}[\`arr\`]`]),
-			// preview
-			normalPreview: new Set([`${fnName}p`]),
-			forceStringPreview: new Set([`${fnName}p.str`, `${fnName}p['str']`, `${fnName}p["str"]`, `${fnName}p[\`str\`]`]),
-			forceArrayPreview: new Set([`${fnName}p.arr`, `${fnName}p['arr']`, `${fnName}p["arr"]`, `${fnName}p[\`arr\`]`]),
-		}
-		// eslint-disable-next-line style/newline-per-chained-call
-		const RE = new RegExp(`\\b(${Object.values(available).flatMap(s => [...s].map(f => `(${f.replace(ESCAPE_REPLACE_RE, '\\$&')})`)).join('|')})\\(`, 'g')
-
-		return {
-			isNormal: (fnName: string) => available.normal.has(fnName) || available.normalPreview.has(fnName),
-			isForceString: (fnName: string) => available.forceString.has(fnName) || available.forceStringPreview.has(fnName),
-			isForceArray: (fnName: string) => available.forceArray.has(fnName) || available.forceArrayPreview.has(fnName),
-			isPreview: (fnName: string) => available.normalPreview.has(fnName) || available.forceStringPreview.has(fnName) || available.forceArrayPreview.has(fnName),
-			RE,
-		}
-	}
 	const fnUtils = createFnUtils(fnName)
-	function findTemplateExpressionEnd(code: string, start: number): number {
-		let end = start
-		let depth = 1
-		let inString: '\'' | '"' | '`' | false = false
-		let isEscaped = false
-
-		while (depth > 0 && end < code.length - 1) {
-			end++
-			const char = code[end]
-
-			if (isEscaped) {
-				isEscaped = false
-				continue
-			}
-
-			if (char === '\\') {
-				isEscaped = true
-				continue
-			}
-
-			if (inString !== false) {
-				if (char === inString) {
-					inString = false
-				}
-				else if (inString === '`' && char === '$' && code[end + 1] === '{') {
-					const nestedExpressionEnd = findTemplateExpressionEnd(code, end + 1)
-					if (nestedExpressionEnd === -1) {
-						return -1
-					}
-					end = nestedExpressionEnd
-				}
-				continue
-			}
-
-			if (char === '{') {
-				depth++
-			}
-			else if (char === '}') {
-				depth--
-			}
-			else if (char === '\'' || char === '"' || char === '`') {
-				inString = char
-			}
-			else if (char === '/' && code[end + 1] === '/') {
-				const lineEnd = code.indexOf('\n', end)
-				if (lineEnd === -1) {
-					return -1
-				}
-				end = lineEnd
-			}
-			else if (char === '/' && code[end + 1] === '*') {
-				const commentEnd = code.indexOf('*/', end + 2)
-				if (commentEnd === -1) {
-					return -1
-				}
-				end = commentEnd + 1
-			}
-		}
-
-		return depth === 0 ? end : -1
-	}
-	function findFunctionCalls(code: string) {
-		const RE = fnUtils.RE
-		const result: { fnName: string, start: number, end: number, snippet: string }[] = []
-		let matched: RegExpExecArray | Nullish = RE.exec(code)
-
-		while (matched != null) {
-			const fnName = matched[1]!
-			const start = matched.index
-			let end = start + fnName.length
-			let depth = 1
-			let inString: '\'' | '"' | '`' | false = false
-			let isEscaped = false
-
-			// Prevent infinite loop by checking boundaries
-			while (depth > 0 && end < code.length) {
-				end++
-				const char = code[end]
-
-				// Handle escape sequences
-				if (isEscaped) {
-					isEscaped = false
-					continue
-				}
-
-				if (char === '\\') {
-					isEscaped = true
-					continue
-				}
-
-				// Inside string
-				if (inString !== false) {
-					if (char === inString) {
-						inString = false
-					}
-					// Handle template literal ${} expressions
-					else if (inString === '`' && char === '$' && code[end + 1] === '{') {
-						const templateExpressionEnd = findTemplateExpressionEnd(code, end + 1)
-						if (templateExpressionEnd === -1) {
-							log.warn(`Malformed template literal expression in function call at position ${start}`)
-							break
-						}
-						end = templateExpressionEnd
-					}
-					continue
-				}
-
-				// Not inside string
-				if (char === '(') {
-					depth++
-				}
-				else if (char === ')') {
-					depth--
-				}
-				else if (char === '\'' || char === '"' || char === '`') {
-					inString = char
-				}
-				// Handle single-line comments
-				else if (char === '/' && code[end + 1] === '/') {
-					const lineEnd = code.indexOf('\n', end)
-					if (lineEnd === -1) {
-						// Comment extends to end of file, function call may be incomplete
-						log.warn(`Unclosed function call at position ${start}`)
-						break
-					}
-					end = lineEnd
-				}
-				// Handle multi-line comments
-				else if (char === '/' && code[end + 1] === '*') {
-					const commentEnd = code.indexOf('*/', end + 2)
-					if (commentEnd === -1) {
-						// Unclosed comment
-						log.warn(`Unclosed comment in function call at position ${start}`)
-						break
-					}
-					end = commentEnd + 1 // +1 because we'll increment again
-				}
-			}
-
-			// Check if we terminated normally
-			if (depth !== 0) {
-				log.warn(`Malformed function call at position ${start}, skipping`)
-				matched = RE.exec(code)
-				continue
-			}
-
-			const snippet = code.slice(start, end + 1)
-			result.push({ fnName, start, end, snippet })
-			matched = RE.exec(code)
-		}
-
-		return result
-	}
 	async function transform(code: string, id: string) {
 		const _engine = engine()
 		if (_engine == null)
@@ -414,7 +240,7 @@ function useTransform({
 			usages.delete(id)
 
 			// Find all target function calls
-			const functionCalls = findFunctionCalls(code)
+			const functionCalls = findFunctionCalls(code, fnUtils)
 
 			if (functionCalls.length === 0)
 				return
@@ -484,6 +310,18 @@ function useTransform({
 	}
 }
 
+/**
+ * Creates an `IntegrationContext` that wires together config loading, engine initialization, source file transformation, and codegen output.
+ *
+ * @param options - The integration configuration including paths, function name, scan globs, and codegen settings.
+ * @returns A fully constructed `IntegrationContext`. Call `setup()` on the returned context before using transforms.
+ *
+ * @remarks
+ * The context uses reactive signals internally so that computed paths (CSS and TS codegen
+ * file paths) automatically update when `cwd` changes. The `setup()` method must be called
+ * before any transform or codegen operations - transform calls automatically await the
+ * pending setup promise.
+ */
 export function createCtx(options: IntegrationContextOptions): IntegrationContext {
 	const {
 		cwd,

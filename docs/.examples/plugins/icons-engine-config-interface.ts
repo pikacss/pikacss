@@ -1,3 +1,0 @@
-interface EngineConfig {
-	icons?: IconsConfig
-}

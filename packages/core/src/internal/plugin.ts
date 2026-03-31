@@ -57,6 +57,23 @@ function logPluginHookError(plugin: EnginePlugin, hook: keyof EngineHooksDefinit
 	log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
 }
 
+/**
+ * Executes an async hook across all plugins in order, piping the payload through each plugin's handler.
+ * @internal
+ *
+ * @typeParam P - The payload/return type flowing through the hook pipeline.
+ * @param plugins - The ordered list of engine plugins to execute.
+ * @param hook - The name of the async hook to invoke.
+ * @param payload - The initial payload to pass into the first plugin.
+ * @returns The final payload after all plugins have processed it.
+ *
+ * @remarks Each plugin's hook receives the current payload and may return a replacement. If a plugin's hook throws, the error is logged and the current payload is preserved for subsequent plugins.
+ *
+ * @example
+ * ```ts
+ * const config = await execAsyncHook(plugins, 'configureRawConfig', rawConfig)
+ * ```
+ */
 export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: AsyncHooksNames, payload: P): Promise<P> {
 	logHookStart('Async', hook)
 	let current: unknown = payload
@@ -78,6 +95,23 @@ export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: A
 	return current as P
 }
 
+/**
+ * Executes a synchronous hook across all plugins in order, piping the payload through each plugin's handler.
+ * @internal
+ *
+ * @typeParam P - The payload/return type flowing through the hook pipeline.
+ * @param plugins - The ordered list of engine plugins to execute.
+ * @param hook - The name of the sync hook to invoke.
+ * @param payload - The initial payload to pass into the first plugin.
+ * @returns The final payload after all plugins have processed it.
+ *
+ * @remarks Functions identically to `execAsyncHook` but without awaiting. Used for notification-style hooks like `preflightUpdated` or `atomicStyleAdded`.
+ *
+ * @example
+ * ```ts
+ * execSyncHook(plugins, 'atomicStyleAdded', atomicStyle)
+ * ```
+ */
 export function execSyncHook<P>(plugins: readonly EnginePlugin[], hook: SyncHooksNames, payload: P): P {
 	logHookStart('Sync', hook)
 	let current: unknown = payload
@@ -114,6 +148,18 @@ type EngineHooks = {
 	) => HookReturnType<EngineHooksDefinition[K]>
 }
 
+/**
+ * Pre-built hook dispatcher object mapping each hook name to a function that delegates to `execAsyncHook` or `execSyncHook`.
+ * @internal
+ *
+ * @remarks Provides a convenient, type-safe interface for calling any engine hook by name without manually selecting between `execAsyncHook` and `execSyncHook`. Used throughout the `Engine` class.
+ *
+ * @example
+ * ```ts
+ * const config = await hooks.configureRawConfig(plugins, rawConfig)
+ * hooks.preflightUpdated(plugins)
+ * ```
+ */
 export const hooks: EngineHooks = {
 	configureRawConfig: (plugins: EnginePlugin[], config: EngineConfig) =>
 		execAsyncHook(plugins, 'configureRawConfig', config),
@@ -143,8 +189,27 @@ type EnginePluginHooksOptions = {
 		: (...params: HookParams<EngineHooksDefinition[K]>) => EngineHooksDefinition[K][1] | void
 }
 
+/**
+ * Describes an engine plugin that can hook into the PikaCSS engine lifecycle.
+ *
+ * @remarks Plugins implement optional hook methods corresponding to engine lifecycle events. Hooks run in plugin registration order, optionally reordered by the `order` property.
+ *
+ * @example
+ * ```ts
+ * const myPlugin: EnginePlugin = {
+ *   name: 'my-plugin',
+ *   configureRawConfig: (config) => ({ ...config, important: true }),
+ * }
+ * ```
+ */
 export interface EnginePlugin extends EnginePluginHooksOptions {
+	/** The unique human-readable name identifying this plugin in logs and diagnostics. */
 	name: string
+	/**
+	 * Controls plugin execution order relative to other plugins.
+	 *
+	 * @default undefined (normal order)
+	 */
 	order?: 'pre' | 'post'
 }
 
@@ -154,12 +219,43 @@ const orderMap = new Map([
 	['post', 2],
 ])
 
+/**
+ * Sorts an array of plugins by their `order` property: `'pre'` first, default in the middle, `'post'` last.
+ * @internal
+ *
+ * @param plugins - The unordered array of engine plugins.
+ * @returns A new array sorted by execution order.
+ *
+ * @remarks The original array is not mutated. Plugins with the same order retain their relative insertion order (stable sort).
+ *
+ * @example
+ * ```ts
+ * const ordered = resolvePlugins([postPlugin, prePlugin, normalPlugin])
+ * // [prePlugin, normalPlugin, postPlugin]
+ * ```
+ */
 export function resolvePlugins(plugins: EnginePlugin[]): EnginePlugin[] {
 	return [...plugins].sort((a, b) => orderMap.get(a.order)! - orderMap.get(b.order)!)
 }
 
 // Only for type inference without runtime effect
 /* c8 ignore start */
+/**
+ * Identity helper that returns the plugin object as-is, providing TypeScript type inference for plugin definitions.
+ *
+ * @param plugin - The engine plugin definition.
+ * @returns The same plugin object, unchanged.
+ *
+ * @remarks This is a compile-time-only helper; it has no runtime effect. Using it ensures type checking and IDE autocompletion for hook names and payloads.
+ *
+ * @example
+ * ```ts
+ * export default defineEnginePlugin({
+ *   name: 'my-plugin',
+ *   configureRawConfig: (config) => ({ ...config, important: true }),
+ * })
+ * ```
+ */
 export function defineEnginePlugin(plugin: EnginePlugin): EnginePlugin {
 	return plugin
 }

@@ -2,10 +2,26 @@ import type { AtomicStyle, ExtractedStyleContent, StyleContent } from './types'
 import { hasPropertyEffectOverlap } from './property-effects'
 import { log, numberToChars, serialize } from './utils'
 
+/**
+ * Mutable store holding all resolved atomic styles and their lookup indices for an engine instance.
+ * @internal
+ *
+ * @remarks The store is created once per engine and mutated as new styles are resolved via `engine.use()`. It maintains four related indices: content-hash to ID, ID to full atomic style, base-key to ID list (for order-sensitive reuse), and ID to insertion order.
+ *
+ * @example
+ * ```ts
+ * const store = createEngineStore()
+ * // store.atomicStyleIds: Map<serializedKey, 'pk-a'>
+ * ```
+ */
 export interface EngineStore {
+	/** Map from serialized content keys to their assigned atomic style IDs. */
 	atomicStyleIds: Map<string, string>
+	/** Map from atomic style ID to the full `AtomicStyle` object. */
 	atomicStyles: Map<string, AtomicStyle>
+	/** Map from base content key to the list of atomic style IDs that share it (for order-sensitive styles). */
 	atomicStyleIdsByBaseKey: Map<string, string[]>
+	/** Map from atomic style ID to its insertion order index, used for deterministic output ordering. */
 	atomicStyleOrder: Map<string, number>
 }
 
@@ -14,6 +30,20 @@ interface AtomicStyleResolution {
 	atomicStyle?: AtomicStyle
 }
 
+/**
+ * Creates a fresh, empty `EngineStore` with all maps initialized.
+ * @internal
+ *
+ * @returns A new `EngineStore` instance with empty maps.
+ *
+ * @remarks Called once during engine construction. Each engine instance owns a single store.
+ *
+ * @example
+ * ```ts
+ * const store = createEngineStore()
+ * store.atomicStyles.size // 0
+ * ```
+ */
 export function createEngineStore(): EngineStore {
 	return {
 		atomicStyleIds: new Map<string, string>(),
@@ -23,6 +53,21 @@ export function createEngineStore(): EngineStore {
 	}
 }
 
+/**
+ * Assigns or retrieves a compact atomic style ID for the given resolved style content.
+ * @internal
+ *
+ * @param options - Object containing the style `content`, the engine `prefix`, and the `stored` ID map.
+ * @returns The short alphabetic ID string (e.g. `'pk-a'`, `'pk-bA'`).
+ *
+ * @remarks For non-order-sensitive content, returns a cached ID if one already exists for the same base key. For order-sensitive content (where `orderSensitiveTo` is set), always generates a new ID to prevent incorrect reuse across different call-site orderings.
+ *
+ * @example
+ * ```ts
+ * const id = getAtomicStyleId({ content, prefix: 'pk-', stored: store.atomicStyleIds })
+ * // 'pk-a'
+ * ```
+ */
 export function getAtomicStyleId({
 	content,
 	prefix,
@@ -49,6 +94,15 @@ export function getAtomicStyleId({
 	return id
 }
 
+/**
+ * Resolves a `StyleContent` into an atomic style: either reusing an existing ID or creating a new `AtomicStyle` entry in the store.
+ * @internal
+ *
+ * @param options - Object containing the style `content`, `prefix`, `store`, and the per-use-call `resolvedIdsByBaseKey` map for order-sensitive reuse tracking.
+ * @returns An `AtomicStyleResolution` with the assigned `id` and optionally the newly created `atomicStyle` (absent when the ID was already registered).
+ *
+ * @remarks First checks for reusable order-sensitive IDs within the current `engine.use()` call, then falls back to `getAtomicStyleId` for general ID assignment. When a new atomic style is created, it is registered in all store indices.\n *\n * @example\n * ```ts\n * const { id, atomicStyle } = resolveAtomicStyle({\n *   content, prefix: 'pk-', store, resolvedIdsByBaseKey,\n * })\n * ```\n
+ */
 export function resolveAtomicStyle({
 	content,
 	prefix,
@@ -83,6 +137,11 @@ export function resolveAtomicStyle({
 	return { id, atomicStyle }
 }
 
+/**
+ * Deduplicates and optimizes a list of extracted style contents by merging duplicate selector-property pairs and detecting order-sensitive shorthand overlaps.
+ * @internal
+ *\n * @param list - The raw extracted style contents to optimize.\n * @returns An optimized array of `StyleContent` entries with nullish-value removals applied and `orderSensitiveTo` metadata attached where needed.\n *\n * @remarks Later definitions of the same selector-property pair cancel earlier ones. When two properties in the same scope share overlapping CSS effects (e.g. `margin` and `margin-top`), the later one is marked as order-sensitive to prevent incorrect ID reuse.\n *\n * @example\n * ```ts\n * const optimized = optimizeAtomicStyleContents(extractedList)\n * ```\n
+ */
 export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
 	const map = new Map<string, StyleContent>()
 	const scopedEntries = new Map<string, Map<string, StyleContent>>()
@@ -110,6 +169,20 @@ export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
 	return [...map.values()]
 }
 
+/**
+ * Computes the base cache key for an atomic style from its selector, property, and value.
+ * @internal
+ *
+ * @param content - An object with `selector`, `property`, and `value` fields.
+ * @returns A deterministic serialized string key.
+ *
+ * @remarks Used for deduplication: two atomic styles with the same base key are considered equivalent (unless order-sensitive). The key is derived by serializing the triple `[selector, property, value]`.
+ *
+ * @example
+ * ```ts
+ * const key = getAtomicStyleBaseKey({ selector: ['.pk-__ID__'], property: 'color', value: ['red'] })
+ * ```
+ */
 export function getAtomicStyleBaseKey(content: Pick<StyleContent, 'selector' | 'property' | 'value'>) {
 	return serialize([content.selector, content.property, content.value])
 }
@@ -183,7 +256,7 @@ function findReusableOrderSensitiveAtomicStyleId({
 
 	const baseKey = getAtomicStyleBaseKey(content)
 	const requiredOrder = getRequiredAtomicStyleOrder({
-		dependencyKeys: content.orderSensitiveTo ?? [],
+		dependencyKeys: content.orderSensitiveTo!,
 		store,
 		resolvedIdsByBaseKey,
 	})

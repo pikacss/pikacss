@@ -2,14 +2,17 @@ import type { InternalPropertyValue, InternalStyleDefinition, Nullish } from '..
 import { defineEnginePlugin } from '../plugin'
 import { isPropertyValue } from '../utils'
 
-// #region ImportantConfig
 interface ImportantConfig {
 	default?: boolean
 }
-// #endregion ImportantConfig
 
 declare module '@pikacss/core' {
 	interface EngineConfig {
+		/**
+		 * Controls the `!important` modifier on generated CSS declarations.
+		 *
+		 * @default undefined (no `!important` appended by default)
+		 */
 		important?: ImportantConfig
 	}
 }
@@ -29,6 +32,18 @@ function modifyPropertyValue(value: InternalPropertyValue): InternalPropertyValu
 	return appendImportant(value)
 }
 
+/**
+ * Built-in engine plugin that appends `!important` to generated CSS declarations.
+ *
+ * @returns An `EnginePlugin` that intercepts `transformStyleDefinitions` to conditionally append `!important` to every property value.
+ *
+ * @remarks When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default.
+ *
+ * @example
+ * ```ts
+ * createEngine({ plugins: [important()] })
+ * ```
+ */
 export function important() {
 	let defaultValue: boolean
 	return defineEnginePlugin({
