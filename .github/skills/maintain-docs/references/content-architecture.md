@@ -52,11 +52,8 @@ Getting Started
 
 Integrations
 = Agent Skills
+== Install
 == pikacss-use
-=== When to Use
-=== How to Trigger
-=== Coverage
-== pikacss-develop-plugin
 === When to Use
 === How to Trigger
 === Coverage

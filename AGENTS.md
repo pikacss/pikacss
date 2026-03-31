@@ -64,17 +64,16 @@ Each package uses `src/index.ts` as the entry point, keeps tests co-located with
 - Docs pages, READMEs, API reference drift, docs examples, or zh-TW sync: use the `maintain-docs` skill directly from the main agent, then hand completed work to `maintain-docs-review`.
 - Exported-surface JSDoc maintenance: use the `maintain-jsdocs` workflow skill. It runs a streamlined scan-fill-apply-validate flow without intermediate templates or multi-agent review rounds.
 - Unit or integration test creation, refinement, coverage work, or downstream validation: use the `maintain-tests` skill directly from the main agent, then hand completed work to `maintain-tests-review`.
-- Consumer installation, application configuration, troubleshooting, and examples for using PikaCSS in a project: use the `pikacss-use` domain skill directly from the main agent. It does not have a dedicated paired custom agent.
-- Authoring or modifying plugin implementation, hook usage, config augmentation, and plugin tests: use the `pikacss-develop-plugin` domain skill directly from the main agent. It does not have a dedicated paired custom agent.
+- Consumer installation, application configuration, troubleshooting, examples for using PikaCSS in a project, and authoring or modifying plugin implementation, hook usage, config augmentation, and plugin tests: use the `pikacss-use` domain skill directly from the main agent. It does not have a dedicated paired custom agent.
 
 ## Composition Rules
 
 - Choose one primary skill or workflow for a request.
 - Add a secondary skill only when the task genuinely spans two domains.
-- Prefer `pikacss-use` for consuming plugins and `pikacss-develop-plugin` for authoring plugins. Do not blur them together for discovery convenience.
+- Use the single `pikacss-use` skill for both consuming and authoring plugins.
 - Treat `maintain-jsdocs` as a workflow skill with an implementation agent. The review agent is optional and not part of the default flow.
 - Treat `maintain-docs` and `maintain-tests` as main-agent execution skills that keep paired review agents only.
-- Use `pikacss-use` and `pikacss-develop-plugin` as skill-only domain guidance in the main conversation unless dedicated agents are added later.
+- Use `pikacss-use` as skill-only domain guidance in the main conversation unless a dedicated agent is added later.
 - After heavy workflow changes, hand off to the matching review agent instead of embedding review policy into implementation steps.
 - If a paired implementation agent exists for the selected workflow, use it for execution and reserve the review agent for findings.
 
@@ -84,8 +83,7 @@ Each package uses `src/index.ts` as the entry point, keeps tests co-located with
 - `maintain-jsdocs` is the implementation agent for the scan-fill-apply-validate JSDoc workflow.
 - `maintain-jsdocs-review` is an optional quality reviewer, not part of the default workflow. Use only when explicitly requested.
 - `maintain-tests` is executed directly by the main agent. `maintain-tests-review` reviews test changes after implementation stabilizes.
-- `pikacss-use` is a skill-only domain guide. It has no paired `.agent.md` file at this time.
-- `pikacss-develop-plugin` is a skill-only domain guide. It has no paired `.agent.md` file at this time.
+- `pikacss-use` is a skill-only domain guide covering both consumer usage and plugin authoring. It has no paired `.agent.md` file at this time.
 
 ## Global Rules
 

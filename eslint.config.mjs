@@ -13,6 +13,7 @@ export default await deviltea(
 			'.planning/**/*',
 			'./docs/.examples/**/*',
 			'./docs/**/*.md',
+			'./skills/**/*.md',
 			// Ignore the generated files
 			'packages/core/src/csstype.ts',
 		],

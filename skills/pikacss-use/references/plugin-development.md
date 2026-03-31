@@ -1,27 +1,17 @@
+# Plugin Development
+
+> Read this when the user wants to create a new PikaCSS engine plugin, modify an existing plugin's internals, understand plugin hooks and lifecycle, extend EngineConfig with module augmentation, or write plugin tests.
+
+## Table of Contents
+
+1. [Plugin Structure](#plugin-structure)
+2. [Lifecycle Hooks](#lifecycle-hooks)
+3. [Engine API](#engine-api)
+4. [Config Augmentation](#config-augmentation)
+5. [Real-World Example (plugin-reset)](#real-world-example-plugin-reset)
+6. [Testing](#testing)
+
 ---
-name: pikacss-develop-plugin
-description: 'Help plugin authors create or modify PikaCSS engine plugins and plugin tests. Covers plugin structure, lifecycle hooks, config augmentation, layer management, selectors, shortcuts, preflights, keyframes, variables, and plugin validation. Use when: (1) creating a new PikaCSS engine plugin, (2) modifying an official plugin implementation, (3) understanding plugin hooks and lifecycle, (4) extending EngineConfig with module augmentation, (5) writing or fixing plugin tests. Do not use for consumer installation, app configuration, or troubleshooting usage of already-built plugins; route that work to pikacss-use. This is a skill-only domain guide used directly by the main agent; it has no paired custom agent.'
----
-
-# Develop PikaCSS Plugin
-
-PikaCSS is an instant on-demand atomic CSS-in-JS engine. Plugins extend the engine with custom CSS behaviors — preflights, selectors, shortcuts, keyframes, variables, and style transformations.
-
-- **Plugin Dev Guide**: <https://pikacss.com/plugin-development/>
-- **API Reference**: <https://pikacss.com/api/>
-- **Source**: <https://github.com/pikacss/pikacss> (see `packages/plugin-*/` for official plugin examples)
-
-## Boundary
-
-- This skill is for authoring plugin code, modifying plugin internals, and validating plugin behavior.
-- This is a skill-only domain guide. The main agent should apply it directly instead of delegating to a same-named custom agent.
-- Consumer installation, project setup, and troubleshooting how to use an existing plugin in an app are out of scope. Route that work to `pikacss-use`.
-
-## Agent pairing
-
-- Dedicated implementation agent: none
-- Dedicated review agent: none
-- Use this skill directly in the main conversation for plugin-authoring work.
 
 ## Plugin Structure
 
@@ -70,7 +60,14 @@ All hooks are direct methods on the plugin object.
 
 Returning `void`/`null`/`undefined` keeps the current payload unchanged.
 
-### Config Phase Example
+### Config Phase
+
+Runs once during engine initialization, in order:
+
+1. **`configureRawConfig`** — Mutate or replace the raw user config before resolution. Good for injecting defaults (layers, preflight layers, fallback options).
+2. **`rawConfigConfigured`** — Read-only observation after all plugins have configured the raw config.
+3. **`configureResolvedConfig`** — Mutate or replace the resolved config. Runs after internal resolution logic.
+4. **`configureEngine`** — Access the fully initialized engine. Register preflights, selectors, shortcuts, keyframes, variables, autocomplete, and CSS imports here.
 
 ```ts
 configureRawConfig: (config) => {
@@ -87,7 +84,13 @@ configureEngine: async (engine) => {
 },
 ```
 
-### Transform Phase Example
+### Transform Phase
+
+Runs each time `pika()` calls are processed:
+
+5. **`transformSelectors`** — Modify selector strings before they are applied.
+6. **`transformStyleItems`** — Modify or expand resolved style items.
+7. **`transformStyleDefinitions`** — Modify resolved style definitions after flattening.
 
 ```ts
 transformStyleItems: async (styleItems) => {
@@ -100,6 +103,14 @@ transformStyleDefinitions: async (styleDefinitions) => {
   return styleDefinitions
 },
 ```
+
+### Notification Hooks
+
+Fire after engine state changes:
+
+8. **`preflightUpdated`** — After preflight CSS changes.
+9. **`atomicStyleAdded`** — After a new atomic style is registered.
+10. **`autocompleteConfigUpdated`** — After autocomplete contributions change.
 
 ## Engine API
 
@@ -196,12 +207,28 @@ it('should register preflights', async () => {
   const css = await engine.renderPreflights(false)
   expect(css).toContain('/* expected CSS */')
 })
+
+it('should register shortcuts', async () => {
+  const engine = await createEngine(defineEngineConfig({
+    plugins: [myPlugin()],
+  }))
+  const result = await engine.use({ display: 'flex' }, 'my-shortcut')
+  const css = await engine.renderAtomicStyles(false)
+  expect(css).toContain('display:flex')
+})
+
+it('should augment config', async () => {
+  const engine = await createEngine(defineEngineConfig({
+    plugins: [myPlugin()],
+    myOption: 'custom-value',
+  }))
+  // verify plugin read the augmented config
+})
 ```
 
-## Workflow
+### Testing Tips
 
-1. Understand the user's plugin goal (what CSS behavior to add).
-2. Reference official plugins for real-world patterns (reset, icons, fonts, typography).
-3. Choose hooks based on needs; use module augmentation for user configuration.
-4. Register layers for CSS ordering if injecting preflight CSS.
-5. Write tests using `createEngine`.
+- Use `engine.renderPreflights(false)` and `engine.renderAtomicStyles(false)` (unformatted) for simpler snapshot matching.
+- Call `engine.use(...)` to feed style items through the engine before rendering atomic styles.
+- Test config augmentation by passing augmented options to `defineEngineConfig` and asserting the plugin consumed them correctly.
+- Test hook ordering by combining your plugin with a simple spy plugin that records hook invocations.

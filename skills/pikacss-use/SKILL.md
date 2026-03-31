@@ -1,6 +1,6 @@
 ---
 name: pikacss-use
-description: 'Help consumers install, configure, troubleshoot, and use PikaCSS in application projects. Covers installation, Vite/Nuxt/Webpack/Rollup/esbuild/Rspack/Rolldown integration, engine configuration, the pika() compile-time macro and its variants, official plugin consumption (reset, icons, fonts, typography), ESLint setup, and TypeScript support. Use when: (1) setting up PikaCSS in an app, (2) configuring engine options or pika.config, (3) consuming official plugins, (4) using pika()/pika.str()/pika.arr()/pikap(), (5) troubleshooting consumer build or runtime issues, (6) learning end-user PikaCSS patterns, (7) understanding selectors, shortcuts, variables, keyframes, or preflights from a consumer perspective. Do not use for authoring or modifying plugin implementation; route that work to pikacss-develop-plugin. This is a skill-only domain guide used directly by the main agent; it has no paired custom agent.'
+description: 'The single PikaCSS domain skill for both consumers and plugin authors. Covers installation, Vite/Nuxt/Webpack/Rollup/esbuild/Rspack/Rolldown integration, engine configuration, the pika() compile-time macro, official plugin consumption (reset, icons, fonts, typography), ESLint setup, TypeScript support, AND plugin authoring — plugin structure, lifecycle hooks, config augmentation, engine API, layer management, testing plugins with createEngine. Use when: (1) setting up PikaCSS in an app, (2) configuring engine options or pika.config, (3) consuming official plugins, (4) using pika()/pika.str()/pika.arr()/pikap(), (5) troubleshooting consumer build or runtime issues, (6) learning end-user PikaCSS patterns, (7) understanding selectors, shortcuts, variables, keyframes, or preflights, (8) creating a new PikaCSS engine plugin, (9) modifying an official plugin implementation, (10) understanding plugin hooks and lifecycle, (11) extending EngineConfig with module augmentation, (12) writing or fixing plugin tests. Make sure to use this skill whenever the user mentions PikaCSS plugins, defineEnginePlugin, plugin hooks, configureEngine, or asks how to extend PikaCSS with custom behavior. This is a skill-only domain guide used directly by the main agent; it has no paired custom agent.'
 ---
 
 # Use PikaCSS
@@ -23,6 +23,7 @@ This skill ships with detailed reference documents. Load them on demand:
 | `references/plugin-icons.md` | User asks about icon shortcuts, Iconify collections, or icon troubleshooting |
 | `references/plugin-fonts.md` | User asks about web font loading — Google Fonts, `@font-face`, or `@import` |
 | `references/plugin-typography.md` | User asks about prose/typography shortcuts or `--pk-prose-*` variables |
+| `references/plugin-development.md` | User asks about creating a plugin, plugin hooks, lifecycle, engine API, config augmentation, or plugin testing |
 
 ## Key Concept — pika() Is a Compile-Time Macro
 
@@ -34,10 +35,10 @@ This skill ships with detailed reference documents. Load them on demand:
 
 ## Boundary
 
-- This skill is for consumers integrating or troubleshooting PikaCSS in an app.
+- This skill covers both consumer usage (install, configure, troubleshoot) and plugin authoring (create, modify, test plugins).
 - This is a skill-only domain guide. The main agent should apply it directly instead of delegating to a same-named custom agent.
-- Official plugins are in scope only as things to install, configure, and use.
-- Creating a new plugin, changing plugin internals, or working on plugin hook implementation is out of scope. Route that work to `pikacss-develop-plugin`.
+- Official plugins are in scope both as things to consume and as reference implementations for plugin authors.
+- For plugin authoring details (hooks, engine API, config augmentation, testing), load `references/plugin-development.md`.
 
 ## Agent pairing
 
@@ -293,7 +294,20 @@ The default export is a function that returns a flat-config entry. The `fnName` 
 | Icons not rendering | Collection package missing | Install `@iconify-json/{collection}` or enable `autoInstall` — see `references/plugin-icons.md` |
 | Wrong icon appearance | Mask vs background mode mismatch | Read the icon modes section in `references/plugin-icons.md` |
 
+## Plugin Development (Quick Start)
+
+For full details, load `references/plugin-development.md`. The essentials:
+
+- Plugins are plain objects created with `defineEnginePlugin({ name, order?, ...hooks })`.
+- Hooks are direct methods — no `setup()` wrapper.
+- Order tiers: `'pre'` → default (`undefined`) → `'post'`.
+- Use `configureRawConfig` for injecting config defaults, `configureEngine` for registering preflights/selectors/shortcuts/keyframes/variables.
+- Use TypeScript module augmentation on `EngineConfig` to expose plugin options to users.
+- Test with `createEngine` + `defineEngineConfig` from `@pikacss/core`.
+
 ## Workflow
+
+### Consumer Setup
 
 1. Identify the user's project setup (Vite, Nuxt, Webpack, Rollup, esbuild, Rspack, Rolldown).
 2. Install `@pikacss/unplugin-pikacss` (or `@pikacss/nuxt-pikacss` for Nuxt) and any desired plugins.
@@ -303,3 +317,12 @@ The default export is a function that returns a flat-config entry. The `fnName` 
 6. Demonstrate `pika()` usage with the user's framework.
 7. Configure selectors, shortcuts, variables, and keyframes as needed — load `references/customizations.md` for detailed patterns.
 8. Add ESLint config if desired.
+
+### Plugin Authoring
+
+1. Understand the user's plugin goal (what CSS behavior to add).
+2. Load `references/plugin-development.md` for hooks, engine API, and patterns.
+3. Reference official plugins (reset, icons, fonts, typography) as real-world examples.
+4. Choose hooks based on needs; use module augmentation for user configuration.
+5. Register layers for CSS ordering if injecting preflight CSS.
+6. Write tests using `createEngine` from `@pikacss/core`.
