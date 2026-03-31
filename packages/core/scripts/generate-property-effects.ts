@@ -1,9 +1,9 @@
 import type { CSSPropertyData } from './mdn-data-types'
 import fs from 'node:fs'
-import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 // @ts-expect-error - mdn-data doesn't have types, so we import as any and assert types above
 import mdnData from 'mdn-data'
+import path from 'pathe'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_PATH = path.resolve(__dirname, '..', 'src', 'internal', 'generated-shorthand-map.ts')

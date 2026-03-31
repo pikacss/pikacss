@@ -10,11 +10,11 @@
 
 import type { CSSAtRuleData, CSSPropertyData, CSSSelectorData, CSSSyntaxData } from './mdn-data-types'
 import fs from 'node:fs'
-import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import bcd from '@mdn/browser-compat-data'
 // @ts-expect-error - mdn-data doesn't have types, so we import as any and assert types above
 import mdnData from 'mdn-data'
+import path from 'pathe'
 import { features as webFeatures } from 'web-features'
 
 // ---------------------------------------------------------------------------
