@@ -121,6 +121,12 @@ Use this checklist when reviewing JSDoc quality after the fill step.
 - [ ] `@example` uses fenced TypeScript code blocks
 - [ ] Indentation matches surrounding code
 
+### LLM fill-step integrity check (`pnpm maintain-jsdocs:lint`)
+- [ ] No literal `\n`, `\t`, or `\r` escape sequences in JSDoc (should be actual newlines)
+- [ ] No JSDoc lines exceeding 300 characters (indicates collapsed multi-line content)
+- [ ] No leftover `@todo FILL` markers
+- [ ] No multiple `@`-tags merged onto a single line
+
 ## Package Processing Order
 
 Process packages from most independent to most dependent:

@@ -25,7 +25,7 @@ select packages → scaffold → fill loop → validate
 | **Select packages** | Multi-select packages to process via `vscode_askQuestions` | Executing agent + User |
 | **Scaffold** | TypeScript AST replaces all JSDoc with templates containing `@todo FILL:` markers | Runtime script |
 | **Fill loop** | Grep for `@todo FILL`, read each file, fill JSDoc content, remove markers | Executing agent (LLM) |
-| **Validate** | Run gen-api-docs for zero-gap check + package typecheck | Executing agent |
+| **Validate** | Run JSDoc lint for corruption check + gen-api-docs for zero-gap check + package typecheck | Executing agent |
 
 The scaffold script handles all the mechanical work (stripping old JSDoc, inserting templates with the right structure and tags). The LLM focuses purely on writing semantic content by filling in the `@todo FILL:` placeholders.
 
@@ -36,8 +36,9 @@ Entrypoint: `pnpm maintain-jsdocs:scaffold --packages <name>...`
 | Command | Purpose |
 |---------|---------|
 | `pnpm maintain-jsdocs:scaffold --packages <name>...` | Replace/insert JSDoc templates with `@todo FILL:` markers on all exported declarations (including `@internal`) |
+| `pnpm maintain-jsdocs:lint [--packages <name>...]` | Detect LLM fill-step corruption: literal `\n`/`\t`, collapsed lines, unfilled `@todo`, merged tags |
 
-Validation: `pnpm maintain-docs:gen-api`
+Validation: `pnpm maintain-docs:gen-api` + `pnpm maintain-jsdocs:lint`
 
 ## Exclusions
 
@@ -131,9 +132,16 @@ Process files **one at a time** until no `@todo FILL` markers remain:
 - When filling `@default @todo FILL: default`, replace `@todo FILL: default` with the actual default value.
 - Add `@remarks`, `@example`, `@typeParam` tags as needed — the template provides the minimum structure, the LLM can enrich beyond it.
 
+#### Fill anti-patterns
+
+**Never** produce replacements that contain literal `\n`, `\t`, or `\r` strings inside JSDoc. Each JSDoc tag and line must be a real line in the file, properly prefixed with ` * `. When adding multi-line content (e.g. `@remarks` followed by `@example`), write each section on its own line — do not collapse them into a single line with escape characters.
+
 ### Step 3: Validate
 
 ```bash
+# Lint JSDoc for LLM fill-step corruption — goal is "✅ No JSDoc lint issues detected."
+pnpm maintain-jsdocs:lint --packages <package>...
+
 # Check JSDoc coverage — goal is "✅ No JSDoc coverage gaps detected."
 pnpm maintain-docs:gen-api
 
@@ -141,9 +149,11 @@ pnpm maintain-docs:gen-api
 pnpm --filter @pikacss/<package> typecheck
 ```
 
+If the lint reports issues (literal escape sequences, collapsed lines, unfilled todos, merged tags), fix them before proceeding to gen-api-docs.
+
 If gen-api-docs reports remaining gaps, return to Step 2 for those specific symbols.
 
-After zero-gap is achieved, produce a summary report for the user: packages processed, files modified, quality observations.
+After both lint and gen-api-docs pass, produce a summary report for the user: packages processed, files modified, quality observations.
 
 ## Quality guide {#quality-guide}
 

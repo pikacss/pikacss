@@ -17,6 +17,7 @@
 		"build": "pnpm -r --filter='./packages/*' build",
 		"maintain-docs:analyze": "tsx ./scripts/maintain-docs/analyze.ts",
 		"maintain-docs:gen-api": "tsx ./scripts/maintain-docs/gen-api-docs.ts",
+		"maintain-jsdocs:lint": "tsx ./scripts/maintain-jsdocs/lint.ts",
 		"maintain-jsdocs:scaffold": "tsx ./scripts/maintain-jsdocs/scaffold.ts",
 		"newpkg": "tsx ./scripts/newpkg.ts",
 		"newplugin": "tsx ./scripts/newplugin.ts",

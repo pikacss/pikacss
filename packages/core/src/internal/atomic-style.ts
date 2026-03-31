@@ -101,7 +101,14 @@ export function getAtomicStyleId({
  * @param options - Object containing the style `content`, `prefix`, `store`, and the per-use-call `resolvedIdsByBaseKey` map for order-sensitive reuse tracking.
  * @returns An `AtomicStyleResolution` with the assigned `id` and optionally the newly created `atomicStyle` (absent when the ID was already registered).
  *
- * @remarks First checks for reusable order-sensitive IDs within the current `engine.use()` call, then falls back to `getAtomicStyleId` for general ID assignment. When a new atomic style is created, it is registered in all store indices.\n *\n * @example\n * ```ts\n * const { id, atomicStyle } = resolveAtomicStyle({\n *   content, prefix: 'pk-', store, resolvedIdsByBaseKey,\n * })\n * ```\n
+ * @remarks First checks for reusable order-sensitive IDs within the current `engine.use()` call, then falls back to `getAtomicStyleId` for general ID assignment. When a new atomic style is created, it is registered in all store indices.
+ *
+ * @example
+ * ```ts
+ * const { id, atomicStyle } = resolveAtomicStyle({
+ *   content, prefix: 'pk-', store, resolvedIdsByBaseKey,
+ * })
+ * ```
  */
 export function resolveAtomicStyle({
 	content,
@@ -140,7 +147,15 @@ export function resolveAtomicStyle({
 /**
  * Deduplicates and optimizes a list of extracted style contents by merging duplicate selector-property pairs and detecting order-sensitive shorthand overlaps.
  * @internal
- *\n * @param list - The raw extracted style contents to optimize.\n * @returns An optimized array of `StyleContent` entries with nullish-value removals applied and `orderSensitiveTo` metadata attached where needed.\n *\n * @remarks Later definitions of the same selector-property pair cancel earlier ones. When two properties in the same scope share overlapping CSS effects (e.g. `margin` and `margin-top`), the later one is marked as order-sensitive to prevent incorrect ID reuse.\n *\n * @example\n * ```ts\n * const optimized = optimizeAtomicStyleContents(extractedList)\n * ```\n
+ * @param list - The raw extracted style contents to optimize.
+ * @returns An optimized array of `StyleContent` entries with nullish-value removals applied and `orderSensitiveTo` metadata attached where needed.
+ *
+ * @remarks Later definitions of the same selector-property pair cancel earlier ones. When two properties in the same scope share overlapping CSS effects (e.g. `margin` and `margin-top`), the later one is marked as order-sensitive to prevent incorrect ID reuse.
+ *
+ * @example
+ * ```ts
+ * const optimized = optimizeAtomicStyleContents(extractedList)
+ * ```
  */
 export function optimizeAtomicStyleContents(list: ExtractedStyleContent[]) {
 	const map = new Map<string, StyleContent>()

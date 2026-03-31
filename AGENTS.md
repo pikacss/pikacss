@@ -41,6 +41,7 @@ pnpm newplugin
 pnpm maintain-docs:analyze
 pnpm maintain-docs:gen-api
 pnpm maintain-jsdocs:scaffold --packages <name>...
+pnpm maintain-jsdocs:lint [--packages <name>...]
 ```
 
 Use package-scoped commands during iterative development. Root-level `vitest --project` filtering is not the canonical package validation path in this repo.
