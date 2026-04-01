@@ -14,6 +14,8 @@ order: 10
 
 PikaCSS uses [unplugin](https://github.com/unjs/unplugin) to provide a single build plugin that works across all major bundlers.
 
+The Vite entry supports Vite 7 and 8 only.
+
 ## Supported Tools
 
 | Bundler | Import Path |

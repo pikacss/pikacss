@@ -7,7 +7,7 @@
 	"homepage": "https://pikacss.com",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
+		"url": "git+https://github.com/pikacss/pikacss.git",
 		"directory": "packages/integration"
 	},
 	"bugs": {

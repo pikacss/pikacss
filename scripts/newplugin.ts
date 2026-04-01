@@ -51,7 +51,7 @@ const templates = {
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pikacss/pikacss.githiub.io.git",
+		"url": "git+https://github.com/pikacss/pikacss.git",
 		"directory": "packages/${pkgDirname}"
 	},
 	"bugs": {

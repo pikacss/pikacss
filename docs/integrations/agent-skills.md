@@ -15,7 +15,7 @@ PikaCSS ships with a Copilot agent skill that provides AI-assisted guidance for 
 ## Install
 
 ```bash
-npx skills add pikacss/pikacss.github.io --skill pikacss-use
+npx skills add pikacss/pikacss --skill pikacss-use
 ```
 
 ## pikacss-use
