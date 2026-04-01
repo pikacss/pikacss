@@ -7,10 +7,10 @@
 	"labels": ["dependencies"],
 	"packageRules": [
 		{
-			"description": "Group all non-major dependency updates into a single PR",
+			"description": "Group all non-major dependency updates into a single PR for manual review",
 			"groupName": "all non-major dependencies",
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-			"automerge": true,
+			"automerge": false,
 			"matchManagers": ["npm"]
 		},
 		{

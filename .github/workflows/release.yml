@@ -34,14 +34,19 @@ jobs:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: validate release inputs
+        run: pnpm typecheck && pnpm test && pnpm build && pnpm publint
+
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           pnpm dlx bumpp -r ${{ github.event.inputs.bump_type }} -y
 
-      - run: pnpm install && pnpm build && pnpm publish:packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: publish packages with trusted publishing
+        run: pnpm build && pnpm publish:packages
 
       - run: npx changelogithub
         env:

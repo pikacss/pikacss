@@ -1,0 +1,41 @@
+name: Lockfile Policy
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - package.json
+      - docs/package.json
+      - demo/package.json
+      - packages/**/package.json
+
+jobs:
+  lockfile-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: validate lockfile change context
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed_files="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+
+          if ! printf '%s\n' "$changed_files" | grep -qx 'pnpm-lock.yaml'; then
+            echo "pnpm-lock.yaml did not change."
+            exit 0
+          fi
+
+          if printf '%s\n' "$changed_files" | grep -Eq '(^|/)(package\.json|pnpm-workspace\.yaml)$'; then
+            echo "Lockfile change is paired with manifest or workspace config changes."
+            exit 0
+          fi
+
+          echo "::error title=Unexpected lockfile change::pnpm-lock.yaml changed without any package.json or pnpm-workspace.yaml change."
+          exit 1

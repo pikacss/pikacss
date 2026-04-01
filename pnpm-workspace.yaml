@@ -1,5 +1,8 @@
+minimumReleaseAge: 4320
 shellEmulator: true
 trustPolicy: no-downgrade
+strictDepBuilds: true
+blockExoticSubdeps: true
 
 packages:
   - docs
