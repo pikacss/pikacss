@@ -135,8 +135,8 @@ async function generateOverloadContent(ctx: IntegrationContext) {
 	log.debug('Generating TypeScript overload content')
 	const paramsLines: string[] = []
 	const fnsLines: string[] = []
-	const usages = [...ctx.usages.values()].flat()
-	log.debug(`Processing ${usages.length} style usages for overload generation`)
+	const usages = [...ctx.previewUsages.values()].flat()
+	log.debug(`Processing ${usages.length} preview usages for overload generation`)
 
 	for (let i = 0; i < usages.length; i++) {
 		const usage = usages[i]!

@@ -114,6 +114,8 @@ export interface IntegrationContext {
 	loadConfig: () => Promise<LoadedConfigResult>
 	/** Map from source file ID to the list of `UsageRecord` entries extracted during transforms. Keyed by the file path relative to `cwd`. */
 	usages: Map<string, UsageRecord[]>
+	/** Map from source file ID to preview-only `UsageRecord` entries (from `pikap()` calls). Only these drive TypeScript preview overload generation. */
+	previewUsages: Map<string, UsageRecord[]>
 	/** Event hooks for notifying plugins when generated outputs need refreshing. `styleUpdated` fires on CSS changes; `tsCodegenUpdated` fires on TypeScript declaration changes. */
 	hooks: {
 		styleUpdated: ReturnType<typeof createEventHook<void>>

@@ -110,6 +110,10 @@ describe('createCtx', () => {
 			.toBe(true)
 		expect(ctx.usages.get('src/demo.ts'))
 			.toHaveLength(3)
+		expect(ctx.previewUsages.get('src/demo.ts'))
+			.toHaveLength(1)
+		expect(ctx.previewUsages.get('src/demo.ts')![0]!.params)
+			.toEqual([{ color: 'green' }])
 		expect(onStyleUpdated)
 			.toHaveBeenCalled()
 		expect(onTsUpdated)
@@ -262,11 +266,15 @@ describe('createCtx', () => {
 			.toBeDefined()
 		expect(ctx.usages.has('src/broken.ts'))
 			.toBe(true)
+		expect(ctx.previewUsages.has('src/broken.ts'))
+			.toBe(false)
 
 		const invalid = await ctx.transform('const broken = pika(foo())', 'src/broken.ts')
 		expect(invalid)
 			.toBeUndefined()
 		expect(ctx.usages.has('src/broken.ts'))
+			.toBe(false)
+		expect(ctx.previewUsages.has('src/broken.ts'))
 			.toBe(false)
 	})
 
@@ -291,6 +299,8 @@ describe('createCtx', () => {
 			.toBe(false)
 		expect(ctx.usages.get('src/complex.ts'))
 			.toHaveLength(3)
+		expect(ctx.previewUsages.get('src/complex.ts'))
+			.toHaveLength(1)
 	})
 
 	it('warns and skips malformed template, comment, and unterminated call patterns', async () => {

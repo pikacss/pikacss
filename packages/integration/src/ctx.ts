@@ -211,6 +211,7 @@ function useTransform({
 	scan,
 	fnName,
 	usages,
+	previewUsages,
 	engine,
 	transformedFormat,
 	triggerStyleUpdated,
@@ -226,6 +227,7 @@ function useTransform({
 	cssCodegenFilepath: Signal<string>
 	tsCodegenFilepath: Signal<string | null>
 	usages: Map<string, UsageRecord[]>
+	previewUsages: Map<string, UsageRecord[]>
 	engine: Signal<Engine | null>
 	triggerStyleUpdated: () => void
 	triggerTsCodegenUpdated: () => void
@@ -240,6 +242,7 @@ function useTransform({
 			log.debug(`Transforming file: ${id}`)
 
 			usages.delete(id)
+			previewUsages.delete(id)
 
 			// Find all target function calls
 			const functionCalls = findFunctionCalls(code, fnUtils)
@@ -249,6 +252,7 @@ function useTransform({
 			log.debug(`Found ${functionCalls.length} style function calls in ${id}`)
 
 			const usageList: UsageRecord[] = []
+			const previewUsageList: UsageRecord[] = []
 
 			const transformed = new MagicString(code)
 			for (const fnCall of functionCalls) {
@@ -262,6 +266,9 @@ function useTransform({
 					params: args,
 				}
 				usageList.push(usage)
+				if (fnUtils.isPreview(fnCall.fnName)) {
+					previewUsageList.push(usage)
+				}
 
 				let transformedContent: string
 				if (fnUtils.isNormal(fnCall.fnName)) {
@@ -285,6 +292,9 @@ function useTransform({
 			}
 
 			usages.set(id, usageList)
+			if (previewUsageList.length > 0) {
+				previewUsages.set(id, previewUsageList)
+			}
 			triggerStyleUpdated()
 			triggerTsCodegenUpdated()
 			log.debug(`Transformed ${usageList.length} style usages in ${id}`)
@@ -343,6 +353,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	})
 
 	const usages = new Map<string, UsageRecord[]>()
+	const previewUsages = new Map<string, UsageRecord[]>()
 	const engine = signal(null as Engine | null)
 	const hooks = {
 		styleUpdated: createEventHook<void>(),
@@ -358,6 +369,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		cssCodegenFilepath,
 		tsCodegenFilepath,
 		usages,
+		previewUsages,
 		engine,
 		triggerStyleUpdated: () => hooks.styleUpdated.trigger(),
 		triggerTsCodegenUpdated: () => hooks.tsCodegenUpdated.trigger(),
@@ -377,6 +389,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		get resolvedConfigContent() { return resolvedConfigContent() },
 		loadConfig,
 		usages,
+		previewUsages,
 		hooks,
 		get engine() {
 			const _engine = engine()
@@ -477,6 +490,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	async function setup() {
 		log.debug('Setting up integration context')
 		usages.clear()
+		previewUsages.clear()
 		hooks.styleUpdated.listeners.clear()
 		hooks.tsCodegenUpdated.listeners.clear()
 		engine(null)

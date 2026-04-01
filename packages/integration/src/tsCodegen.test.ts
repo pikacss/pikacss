@@ -34,6 +34,30 @@ function createStubContext(options?: {
 					params: [{ color: 'blue' }],
 				},
 			]],
+			['src/non-preview.ts', [
+				{
+					atomicStyleIds: ['pk-d'],
+					params: [{ fontSize: '16px' }],
+				},
+			]],
+		]),
+		previewUsages: new Map([
+			['src/demo.ts', [
+				{
+					atomicStyleIds: ['pk-a'],
+					params: [{ color: 'red' }],
+				},
+				{
+					atomicStyleIds: ['pk-b'],
+					params: ['hover', { display: 'block' }],
+				},
+			]],
+			['src/broken.ts', [
+				{
+					atomicStyleIds: ['broken'],
+					params: [{ color: 'blue' }],
+				},
+			]],
 		]),
 		engine: {
 			config: {
@@ -111,6 +135,8 @@ describe('generateTsCodegenContent', () => {
 			.toMatch(/type P\d+_0 = "hover"/)
 		expect(content)
 			.toMatch(/type P\d+_1 = \{"display":"block"\}/)
+		expect(content)
+			.not.toContain('"fontSize"')
 	})
 
 	it('falls back to never unions and omits Vue declarations when no autocomplete data exists', async () => {
@@ -120,6 +146,7 @@ describe('generateTsCodegenContent', () => {
 			hasVue: false,
 			transformedFormat: 'string',
 			usages: new Map(),
+			previewUsages: new Map(),
 			engine: {
 				config: {
 					autocomplete: {
@@ -161,6 +188,7 @@ describe('generateTsCodegenContent', () => {
 			hasVue: false,
 			transformedFormat: 'other',
 			usages: new Map(),
+			previewUsages: new Map(),
 			engine: {
 				config: {
 					autocomplete: {
