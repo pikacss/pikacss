@@ -1,4 +1,3 @@
-import type { Server as FarmServer } from '@farmfe/core'
 import type { RspackCompiler, UnpluginFactory } from 'unplugin'
 import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
@@ -21,7 +20,7 @@ const PLUGIN_NAME = 'unplugin-pikacss'
  *
  * @param options - User-supplied plugin configuration. When `undefined`, all defaults apply.
  * @param meta - Unplugin metadata providing the target bundler framework name.
- * @returns An unplugin hooks object consumed by Vite, webpack, Rollup, esbuild, Rspack, and Farm.
+ * @returns An unplugin hooks object consumed by Vite, webpack, Rollup, esbuild, and Rspack.
  *
  * @remarks
  * This is the core entry-point called by `createUnplugin`. It resolves user options,
@@ -69,7 +68,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	let mode: 'build' | 'serve' = 'build'
 	const viteServers = [] as ViteDevServer[]
 	const rspackCompilers = [] as RspackCompiler[]
-	const farmServers = [] as FarmServer[]
 
 	const ctx = createCtx({
 		cwd: resolve(userCwd ?? process.cwd()),
@@ -152,17 +150,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 						compiler.watching.invalidate()
 					})
 				}
-
-				else if (meta.framework === 'farm') {
-					const promises = [] as Promise<any>[]
-					farmServers.forEach((server) => {
-						if (server.hmrEngine == null)
-							return
-
-						promises.push(server.hmrEngine.recompileAndSendResult())
-					})
-					await Promise.all(promises)
-				}
 			}
 		})
 		return setupPromise
@@ -191,14 +178,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		rspack: (compiler) => {
 			rspackCompilers.push(compiler)
 			applyRuntimeContext(compiler.options.context || process.cwd(), compiler.options.mode === 'development' ? 'serve' : 'build')
-		},
-		farm: {
-			configResolved: (config) => {
-				applyRuntimeContext(config.root || process.cwd(), config.envMode === 'development' ? 'serve' : 'build')
-			},
-			configureDevServer(server) {
-				farmServers.push(server)
-			},
 		},
 		esbuild: {
 			async setup(build) {

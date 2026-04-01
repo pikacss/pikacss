@@ -276,7 +276,7 @@ describe('unpluginFactory', () => {
 			.not.toHaveBeenCalled()
 	})
 
-	it('invalidates rspack and farm runtimes during reload setup and maps the esbuild virtual module', async () => {
+	it('invalidates rspack runtimes during reload setup and maps the esbuild virtual module', async () => {
 		const mod = await import('./index')
 
 		const rspackCtx = createCtxStub()
@@ -312,33 +312,6 @@ describe('unpluginFactory', () => {
 		mockReadFileSync.mockReturnValue('changed-rspack')
 		silentRspackPlugin.watchChange?.('/tmp/pika.config.ts')
 
-		const farmCtx = createCtxStub()
-		mockCreateCtx.mockReturnValueOnce(farmCtx)
-		const farmPlugin = mod.unpluginFactory(undefined, { framework: 'farm' } as any) as any
-		const farmServer = {
-			hmrEngine: {
-				recompileAndSendResult: vi.fn(async () => {}),
-			},
-		}
-
-		farmPlugin.farm.configResolved?.({ root: '/farm-app', envMode: 'development' } as any)
-		farmPlugin.farm.configureDevServer?.(farmServer as any)
-		await farmPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
-		mockReadFileSync.mockReturnValue('changed-again')
-		farmPlugin.watchChange?.('/tmp/pika.config.ts')
-		await flushAsyncWork()
-
-		expect(farmServer.hmrEngine.recompileAndSendResult)
-			.toHaveBeenCalled()
-
-		const silentFarmCtx = createCtxStub()
-		mockCreateCtx.mockReturnValueOnce(silentFarmCtx)
-		const silentFarmPlugin = mod.unpluginFactory(undefined, { framework: 'farm' } as any) as any
-		silentFarmPlugin.farm.configureDevServer?.({} as any)
-		await silentFarmPlugin.buildStart.call({ addWatchFile: vi.fn() } as any)
-		mockReadFileSync.mockReturnValue('changed-farm')
-		silentFarmPlugin.watchChange?.('/tmp/pika.config.ts')
-
 		const esbuildCtx = createCtxStub()
 		mockCreateCtx.mockReturnValueOnce(esbuildCtx)
 		const esbuildPlugin = mod.unpluginFactory(undefined, { framework: 'esbuild' } as any) as any
@@ -363,7 +336,7 @@ describe('unpluginFactory', () => {
 			.toBeUndefined()
 	})
 
-	it('covers alternative framework configurations: vite build, webpack dev with reload, farm production, and esbuild without cwd', async () => {
+	it('covers alternative framework configurations: vite build, webpack dev with reload, and esbuild without cwd', async () => {
 		const mod = await import('./index')
 
 		// Vite build mode
@@ -383,12 +356,6 @@ describe('unpluginFactory', () => {
 		await flushAsyncWork()
 		expect(webpackCtx.setup)
 			.toHaveBeenCalledTimes(2)
-
-		// Farm with no root and production mode
-		const farmCtx = createCtxStub()
-		mockCreateCtx.mockReturnValueOnce(farmCtx)
-		const farmPlugin = mod.unpluginFactory(undefined, { framework: 'farm' } as any) as any
-		farmPlugin.farm.configResolved?.({ envMode: 'production' } as any)
 
 		// Esbuild with no absWorkingDir
 		const esbuildCtx = createCtxStub()
