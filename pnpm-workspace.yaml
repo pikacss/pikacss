@@ -1,6 +1,6 @@
 shellEmulator: true
-
 trustPolicy: no-downgrade
+
 packages:
   - docs
   - demo
@@ -8,27 +8,25 @@ packages:
 
 catalog:
   '@braintree/sanitize-url': ^7.1.2
-  '@clack/prompts': ^1.1.0
+  '@clack/prompts': ^1.2.0
   '@deviltea/eslint-config': ^7.0.0
   '@deviltea/tsconfig': ^0.0.9
-  '@farmfe/core': ^1.7.11
-  '@iconify-json/line-md': ^1.2.14
+  '@iconify-json/line-md': ^1.2.16
   '@iconify-json/mdi': ^1.2.3
   '@iconify/utils': ^3.1.0
   '@mdn/browser-compat-data': ^7.3.9
-  '@nuxt/kit': ^4.3.1
-  '@nuxt/schema': ^4.3.1
+  '@nuxt/kit': ^4.4.2
+  '@nuxt/schema': ^4.4.2
   '@shikijs/vitepress-twoslash': ^3.23.0
-  '@types/micromatch': ^4.0.10
-  '@types/node': ^24.10.14
-  '@vitejs/plugin-vue': ^6.0.4
+  '@types/node': ^24.12.0
+  '@vitejs/plugin-vue': ^6.0.5
   '@vitest/coverage-v8': ^4.1.2
   alien-signals: ^3.1.2
   cytoscape: ^3.33.1
   cytoscape-cose-bilkent: ^4.1.0
-  dayjs: ^1.11.19
+  dayjs: ^1.11.20
   debug: ^4.4.3
-  esbuild: ^0.27.3
+  esbuild: ^0.27.4
   eslint: ^10.1.0
   globby: ^16.2.0
   gray-matter: ^4.0.3
@@ -39,8 +37,7 @@ catalog:
   local-pkg: ^1.1.2
   magic-string: ^0.30.21
   mdn-data: ^2.27.1
-  mermaid: ^11.12.3
-  micromatch: ^4.0.8
+  mermaid: ^11.13.0
   ofetch: ^1.5.1
   oxc-parser: ^0.121.0
   pathe: ^2.0.3
@@ -54,17 +51,17 @@ catalog:
   tsx: ^4.21.0
   typescript: ^5.9.3
   unplugin: ^3.0.0
-  vite: ^7.3.1
-  vite-plugin-vue-devtools: ^8.0.6
-  vitepress: ^2.0.0-alpha.16
-  vitepress-plugin-group-icons: ^1.7.1
-  vitepress-plugin-llms: ^1.11.0
+  vite: ^8.0.3
+  vite-plugin-vue-devtools: ^8.1.1
+  vitepress: 2.0.0-alpha.17
+  vitepress-plugin-group-icons: ^1.7.3
+  vitepress-plugin-llms: ^1.12.0
   vitepress-plugin-mermaid: ^2.0.17
   vitest: ^4.1.2
-  vue: ^3.5.29
+  vue: ^3.5.31
   vue-eslint-parser: ^10.4.0
   vue-tsc: ^3.2.6
-  web-features: ^3.22.0
+  web-features: ^3.22.1
   zx: ^8.8.5
 
 ignoredBuiltDependencies:

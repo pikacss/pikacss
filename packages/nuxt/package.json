@@ -43,7 +43,7 @@
 		"dist"
 	],
 	"engines": {
-		"node": ">=20"
+		"node": ">=22"
 	},
 	"scripts": {
 		"build": "tsdown",
@@ -54,12 +54,16 @@
 		"test": "vitest run --config ./vitest.config.ts",
 		"test:watch": "vitest --config ./vitest.config.ts"
 	},
-	"dependencies": {
+	"peerDependencies": {
 		"@nuxt/kit": "catalog:",
+		"@nuxt/schema": "catalog:"
+	},
+	"dependencies": {
 		"@pikacss/unplugin-pikacss": "workspace:*",
 		"pathe": "catalog:"
 	},
 	"devDependencies": {
+		"@nuxt/kit": "catalog:",
 		"@nuxt/schema": "catalog:"
 	}
 }

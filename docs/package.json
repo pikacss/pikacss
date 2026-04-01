@@ -6,6 +6,9 @@
 	"description": "Documents for pikacss.",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"dev": "vitepress dev .",
 		"build": "vitepress build .",

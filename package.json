@@ -13,6 +13,9 @@
 		"css-in-js",
 		"atomic-css-in-js-engine"
 	],
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"build": "pnpm -r --filter='./packages/*' build",
 		"maintain-docs:analyze": "tsx ./scripts/maintain-docs/analyze.ts",
