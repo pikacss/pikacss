@@ -61,6 +61,7 @@ The Nuxt module accepts all [Unplugin options](/integrations/unplugin#config) wi
 
 | Property | Description |
 |---|---|
+| cwd | Explicit working directory for path resolution. Overrides the bundler-detected project root. |
 | scan | File glob patterns controlling which source files are scanned for `pika()` call sites. |
 | config | PikaCSS engine configuration, either as an inline object or a path to a config module. |
 | autoCreateConfig | When `true`, auto-creates a PikaCSS config file if none is found. |

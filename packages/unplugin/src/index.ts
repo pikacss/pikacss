@@ -38,6 +38,7 @@ const PLUGIN_NAME = 'unplugin-pikacss'
  */
 export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (options, meta) => {
 	const {
+		cwd: userCwd,
 		currentPackageName = '@pikacss/unplugin-pikacss',
 		config: configOrPath,
 		tsCodegen = true,
@@ -65,28 +66,23 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	}
 	log.debug('Resolved plugin options:', resolvedOptions)
 
-	let cwd = resolve(process.cwd())
 	let mode: 'build' | 'serve' = 'build'
 	const viteServers = [] as ViteDevServer[]
 	const rspackCompilers = [] as RspackCompiler[]
 	const farmServers = [] as FarmServer[]
 
 	const ctx = createCtx({
-		cwd,
+		cwd: resolve(userCwd ?? process.cwd()),
 		...resolvedOptions,
 	})
 
 	type RuntimeMode = 'build' | 'serve'
 
-	function syncCtxCwd() {
-		if (ctx.cwd !== cwd)
-			ctx.cwd = cwd
-	}
-
 	function applyRuntimeContext(nextCwd: string, nextMode: RuntimeMode) {
-		cwd = resolve(nextCwd)
+		if (userCwd == null) {
+			ctx.cwd = resolve(nextCwd)
+		}
 		mode = nextMode
-		syncCtxCwd()
 	}
 
 	const debouncedWriteCssCodegenFile = debounce(async () => {
@@ -117,12 +113,10 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	let lastSetupCwd: string | null = null
 	let pendingSetupCwd: string | null = null
 	function setup(reload = false) {
-		syncCtxCwd()
 		pendingSetupCwd = ctx.cwd
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
 			const moduleIds = Array.from(ctx.usages.keys())
-			syncCtxCwd()
 			hooksBound = false
 			await ctx.setup()
 			lastSetupCwd = ctx.cwd
@@ -174,7 +168,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		return setupPromise
 	}
 	function ensureSetup(reload = false) {
-		syncCtxCwd()
 		if (!reload && (lastSetupCwd === ctx.cwd || pendingSetupCwd === ctx.cwd))
 			return setupPromise
 		return setup(reload)
@@ -229,7 +222,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 
 		async buildStart() {
 			log.debug('Plugin buildStart hook triggered')
-			log.debug(`Current mode: ${mode}, cwd: ${cwd}`)
+			log.debug(`Current mode: ${mode}, cwd: ${ctx.cwd}`)
 
 			await ensureSetup()
 

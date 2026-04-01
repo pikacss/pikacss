@@ -24,6 +24,17 @@ import type { EngineConfig, IntegrationContextOptions, Nullish } from '@pikacss/
  */
 export interface PluginOptions {
 	/**
+	 * Explicit working directory for resolving config files, codegen output paths, and source
+	 * scanning globs. When set, overrides the bundler-detected project root.
+	 *
+	 * @remarks
+	 * Resolution priority: `cwd` option → bundler root (e.g., Vite `root`, webpack `context`) → `process.cwd()`.
+	 *
+	 * @default `undefined` (use bundler-detected root)
+	 */
+	cwd?: string
+
+	/**
 	 * Glob patterns controlling which source files are scanned for `pika()` calls.
 	 *
 	 * @default `{ include: ['**\/*.{js,ts,jsx,tsx,vue}'], exclude: ['node_modules/**', 'dist/**'] }`

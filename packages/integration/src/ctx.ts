@@ -133,6 +133,7 @@ function useConfig({
 		const stream = globbyStream(
 			'**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}',
 			{
+				cwd: _cwd,
 				ignore: scan.exclude,
 			},
 		)
@@ -292,7 +293,7 @@ function useTransform({
 			}
 		}
 		catch (error: any) {
-			log.error(`Failed to transform code (${join(cwd(), id)}): ${error.message}`, error)
+			log.error(`Failed to transform code (${isAbsolute(id) ? id : join(cwd(), id)}): ${error.message}`, error)
 			return void 0
 		}
 	}
@@ -302,8 +303,8 @@ function useTransform({
 			include: scan.include,
 			exclude: [
 				...scan.exclude,
-				cssCodegenFilepath(),
-				...(tsCodegenFilepath() ? [tsCodegenFilepath()!] : []),
+				relative(cwd(), cssCodegenFilepath()),
+				...(tsCodegenFilepath() ? [relative(cwd(), tsCodegenFilepath()!)] : []),
 			],
 		},
 		transform,
@@ -446,13 +447,14 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			await ctx.setupPromise
 
 			log.debug('Starting full CSS code generation scan')
-			const stream = globbyStream(options.scan.include, { ignore: options.scan.exclude })
-			let fileCount = 0
 			const _cwd = cwd()
+			const stream = globbyStream(options.scan.include, { cwd: _cwd, ignore: options.scan.exclude })
+			let fileCount = 0
 			for await (const entry of stream) {
-				const code = await readFile(join(_cwd, entry), 'utf-8')
+				const filePath = join(_cwd, entry)
+				const code = await readFile(filePath, 'utf-8')
 				// collect usages
-				await ctx.transform(code, entry)
+				await ctx.transform(code, filePath)
 				fileCount++
 			}
 			log.debug(`Scanned ${fileCount} files for style collection`)

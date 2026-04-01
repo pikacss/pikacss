@@ -92,8 +92,8 @@ describe('createCtx', () => {
 			.toEqual(['@pikacss/integration:dev', 'existing-plugin'])
 		expect(ctx.transformFilter.exclude)
 			.toEqual([
-				join(cwd, 'generated/pika.gen.css'),
-				join(cwd, 'generated/pika.gen.ts'),
+				'generated/pika.gen.css',
+				'generated/pika.gen.ts',
 			])
 
 		const transformed = await ctx.transform([
@@ -368,7 +368,7 @@ describe('createCtx', () => {
 			.toBe(configPath)
 		expect(ctx.transformFilter.exclude)
 			.toEqual([
-				join(cwd, 'generated/pika.gen.css'),
+				'generated/pika.gen.css',
 			])
 		expect(await ctx.getCssCodegenContent())
 			.toContain('color: purple;')

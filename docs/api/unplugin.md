@@ -102,6 +102,7 @@ User-facing configuration options for the PikaCSS bundler plugin.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
+| `cwd?` | `string` | Explicit working directory for resolving config files, codegen output paths, and source scanning globs. When set, overrides the bundler-detected project root. | ``undefined` (use bundler-detected root)` |
 | `scan?` | `{ 		/** 		 * File glob patterns to scan. Supports a single string or array of strings. 		 * @default ['**\/*.{js,ts,jsx,tsx,vue}'] 		 */ 		include?: string \| string[] 		/** 		 * File glob patterns to exclude. Supports a single string or array of strings. 		 * @default ['node_modules/**', 'dist/**'] 		 */ 		exclude?: string \| string[] 	}` | Glob patterns controlling which source files are scanned for `pika()` calls. | ``{ include: ['**\/*.{js,ts,jsx,tsx,vue}'], exclude: ['node_modules/**', 'dist/**'] }`` |
 | `config?` | `EngineConfig \| string` | Engine configuration object or a path to a `pika.config.*` file. When omitted, the plugin auto-discovers a config file in the project root. | ``undefined` (auto-discover)` |
 | `autoCreateConfig?` | `boolean` | When `true`, automatically scaffolds a default `pika.config.js` file if no existing config is found. | ``true`` |
