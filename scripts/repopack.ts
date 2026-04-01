@@ -41,17 +41,7 @@ async function main() {
 	totalTokens += docsTokens
 	results.push({ name: 'docs', tokens: docsTokens })
 
-	console.log('Packing docs (zh-TW)...')
-	const docsZhTwInclude = 'docs/zh-TW/**/*.md,docs/.examples/zh-TW/**/*'
-	const docsZhTwIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,**/dist/**,**/coverage/**'
-
-	const resDocsZhTw = await $`repomix . --output repomix/repomix-docs-zh-tw.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${docsZhTwInclude} --ignore ${docsZhTwIgnore} --no-security-check`.quiet()
-
-	const docsZhTwTokens = extractTokens(resDocsZhTw.stdout)
-	totalTokens += docsZhTwTokens
-	results.push({ name: 'docs/zh-TW', tokens: docsZhTwTokens })
-
-	for (const pkg of packages) {
+	for (const pkg of packages.filter(n => !n.startsWith('_'))) {
 		console.log(`Packing package: ${pkg}...`)
 		const pkgInclude = `packages/${pkg}/src/**/*,packages/${pkg}/tests/**/*`
 		const pkgIgnore = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/csstype.ts'
