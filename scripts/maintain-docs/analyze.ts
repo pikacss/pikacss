@@ -20,6 +20,12 @@ import {
 	workspaceRoot,
 } from './shared'
 
+const RE_HEADING_LEVEL = /^(#+)/
+const RE_HEADING_PREFIX = /^#+\s*/
+const RE_HTML_COMMENT = /<!--.*?-->/g
+const RE_HEADING_ID = /\{#.*?\}/g
+const RE_NEXT_SECTION = /^##\s+Next\b/
+
 // ---------------------------------------------------------------------------
 // Checks
 // ---------------------------------------------------------------------------
@@ -55,19 +61,19 @@ function checkHeadingConformity(templateContent: string, docsContent: string): s
 	const issues: string[] = []
 
 	for (const th of templateHeadings) {
-		const level = th.match(/^(#+)/)?.[1] || ''
-		const text = th.replace(/^#+\s*/, '')
-			.replace(/<!--.*?-->/g, '')
+		const level = th.match(RE_HEADING_LEVEL)?.[1] || ''
+		const text = th.replace(RE_HEADING_PREFIX, '')
+			.replace(RE_HTML_COMMENT, '')
 			.trim()
 
 		if (!text)
 			continue
 
 		const found = docsHeadings.some((dh) => {
-			const dText = dh.replace(/^#+\s*/, '')
-				.replace(/\{#.*?\}/g, '')
+			const dText = dh.replace(RE_HEADING_PREFIX, '')
+				.replace(RE_HEADING_ID, '')
 				.trim()
-			const dLevel = dh.match(/^(#+)/)?.[1] || ''
+			const dLevel = dh.match(RE_HEADING_LEVEL)?.[1] || ''
 			return dLevel === level && dText === text
 		})
 
@@ -80,7 +86,7 @@ function checkHeadingConformity(templateContent: string, docsContent: string): s
 
 function checkNextSection(content: string): string | null {
 	const headings = extractHeadings(content)
-	const hasNext = headings.some(h => /^##\s+Next\b/.test(h))
+	const hasNext = headings.some(h => RE_NEXT_SECTION.test(h))
 	if (!hasNext)
 		return 'Missing ## Next section'
 	return null

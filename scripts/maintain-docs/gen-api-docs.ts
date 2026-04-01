@@ -5,6 +5,16 @@ import ts from 'typescript'
 import { PACKAGES, workspaceRoot } from '../_skill-shared'
 
 const ROOT = workspaceRoot
+const RE_TRAILING_INLINE_WHITESPACE = /[ \t]+\n/g
+const RE_TRAILING_PARAM_SEPARATOR = /^\s*-?\s*/
+const RE_NUMERIC_LITERAL_TEXT = /^-?\d/
+const RE_TABLE_PIPE = /\|/g
+const RE_NEWLINE = /\n/g
+const RE_COMBINING_MARKS = /[\u0300-\u036F]/g
+const RE_SLUG_PUNCTUATION = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'<>,.?/]+/g
+const RE_REPEATED_DASH = /-{2,}/g
+const RE_TRIM_DASH = /^-|-$/g
+const RE_LEADING_DIGIT = /^(\d)/
 
 interface ParamInfo {
 	name: string
@@ -164,7 +174,7 @@ function normalizeDocsText(text: string): string {
 	] as const
 
 	let normalized = normalizeLinkTags(text)
-		.replace(/[ \t]+\n/g, '\n')
+		.replace(RE_TRAILING_INLINE_WHITESPACE, '\n')
 		.trim()
 	for (const [from, to] of replacements)
 		normalized = normalized.replaceAll(from, to)
@@ -225,7 +235,7 @@ function getParamDescription(tags: ts.JSDocTagInfo[], paramName: string): string
 		tag.text.slice(nameIndex + 1)
 			.map(part => part.text)
 			.join('')
-			.replace(/^\s*-?\s*/, ''),
+			.replace(RE_TRAILING_PARAM_SEPARATOR, ''),
 	)
 }
 
@@ -247,7 +257,7 @@ function getTypeParamDescriptions(tags: ts.JSDocTagInfo[]): { name: string, desc
 					parts.slice(nameIndex + 1)
 						.map(part => part.text)
 						.join('')
-						.replace(/^\s*-?\s*/, ''),
+						.replace(RE_TRAILING_PARAM_SEPARATOR, ''),
 				),
 			}
 		})
@@ -306,7 +316,7 @@ function resolveTypeAliasText(decl: ts.TypeAliasDeclaration, checker: ts.TypeChe
 	const type = checker.getTypeAtLocation(decl)
 	if (type.isUnion()) {
 		const literals = type.types.map(t => checker.typeToString(t))
-		if (literals.length > 0 && literals.every(l => l.startsWith('"') || l.startsWith('\'') || l === 'true' || l === 'false' || /^-?\d/.test(l)))
+		if (literals.length > 0 && literals.every(l => l.startsWith('"') || l.startsWith('\'') || l === 'true' || l === 'false' || RE_NUMERIC_LITERAL_TEXT.test(l)))
 			return literals.join(' | ')
 	}
 	return undefined
@@ -554,18 +564,18 @@ function extractPackageAPI(pkg: PackageDef, program: ts.Program, checker: ts.Typ
 
 function escapeTable(text: string): string {
 	return text
-		.replace(/\|/g, '\\|')
-		.replace(/\n/g, ' ')
+		.replace(RE_TABLE_PIPE, '\\|')
+		.replace(RE_NEWLINE, ' ')
 }
 
 function slugify(text: string): string {
 	return text
 		.normalize('NFKD')
-		.replace(/[\u0300-\u036F]/g, '')
-		.replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'<>,.?/]+/g, '-')
-		.replace(/-{2,}/g, '-')
-		.replace(/^-|-$/g, '')
-		.replace(/^(\d)/, '_$1')
+		.replace(RE_COMBINING_MARKS, '')
+		.replace(RE_SLUG_PUNCTUATION, '-')
+		.replace(RE_REPEATED_DASH, '-')
+		.replace(RE_TRIM_DASH, '')
+		.replace(RE_LEADING_DIGIT, '_$1')
 		.toLowerCase()
 }
 

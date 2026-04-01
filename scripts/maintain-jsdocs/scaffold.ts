@@ -10,6 +10,9 @@ import {
 } from '../_skill-shared'
 
 const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'csstype.ts', 'generated-']
+const RE_LINE_INDENT = /^(\s*)/
+const RE_TODO_FILL = /@todo FILL/g
+const RE_EXCESSIVE_NEWLINES = /\n{3,}/g
 
 // ── TS program creation (mirrors gen-api-docs) ──
 
@@ -42,7 +45,7 @@ function getLineIndent(text: string, pos: number): string {
 	while (lineStart > 0 && text[lineStart - 1] !== '\n')
 		lineStart--
 	const lineText = text.slice(lineStart, pos)
-	return lineText.match(/^(\s*)/)?.[1] || ''
+	return lineText.match(RE_LINE_INDENT)?.[1] || ''
 }
 
 function isPrivateOrProtected(node: ts.Node): boolean {
@@ -80,7 +83,7 @@ function getJSDocRange(node: ts.Node, sourceText: string): JSDocRange | null {
 
 	const sourceFile = node.getSourceFile()
 	let start = jsDocs[0]!.getStart(sourceFile)
-	let end = jsDocs[jsDocs.length - 1]!.getEnd()
+	let end = jsDocs.at(-1)!.getEnd()
 
 	// Extend start to beginning of line (include leading indentation)
 	while (start > 0 && sourceText[start - 1] !== '\n')
@@ -463,7 +466,7 @@ async function scaffoldPackage(
 		const deduped: Modification[] = []
 		for (const mod of mods) {
 			if (deduped.length > 0) {
-				const prev = deduped[deduped.length - 1]
+				const prev = deduped.at(-1)
 				// prev.start >= mod.start (sorted desc). If mod.end > prev.start, they overlap.
 				if (mod.end > prev!.start)
 					continue
@@ -476,11 +479,11 @@ async function scaffoldPackage(
 
 		for (const mod of deduped) {
 			text = text.slice(0, mod.start) + mod.text + text.slice(mod.end)
-			todoCount += (mod.text.match(/@todo FILL/g) || []).length
+			todoCount += (mod.text.match(RE_TODO_FILL) || []).length
 		}
 
 		// Collapse 3+ consecutive newlines to 2
-		text = text.replace(/\n{3,}/g, '\n\n')
+		text = text.replace(RE_EXCESSIVE_NEWLINES, '\n\n')
 
 		await writeFile(filePath, text, 'utf8')
 		totalTodos += todoCount

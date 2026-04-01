@@ -78,14 +78,23 @@ export async function discoverTemplates(): Promise<string[]> {
 	return files.sort()
 }
 
+const RE_FORWARD_SLASH = /\//g
+const RE_MD_EXTENSION = /\.md$/
+const RE_MARKDOWN_HEADING = /^#{1,6}\s/
+const RE_PROPERTY_TABLE_HEADER = /^\|.*Property.*\|/
+const RE_TABLE_SEPARATOR = /^\|[\s\-|]+\|$/
+const RE_HTML_COMMENT = /<!--.*?-->/g
+const RE_BACKTICKS = /`/g
+const RE_MARKDOWN_LINK = /\[([^\]]+)\]\([^)]+\)/g
+
 export function templatePathToDocsPath(templateRelPath: string): string {
 	return `docs/${templateRelPath}`
 }
 
 export function templatePathToTaskFileName(templateRelPath: string): string {
 	return templateRelPath
-		.replace(/\//g, '--')
-		.replace(/\.md$/, '.task.json')
+		.replace(RE_FORWARD_SLASH, '--')
+		.replace(RE_MD_EXTENSION, '.task.json')
 }
 
 export function parseFrontmatter(content: string): DocsFrontmatter {
@@ -104,7 +113,7 @@ export function extractHeadings(content: string): string[] {
 			inCodeBlock = !inCodeBlock
 		}
 
-		if (!inCodeBlock && /^#{1,6}\s/.test(line))
+		if (!inCodeBlock && RE_MARKDOWN_HEADING.test(line))
 			headings.push(line.trim())
 	}
 
@@ -129,7 +138,7 @@ export function extractTemplateTableProperties(content: string): string[] {
 	for (const line of lines) {
 		const trimmed = line.trim()
 
-		if (!inTable && /^\|.*Property.*\|/.test(trimmed)) {
+		if (!inTable && RE_PROPERTY_TABLE_HEADER.test(trimmed)) {
 			const cells = trimmed.split('|')
 				.map(c => c.trim())
 				.filter(Boolean)
@@ -140,7 +149,7 @@ export function extractTemplateTableProperties(content: string): string[] {
 			}
 		}
 
-		if (inTable && /^\|[\s\-|]+\|$/.test(trimmed)) {
+		if (inTable && RE_TABLE_SEPARATOR.test(trimmed)) {
 			continue
 		}
 
@@ -150,7 +159,7 @@ export function extractTemplateTableProperties(content: string): string[] {
 				.filter(Boolean)
 			if (cells.length > propertyColIndex) {
 				const raw = cells[propertyColIndex]
-				const cleaned = raw!.replace(/<!--.*?-->/g, '')
+				const cleaned = raw!.replace(RE_HTML_COMMENT, '')
 					.trim()
 				if (cleaned && cleaned !== '...')
 					properties.push(cleaned)
@@ -174,7 +183,7 @@ export function extractDocsTableProperties(content: string): string[] {
 	for (const line of lines) {
 		const trimmed = line.trim()
 
-		if (!inTable && /^\|.*Property.*\|/.test(trimmed)) {
+		if (!inTable && RE_PROPERTY_TABLE_HEADER.test(trimmed)) {
 			const cells = trimmed.split('|')
 				.map(c => c.trim())
 				.filter(Boolean)
@@ -185,7 +194,7 @@ export function extractDocsTableProperties(content: string): string[] {
 			}
 		}
 
-		if (inTable && /^\|[\s\-|]+\|$/.test(trimmed)) {
+		if (inTable && RE_TABLE_SEPARATOR.test(trimmed)) {
 			continue
 		}
 
@@ -195,8 +204,8 @@ export function extractDocsTableProperties(content: string): string[] {
 				.filter(Boolean)
 			if (cells.length > propertyColIndex) {
 				const raw = cells[propertyColIndex]
-				const cleaned = raw!.replace(/`/g, '')
-					.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+				const cleaned = raw!.replace(RE_BACKTICKS, '')
+					.replace(RE_MARKDOWN_LINK, '$1')
 					.trim()
 				if (cleaned)
 					properties.push(cleaned)

@@ -382,6 +382,8 @@ export class Engine {
 	 *
 	 * @param isFormatted - Whether to produce human-readable CSS with newlines and indentation.
 	 * @param options - Optional filtering: `atomicStyleIds` to render a subset, `isPreview` to use placeholder IDs.
+	 * @param options.atomicStyleIds - Specific atomic style IDs to render instead of the full store.
+	 * @param options.isPreview - Whether to keep placeholder IDs instead of substituting real class names.
 	 * @returns The rendered atomic-style CSS.
 	 *
 	 * @remarks Styles are sorted by rendering weight (selector specificity depth), grouped into configured `@layer` blocks, and rendered. When `isPreview` is true, atomic style IDs remain as placeholders for tooling previews.
@@ -563,10 +565,10 @@ function groupAtomicStylesByLayer({
 }) {
 	const unlayeredStyles: AtomicStyle[] = []
 	const layerGroups = new Map<string, AtomicStyle[]>(layerOrder.map(name => [name, []]))
-	const candidateDefaultLayer = defaultUtilitiesLayer ?? layerOrder[layerOrder.length - 1]
+	const candidateDefaultLayer = defaultUtilitiesLayer ?? layerOrder.at(-1)
 	const defaultLayer = (candidateDefaultLayer != null && layerGroups.has(candidateDefaultLayer))
 		? candidateDefaultLayer
-		: layerOrder[layerOrder.length - 1]
+		: layerOrder.at(-1)
 
 	for (const style of styles) {
 		const { layer } = splitLayerSelector(style.content.selector)
@@ -721,6 +723,9 @@ function extractLayerFromStyleItem(item: InternalStyleDefinition): { layer: stri
  *   - `itemList` — the raw style items to process.
  *   - `transformStyleItems` — the plugin hook for transforming style items.
  *   - `extractStyleDefinition` — the function that decomposes a style definition into extracted contents.
+ * @param options.itemList - The raw style items to process.
+ * @param options.transformStyleItems - Hook that expands or rewrites style items before extraction.
+ * @param options.extractStyleDefinition - Function that decomposes a style definition into extracted style contents.
  * @returns An object with `unknown` (unresolved string references) and `contents` (optimized extracted style contents).
  *
  * @remarks String items that survive the `transformStyleItems` hook are collected into the `unknown` set. Object items are extracted, optionally layer-prepended, and optimized for duplicate property merging.
@@ -813,6 +818,12 @@ function renderAtomicStylesCss({ atomicStyles, isPreview, isFormatted }: {
  * @internal
  *
  * @param payload - An object containing `atomicStyles`, `isPreview`, `isFormatted`, `defaultSelector`, and optional `layers`/`defaultUtilitiesLayer`.
+ * @param payload.atomicStyles - The atomic styles to render.
+ * @param payload.isPreview - Whether placeholder IDs should be preserved for preview output.
+ * @param payload.isFormatted - Whether to render with indentation and line breaks.
+ * @param payload.defaultSelector - The engine default selector used when computing render order.
+ * @param payload.layers - Optional configured CSS layers to group atomic styles into.
+ * @param payload.defaultUtilitiesLayer - Optional fallback layer for unlayered utility styles.
  * @returns The rendered CSS string.
  *
  * @remarks Sorts styles by rendering weight, groups them into `@layer` blocks when layers are configured, and renders each group. Used by both the `Engine.renderAtomicStyles` method and external consumers.
@@ -863,6 +874,9 @@ export function renderAtomicStyles(payload: { atomicStyles: AtomicStyle[], isPre
  *   - `engine` — the engine instance (used for selector transformation).
  *   - `preflightDefinition` — the nested object tree of selectors and CSS properties.
  *   - `blocks` — accumulator map for the resulting CSS blocks.
+ * @param options.engine - The engine instance used to run selector transforms.
+ * @param options.preflightDefinition - The nested preflight definition object to convert into CSS blocks.
+ * @param options.blocks - Optional accumulator map reused during recursive descent.
  * @returns The accumulated `CSSStyleBlocks` map.
  *
  * @remarks Each key in the definition is either a CSS property (when its value is a property value) or a nested selector scope (when its value is an object). Selector keys are expanded through `hooks.transformSelectors`. The resulting blocks map is consumable by `renderCSSStyleBlocks`.
@@ -931,6 +945,9 @@ export async function _renderPreflightDefinition({
  * @internal
  *
  * @param payload - An object with the `engine`, the `preflightDefinition` to render, and `isFormatted` flag.
+ * @param payload.engine - The engine instance whose selector pipeline should be applied.
+ * @param payload.preflightDefinition - The preflight definition tree to render.
+ * @param payload.isFormatted - Whether the rendered CSS should include indentation and line breaks.
  * @returns The rendered CSS string.
  *
  * @remarks A convenience wrapper that calls `_renderPreflightDefinition` and pipes the result through `renderCSSStyleBlocks`.

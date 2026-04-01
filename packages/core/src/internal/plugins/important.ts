@@ -62,7 +62,7 @@ export function important() {
 			return styleDefinitions.map<InternalStyleDefinition>((styleDefinition) => {
 				const { __important, ...rest } = styleDefinition as Record<string, unknown> & { __important?: boolean | Nullish }
 				const value = __important
-				const important = value == null ? defaultValue : value
+				const important = value ?? defaultValue
 
 				if (important === false)
 					return rest as InternalStyleDefinition

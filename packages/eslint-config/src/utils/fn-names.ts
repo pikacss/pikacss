@@ -70,6 +70,8 @@ export function buildFnNamePatterns(fnName: string = 'pika') {
  * @internal
  *
  * @param node - EST call-expression node with a `callee` property.
+ * @param node.type - The ESTree node type.
+ * @param node.callee - The callee subtree to inspect.
  * @returns The dot-joined callee string (e.g. `'pika.str'`), or `null` if the callee shape is unsupported.
  *
  * @remarks

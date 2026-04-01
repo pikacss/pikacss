@@ -37,6 +37,10 @@ export type FontsProviderOptions = Record<string, FontsProviderOptionValue>
  */
 export type BuiltinFontsProvider = 'google' | 'bunny' | 'fontshare' | 'coollabs' | 'none'
 
+const RE_WHITESPACE = /\s+/g
+const RE_NON_ALPHANUMERIC = /[^a-z0-9]+/g
+const RE_TRIM_DASHES = /^-+|-+$/g
+
 /**
  * Identifier for a font provider — either a built-in name or a custom string.
  *
@@ -273,14 +277,14 @@ function encodeProviderOptionValue(value: FontsProviderOptionValue) {
 
 function encodeFamilyName(name: string) {
 	return name.trim()
-		.replace(/\s+/g, '+')
+		.replace(RE_WHITESPACE, '+')
 }
 
 function toProviderSlug(name: string) {
 	return name.trim()
 		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
+		.replace(RE_NON_ALPHANUMERIC, '-')
+		.replace(RE_TRIM_DASHES, '')
 }
 
 function dedupeStrings(values: string[]) {

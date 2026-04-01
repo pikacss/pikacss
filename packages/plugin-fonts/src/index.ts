@@ -25,6 +25,10 @@ export type {
 	FontsProviderOptions,
 }
 
+const RE_FONT_WITH_WEIGHTS = /^(.*?):([\d,]+)$/
+const RE_QUOTED_FAMILY_NAME = /^['"].*['"]$/
+const RE_CSS_FUNCTION_NAME = /^[a-z-]+\(/i
+
 /**
  * Detailed metadata for a font family entry.
  *
@@ -397,7 +401,7 @@ function normalizeFontEntry(entry: FontFamilyEntry, defaultProvider: FontsProvid
 }
 
 function parseFontString(value: string): ParsedFontString {
-	const matched = value.match(/^(.*?):([\d,]+)$/)
+	const matched = value.match(RE_FONT_WITH_WEIGHTS)
 	if (matched == null) {
 		return { name: value, weights: [] }
 	}
@@ -412,11 +416,11 @@ function parseFontString(value: string): ParsedFontString {
 }
 
 function normalizeFamilyName(value: string) {
-	if (/^['"].*['"]$/.test(value))
+	if (RE_QUOTED_FAMILY_NAME.test(value))
 		return value
 	if (genericFamilyNames.has(value.toLowerCase()))
 		return value
-	if (/^[a-z-]+\(/i.test(value))
+	if (RE_CSS_FUNCTION_NAME.test(value))
 		return value
 	return JSON.stringify(value)
 }

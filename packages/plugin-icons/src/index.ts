@@ -27,6 +27,11 @@ interface IconMeta {
 type IconSource = 'custom' | 'local' | 'cdn'
 type ValidatedIconSet = NonNullable<ReturnType<typeof quicklyValidateIconSet>>
 
+const RE_ESCAPE_REGEXP = /[|\\{}()[\]^$+*?.-]/g
+const RE_CAMEL_CASE_ICON_BOUNDARY = /([a-z])([A-Z])/g
+const RE_DIGIT_ICON_BOUNDARY = /([a-z])(\d+)/g
+const RE_TRAILING_SLASH = /\/$/
+
 /**
  * Configuration options for the PikaCSS icons plugin.
  *
@@ -202,7 +207,7 @@ function normalizePrefixes(prefix: Exclude<IconsConfig['prefix'], undefined>) {
 }
 
 function escapeRegExp(value: string) {
-	return value.replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&')
+	return value.replace(RE_ESCAPE_REGEXP, '\\$&')
 }
 
 function createShortcutRegExp(prefixes: string[]) {
@@ -213,9 +218,9 @@ function createShortcutRegExp(prefixes: string[]) {
 function getPossibleIconNames(iconName: string) {
 	return [
 		iconName,
-		iconName.replace(/([a-z])([A-Z])/g, '$1-$2')
+		iconName.replace(RE_CAMEL_CASE_ICON_BOUNDARY, '$1-$2')
 			.toLowerCase(),
-		iconName.replace(/([a-z])(\d+)/g, '$1-$2'),
+		iconName.replace(RE_DIGIT_ICON_BOUNDARY, '$1-$2'),
 	]
 }
 
@@ -240,7 +245,7 @@ function createAutocompletePatterns(prefixes: string[]) {
 function resolveCdnCollectionUrl(cdn: string, collection: string) {
 	if (cdn.includes('{collection}'))
 		return cdn.replaceAll('{collection}', collection)
-	return `${cdn.replace(/\/$/, '')}/${collection}.json`
+	return `${cdn.replace(RE_TRAILING_SLASH, '')}/${collection}.json`
 }
 
 function createLoaderOptions(config: IconsConfig, usedProps?: Record<string, string>): IconifyLoaderOptions {

@@ -58,6 +58,9 @@ export function createEngineStore(): EngineStore {
  * @internal
  *
  * @param options - Object containing the style `content`, the engine `prefix`, and the `stored` ID map.
+ * @param options.content - The resolved style content to hash and identify.
+ * @param options.prefix - The class-name prefix used when constructing a new atomic style ID.
+ * @param options.stored - The map that caches assigned IDs by serialized key.
  * @returns The short alphabetic ID string (e.g. `'pk-a'`, `'pk-bA'`).
  *
  * @remarks For non-order-sensitive content, returns a cached ID if one already exists for the same base key. For order-sensitive content (where `orderSensitiveTo` is set), always generates a new ID to prevent incorrect reuse across different call-site orderings.
@@ -99,6 +102,10 @@ export function getAtomicStyleId({
  * @internal
  *
  * @param options - Object containing the style `content`, `prefix`, `store`, and the per-use-call `resolvedIdsByBaseKey` map for order-sensitive reuse tracking.
+ * @param options.content - The style content to resolve into a cached or newly registered atomic style.
+ * @param options.prefix - The atomic style ID prefix for any newly created IDs.
+ * @param options.store - The engine store holding existing atomic styles and lookup maps.
+ * @param options.resolvedIdsByBaseKey - Per-call memoization map for reusing order-sensitive IDs within one `engine.use()` execution.
  * @returns An `AtomicStyleResolution` with the assigned `id` and optionally the newly created `atomicStyle` (absent when the ID was already registered).
  *
  * @remarks First checks for reusable order-sensitive IDs within the current `engine.use()` call, then falls back to `getAtomicStyleId` for general ID assignment. When a new atomic style is created, it is registered in all store indices.

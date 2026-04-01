@@ -4,6 +4,9 @@ import { resolve } from 'pathe'
 import { $ } from 'zx'
 
 const rootDir = process.cwd()
+const RE_TOTAL_TOKENS = /Total Tokens:\s*([\d,]+)\s*tokens/
+const RE_COMMAS = /,/g
+const RE_TOP_10_FILES = /📈 Top 10 Files by Token Count:[\s\S]*?(?=📊 Pack Summary:)/
 
 async function getPackages() {
 	const packagesDir = resolve(rootDir, 'packages')
@@ -14,8 +17,8 @@ async function getPackages() {
 }
 
 function extractTokens(stdout: string) {
-	const match = stdout.match(/Total Tokens:\s*([\d,]+)\s*tokens/)
-	return match ? Number.parseInt(match[1]!.replace(/,/g, ''), 10) : 0
+	const match = stdout.match(RE_TOTAL_TOKENS)
+	return match ? Number.parseInt(match[1]!.replace(RE_COMMAS, ''), 10) : 0
 }
 
 async function main() {
@@ -86,7 +89,7 @@ async function main() {
 	await rm(resolve(rootDir, 'repomix/repomix-all-temp.txt'), { force: true })
 		.catch(() => {})
 
-	const top10match = resAll.stdout.match(/📈 Top 10 Files by Token Count:[\s\S]*?(?=📊 Pack Summary:)/)
+	const top10match = resAll.stdout.match(RE_TOP_10_FILES)
 	if (top10match) {
 		console.log(top10match[0].trim())
 	}

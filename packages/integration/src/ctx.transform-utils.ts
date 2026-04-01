@@ -50,7 +50,7 @@ export function createFnUtils(fnName: string): FnUtils {
 		forceArrayPreview: new Set([`${fnName}p.arr`, `${fnName}p['arr']`, `${fnName}p["arr"]`, `${fnName}p[\`arr\`]`]),
 	}
 	const RE = new RegExp(`\\b(${Object.values(available)
-		.flatMap(set => [...set].map(name => `(${name.replace(ESCAPE_REPLACE_RE, '\\$&')})`))
+		.flatMap(set => Array.from(set, name => `(${name.replace(ESCAPE_REPLACE_RE, '\\$&')})`))
 		.join('|')})\\(`, 'g')
 
 	return {

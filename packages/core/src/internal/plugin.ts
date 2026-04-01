@@ -34,7 +34,7 @@ function getPluginHook(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) 
 }
 
 function applyHookPayload(current: unknown, next: unknown) {
-	return next != null ? next : current
+	return next ?? current
 }
 
 function logHookStart(kind: 'Sync' | 'Async', hook: keyof EngineHooksDefinition) {

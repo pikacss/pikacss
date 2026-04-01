@@ -22,6 +22,8 @@ interface Computed<T> {
 	(): T
 }
 
+const RE_VALID_CONFIG_EXT = /\.(?:js|cjs|mjs|ts|cts|mts)$/
+
 function createConfigScaffoldContent({
 	currentPackageName,
 	resolvedConfigPath,
@@ -111,7 +113,6 @@ function useConfig({
 		exclude: string[]
 	}
 }) {
-	const RE_VALID_CONFIG_EXT = /\.(?:js|cjs|mjs|ts|cts|mts)$/
 	const specificConfigPath = computed(() => {
 		if (
 			typeof configOrPath === 'string' && RE_VALID_CONFIG_EXT.test(configOrPath)

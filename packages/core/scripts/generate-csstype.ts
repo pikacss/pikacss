@@ -22,6 +22,20 @@ import { features as webFeatures } from 'web-features'
 // ---------------------------------------------------------------------------
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUTPUT_PATH = path.resolve(__dirname, '..', 'src', 'csstype.ts')
+const RE_OPTIONAL_MULTIPLIER = /\{[\d,]+\}\s*$/
+const RE_OPTIONAL_SUFFIX = /[?+*#]+\s*$/
+const RE_FUNCTION_CALL = /^[\w-]+\(/
+const RE_PROPERTY_REFERENCE = /^<'([^']+)'>$/
+const RE_DATA_TYPE_REFERENCE = /^<([\w-]+(?:\(\))?)(?:\s*\[.*?\])?>$/
+const RE_NUMERIC_LITERAL = /^\d+(?:\.\d+)?$/
+const RE_KEYWORD_LITERAL = /^\w[\w-]*$/
+const RE_MULTIPLIER_TOKEN = /^[?+*#{}]+$/
+const RE_COMPLEX_TYPE_REF = /<([\w-]+(?:\(\))?)(?:\s*\[.*?\])?>/g
+const RE_COMPLEX_PROPERTY_REF = /<'([\w-]+)'>/g
+const RE_EMPTY_CALL_SUFFIX = /\(\)$/
+const RE_VENDOR_PREFIX = /^-(webkit|moz|ms|o)-/
+const RE_KEBAB_SEGMENT = /-([a-z0-9])/gi
+const RE_GENERIC_SUFFIX = /<.*>$/
 
 // ---------------------------------------------------------------------------
 // 1. DATA LOADING
@@ -423,8 +437,8 @@ function parseAlternative(
 
 	// Strip optional multipliers at end: ?, +, *, #, {n,m}
 	let cleaned = trimmed
-		.replace(/\{[\d,]+\}\s*$/, '')
-		.replace(/[?+*#]+\s*$/, '')
+		.replace(RE_OPTIONAL_MULTIPLIER, '')
+		.replace(RE_OPTIONAL_SUFFIX, '')
 		.trim()
 
 	// Check for && or || combinators or juxtaposition with multiple terms
@@ -455,13 +469,13 @@ function parseAlternative(
 	}
 
 	// Function call: name( ... )
-	if (/^[\w-]+\(/.test(cleaned)) {
+	if (RE_FUNCTION_CALL.test(cleaned)) {
 		components.push({ kind: 'string' })
 		return
 	}
 
 	// Data type reference: <name>
-	const dtMatch = cleaned.match(/^<'([^']+)'>$/)
+	const dtMatch = cleaned.match(RE_PROPERTY_REFERENCE)
 	if (dtMatch) {
 		// Property reference <'property-name'>
 		const propName = dtMatch[1]
@@ -479,7 +493,7 @@ function parseAlternative(
 		return
 	}
 
-	const dtMatch2 = cleaned.match(/^<([\w-]+(?:\(\))?)(?:\s*\[.*?\])?>$/)
+	const dtMatch2 = cleaned.match(RE_DATA_TYPE_REFERENCE)
 	if (dtMatch2) {
 		const typeName = dtMatch2[1]
 		resolveDataType(typeName, syntaxes, visited, components)
@@ -487,13 +501,13 @@ function parseAlternative(
 	}
 
 	// Numeric literal
-	if (/^\d+(?:\.\d+)?$/.test(cleaned)) {
+	if (RE_NUMERIC_LITERAL.test(cleaned)) {
 		components.push({ kind: 'number' })
 		return
 	}
 
 	// Keyword (alphanumeric, dashes, no angle brackets or spaces)
-	if (/^\w[\w-]*$/.test(cleaned) && !cleaned.includes('<') && !cleaned.includes('>')) {
+	if (RE_KEYWORD_LITERAL.test(cleaned) && !cleaned.includes('<') && !cleaned.includes('>')) {
 		components.push({ kind: 'literal', value: cleaned })
 		return
 	}
@@ -561,7 +575,7 @@ function tokenizeTopLevel(s: string): string[] {
 		tokens.push(trimmed)
 
 	// Filter out multipliers and operators
-	return tokens.filter(t => t !== '&&' && t !== '||' && t !== '|' && !/^[?+*#{}]+$/.test(t))
+	return tokens.filter(t => t !== '&&' && t !== '||' && t !== '|' && !RE_MULTIPLIER_TOKEN.test(t))
 }
 
 function extractFromComplex(
@@ -575,7 +589,7 @@ function extractFromComplex(
 	components.push({ kind: 'string' })
 
 	// Also extract named types that appear in the expression
-	const typeRefs = s.matchAll(/<([\w-]+(?:\(\))?)(?:\s*\[.*?\])?>/g)
+	const typeRefs = s.matchAll(RE_COMPLEX_TYPE_REF)
 	for (const m of typeRefs) {
 		const typeName = m[1]
 		if (KNOWN_DATA_TYPES[typeName]) {
@@ -587,7 +601,7 @@ function extractFromComplex(
 	}
 
 	// Extract property refs
-	const propRefs = s.matchAll(/<'([\w-]+)'>/g)
+	const propRefs = s.matchAll(RE_COMPLEX_PROPERTY_REF)
 	for (const m of propRefs) {
 		const propName = m[1]
 		if (!visited.has(`prop:${propName}`)) {
@@ -620,7 +634,7 @@ function resolveDataType(
 	}
 
 	// Try to resolve from syntaxes
-	const key = typeName.replace(/\(\)$/, '')
+	const key = typeName.replace(RE_EMPTY_CALL_SUFFIX, '')
 	if (visited.has(`type:${key}`))
 		return
 
@@ -658,7 +672,7 @@ function toCamelCase(kebab: string): string {
 	let result = kebab
 	let prefix = ''
 
-	const vendorMatch = result.match(/^-(webkit|moz|ms|o)-/)
+	const vendorMatch = result.match(RE_VENDOR_PREFIX)
 	if (vendorMatch) {
 		const vendorPrefix = vendorMatch[1]
 		prefix = vendorPrefix === 'ms'
@@ -672,7 +686,7 @@ function toCamelCase(kebab: string): string {
 	}
 
 	// Convert remaining kebab-case to camelCase
-	result = result.replace(/-([a-z0-9])/gi, (_, c: string) => c.toUpperCase())
+	result = result.replace(RE_KEBAB_SEGMENT, (_, c: string) => c.toUpperCase())
 
 	return prefix + result
 }
@@ -1123,8 +1137,8 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	lines.push('export namespace DataType {')
 	const sortedDTKeys = Object.keys(DATA_TYPE_DEFINITIONS)
 		.sort((a, b) => {
-			const aName = a.replace(/<.*>$/, '')
-			const bName = b.replace(/<.*>$/, '')
+			const aName = a.replace(RE_GENERIC_SUFFIX, '')
+			const bName = b.replace(RE_GENERIC_SUFFIX, '')
 			return aName.localeCompare(bName)
 		})
 	for (const key of sortedDTKeys) {

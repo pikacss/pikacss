@@ -10,6 +10,10 @@ import {
 } from '../_skill-shared'
 
 const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'csstype.ts', 'generated-', '/dist/', '/coverage/', '/node_modules/']
+const RE_BACKTICK_CODE_SPAN = /`[^`]*`/g
+const RE_LITERAL_ESCAPES = /\\n|\\t|\\r/
+const RE_UNFILLED_TODO = /@todo\s+FILL/i
+const TAG_PATTERN = /@(?:param|returns|remarks|example|default|typeParam|internal|throws|see|since|deprecated)\b/g
 
 interface LintIssue {
 	file: string
@@ -49,8 +53,8 @@ function checkLiteralEscapes(lines: string[], filePath: string): LintIssue[] {
 			if (!inCodeFence) {
 				// Look for literal \n, \t, \r that are NOT inside backtick-quoted code spans
 				// Remove backtick code spans first to avoid false positives
-				const withoutCodeSpans = line.replace(/`[^`]*`/g, '')
-				if (/\\n|\\t|\\r/.test(withoutCodeSpans) && stripped.startsWith('*')) {
+				const withoutCodeSpans = line.replace(RE_BACKTICK_CODE_SPAN, '')
+				if (RE_LITERAL_ESCAPES.test(withoutCodeSpans) && stripped.startsWith('*')) {
 					issues.push({
 						file: filePath,
 						line: i + 1,
@@ -135,7 +139,7 @@ function checkUnfilledTodos(lines: string[], filePath: string): LintIssue[] {
 		if (stripped.startsWith('/**'))
 			inJSDoc = true
 
-		if (inJSDoc && /@todo\s+FILL/i.test(line)) {
+		if (inJSDoc && RE_UNFILLED_TODO.test(line)) {
 			issues.push({
 				file: filePath,
 				line: i + 1,
@@ -161,7 +165,6 @@ function checkMultipleTagsOnOneLine(lines: string[], filePath: string): LintIssu
 	const issues: LintIssue[] = []
 	let inJSDoc = false
 	let inCodeFence = false
-	const TAG_PATTERN = /@(?:param|returns|remarks|example|default|typeParam|internal|throws|see|since|deprecated)\b/g
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i]!
@@ -179,7 +182,7 @@ function checkMultipleTagsOnOneLine(lines: string[], filePath: string): LintIssu
 
 			if (!inCodeFence && stripped.startsWith('*')) {
 				// Remove backtick code spans to avoid false positives
-				const withoutCodeSpans = line.replace(/`[^`]*`/g, '')
+				const withoutCodeSpans = line.replace(RE_BACKTICK_CODE_SPAN, '')
 				const matches = [...withoutCodeSpans.matchAll(TAG_PATTERN)]
 				if (matches.length > 1) {
 					issues.push({

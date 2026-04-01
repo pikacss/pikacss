@@ -1,6 +1,8 @@
 import type { IntegrationContext } from './types'
 import { log, sortLayerNames } from '@pikacss/core'
 
+const RE_LEADING_INDENT = /^(\s*)/
+
 function formatUnionType(parts: string[]) {
 	return parts.length > 0
 		? parts.join(' | ')
@@ -148,7 +150,7 @@ async function generateOverloadContent(ctx: IntegrationContext) {
 				...(await ctx.engine.renderAtomicStyles(true, { atomicStyleIds: usage.atomicStyleIds, isPreview: true }))
 					.trim()
 					.split('\n')
-					.map(line => `   * ‎${line.replace(/^(\s*)/, '$1‎')}`),
+					.map(line => `   * ‎${line.replace(RE_LEADING_INDENT, '$1‎')}`),
 				'   * ```',
 				'   */',
 				`  fn(...params: [${usage.params.map((_, index) => `p${index}: P${i}_${index}`)

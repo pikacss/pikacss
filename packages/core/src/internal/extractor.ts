@@ -27,6 +27,8 @@ const ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL = /\$=/g
  * @internal
  *
  * @param options - Object containing the raw `selectors` array and the `defaultSelector` template.
+ * @param options.selectors - The raw selector strings to normalize.
+ * @param options.defaultSelector - The selector template that replaces `$` placeholders.
  * @returns An array of normalized selector strings with all placeholders resolved.
  *
  * @remarks The `$` character in a selector is replaced with the engine's `defaultSelector`. The `%` character is the atomic style ID placeholder, preserved for later substitution. Attribute suffix matches (`$=`) are protected from the `$` replacement.
@@ -110,6 +112,13 @@ export function normalizeValue(value: InternalPropertyValue): ExtractedStyleCont
  * @internal
  *
  * @param options - Extraction context: the `styleDefinition` to walk, current nesting `levels`, accumulated `result`, `defaultSelector`, and plugin transform hooks for selectors, style items, and style definitions.
+ * @param options.styleDefinition - The style definition subtree currently being traversed.
+ * @param options.levels - The accumulated nested selector levels leading to this subtree.
+ * @param options.result - The mutable extraction result array being appended to.
+ * @param options.defaultSelector - The selector substituted when extracted selectors omit the atomic-style placeholder.
+ * @param options.transformSelectors - Hook that rewrites selector levels before normalization.
+ * @param options.transformStyleItems - Hook that expands array style items before recursive extraction.
+ * @param options.transformStyleDefinitions - Hook that rewrites style definition objects before traversal.
  * @returns The accumulated array of `ExtractedStyleContent` entries.
  *
  * @remarks Property values are identified using `isPropertyValue`. Array values are treated as style item lists (resolved via `transformStyleItems`). Object values are treated as nested style definitions and recursed into. The transform hooks allow plugins (shortcuts, selectors) to intercept and expand values during extraction.
@@ -210,6 +219,10 @@ export type ExtractFn = (styleDefinition: InternalStyleDefinition) => Promise<Ex
  * @internal
  *
  * @param options - The extraction options: `defaultSelector`, `transformSelectors`, `transformStyleItems`, and `transformStyleDefinitions`.
+ * @param options.defaultSelector - The selector used when no explicit atomic placeholder selector remains.
+ * @param options.transformSelectors - Hook that rewrites selector arrays before normalization.
+ * @param options.transformStyleItems - Hook that rewrites or expands style item arrays.
+ * @param options.transformStyleDefinitions - Hook that rewrites style definition objects before extraction.
  * @returns An `ExtractFn` that accepts a style definition and returns extracted contents.
  *
  * @remarks Called once during engine construction. The returned function is stored as `engine.extract` and used for all subsequent `engine.use()` calls.
