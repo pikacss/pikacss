@@ -24,7 +24,6 @@ PikaCSS uses [unplugin](https://github.com/unjs/unplugin) to provide a single bu
 | esbuild | `@pikacss/unplugin-pikacss/esbuild` |
 | Rollup | `@pikacss/unplugin-pikacss/rollup` |
 | Rolldown | `@pikacss/unplugin-pikacss/rolldown` |
-| Farm | `@pikacss/unplugin-pikacss/farm` |
 
 Example with Vite:
 

@@ -26,7 +26,7 @@ order: 40
 
 ## Package summary
 
-Universal bundler plugins for Vite, Webpack, Rspack, esbuild, Rollup, Rolldown, and Farm Re-exports the public surface of [`@pikacss/integration`](/api/integration).
+Universal bundler plugins for Vite, Webpack, Rspack, esbuild, Rollup, and Rolldown Re-exports the public surface of [`@pikacss/integration`](/api/integration).
 
 Use [Unplugin integration](/integrations/unplugin) when you need conceptual usage guidance instead of exact symbol lookup.
 

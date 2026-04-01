@@ -28,7 +28,7 @@ PikaCSS is composed of several packages, each with a focused API.
 |---------|---------|
 | [`@pikacss/core`](/api/core) | Engine foundation — `createEngine`, `defineEnginePlugin`, identity helpers, types |
 | [`@pikacss/integration`](/api/integration) | Build-system bridge — `createCtx`, config loading, source transformation |
-| [`@pikacss/unplugin-pikacss`](/api/unplugin) | Universal bundler plugin — Vite, Webpack, Rspack, esbuild, Rollup, Rolldown, Farm |
+| [`@pikacss/unplugin-pikacss`](/api/unplugin) | Universal bundler plugin — Vite, Webpack, Rspack, esbuild, Rollup, Rolldown |
 | [`@pikacss/nuxt-pikacss`](/api/nuxt) | Nuxt module — zero-config Nuxt integration |
 
 ### Official Plugins

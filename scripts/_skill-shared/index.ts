@@ -7,6 +7,9 @@ import { dirname, resolve } from 'pathe'
 
 export const workspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
+const RE_SURROUNDING_QUOTES = /^['"]|['"]$/g
+const RE_PACKAGE_DIR_NAME = /^[A-Za-z\d][\w-]*$/u
+
 // ---------------------------------------------------------------------------
 // Package definitions (shared across maintain-docs and maintain-jsdocs)
 // ---------------------------------------------------------------------------
@@ -47,7 +50,7 @@ export const PACKAGES: PackageDef[] = [
 		dir: 'unplugin',
 		slug: 'unplugin',
 		order: 40,
-		description: 'Universal bundler plugins for Vite, Webpack, Rspack, esbuild, Rollup, Rolldown, and Farm',
+		description: 'Universal bundler plugins for Vite, Webpack, Rspack, esbuild, Rollup, and Rolldown',
 		pageTitle: 'Unplugin API reference',
 		guideLink: { text: 'Unplugin integration', url: '/integrations/unplugin' },
 		reExports: '@pikacss/integration',
@@ -127,7 +130,7 @@ export function readMultiValueOption(args: string[], optionName: string) {
 
 export function normalizePackageScope(input: string) {
 	const normalized = input.trim()
-		.replace(/^['"]|['"]$/g, '')
+		.replace(RE_SURROUNDING_QUOTES, '')
 	if (!normalized)
 		throw new Error('Package scope cannot be empty.')
 	if (normalized.startsWith('@pikacss/'))
@@ -137,7 +140,7 @@ export function normalizePackageScope(input: string) {
 		if (parts[1])
 			return parts[1]
 	}
-	if (/^[A-Za-z\d][\w-]*$/u.test(normalized))
+	if (RE_PACKAGE_DIR_NAME.test(normalized))
 		return normalized
 	throw new Error(`Unsupported package scope: ${input}`)
 }

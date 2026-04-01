@@ -1,6 +1,6 @@
 # @pikacss/unplugin-pikacss
 
-Universal bundler plugin for PikaCSS. Supports Vite, Webpack, Rspack, Rollup, Rolldown, esbuild, and Farm.
+Universal bundler plugin for PikaCSS. Supports Vite, Webpack, Rspack, Rollup, Rolldown, and esbuild.
 
 ## Installation
 
