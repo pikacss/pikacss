@@ -385,7 +385,7 @@ Serializes a `CSSStyleBlocks` tree into a CSS string, optionally formatted with 
 |---|---|---|
 | `blocks` | `CSSStyleBlocks` | The CSS block tree to render. |
 | `isFormatted` | `boolean` | When `true`, output includes indentation and newlines for readability; when `false`, output is minified. |
-| `depth?` | `unknown` | Current nesting depth for indentation (defaults to `0`). |
+| `depth?` | `number` | Current nesting depth for indentation (defaults to `0`). |
 
 **Remarks:**
 

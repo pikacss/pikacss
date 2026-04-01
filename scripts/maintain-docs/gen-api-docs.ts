@@ -15,6 +15,7 @@ const RE_SLUG_PUNCTUATION = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'<>,.?/]+/g
 const RE_REPEATED_DASH = /-{2,}/g
 const RE_TRIM_DASH = /^-|-$/g
 const RE_LEADING_DIGIT = /^(\d)/
+const RE_VALID_PARAM_PATH_SEGMENT = /^[A-Z_$][\w$]*$/i
 
 interface ParamInfo {
 	name: string
@@ -239,6 +240,91 @@ function getParamDescription(tags: ts.JSDocTagInfo[], paramName: string): string
 	)
 }
 
+function appendParamPath(baseName: string, propertyName: string): string {
+	return RE_VALID_PARAM_PATH_SEGMENT.test(propertyName)
+		? `${baseName}.${propertyName}`
+		: `${baseName}[${JSON.stringify(propertyName)}]`
+}
+
+function getBindingElementPropertyName(element: ts.BindingElement): string {
+	if (element.propertyName) {
+		if (ts.isIdentifier(element.propertyName) || ts.isStringLiteral(element.propertyName) || ts.isNumericLiteral(element.propertyName))
+			return element.propertyName.text
+		return element.propertyName.getText()
+	}
+
+	if (ts.isIdentifier(element.name))
+		return element.name.text
+
+	return element.name.getText()
+}
+
+function getSyntheticParamName(name: ts.BindingName, index: number): string {
+	if (ts.isObjectBindingPattern(name))
+		return index === 0 ? 'options' : `options${index + 1}`
+
+	if (ts.isArrayBindingPattern(name))
+		return index === 0 ? 'items' : `items${index + 1}`
+
+	return name.getText()
+}
+
+function isOptionalSymbol(symbol: ts.Symbol | undefined): boolean {
+	return Boolean(symbol && (symbol.getFlags() & ts.SymbolFlags.Optional))
+}
+
+function buildParamInfoList(parameters: readonly ts.ParameterDeclaration[], tags: ts.JSDocTagInfo[], checker: ts.TypeChecker): ParamInfo[] {
+	const params: ParamInfo[] = []
+
+	parameters.forEach((param, index) => {
+		const name = getSyntheticParamName(param.name, index)
+		const type = param.type?.getText() || checker.typeToString(checker.getTypeAtLocation(param)) || 'unknown'
+		params.push({
+			name,
+			type,
+			description: getParamDescription(tags, name),
+			optional: !!(param.questionToken || param.initializer),
+		})
+
+		if (ts.isObjectBindingPattern(param.name)) {
+			params.push(...collectObjectBindingParamInfo(param.name, name, checker.getTypeAtLocation(param), tags, checker))
+		}
+	})
+
+	return params
+}
+
+function collectObjectBindingParamInfo(
+	pattern: ts.ObjectBindingPattern,
+	baseName: string,
+	parentType: ts.Type,
+	tags: ts.JSDocTagInfo[],
+	checker: ts.TypeChecker,
+): ParamInfo[] {
+	const params: ParamInfo[] = []
+
+	for (const element of pattern.elements) {
+		const propertyName = getBindingElementPropertyName(element)
+		const name = appendParamPath(baseName, propertyName)
+		const propertySymbol = parentType.getProperty(propertyName)
+		const propertyType = propertySymbol
+			? checker.getTypeOfSymbolAtLocation(propertySymbol, element)
+			: undefined
+
+		params.push({
+			name,
+			type: propertyType ? checker.typeToString(propertyType) : 'unknown',
+			description: getParamDescription(tags, name),
+			optional: !!element.initializer || isOptionalSymbol(propertySymbol),
+		})
+
+		if (propertyType && ts.isObjectBindingPattern(element.name))
+			params.push(...collectObjectBindingParamInfo(element.name, name, propertyType, tags, checker))
+	}
+
+	return params
+}
+
 function getTypeParamDescriptions(tags: ts.JSDocTagInfo[]): { name: string, description: string }[] {
 	return tags
 		.filter(tag => tag.name === 'typeParam')
@@ -352,12 +438,7 @@ function extractExportInfo(sym: ts.Symbol, checker: ts.TypeChecker, pkgDir: stri
 		return {
 			...baseInfo,
 			kind: 'function',
-			params: decl.parameters.map(param => ({
-				name: param.name.getText(),
-				type: param.type?.getText() || 'unknown',
-				description: getParamDescription(tags, param.name.getText()),
-				optional: !!(param.questionToken || param.initializer),
-			})),
+			params: buildParamInfoList(decl.parameters, tags, checker),
 			returnType: decl.type?.getText(),
 			returnsDescription: getTagByName(tags, 'returns'),
 			typeParams: getTypeParamDescriptions(tags),
@@ -429,12 +510,7 @@ function extractExportInfo(sym: ts.Symbol, checker: ts.TypeChecker, pkgDir: stri
 				classMethods.push({
 					name: member.name.getText(),
 					description: memberSym ? getSymbolDescription(memberSym, checker) : '',
-					params: member.parameters.map(param => ({
-						name: param.name.getText(),
-						type: param.type?.getText() || 'unknown',
-						description: getParamDescription(memberTags, param.name.getText()),
-						optional: !!(param.questionToken || param.initializer),
-					})),
+					params: buildParamInfoList(member.parameters, memberTags, checker),
 					returnType: member.type?.getText(),
 					returnsDescription: getTagByName(memberTags, 'returns'),
 					typeParams: getTypeParamDescriptions(memberTags),

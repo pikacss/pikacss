@@ -13,6 +13,7 @@ const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'csstype.ts', 'g
 const RE_LINE_INDENT = /^(\s*)/
 const RE_TODO_FILL = /@todo FILL/g
 const RE_EXCESSIVE_NEWLINES = /\n{3,}/g
+const RE_VALID_PARAM_PATH_SEGMENT = /^[A-Z_$][\w$]*$/i
 
 // ── TS program creation (mirrors gen-api-docs) ──
 
@@ -236,6 +237,66 @@ function getTypeParamNames(node: ts.FunctionDeclaration | ts.InterfaceDeclaratio
 	return (node.typeParameters || []).map(tp => tp.name.text)
 }
 
+function appendParamPath(baseName: string, propertyName: string): string {
+	return RE_VALID_PARAM_PATH_SEGMENT.test(propertyName)
+		? `${baseName}.${propertyName}`
+		: `${baseName}[${JSON.stringify(propertyName)}]`
+}
+
+function getBindingElementPropertyName(element: ts.BindingElement): string {
+	if (element.propertyName) {
+		if (ts.isIdentifier(element.propertyName) || ts.isStringLiteral(element.propertyName) || ts.isNumericLiteral(element.propertyName))
+			return element.propertyName.text
+		return element.propertyName.getText()
+	}
+
+	if (ts.isIdentifier(element.name))
+		return element.name.text
+
+	return element.name.getText()
+}
+
+function getSyntheticParamName(name: ts.BindingName, index: number): string {
+	if (ts.isObjectBindingPattern(name))
+		return index === 0 ? 'options' : `options${index + 1}`
+
+	if (ts.isArrayBindingPattern(name))
+		return index === 0 ? 'items' : `items${index + 1}`
+
+	return name.getText()
+}
+
+function collectObjectBindingParamNames(name: ts.ObjectBindingPattern, baseName: string): string[] {
+	const names: string[] = []
+
+	for (const element of name.elements) {
+		const propertyName = getBindingElementPropertyName(element)
+		const paramName = appendParamPath(baseName, propertyName)
+		names.push(paramName)
+
+		if (ts.isObjectBindingPattern(element.name))
+			names.push(...collectObjectBindingParamNames(element.name, paramName))
+	}
+
+	return names
+}
+
+function getParamTemplates(parameters: readonly ts.ParameterDeclaration[]): { name: string }[] {
+	const params: { name: string }[] = []
+
+	parameters.forEach((param, index) => {
+		const name = getSyntheticParamName(param.name, index)
+		params.push({ name })
+
+		if (ts.isObjectBindingPattern(param.name)) {
+			for (const propertyName of collectObjectBindingParamNames(param.name, name))
+				params.push({ name: propertyName })
+		}
+	})
+
+	return params
+}
+
 // ── Modification types ──
 
 interface Modification {
@@ -325,7 +386,7 @@ async function scaffoldPackage(
 			if (ts.isFunctionDeclaration(stmt) && stmt.name) {
 				const name = stmt.name.text
 				const indent = getLineIndent(sourceText, stmt.getStart(sf))
-				const params = stmt.parameters.map(p => ({ name: p.name.getText() }))
+				const params = getParamTemplates(stmt.parameters)
 				const typeParams = getTypeParamNames(stmt)
 				let nonVoidReturn = true
 				const sym = checker.getSymbolAtLocation(stmt.name)
@@ -378,7 +439,7 @@ async function scaffoldPackage(
 
 					let template: string
 					if (init && (ts.isArrowFunction(init) || ts.isFunctionExpression(init))) {
-						const params = init.parameters.map(p => ({ name: p.name.getText() }))
+						const params = getParamTemplates(init.parameters)
 						const typeParams = getTypeParamNames(init)
 						let nonVoidReturn = true
 						const sym = checker.getSymbolAtLocation(decl.name)
@@ -425,7 +486,7 @@ async function scaffoldPackage(
 					else if (ts.isMethodDeclaration(member) && member.name) {
 						const methodName = member.name.getText()
 						const methodIndent = getLineIndent(sourceText, member.getStart(sf))
-						const params = member.parameters.map(p => ({ name: p.name.getText() }))
+						const params = getParamTemplates(member.parameters)
 						const methodTypeParams = member.typeParameters?.map(tp => tp.name.text) ?? []
 						let nonVoidReturn = true
 						const methodSym = member.name ? checker.getSymbolAtLocation(member.name) : undefined
@@ -443,7 +504,7 @@ async function scaffoldPackage(
 					// Constructor
 					else if (ts.isConstructorDeclaration(member)) {
 						const ctorIndent = getLineIndent(sourceText, member.getStart(sf))
-						const params = member.parameters.map(p => ({ name: p.name.getText() }))
+						const params = getParamTemplates(member.parameters)
 						const ctorTmpl = functionTemplate('constructor', params, [], false, false, ctorIndent)
 						addOrReplace(sf.fileName, member, sourceText, ctorTmpl)
 					}
