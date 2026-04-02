@@ -3,7 +3,7 @@
 
 export type PropertyEffectMode = 'self' | 'shorthand' | 'patched-shorthand'
 
-export const PROPERTY_EFFECTS = {
+export const PROPERTY_EFFECTS: Record<string, readonly string[]> = {
 	'accent-color': ['accent-color'],
 	'align-content': ['align-content'],
 	'align-items': ['align-items'],
@@ -555,9 +555,9 @@ export const PROPERTY_EFFECTS = {
 	'y': ['y'],
 	'z-index': ['z-index'],
 	'zoom': ['zoom'],
-} as const satisfies Record<string, readonly string[]>
+}
 
-export const PROPERTY_EFFECT_MODES = {
+export const PROPERTY_EFFECT_MODES: Record<string, PropertyEffectMode> = {
 	'accent-color': 'self',
 	'align-content': 'self',
 	'align-items': 'self',
@@ -1109,4 +1109,4 @@ export const PROPERTY_EFFECT_MODES = {
 	'y': 'self',
 	'z-index': 'self',
 	'zoom': 'self',
-} as const satisfies Record<string, PropertyEffectMode>
+}

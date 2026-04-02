@@ -55,18 +55,18 @@ export type PropertyValue<T> = T | [value: T, fallback: T[]] | Nullish
 
 type _CssPropertiesValue = ResolvedAutocompleteCSSPropertyValue
 type _CssPropertiesValueWildcard = GetValue<_CssPropertiesValue, '*'>
-type CSSPropertyInputValue<Key extends string, RelatedKey extends string = Key> = PropertyValue<
+type CSSPropertyInputValue<BaseValue, RelatedKey extends string> = PropertyValue<
 	| UnionString
-	| GetValue<CSSProperties, Key>
+	| BaseValue
 	| GetValue<_CssPropertiesValue, RelatedKey>
 	| _CssPropertiesValueWildcard
 >
 
 type Properties_CSS_Camel = {
-	[Key in keyof CSS.Properties]?: CSSPropertyInputValue<Key, Key | ToKebab<Key>>
+	[Key in keyof CSS.Properties]?: CSSPropertyInputValue<CSS.Properties[Key], Extract<Key, string> | ToKebab<Extract<Key, string>>>
 }
 type Properties_CSS_Hyphen = {
-	[Key in keyof CSS.PropertiesHyphen]?: CSSPropertyInputValue<Key, Key | FromKebab<Key>>
+	[Key in keyof CSS.PropertiesHyphen]?: CSSPropertyInputValue<CSS.PropertiesHyphen[Key], Extract<Key, string> | FromKebab<Extract<Key, string>>>
 }
 type Properties_CSS_Vars = {
 	[K in `--${string}` & {}]?: PropertyValue<
@@ -75,7 +75,7 @@ type Properties_CSS_Vars = {
 	>
 }
 type Properties_ExtraCSS = {
-	[Key in ResolvedExtraCSSProperty]?: CSSPropertyInputValue<Key, Key | ToKebab<Key> | FromKebab<Key>>
+	[Key in ResolvedExtraCSSProperty]?: CSSPropertyInputValue<GetValue<CSSProperties, Key>, Key | ToKebab<Key> | FromKebab<Key>>
 }
 type Properties_Extra = {
 	[Key in ResolvedExtraProperty]?: GetValue<ResolvedAutocompletePropertyValue, Key>

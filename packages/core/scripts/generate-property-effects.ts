@@ -157,13 +157,13 @@ function main() {
 		'',
 		'export type PropertyEffectMode = \'self\' | \'shorthand\' | \'patched-shorthand\'',
 		'',
-		'export const PROPERTY_EFFECTS = {',
+		'export const PROPERTY_EFFECTS: Record<string, readonly string[]> = {',
 		formatObjectRecord(propertyEffects),
-		'} as const satisfies Record<string, readonly string[]>',
+		'}',
 		'',
-		'export const PROPERTY_EFFECT_MODES = {',
+		'export const PROPERTY_EFFECT_MODES: Record<string, PropertyEffectMode> = {',
 		formatStringRecord(propertyEffectModes),
-		'} as const satisfies Record<string, PropertyEffectMode>',
+		'}',
 		'',
 	].join('\n')
 
