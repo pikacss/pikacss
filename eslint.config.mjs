@@ -10,6 +10,7 @@ export default await deviltea(
 		},
 		ignores: [
 			'./.github/**/*',
+			'./.agents/**/*',
 			'.planning/**/*',
 			'./docs/.examples/**/*',
 			'./docs/**/*.md',

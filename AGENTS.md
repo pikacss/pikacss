@@ -1,6 +1,8 @@
 # AGENTS.md — PikaCSS
 
-PikaCSS is an instant on-demand atomic CSS-in-JS engine. This file is the global contract for agents working in the repository.
+PikaCSS is an instant on-demand atomic CSS-in-JS engine. This file is the canonical always-on instruction source for agents working in the repository.
+
+Keep repository-wide rules here. The workspace-level [.github/copilot-instructions.md](.github/copilot-instructions.md) file exists only as a thin compatibility forwarder for tools that expect that fixed path.
 
 ## Control Plane
 

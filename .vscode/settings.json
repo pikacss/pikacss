@@ -38,7 +38,7 @@
 		".github/prompts": true
 	},
 	"chat.agentFilesLocations": {
-		".github/agents": true,
+		".agents": true,
 		".claude/agents": true
 	},
 	"typescript.tsdk": "node_modules/typescript/lib",
