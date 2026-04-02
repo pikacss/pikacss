@@ -1077,6 +1077,13 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	}
 	lines.push('}')
 	lines.push('')
+	lines.push('export interface PropertyRelatedNames {')
+	for (const prop of properties) {
+		const relatedKeys = `${JSON.stringify(prop.camelName)} | ${JSON.stringify(prop.name)}`
+		lines.push(`  ${prop.camelName}: ${relatedKeys};`)
+	}
+	lines.push('}')
+	lines.push('')
 
 	// PropertiesHyphen interface (kebab-case)
 	lines.push('export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime> {')
@@ -1086,6 +1093,13 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 		const typeStr = buildPropertyTypeRef(prop, true)
 		lines.push(jsdoc)
 		lines.push(`  "${prop.name}"?: ${typeStr} | undefined;`)
+	}
+	lines.push('}')
+	lines.push('')
+	lines.push('export interface PropertyHyphenRelatedNames {')
+	for (const prop of sortedByKebab) {
+		const relatedKeys = `${JSON.stringify(prop.name)} | ${JSON.stringify(prop.camelName)}`
+		lines.push(`  ${JSON.stringify(prop.name)}: ${relatedKeys};`)
 	}
 	lines.push('}')
 	lines.push('')

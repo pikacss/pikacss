@@ -63,10 +63,16 @@ type CSSPropertyInputValue<BaseValue, RelatedKey extends string> = PropertyValue
 >
 
 type Properties_CSS_Camel = {
-	[Key in keyof CSS.Properties]?: CSSPropertyInputValue<CSS.Properties[Key], Extract<Key, string> | ToKebab<Extract<Key, string>>>
+	[Key in keyof CSS.Properties]?: CSSPropertyInputValue<
+		CSS.Properties[Key],
+		Extract<CSS.PropertyRelatedNames[Extract<Key, keyof CSS.PropertyRelatedNames>], string>
+	>
 }
 type Properties_CSS_Hyphen = {
-	[Key in keyof CSS.PropertiesHyphen]?: CSSPropertyInputValue<CSS.PropertiesHyphen[Key], Extract<Key, string> | FromKebab<Extract<Key, string>>>
+	[Key in keyof CSS.PropertiesHyphen]?: CSSPropertyInputValue<
+		CSS.PropertiesHyphen[Key],
+		Extract<CSS.PropertyHyphenRelatedNames[Extract<Key, keyof CSS.PropertyHyphenRelatedNames>], string>
+	>
 }
 type Properties_CSS_Vars = {
 	[K in `--${string}` & {}]?: PropertyValue<
