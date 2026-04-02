@@ -48,6 +48,76 @@ pnpm maintain-jsdocs:lint [--packages <name>...]
 
 Use package-scoped commands during iterative development. Root-level `vitest --project` filtering is not the canonical package validation path in this repo.
 
+## Type Bench
+
+`scripts/type-bench/` is a quantitative benchmarking tool that measures PikaCSS's TypeScript type system performance under different usage scales. It dynamically generates fixture projects using the real `createCtx()` codegen pipeline.
+
+### Quick Reference
+
+```bash
+# Run all dimensions (default 5 runs, takes a while)
+pnpm type-bench
+
+# Single dimension, 1 run (fast check)
+pnpm type-bench -d callCount -r 1
+
+# With trace hotspot analysis
+pnpm type-bench -d callCount -r 1 --trace
+
+# With tsserver IDE latency measurement (completionInfo, quickInfo, diagnostics)
+pnpm type-bench -d callCount -r 1 --tsserver
+
+# Save a baseline before refactoring
+pnpm type-bench -r 3 --save-baseline before-refactor
+
+# Compare against a saved baseline (shows ±% per metric with regression markers)
+pnpm type-bench -r 3 --compare before-refactor
+
+# Cross-version comparison (downloads via npx)
+pnpm type-bench -d callCount -r 1 --ts-versions 5.7,5.8,5.9
+
+# Export JSON report
+pnpm type-bench -d callCount -r 3 -o ./bench-result.json
+```
+
+### Dimensions
+
+| Dimension | Description | Scale |
+|---|---|---|
+| `callCount` | Number of `pika()` calls | 10 → 1000 |
+| `pluginCount` | Registered plugins | 0 → 5 |
+| `autocompleteSize` | Autocomplete union size | 10 → 200 |
+| `nestingDepth` | StyleDefinition nesting depth | 1 → 4 |
+| `fileSpread` | Call distribution across files | single / 10files / 50files |
+
+### Measurement Runners
+
+| Runner | Flag | Metrics |
+|---|---|---|
+| tsc diagnostics | *(always on)* | Types, Instantiations, Memory, Check Time |
+| Trace analysis | `--trace` | Top-N hotspot type instantiations |
+| tsserver latency | `--tsserver` | completionInfo / quickInfo / semanticDiagnosticsSync p50/p95 |
+
+### When to Use
+
+- **Before/after type-level refactors** — save a baseline, refactor, compare.
+- **Evaluating plugin impact** — use `-d pluginCount` to measure type cost per plugin.
+- **Diagnosing IDE slowness** — use `--tsserver` to pinpoint which operations are slow.
+- **TS version upgrades** — use `--ts-versions` to compare type performance across versions.
+
+### File Structure
+
+- `scripts/type-bench/index.ts` — CLI entry point
+- `scripts/type-bench/config.ts` — dimension definitions and scenario generation
+- `scripts/type-bench/fixture-gen.ts` — dynamic fixture project generator (uses real `createCtx()` pipeline)
+- `scripts/type-bench/baseline.ts` — baseline save/load/compare with regression detection
+- `scripts/type-bench/runners/tsc.ts` — `tsc --noEmit --diagnostics` runner
+- `scripts/type-bench/runners/trace.ts` — `tsc --generateTrace` analysis
+- `scripts/type-bench/runners/tsserver.ts` — programmatic tsserver session for IDE latency
+- `scripts/type-bench/reporters/cli-table.ts` — terminal table + baseline diff output
+- `scripts/type-bench/reporters/json.ts` — JSON file output
+- `scripts/type-bench/baselines/` — saved baseline snapshots (git tracked)
+
 ## Package Graph
 
 ```plaintext
