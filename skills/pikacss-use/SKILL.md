@@ -1,6 +1,6 @@
 ---
 name: pikacss-use
-description: 'The single PikaCSS domain skill for both consumers and plugin authors. Covers installation, Vite/Nuxt/Webpack/Rollup/esbuild/Rspack/Rolldown integration, engine configuration, the pika() compile-time macro, official plugin consumption (reset, icons, fonts, typography), ESLint setup, TypeScript support, AND plugin authoring — plugin structure, lifecycle hooks, config augmentation, engine API, layer management, testing plugins with createEngine. Use when: (1) setting up PikaCSS in an app, (2) configuring engine options or pika.config, (3) consuming official plugins, (4) using pika()/pika.str()/pika.arr()/pikap(), (5) troubleshooting consumer build or runtime issues, (6) learning end-user PikaCSS patterns, (7) understanding selectors, shortcuts, variables, keyframes, or preflights, (8) creating a new PikaCSS engine plugin, (9) modifying an official plugin implementation, (10) understanding plugin hooks and lifecycle, (11) extending EngineConfig with module augmentation, (12) writing or fixing plugin tests. Make sure to use this skill whenever the user mentions PikaCSS plugins, defineEnginePlugin, plugin hooks, configureEngine, or asks how to extend PikaCSS with custom behavior. This is a skill-only domain guide used directly by the main agent; it has no paired custom agent.'
+description: 'Use when working with PikaCSS — the atomic CSS-in-JS engine. Covers both consumer usage and plugin authoring. Consumer: installation, Vite/Nuxt/Webpack/Rollup/esbuild/Rspack integration, pika.config setup, pika() compile-time macro, official plugins (reset, icons, fonts, typography), ESLint, TypeScript, Vite integration behavior, variables/selectors/shortcuts/keyframes/preflights. Plugin author: defineEnginePlugin, lifecycle hooks (configureRawConfig, configureEngine, transformStyleItems), EngineConfig module augmentation, engine API, testing with createEngine. Use when: setting up PikaCSS, configuring pika.config, using pika()/pikap(), troubleshooting build errors, creating or modifying plugins, understanding hooks or config augmentation. Trigger on mentions of PikaCSS, pika(), defineEnginePlugin, plugin hooks, or configureEngine.'
 ---
 
 # Use PikaCSS
@@ -175,6 +175,8 @@ These options are added to `EngineConfig` via TypeScript module augmentation by 
 
 For detailed usage of these options (variables with dark mode, keyframes, preflights, selectors config, shortcuts with nested selectors, `__layer`/`__important` per-style control), see `references/customizations.md`.
 
+**Dark mode / theming note**: When configuring `variables` with scoped selectors and `selectors` aliases for dark mode, the scoped key and alias CSS template must match **the project's actual dark mode mechanism** (class-based `html.dark`, data-attribute `[data-theme="dark"]`, or media query). Read the reference for examples of each approach.
+
 ### cssImports vs preflights
 
 - `cssImports` — static `@import` strings placed first in the CSS output. Use for external stylesheets (Google Fonts CDN, normalize.css CDN, etc.).
@@ -288,9 +290,11 @@ The default export is a function that returns a flat-config entry. The `fnName` 
 | Config not detected | File name or location wrong | Use `pika.config.ts` (or `pikacss.config.ts`) at the project root |
 | Styles not applied | Missing CSS import | Add `import 'pika.css'` to your entry file (not needed for Nuxt) |
 | Type errors on `pika()` | Missing generated types | Ensure `pika.gen.ts` is included in your tsconfig |
+| `pika is not defined` in Vue/Svelte/Solid | Vite plugin not running or an older unplugin build | Current Vite integration uses `enforce: 'pre'`, so `[vue(), pikacss()]` is supported. If this still appears, verify the plugin is enabled and update to a version that includes that behavior |
 | Plugin config types missing | Module augmentation not loaded | Import the plugin in `pika.config.ts` — TypeScript picks up the augmented types |
 | Build errors with dynamic args | Non-static pika() arguments | All `pika()` arguments must be statically analyzable — no runtime variables |
-| Plugin order issues | Plugins applied in wrong order | Reorder the `plugins` array — plugins are applied in order |
+| Plugin order issues | Engine plugins applied in wrong order | Reorder the `plugins` array in `pika.config.ts` — PikaCSS engine plugins are applied in order |
+| Plugin hook not firing | Plugin misconfigured | Check: (1) plugin is in `plugins` array, (2) factory function is **called** — `myPlugin()` not `myPlugin`, (3) hook name is spelled correctly (e.g. `configureEngine` not `configEngine`) |
 | Icons not rendering | Collection package missing | Install `@iconify-json/{collection}` or enable `autoInstall` — see `references/plugin-icons.md` |
 | Wrong icon appearance | Mask vs background mode mismatch | Read the icon modes section in `references/plugin-icons.md` |
 

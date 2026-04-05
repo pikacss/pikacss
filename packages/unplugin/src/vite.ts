@@ -10,6 +10,8 @@ export * from './types'
  * Wraps the shared PikaCSS unplugin factory into a Vite-compatible plugin.
  * Accepts optional {@link PluginOptions} to configure scanning, code
  * generation, and engine settings. Returns a standard Vite `Plugin`.
+ * The plugin declares `enforce: 'pre'`, so PikaCSS template transforms run
+ * before framework compiler plugins regardless of the user's `plugins` order.
  *
  * @example
  * ```ts

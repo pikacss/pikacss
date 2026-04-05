@@ -43,6 +43,10 @@ export default defineConfig({
 })
 ```
 
+:::tip Vite plugin order
+The Vite entry registers with `enforce: 'pre'`. PikaCSS still runs before framework compiler plugins even if your Vite `plugins` array is ordered as `[vue(), pikacss()]`, so you do not need to reorder the array just to avoid template compile errors.
+:::
+
 ## Config
 
 | Property | Description |

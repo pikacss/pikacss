@@ -62,6 +62,9 @@ Factory function that produces the bundler-agnostic PikaCSS plugin hooks.
 This is the core entry-point called by `createUnplugin`. It resolves user options,
 creates an integration context via `createCtx`, and wires bundler-specific lifecycle
 hooks (config resolution, dev-server HMR, build transforms, and config file watching).
+When consumed through the Vite entry, the plugin also declares `enforce: 'pre'`
+so PikaCSS transforms run before framework compiler plugins even if the user's
+Vite `plugins` array lists `vue()` before `pikacss()`.
 
 ```ts
 import { unpluginFactory } from '@pikacss/unplugin-pikacss'
