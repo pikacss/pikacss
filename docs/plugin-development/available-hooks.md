@@ -106,6 +106,10 @@ defineEnginePlugin({
       layer: 'base',
       preflight: '*, *::before, *::after { box-sizing: border-box; }',
     })
+    engine.selectors.add(['@dark', 'html.dark $'])
+    engine.shortcuts.add(['flex-center', { display: 'flex', alignItems: 'center', justifyContent: 'center' }])
+    engine.keyframes.add(['fade-in', { from: { opacity: '0' }, to: { opacity: '1' } }])
+    engine.variables.add({ '--color-primary': '#3b82f6' })
   },
 })
 ```

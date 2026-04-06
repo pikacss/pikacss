@@ -62,6 +62,26 @@ pika({ color: 'var(--color-text)', 'background-color': 'var(--color-bg)' })
 
 Toggle dark mode at runtime: `document.documentElement.classList.toggle('dark')`
 
+### Data-Attribute Scoping
+
+If dark mode is toggled via a `data-theme` attribute (e.g. `<html data-theme="dark">`), use the attribute selector as the scoped key:
+
+```ts
+variables: {
+  variables: {
+    '--color-bg': '#ffffff',
+    '--color-text': '#1a1a1a',
+
+    '[data-theme="dark"]': {
+      '--color-bg': '#1a1a1a',
+      '--color-text': '#f5f5f5',
+    },
+  },
+}
+```
+
+Toggle: `document.documentElement.setAttribute('data-theme', 'dark')`
+
 ### Media Query Scoping
 
 ```ts
@@ -177,6 +197,12 @@ preflights: [
 
 Register named selector aliases used in pika() style nesting:
 
+The selector alias and its CSS template must match **the user's chosen dark mode mechanism**:
+
+- Class-based (`html.dark`): `['@dark', 'html.dark $']`
+- Data-attribute (`[data-theme="dark"]`): `['@dark', '[data-theme="dark"] $']`
+- Media query: `['@dark', '@media (prefers-color-scheme: dark)']`
+
 ```ts
 selectors: {
   selectors: [
@@ -184,7 +210,7 @@ selectors: {
     [':hover', '$:hover'],
     [':focus', '$:focus'],
     ['::before', '$::before'],
-    ['@dark', 'html.dark $'],
+    ['@dark', 'html.dark $'],           // ← class-based example
     ['@light', 'html:not(.dark) $'],
     ['@sm', '@media screen and (min-width: 640px)'],
     ['@md', '@media screen and (min-width: 768px)'],

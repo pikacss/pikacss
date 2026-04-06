@@ -76,11 +76,14 @@ configureRawConfig: (config) => {
 },
 
 configureEngine: async (engine) => {
-  engine.addPreflight({ layer: 'myLayer', preflight: '/* CSS */' })
-  engine.selectors.add({ name: '$:custom', selector: '&:is(:hover, :focus)' })
-  engine.shortcuts.add({ name: 'my-shortcut', styleItems: [{ display: 'flex' }] })
-  engine.keyframes.add({ name: 'fade-in', value: '@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }' })
-  engine.variables.add({ variables: [{ name: '--my-var', value: 'red' }] })
+  // addPreflight: plain string
+  engine.addPreflight('*, *::before, *::after { box-sizing: border-box; }')
+  // addPreflight: wrapped with layer and id
+  engine.addPreflight({ layer: 'myLayer', id: 'my-reset', preflight: '/* CSS */' })
+  engine.selectors.add(['$:custom', '&:is(:hover, :focus)'])
+  engine.shortcuts.add(['my-shortcut', { display: 'flex' }])
+  engine.keyframes.add(['fade-in', { from: { opacity: '0' }, to: { opacity: '1' } }])
+  engine.variables.add({ '--my-var': 'red' })
 },
 ```
 
@@ -118,13 +121,13 @@ Methods available on the `engine` object in `configureEngine`:
 
 | Method | Purpose |
 |---|---|
-| `engine.addPreflight(preflight)` | Add preflight CSS |
-| `engine.appendAutocomplete(contribution)` | Add autocomplete suggestions |
+| `engine.addPreflight(preflight)` | Add preflight CSS — accepts a plain CSS string, a `PreflightDefinition` (CSS declaration object), a `PreflightFn` (function returning CSS), or a wrapped `{ id?, layer?, preflight }` object |
+| `engine.appendAutocomplete(contribution)` | Add autocomplete suggestions — `AutocompleteContribution` has optional fields: `selectors`, `shortcuts`, `extraProperties`, `extraCssProperties`, `properties`, `cssProperties`, `patterns` |
 | `engine.appendCssImport(cssImport)` | Add CSS `@import` |
-| `engine.selectors.add(...selectors)` | Register named selectors |
-| `engine.shortcuts.add(...shortcuts)` | Register named shortcuts |
-| `engine.keyframes.add(...keyframes)` | Register named keyframes |
-| `engine.variables.add(variables)` | Register CSS custom properties |
+| `engine.selectors.add(...selectors)` | Register named selectors — each arg is a `Selector`: `[name, cssSelector]` tuple or `{ selector, value }` object |
+| `engine.shortcuts.add(...shortcuts)` | Register named shortcuts — each arg is a `Shortcut`: `[name, styleItems]` tuple or `{ shortcut, value }` object |
+| `engine.keyframes.add(...keyframes)` | Register named keyframes — each arg is a `Keyframes`: `[name, frames]` tuple or `{ name, frames }` object |
+| `engine.variables.add(variables)` | Register CSS custom properties — arg is a `VariablesDefinition` record: `{ '--key': 'value', 'html.dark': { '--key': 'dark-value' } }` |
 | `engine.use(...items)` | Process style items through the engine |
 
 Render methods (primarily for testing):
