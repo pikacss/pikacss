@@ -128,13 +128,13 @@ export function resolveAtomicStyle({
 	store: EngineStore
 	resolvedIdsByBaseKey: Map<string, string>
 }): AtomicStyleResolution {
-	const reusableId = findReusableOrderSensitiveAtomicStyleId({
+	const reusableId = findReusableAtomicStyleId({
 		content,
 		store,
 		resolvedIdsByBaseKey,
 	})
 	if (reusableId != null) {
-		log.debug(`Order-sensitive atomic style reused: ${reusableId}`)
+		log.debug(`Atomic style reused: ${reusableId}`)
 		return { id: reusableId }
 	}
 
@@ -264,7 +264,7 @@ function getRequiredAtomicStyleOrder({
 	return requiredOrder
 }
 
-function findReusableOrderSensitiveAtomicStyleId({
+function findReusableAtomicStyleId({
 	content,
 	store,
 	resolvedIdsByBaseKey,
@@ -273,12 +273,9 @@ function findReusableOrderSensitiveAtomicStyleId({
 	store: EngineStore
 	resolvedIdsByBaseKey: Map<string, string>
 }) {
-	if (isOrderSensitiveContent(content) === false)
-		return undefined
-
 	const baseKey = getAtomicStyleBaseKey(content)
 	const requiredOrder = getRequiredAtomicStyleOrder({
-		dependencyKeys: content.orderSensitiveTo!,
+		dependencyKeys: content.orderSensitiveTo ?? [],
 		store,
 		resolvedIdsByBaseKey,
 	})

@@ -132,6 +132,51 @@ describe('resolveAtomicStyle', () => {
 			.toEqual({ id: firstResolution.id })
 	})
 
+	it('reuses an earlier order-sensitive candidate when a later declaration with the same base key has no prior overlap requirements', () => {
+		const store = createEngineStore()
+		const selector = ['.button']
+		const dependencyContent = {
+			selector,
+			property: 'padding-bottom',
+			value: ['8px'],
+		}
+		const dependency = resolveAtomicStyle({
+			content: dependencyContent,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>(),
+		})
+
+		const shorthandContent = {
+			selector,
+			property: 'padding',
+			value: ['32px'],
+			orderSensitiveTo: [getAtomicStyleBaseKey(dependencyContent)],
+		}
+		const firstResolution = resolveAtomicStyle({
+			content: shorthandContent,
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>([[getAtomicStyleBaseKey(dependencyContent), dependency.id]]),
+		})
+
+		const laterOrderInsensitiveResolution = resolveAtomicStyle({
+			content: {
+				selector,
+				property: 'padding',
+				value: ['32px'],
+			},
+			prefix: 'p-',
+			store,
+			resolvedIdsByBaseKey: new Map<string, string>(),
+		})
+
+		expect(firstResolution.atomicStyle)
+			.toEqual({ id: firstResolution.id, content: shorthandContent })
+		expect(laterOrderInsensitiveResolution)
+			.toEqual({ id: firstResolution.id })
+	})
+
 	it('returns an existing id without re-registering when the generated id is already present in the store', () => {
 		const store = createEngineStore()
 		const content = {

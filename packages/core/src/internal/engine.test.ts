@@ -228,6 +228,18 @@ describe('engine helpers', () => {
 			.toEqual(ids2)
 	})
 
+	it('reuses a shorthand utility across use calls when its existing order already fits later longhand conflicts', async () => {
+		const engine = await createEngine()
+		const ids1 = await engine.use({ paddingBottom: '8px', padding: '32px' })
+		const ids2 = await engine.use({ padding: '32px', paddingBottom: '8px' })
+		const css = await engine.renderAtomicStyles(false)
+
+		expect(ids1[1])
+			.toBe(ids2[0])
+		expect(css.match(/padding:32px;/g))
+			.toHaveLength(1)
+	})
+
 	it('renders atomic styles without layer grouping when no layer config is provided', () => {
 		expect(renderAtomicStyles({
 			atomicStyles: [
