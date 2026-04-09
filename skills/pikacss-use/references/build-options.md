@@ -26,6 +26,8 @@ export default defineConfig({
 
 ## Option Reference
 
+The default generated filenames (`pika.gen.ts` and `pika.gen.css`) are convenience defaults, not required names. When you pass a string to `tsCodegen` or `cssCodegen`, that exact custom path is used.
+
 | Option | Type | Default | Purpose |
 |---|---|---|---|
 | `fnName` | `string` | `'pika'` | Base function name recognized by the transform |
@@ -34,8 +36,8 @@ export default defineConfig({
 | `scan.exclude` | `string[]` | `['node_modules/**', 'dist/**']` | Glob patterns to exclude |
 | `config` | `EngineConfig \| string` | auto-discovery | Engine config object or path to config file |
 | `autoCreateConfig` | `boolean` | `true` | Scaffold default config file if missing |
-| `tsCodegen` | `boolean \| string` | `true` (`pika.gen.ts`) | TypeScript declaration output path (`false` to disable) |
-| `cssCodegen` | `boolean \| string` | `true` (`pika.gen.css`) | CSS output file path |
+| `tsCodegen` | `boolean \| string` | `true` (`pika.gen.ts`) | TypeScript declaration output path when set to a string; `false` disables codegen |
+| `cssCodegen` | `boolean \| string` | `true` (`pika.gen.css`) | CSS output file path when set to a string |
 
 ## Common Scenarios
 
@@ -47,6 +49,8 @@ pikacss({ transformedFormat: 'array' })
 ```
 
 ### Custom output paths
+
+These filenames are examples only. Any custom path that fits the project layout is valid; the important part is setting `tsCodegen` and `cssCodegen` to the paths you want generated.
 
 ```ts
 pikacss({

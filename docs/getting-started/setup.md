@@ -5,7 +5,15 @@ relatedPackages:
   - '@pikacss/core'
   - '@pikacss/unplugin-pikacss'
 relatedSources:
+  - 'packages/unplugin/package.json'
+  - 'packages/unplugin/src/vite.ts'
   - 'packages/unplugin/src/index.ts'
+  - 'packages/unplugin/src/types.ts'
+  - 'packages/integration/src/ctx.ts'
+  - 'packages/integration/src/tsCodegen.ts'
+  - 'packages/core/src/internal/plugins/selectors.ts'
+  - 'packages/core/src/internal/plugins/shortcuts.ts'
+  - 'packages/core/src/internal/plugins/variables.ts'
 category: getting-started
 order: 20
 ---
@@ -36,17 +44,7 @@ yarn add -D @pikacss/core @pikacss/unplugin-pikacss
 
 Add the PikaCSS Vite plugin to your `vite.config.ts`:
 
-```ts
-// vite.config.ts
-import PikaCSS from '@pikacss/unplugin-pikacss/vite'
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  plugins: [
-    PikaCSS(),
-  ],
-})
-```
+<<< @/.examples/getting-started/setup.vite.example.ts
 
 For other build tools, see [Integrations](/integrations/unplugin).
 
@@ -54,20 +52,19 @@ For other build tools, see [Integrations](/integrations/unplugin).
 
 Import the generated CSS file in your application entry point:
 
-```ts
-// main.ts
-import 'pika.css'
-```
+<<< @/.examples/getting-started/setup.main.example.ts
 
-This import resolves to the generated `pika.gen.css` file that contains all your atomic styles.
+This import resolves to the generated CSS output that contains all your atomic styles. By default that file is `pika.gen.css`, but `cssCodegen` can point it to a different output path.
 
 ## Generated Files
 
+By default, the build plugin writes `pika.gen.ts` and `pika.gen.css`. Setting `tsCodegen` or `cssCodegen` to a string writes the same outputs to custom paths. Setting `tsCodegen` to `false` disables TypeScript declaration codegen entirely.
+
 ### pika.gen.ts
 
-A TypeScript declaration file generated automatically by the build plugin. It provides type definitions and autocomplete support for the `pika()` function, including all custom selectors, shortcuts, variables, and plugin-contributed properties.
+When `tsCodegen` is enabled, the build plugin generates a TypeScript declaration file. By default this file is named `pika.gen.ts`, but a string value can write it to a custom path. It provides type definitions and autocomplete support for the `pika()` function, including all custom selectors, shortcuts, variables, and plugin-contributed properties.
 
-You do not need to import this file directly — it is referenced automatically by the plugin.
+You do not usually import this file directly. The integration generates it for you, but TypeScript only sees its declarations when the generated path is part of your project through your `tsconfig`/`include`. In scaffolded configs, PikaCSS may also add a triple-slash reference to the generated declaration file, but that is a convenience of the scaffolded file rather than the guarantee.
 
 ### pika.gen.css
 
@@ -77,7 +74,7 @@ The generated CSS file containing:
 - Preflight styles (resets, variables, keyframes)
 - Atomic utility classes
 
-This file is imported via `import 'pika.css'` and is updated automatically when your source code or configuration changes.
+By default this file is named `pika.gen.css`. It is imported via `import 'pika.css'` and is updated automatically when your source code or configuration changes, even if you customize `cssCodegen` to write a different filename.
 
 ## Next
 

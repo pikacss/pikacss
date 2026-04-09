@@ -34,6 +34,17 @@ Valid `category` values: `getting-started`, `integrations`, `customizations`, `o
 
 VitePress built-in frontmatter options are also available: `titleTemplate`, `head`, `layout` (`doc` | `home` | `page`), `outline`, `sidebar`, `navbar`, `aside`, `lastUpdated`, `editLink`, `footer`, `pageClass`.
 
+Non-index pages are never exempt from the required fields above. If a page is not an `index.md` file, treat any missing required metadata field as a bug. Index pages may have page-specific or generator-owned exceptions, but do not generalize those exceptions to neighboring pages.
+
+### Choosing `relatedSources`
+
+Use the smallest set of current source files that fully backs the documented behavior:
+
+- Point to the exact implementation or type files that define the behavior, not only broad package entry points or barrels.
+- When documenting concrete CSS variable names, defaults, or preset lists, include the file that declares those values.
+- When documenting integration-specific options or build behavior, include the file that defines the public option shape and the file that implements the behavior if they differ.
+- Remove stale paths when the implementation moves. `relatedSources` should match the current source tree, not historical locations.
+
 ## Writing Style
 
 - Use clear, direct language and address the reader as "you".
@@ -43,6 +54,7 @@ VitePress built-in frontmatter options are also available: `titleTemplate`, `hea
 - Keep headings concise and descriptive in sentence case.
 - Prefer active voice and avoid filler phrasing.
 - Use PikaCSS terms consistently. Do not introduce alternate names for engine concepts.
+- Keep API names, config keys, import paths, CSS variable names, and similar identifiers exactly aligned with source and JSDoc. Do not normalize, shorten, pluralize, or alias them in prose or examples.
 
 ## Internal Links
 
@@ -210,6 +222,22 @@ Do not repeat the same code example or code-group verbatim across sections of th
 
 When documenting a function with multiple variants (e.g., `pika()`, `pika.str()`, `pika.arr()`, `pikap()`), document all variants in a single dedicated section. Do not leave variants discoverable only through generated type files.
 
+### Public API Shape Fidelity
+
+Examples, config snippets, and schema tables must use supported public shapes from the exported API. Do not substitute convenient containers or helper patterns that the public type does not accept.
+
+- If a public value is `Arrayable<T>`, examples may show `value` or `[value]`; do not use `new Set([...])` or other iterables.
+- Prefer exported identity helpers and public config namespaces when they are the documented entry point.
+- When in doubt, read the owning type or JSDoc before writing the snippet.
+
+### Behavior Claim Scoping
+
+Scope behavior claims to the exact integration, option, or code path that guarantees them.
+
+- Do not imply an automatic behavior in the general case unless the source guarantees it across all supported integrations.
+- Name the condition when behavior depends on an option or wrapper package, such as `@pikacss/nuxt`, `autoCreateConfig`, or a generated-file setting.
+- Prefer precise phrasing such as "The Nuxt module auto-imports..." or "When `autoCreateConfig` is true..." over unqualified statements like "PikaCSS automatically...".
+
 ### Custom Container Usage
 
 Use VitePress custom containers to surface non-obvious behavior:
@@ -248,6 +276,8 @@ docs/.examples/<section>/
 docs/.examples/_utils/
 └── pika-example.ts                # shared test utility — DO NOT MODIFY
 ```
+
+Unless an API or tool requires a canonical filename, treat example file paths and generated output paths as illustrative. Use realistic paths, but do not imply that a specific filename is mandatory when it is not.
 
 ### Test Utility — `_utils/pika-example.ts`
 
@@ -356,9 +386,9 @@ Use this checklist as the final gate before handoff.
 
 ### Metadata
 
-- All required frontmatter fields are present.
+- All required frontmatter fields are present on every non-index page.
 - `category` matches the section ownership.
-- `relatedSources` point to the real source files.
+- `relatedSources` point to the exact current source files that back the page behavior.
 - `description` is concise and can stand alone in search contexts.
 
 ### Content
@@ -366,11 +396,13 @@ Use this checklist as the final gate before handoff.
 - The page fulfills its template purpose.
 - Every heading from the template is present.
 - The page does not absorb topics that belong to other pages.
+- Behavior claims about integrations, generated files, or automatic behavior are scoped to the exact guarantee in source.
 
 ### Examples
 
 - Example mechanics follow the rules above.
 - Engine examples use `pikain` / `pikaout` pattern.
+- Snippets and config examples use valid public shapes from exported types.
 - Pages that omit examples justify the omission.
 
 ### Linking
@@ -382,6 +414,7 @@ Use this checklist as the final gate before handoff.
 ### Validation
 
 - Run the smallest credible docs validation for the changed area.
+- Changed claims, examples, and `relatedSources` were checked against the owning source files.
 - Example tests pass when examples were added or changed.
 - Generated API pages were regenerated (not hand-edited) when API reference content changed.
 - Nav/sidebar entries match the current page set.

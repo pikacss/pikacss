@@ -3,9 +3,12 @@ title: Autocomplete
 description: Customize IDE autocomplete suggestions for PikaCSS properties and values.
 relatedPackages:
   - '@pikacss/core'
+  - '@pikacss/unplugin-pikacss'
 relatedSources:
-  - 'packages/core/src/internal/types.ts'
+  - 'packages/core/src/internal/types/autocomplete.ts'
   - 'packages/core/src/internal/utils.ts'
+  - 'packages/integration/src/tsCodegen.ts'
+  - 'packages/unplugin/src/types.ts'
 category: customizations
 order: 80
 ---
@@ -14,7 +17,7 @@ order: 80
 
 Customize IDE autocomplete suggestions for CSS properties and values.
 
-PikaCSS generates TypeScript definitions (`pika.gen.ts`) that provide autocomplete support in your editor. The autocomplete system can be extended with custom property values, extra properties, and pattern-based suggestions through the engine config.
+In integrations that support `tsCodegen`, enabling that option generates a TypeScript declaration file for editor autocomplete. In the unplugin, `tsCodegen` writes `pika.gen.ts` by default, a string writes the declarations to a custom path, and `false` disables TypeScript codegen entirely. The `autocomplete` engine config below extends those generated suggestions with custom property values, extra properties, and pattern-based suggestions.
 
 Plugins can also contribute autocomplete entries. The autocomplete configuration merges contributions from all sources.
 
@@ -37,14 +40,14 @@ export default defineEngineConfig({
     },
 
     // Register extra non-standard properties
-    extraProperties: new Set(['__layer']),
+    extraProperties: ['__layer'],
 
     // Register extra CSS-like properties from plugins
-    extraCssProperties: new Set(),
+    extraCssProperties: ['--brand'],
 
-    // Pattern-based suggestions for selectors and shortcuts
-    selectors: new Set(['@dark', '@light', '@sm', '@md', '@lg']),
-    shortcuts: new Set(['flex-center', 'btn']),
+    // Register extra selector and shortcut suggestions
+    selectors: ['@dark', '@light', '@sm', '@md', '@lg'],
+    shortcuts: ['flex-center', 'btn'],
   },
 })
 ```

@@ -1,6 +1,24 @@
 ---
 title: 'FAQ'
 description: 'Frequently asked questions and troubleshooting tips for PikaCSS.'
+relatedPackages:
+  - '@pikacss/core'
+  - '@pikacss/unplugin-pikacss'
+  - '@pikacss/nuxt-pikacss'
+  - '@pikacss/eslint-config'
+relatedSources:
+  - 'packages/core/src/internal/engine.ts'
+  - 'packages/core/src/internal/types/engine.ts'
+  - 'packages/core/src/internal/plugins/selectors.ts'
+  - 'packages/integration/src/ctx.ts'
+  - 'packages/integration/src/ctx.transform-utils.ts'
+  - 'packages/integration/src/tsCodegen.ts'
+  - 'packages/unplugin/src/index.ts'
+  - 'packages/unplugin/src/types.ts'
+  - 'packages/nuxt/src/index.ts'
+  - 'packages/eslint-config/src/rules/no-dynamic-args.ts'
+  - 'packages/plugin-typography/src/index.ts'
+  - 'packages/plugin-typography/package.json'
 category: troubleshooting
 order: 10
 ---
@@ -11,18 +29,20 @@ Common questions and solutions for PikaCSS.
 
 ## Why are my styles not appearing?
 
-Make sure the generated CSS file (`pika.gen.css`) is imported in your application entry point:
+Make sure your application entry point imports the generated CSS module:
 
 ```ts
 // main.ts
 import 'pika.css'
 ```
 
-If you are using the unplugin or Nuxt integration, the import is injected automatically — verify that the plugin is registered in your build config.
+`import 'pika.css'` resolves to the configured CSS codegen output. By default that file is `pika.gen.css`.
+
+If you are using the Nuxt module, the import is injected automatically. With the generic unplugin integration, make sure you add the import yourself and that the plugin is registered in your build config.
 
 ## Why do I get "no-dynamic-args" ESLint errors?
 
-The `pikacss/no-dynamic-args` rule requires that every argument passed to `pika()` is a static literal. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
+The `pikacss/no-dynamic-args` rule requires each argument passed to `pika()` to stay within a recursively statically analyzable literal structure. Plain literals, static template literals, and nested object/array literals are fine; runtime variables, conditionals, function calls, and template expressions are not. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
 
 ```ts
 // ❌ Invalid — conditional argument
@@ -55,17 +75,11 @@ See [Layers](/customizations/layers) for a full example.
 
 ## Can I use PikaCSS without a build plugin?
 
-Yes. `@pikacss/core` works at runtime without a bundler plugin. Call `engine.use()` to register atomic classes and `engine.renderCSS()` to get the CSS output:
+Yes. `@pikacss/core` works without a bundler plugin. Create an engine, register styles with `await engine.use(...)`, then compose the CSS output from the layer declaration, preflights, and atomic styles:
 
-```ts
-import { createEngine } from '@pikacss/core'
+<<< @/.examples/troubleshooting/without-build-plugin.example.ts#example
 
-const engine = await createEngine({ /* config */ })
-engine.use({ color: 'red' })
-const css = engine.renderCSS()
-```
-
-The unplugin integration adds HMR, auto-import injection, and static extraction but is not required.
+The unplugin integration adds HMR and static extraction but is not required. The Nuxt module also auto-injects the CSS import, while the generic unplugin integrations still expect you to add `import 'pika.css'` yourself.
 
 ## How do I add a custom pseudo-class or breakpoint?
 
@@ -88,7 +102,7 @@ See [Selectors](/customizations/selectors).
 
 ## TypeScript cannot find module augmentations from a plugin
 
-Ensure the plugin package is installed and that your `tsconfig.json` uses `moduleResolution: 'bundler'` or `'node16'`:
+Ensure the plugin package is installed and that your `tsconfig.json` uses a modern module resolution mode such as `moduleResolution: 'bundler'` or `'node16'` so TypeScript can follow the plugin package export map to its declaration file and `@pikacss/core` module augmentation:
 
 ```json
 {
@@ -98,19 +112,17 @@ Ensure the plugin package is installed and that your `tsconfig.json` uses `modul
 }
 ```
 
-Each official plugin ships module-augmented types that extend `EngineConfig` in `@pikacss/core`.
-
 ## Styles are not updating during development (HMR)
 
 The PikaCSS Vite plugin handles HMR automatically. If styles are not updating:
 
 1. Verify the plugin is registered in `vite.config.ts` with `PikaCSS()`.
 2. Check that `import 'pika.css'` is present in your entry file.
-3. Restart the dev server if you changed `pika.config.ts` — config changes require a server restart.
+3. Changing `pika.config.ts` should trigger a config reload automatically. If it does not, confirm you are editing the resolved config file path and that the saved file content actually changed.
 
 ## How do I combine PikaCSS classes conditionally?
 
-Since `pika()` returns a plain class name string, use standard JavaScript to combine them:
+By default, transformed `pika()` calls produce a plain class name string, so standard JavaScript composition works:
 
 ```ts
 const base = pika({ display: 'flex', padding: '1rem' })
@@ -119,6 +131,8 @@ const inactive = pika({ color: 'gray' })
 
 const className = `${base} ${isActive ? active : inactive}`
 ```
+
+If your integration uses `transformedFormat: 'array'`, normal `pika()` calls return arrays instead. `pika.arr()` also forces array output, so compose those results with your framework's usual array-based class handling.
 
 ## Next
 

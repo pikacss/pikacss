@@ -1,0 +1,1 @@
+const articleLinksClassName = pika('prose-links')

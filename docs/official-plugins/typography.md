@@ -5,6 +5,7 @@ relatedPackages:
   - '@pikacss/plugin-typography'
 relatedSources:
   - 'packages/plugin-typography/src/index.ts'
+  - 'packages/plugin-typography/src/styles.ts'
 category: official-plugins
 order: 20
 ---
@@ -31,19 +32,13 @@ yarn add -D @pikacss/plugin-typography
 
 :::
 
-```ts
-import { defineEngineConfig } from '@pikacss/core'
-import { typography } from '@pikacss/plugin-typography'
-
-export default defineEngineConfig({
-  plugins: [typography()],
-})
-```
+<<< @/.examples/official-plugins/typography.setup.example.ts
 
 Available shortcuts:
 
 | Shortcut | Purpose |
 |----------|---------|
+| `prose-base` | Base prose container styles shared by the other `prose-*` shortcuts |
 | `prose` | Base prose styling — applies all component styles |
 | `prose-paragraphs` | Paragraph spacing and line height |
 | `prose-links` | Link colors and underline |
@@ -68,18 +63,27 @@ Size variants:
 
 Usage:
 
-```ts
-pika('prose')
-pika('prose', 'prose-lg')
-```
+The typography shortcuts are regular `pika()` inputs. For example, you can apply a focused module shortcut like this:
 
-All prose styles use `--pk-prose-*` CSS variables for customization.
+::: code-group
+
+<<< @/.examples/official-plugins/typography.usage.example.pikain.ts [Input]
+
+<<< @/.examples/official-plugins/typography.usage.example.pikaout.css [Output]
+
+:::
+
+Prose color roles use `--pk-prose-color-*` CSS variables such as `--pk-prose-color-body`, `--pk-prose-color-links`, and `--pk-prose-color-headings`. Keyboard key shadows use `--pk-prose-kbd-shadows`.
 
 ## Config
 
+Configure the plugin through the top-level `typography` key in your engine config.
+
 | Property | Description |
 |---|---|
-| variables | CSS variable overrides for typography styling using the `--pk-prose-*` namespace. |
+| variables | Nested under `typography`. CSS variable overrides for the registered prose variables, including the `--pk-prose-color-*` set and `--pk-prose-kbd-shadows`. |
+
+<<< @/.examples/official-plugins/typography.config.example.ts
 
 > See [API Reference — Plugin Typography](/api/plugin-typography) for full type signatures and defaults.
 

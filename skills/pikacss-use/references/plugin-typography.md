@@ -68,14 +68,14 @@ Override default CSS custom properties via the `typography` config key:
 export default defineEngineConfig({
   typography: {
     variables: {
-      '--pk-prose-body': '#1a1a1a',
-      '--pk-prose-headings': '#111',
-      '--pk-prose-links': '#2563eb',
-      '--pk-prose-code': '#e11d48',
+      '--pk-prose-color-body': '#1a1a1a',
+      '--pk-prose-color-headings': '#111',
+      '--pk-prose-color-links': '#2563eb',
+      '--pk-prose-color-code': '#e11d48',
     },
   },
   plugins: [typography()],
 })
 ```
 
-All typography styling uses `--pk-prose-*` CSS custom properties, so colors and spacing can be overridden without touching the plugin source.
+Typography color variables use the full `--pk-prose-color-*` naming scheme from the source API, so overrides should use those exact custom property names rather than shortened aliases.

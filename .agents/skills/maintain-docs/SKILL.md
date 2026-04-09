@@ -25,6 +25,7 @@ Sidebar and nav are defined in a single VitePress config module:
 Keep `sidebarAndNav.ts` in sync with `content-architecture.md` when pages are added or removed.
 
 Read both references before creating or updating any documentation page.
+Before drafting content, read the exact source files that will back the page's `relatedSources`. Use those files to verify public config shapes, concrete CSS variable names, and any integration or build-tool behavior claims.
 
 ## Templates
 
@@ -64,6 +65,8 @@ This checks every template against its corresponding docs page:
 
 Output: one `.task.json` per page in `.maintain-docs/tasks/`, plus a stdout summary.
 
+`analyze` is structural only. It does not prove that examples use valid public shapes, that automatic behavior claims are scoped correctly, or that `relatedSources` are precise enough.
+
 ### 2. Review Task Files
 
 Read task files to identify work:
@@ -83,14 +86,15 @@ Each task file contains:
 **For missing pages:**
 1. Read the template from `templatePath`.
 2. Read `references/writing-guidelines.md` for authoring rules.
-3. Fill in content following the template structure and guidance comments.
-4. Add proper frontmatter with all required fields.
-5. End with a `## Next` section.
+3. Read the exact source files that will go into `relatedSources` before drafting examples, config tables, or behavior claims.
+4. Fill in content following the template structure and guidance comments.
+5. Add proper frontmatter with all required fields.
+6. End with a `## Next` section.
 
 **For outdated pages:**
 1. Read the task file `issues[]` to understand what needs fixing.
 2. Fix heading structure, frontmatter, or `## Next` section as needed.
-3. Apply content quality rules from `writing-guidelines.md` — check for duplicate code-groups, missing `:::tip` containers for double-layer keys, undocumented API variants, and stray `## Intro` headings.
+3. Apply content quality rules from `writing-guidelines.md` — check for duplicate code-groups, missing `:::tip` containers for double-layer keys, undocumented API variants, stray `## Intro` headings, invalid public config shapes in examples, over-broad automatic behavior claims, imprecise `relatedSources`, and missing required metadata on non-index pages.
 4. Re-run `analyze` to confirm the issues are resolved.
 
 **For API reference pages (`docs/api/*.md` except `index.md`):**
@@ -108,6 +112,8 @@ If the generated links are stale (e.g. dead-link build failures), fix the `guide
 ### 4. Validate
 
 After making changes, re-run `analyze` to confirm all addressed pages show `ok` status.
+
+Before handoff, do a brief source-backed self-review: confirm examples use supported public shapes, automatic behavior claims are scoped to the exact integration or option that provides them, `relatedSources` list the exact current source files, and every non-index page has complete required metadata.
 
 For example changes, run:
 

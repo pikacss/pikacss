@@ -20,7 +20,7 @@ export default defineEngineConfig({
 })
 ```
 
-`reset()` takes no arguments. Configuration is via the `reset` key on `EngineConfig` (added by module augmentation).
+`reset()` takes no arguments. Configure the plugin via the top-level `reset` key on `EngineConfig` (added by module augmentation); if that key is unset, the plugin uses `'modern-normalize'`.
 
 ## Choosing a Reset Style
 
@@ -43,5 +43,7 @@ export default defineEngineConfig({
 
 ## Behavior
 
-- Emits the chosen reset as a preflight on a dedicated `reset` layer with priority `-1` (renders before all other layers).
+- `reset()` does not accept inline options; the `reset` config key is the only way to choose a stylesheet.
+- If `reset` is unset, the plugin emits the `modern-normalize` stylesheet by default.
+- Emits the chosen reset as a preflight on a dedicated `reset` layer with order/priority `-1`, so it renders before all other layers.
 - No runtime cost — CSS is injected statically at build time.
