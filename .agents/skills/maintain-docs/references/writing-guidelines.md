@@ -238,6 +238,28 @@ Scope behavior claims to the exact integration, option, or code path that guaran
 - Name the condition when behavior depends on an option or wrapper package, such as `@pikacss/nuxt`, `autoCreateConfig`, or a generated-file setting.
 - Prefer precise phrasing such as "The Nuxt module auto-imports..." or "When `autoCreateConfig` is true..." over unqualified statements like "PikaCSS automatically...".
 
+### Integration Mechanism Fidelity
+
+When a wrapper package performs setup on behalf of another integration, document both the wrapper and the concrete mechanism rather than only the final effect.
+
+- If a wrapper registers another plugin internally, name that plugin explicitly when it matters to setup guidance.
+- If CSS is imported via a generated plugin or template, say that directly rather than implying a broad automatic import behavior.
+- If manual setup would duplicate the wrapper behavior, warn the reader not to do both.
+
+### Literal Ordering Claims
+
+When docs describe CSS ordering with a concrete layer weight or priority, include the literal value from source.
+
+- If the implementation sets a layer to `-1`, document `-1` instead of only saying "earlier" or "before other layers".
+- Distinguish "before the default layers" from "before every layer" unless the source guarantees the stronger claim.
+
+### Cross-Page Example Naming Consistency
+
+Generic placeholder names should stay aligned across related pages so the examples read like one coherent plugin walkthrough.
+
+- If one page defines `myPlugin()`, related pages should keep using `myPlugin()` for config, augmentation, and test examples unless they explicitly introduce a second plugin.
+- Keep placeholder config keys aligned with the same example plugin name. Do not rename the factory in one page and leave the augmented config key behind.
+
 ### Custom Container Usage
 
 Use VitePress custom containers to surface non-obvious behavior:

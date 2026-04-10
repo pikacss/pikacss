@@ -2,6 +2,8 @@
 
 > Read this when the user asks about customizing the build plugin behavior — scan patterns, output format, generated file paths, or function name.
 
+If the project is Nuxt, prefer `@pikacss/nuxt-pikacss` instead of manually wiring `@pikacss/unplugin-pikacss/vite`. The Nuxt module configures the Vite plugin for you and injects a generated Nuxt plugin/template that imports `pika.css`, so manual CSS imports are not needed there.
+
 ## Unplugin Options
 
 The `pikacss()` factory function from each bundler subpath export accepts an options object:

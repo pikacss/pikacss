@@ -37,6 +37,8 @@ export function myPlugin(): EnginePlugin {
 }
 ```
 
+When writing generic examples, keep the plugin factory name aligned across every snippet. If the example defines `myPlugin`, the consumer config and tests should use `plugins: [myPlugin()]` rather than switching to a different placeholder name.
+
 **Order tiers**: `'pre'` → default (`undefined`) → `'post'`. Within a tier, original array order is preserved. There is no `'normal'` value.
 
 `defineEnginePlugin` is an identity helper for type inference only.

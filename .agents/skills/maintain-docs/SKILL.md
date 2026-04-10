@@ -25,7 +25,7 @@ Sidebar and nav are defined in a single VitePress config module:
 Keep `sidebarAndNav.ts` in sync with `content-architecture.md` when pages are added or removed.
 
 Read both references before creating or updating any documentation page.
-Before drafting content, read the exact source files that will back the page's `relatedSources`. Use those files to verify public config shapes, concrete CSS variable names, and any integration or build-tool behavior claims.
+Before drafting content, read the exact source files that will back the page's `relatedSources`. Use those files to verify public config shapes, concrete CSS variable names, literal layer weights or order values, and any integration or build-tool behavior claims.
 
 ## Templates
 
@@ -94,7 +94,7 @@ Each task file contains:
 **For outdated pages:**
 1. Read the task file `issues[]` to understand what needs fixing.
 2. Fix heading structure, frontmatter, or `## Next` section as needed.
-3. Apply content quality rules from `writing-guidelines.md` — check for duplicate code-groups, missing `:::tip` containers for double-layer keys, undocumented API variants, stray `## Intro` headings, invalid public config shapes in examples, over-broad automatic behavior claims, imprecise `relatedSources`, and missing required metadata on non-index pages.
+3. Apply content quality rules from `writing-guidelines.md` — check for duplicate code-groups, missing `:::tip` containers for double-layer keys, undocumented API variants, stray `## Intro` headings, invalid public config shapes in examples, over-broad automatic behavior claims, wrapper integrations that fail to name the concrete auto-wiring mechanism, ordering claims that omit literal source-backed layer values, drifted placeholder names across related plugin-authoring pages, imprecise `relatedSources`, and missing required metadata on non-index pages.
 4. Re-run `analyze` to confirm the issues are resolved.
 
 **For API reference pages (`docs/api/*.md` except `index.md`):**
@@ -113,7 +113,7 @@ If the generated links are stale (e.g. dead-link build failures), fix the `guide
 
 After making changes, re-run `analyze` to confirm all addressed pages show `ok` status.
 
-Before handoff, do a brief source-backed self-review: confirm examples use supported public shapes, automatic behavior claims are scoped to the exact integration or option that provides them, `relatedSources` list the exact current source files, and every non-index page has complete required metadata.
+Before handoff, do a brief source-backed self-review: confirm examples use supported public shapes, automatic behavior claims are scoped to the exact integration or option that provides them, wrapper-package docs name the concrete generated file or template when that is what performs the work, ordering claims preserve literal source-backed values such as `-1`, placeholder plugin names stay aligned across neighboring authoring pages, `relatedSources` list the exact current source files, and every non-index page has complete required metadata.
 
 For example changes, run:
 

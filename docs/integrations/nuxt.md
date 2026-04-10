@@ -41,15 +41,19 @@ export default defineNuxtConfig({
 })
 ```
 
+:::warning
+When you use `@pikacss/nuxt-pikacss`, do not also register `@pikacss/unplugin-pikacss/vite` manually in `vite.config.ts`. The Nuxt module already wires the Vite plugin and generates a Nuxt plugin template that imports `pika.css`.
+:::
+
 ## What the Module Does
 
 ### Vite Plugin Registration
 
-The module automatically registers the PikaCSS Vite plugin with `enforce: 'pre'`, ensuring style extraction runs before other transformations.
+The module automatically registers `@pikacss/unplugin-pikacss/vite` with `enforce: 'pre'`, ensuring style extraction runs before other transformations.
 
 ### CSS Auto-Import
 
-A Nuxt plugin template is generated that imports `pika.css`, so you do not need to manually import the generated CSS file.
+The module generates a Nuxt plugin template that imports `pika.css`, so you do not need to manually import the generated CSS file yourself.
 
 ### Default Scan Patterns
 

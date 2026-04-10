@@ -93,7 +93,7 @@ export default defineNuxtConfig({
 })
 ```
 
-The Nuxt module configures the Vite plugin and injects a Nuxt plugin that automatically imports the generated CSS — no manual CSS import needed.
+In Nuxt projects, use `@pikacss/nuxt-pikacss` instead of manually adding `@pikacss/unplugin-pikacss/vite` to `vite.plugins`. The Nuxt module owns that wiring, configures the Vite plugin internally, and injects a generated Nuxt plugin/template that imports `pika.css` automatically, so no manual CSS import is needed.
 
 ### Generated Files and CSS Import
 
@@ -108,7 +108,7 @@ The build plugin generates two files (configurable via plugin options):
 import 'pika.css'
 ```
 
-`pika.css` is a virtual module alias that resolves to the generated CSS file. The Nuxt module handles this import automatically.
+`pika.css` is a virtual module alias that resolves to the generated CSS file. In Nuxt, the module-generated plugin/template handles this import automatically.
 
 ### TypeScript — pika.gen.ts Must Be Included
 
