@@ -20,7 +20,7 @@ const ctx = createCtx({
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/guide/integrations/).
+See the [full documentation](https://pikacss.com/api/integration).
 
 ## License
 

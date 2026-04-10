@@ -19,7 +19,7 @@ export default defineNuxtConfig({
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/guide/integrations/nuxt).
+See the [full documentation](https://pikacss.com/integrations/nuxt).
 
 ## License
 

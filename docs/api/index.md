@@ -11,7 +11,9 @@ relatedPackages:
   - '@pikacss/plugin-fonts'
   - '@pikacss/plugin-typography'
   - '@pikacss/eslint-config'
-relatedSources: []
+relatedSources:
+  - 'scripts/_skill-shared/index.ts'
+  - 'AGENTS.md'
 category: api
 order: 0
 ---

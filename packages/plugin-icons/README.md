@@ -30,7 +30,7 @@ Then use in templates:
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/guide/plugins/icons).
+See the [full documentation](https://pikacss.com/official-plugins/icons).
 
 ## License
 

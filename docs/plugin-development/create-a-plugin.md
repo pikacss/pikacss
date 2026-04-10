@@ -17,17 +17,7 @@ Build custom PikaCSS engine plugins to extend the engine with new capabilities.
 
 A PikaCSS plugin is a function that returns an `EnginePlugin` object. The recommended pattern:
 
-```ts
-import type { EnginePlugin } from '@pikacss/core'
-import { defineEnginePlugin } from '@pikacss/core'
-
-export function myPlugin(): EnginePlugin {
-  return defineEnginePlugin({
-    name: 'my-plugin',
-    // hooks here
-  })
-}
-```
+<<< @/.examples/plugin-development/create-plugin.example.ts
 
 ## defineEnginePlugin
 
@@ -37,19 +27,7 @@ The `defineEnginePlugin` helper provides type inference for the plugin object. I
 - `order` — optional execution order: `'pre'`, `'post'`, or omit for default.
 - Hook methods — functions called at specific points in the engine lifecycle.
 
-```ts
-defineEnginePlugin({
-  name: 'my-plugin',
-  order: 'pre',
-  configureRawConfig: (config) => {
-    // Mutate the raw config before resolution
-  },
-  configureEngine: async (engine) => {
-    // Extend the engine after initialization
-    engine.addPreflight('/* my styles */')
-  },
-})
-```
+The example above uses `defineEnginePlugin()` directly so the `config` and `engine` hook parameters stay inferred without additional helper types.
 
 ## order
 

@@ -66,6 +66,7 @@ export const sectionMap: Record<string, string> = {
 	'customizations': 'Customizations',
 	'official-plugins': 'Official Plugins',
 	'plugin-development': 'Plugin Development',
+	'api': 'API Reference',
 	'troubleshooting': 'Troubleshooting',
 }
 

@@ -58,8 +58,8 @@ Use the smallest set of current source files that fully backs the documented beh
 
 ## Internal Links
 
-- Use absolute internal links: `[Installation](/getting-started/installation)`.
-- Never use relative Markdown links such as `../guide/config.md`.
+- Use absolute internal links: `[Setup](/getting-started/setup)`.
+- Never use relative Markdown links such as `../integrations/unplugin.md`.
 - Link to headings with anchors when needed: `[Layers](/customizations/layers)`.
 
 ## Cross-Page Linking Strategy
@@ -282,7 +282,7 @@ Do not overuse containers. Reserve them for genuinely surprising or frequently m
 
 - `docs/.vitepress/sidebarAndNav.ts` is the single source of truth for sidebar groups and nav items.
 - Sidebar entries must align with pages declared in `content-architecture.md`.
-- Nav contains only **Getting Started** and **API Reference** links.
+- Treat the current top-level nav shape in `sidebarAndNav.ts` as authoritative. Do not assume a fixed two-link navbar; preserve the existing grouping unless the task intentionally changes the docs information architecture.
 - When a page is added or removed, update `sidebarAndNav.ts` to keep it in sync.
 
 ## Example Authoring
@@ -392,10 +392,12 @@ yarn add @pikacss/core
 
 ### General Rules
 
-- Use `docs/.examples/_utils/pika-example.ts` for the `renderPikaCSS()` helper in tests.
+- Use `docs/.examples/_utils/pika-example.ts` for the `renderExampleCSS()` helper in tests.
 - All example tests run under `pnpm --filter @pikacss/docs test`.
-- A page with zero `<<<` imports (other than install commands) is a bug.
-- Never write code blocks directly in Markdown pages unless the block is a package-manager install command inside `::: code-group`.
+- Use `<<< @/.examples/...` imports for runnable or behavior-sensitive examples, especially when the docs need to prove engine output, config behavior, or generated-file semantics.
+- Treat imported examples as validated through docs-scoped checks: `.example.test.ts` files run under Vitest, while imported example files without dedicated tests are still covered by `pnpm --filter @pikacss/docs typecheck`.
+- Inline fenced code is acceptable for signatures, module augmentations, compact config skeletons, helper call patterns, or other source-backed snippets where a dedicated fixture would add little validation value.
+- A page may legitimately have zero `<<<` imports when its examples are primarily explanatory or reference-oriented rather than test-backed behavior demos.
 
 ## Quality Checklist
 
@@ -437,7 +439,8 @@ Use this checklist as the final gate before handoff.
 
 - Run the smallest credible docs validation for the changed area.
 - Changed claims, examples, and `relatedSources` were checked against the owning source files.
-- Example tests pass when examples were added or changed.
+- Example tests pass when `.example.test.ts` coverage exists for the changed example.
+- Docs typecheck passes when imported example files or docs-driven example imports were added or changed.
 - Generated API pages were regenerated (not hand-edited) when API reference content changed.
 - Nav/sidebar entries match the current page set.
 
@@ -466,11 +469,11 @@ Each package README follows this structure:
 
 ## Documentation
 
-See the [full documentation](/guide/plugins/<name>).
+See the [full documentation](https://pikacss.com/<current-docs-route>).
 
 ## License
 
 MIT
 ```
 
-Update the affected `packages/*/README.md` when a package's public API or behavior changes. Ensure the usage example still compiles.
+Point the documentation link at the package's current public docs page, following the live section routes such as `https://pikacss.com/integrations/unplugin`, `https://pikacss.com/official-plugins/reset`, `https://pikacss.com/getting-started/eslint-config`, or `https://pikacss.com/api/core` for low-level packages that are primarily documented through the API reference. Do not keep historical legacy guide URLs. Update the affected `packages/*/README.md` when a package's public API or behavior changes. Ensure the usage example still compiles.

@@ -27,7 +27,7 @@ export default defineEngineConfig({
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/guide/plugins/fonts).
+See the [full documentation](https://pikacss.com/official-plugins/fonts).
 
 ## License
 

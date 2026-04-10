@@ -36,7 +36,7 @@ import pikacss from '@pikacss/unplugin-pikacss/webpack'
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/guide/integrations/vite).
+See the [full documentation](https://pikacss.com/integrations/unplugin).
 
 ## License
 

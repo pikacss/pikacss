@@ -21,7 +21,7 @@ export default [
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/getting-started/eslint).
+See the [full documentation](https://pikacss.com/getting-started/eslint-config).
 
 ## License
 
