@@ -113,7 +113,7 @@ export default defineConfig(createPackageVitestConfig())
 	'src/index.ts': `
 export {}
 	`.trim(),
-	'tests/some.test.ts': `
+	'src/some.test.ts': `
 import { describe, expect, it } from 'vitest'
 
 describe('test hello', () => {
@@ -139,18 +139,22 @@ describe('test hello', () => {
 	},
 	"include": [
 		"./src/**/*.ts"
+	],
+	"exclude": [
+		"./src/**/*.test.ts"
 	]
 }
 	`.trim(),
 	'tsconfig.tests.json': `
 {
-	"extends": "@deviltea/tsconfig/node",
+	"extends": "./tsconfig.package.json",
 	"compilerOptions": {
 		"composite": true
 	},
 	"include": [
-		"./src/**/*.ts",
-		"./tests/**/*.ts"
+		"./src/**/*.test.ts",
+		"./vitest.config.ts",
+		"../_shared/vitest.ts"
 	]
 }
 	`.trim(),

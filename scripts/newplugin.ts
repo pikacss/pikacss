@@ -158,10 +158,10 @@ export function ${pluginFactoryName}(options: ${pluginPascalName}PluginOptions =
 	})
 }
 	`.trim(),
-	[`tests/${pluginSlug}.test.ts`]: `
+	[`src/${pluginSlug}.test.ts`]: `
 import { describe, expect, it } from 'vitest'
 
-import { ${pluginFactoryName} } from '../src'
+import { ${pluginFactoryName} } from './index'
 
 describe('${pkgName}', () => {
 	it('returns plugin definition', () => {
@@ -187,18 +187,22 @@ describe('${pkgName}', () => {
 	},
 	"include": [
 		"./src/**/*.ts"
+	],
+	"exclude": [
+		"./src/**/*.test.ts"
 	]
 }
 	`.trim(),
 	'tsconfig.tests.json': `
 {
-	"extends": "@deviltea/tsconfig/node",
+	"extends": "./tsconfig.package.json",
 	"compilerOptions": {
 		"composite": true
 	},
 	"include": [
-		"./src/**/*.ts",
-		"./tests/**/*.ts"
+		"./src/**/*.test.ts",
+		"./vitest.config.ts",
+		"../_shared/vitest.ts"
 	]
 }
 	`.trim(),
