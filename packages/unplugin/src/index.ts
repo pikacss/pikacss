@@ -93,6 +93,59 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	const debouncedWriteTsCodegenFile = debounce(async () => {
 		await ctx.writeTsCodegenFile()
 	}, 300)
+	let activeTransforms = 0
+	let pendingCssWrite = false
+	let pendingTsWrite = false
+	let generatedWritePromise = Promise.resolve()
+
+	function flushPendingGeneratedWrites() {
+		generatedWritePromise = generatedWritePromise
+			.catch(() => {})
+			.then(async () => {
+				if (activeTransforms > 0)
+					return
+
+				const shouldWriteCss = pendingCssWrite
+				const shouldWriteTs = pendingTsWrite
+
+				pendingCssWrite = false
+				pendingTsWrite = false
+
+				if (shouldWriteCss) {
+					try {
+						await debouncedWriteCssCodegenFile()
+					}
+					catch (error) {
+						pendingCssWrite = true
+						if (shouldWriteTs)
+							pendingTsWrite = true
+						throw error
+					}
+				}
+
+				if (shouldWriteTs) {
+					try {
+						await debouncedWriteTsCodegenFile()
+					}
+					catch (error) {
+						pendingTsWrite = true
+						throw error
+					}
+				}
+			})
+
+		return generatedWritePromise
+	}
+
+	function queueCssWrite() {
+		pendingCssWrite = true
+		return flushPendingGeneratedWrites()
+	}
+
+	function queueTsWrite() {
+		pendingTsWrite = true
+		return flushPendingGeneratedWrites()
+	}
 
 	let hooksBound = false
 	function bindHooks() {
@@ -102,11 +155,11 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 
 		ctx.hooks.styleUpdated.on(() => {
 			log.debug(`Style updated, ${ctx.engine.store.atomicStyleIds.size} atomic styles generated`)
-			debouncedWriteCssCodegenFile()
+			return queueCssWrite()
 		})
 		ctx.hooks.tsCodegenUpdated.on(() => {
 			log.debug('TypeScript code generation updated')
-			debouncedWriteTsCodegenFile()
+			return queueTsWrite()
 		})
 	}
 
@@ -118,6 +171,12 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
 			const moduleIds = Array.from(ctx.usages.keys())
+			activeTransforms = 0
+			pendingCssWrite = false
+			pendingTsWrite = false
+			// generatedWritePromise is intentionally not reset: the promise chain's
+			// .catch(() => {}).then(...) recovery means any in-flight flush will see
+			// the already-cleared pending flags and become a no-op.
 			hooksBound = false
 			await ctx.setup()
 			lastSetupCwd = ctx.cwd
@@ -240,11 +299,23 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			},
 			async handler(code: string, id: string) {
 				await ensureSetup()
+				activeTransforms++
 				if (meta.framework === 'webpack' && ctx.resolvedConfigPath != null) {
 					this.addWatchFile(ctx.resolvedConfigPath)
 					log.debug(`Added watch file: ${ctx.resolvedConfigPath}`)
 				}
-				return ctx.transform(code, id)
+				try {
+					return await ctx.transform(code, id)
+				}
+				finally {
+					if (activeTransforms > 0)
+						activeTransforms--
+					if (activeTransforms === 0) {
+						// This may be a second flush call if hooks already queued a flush,
+						// but pendingCssWrite/pendingTsWrite will already be false — safe no-op.
+						await flushPendingGeneratedWrites()
+					}
+				}
 			},
 		},
 

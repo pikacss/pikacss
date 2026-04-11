@@ -214,6 +214,8 @@ function useTransform({
 	previewUsages,
 	engine,
 	transformedFormat,
+	beginTransform,
+	endTransform,
 	triggerStyleUpdated,
 	triggerTsCodegenUpdated,
 }: {
@@ -229,6 +231,8 @@ function useTransform({
 	usages: Map<string, UsageRecord[]>
 	previewUsages: Map<string, UsageRecord[]>
 	engine: Signal<Engine | null>
+	beginTransform: () => void
+	endTransform: () => void
 	triggerStyleUpdated: () => void
 	triggerTsCodegenUpdated: () => void
 }) {
@@ -238,6 +242,7 @@ function useTransform({
 		if (_engine == null)
 			return null
 
+		beginTransform()
 		try {
 			log.debug(`Transforming file: ${id}`)
 
@@ -307,6 +312,9 @@ function useTransform({
 			log.error(`Failed to transform code (${isAbsolute(id) ? id : join(cwd(), id)}): ${error.message}`, error)
 			return void 0
 		}
+		finally {
+			endTransform()
+		}
 	}
 
 	return {
@@ -328,7 +336,6 @@ function useTransform({
  * @param options - The integration configuration including paths, function name, scan globs, and codegen settings.
  * @returns A fully constructed `IntegrationContext`. Call `setup()` on the returned context before using transforms.
  *
- * @remarks
  * The context uses reactive signals internally so that computed paths (CSS and TS codegen
  * file paths) automatically update when `cwd` changes. The `setup()` method must be called
  * before any transform or codegen operations - transform calls automatically await the
@@ -359,6 +366,35 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		styleUpdated: createEventHook<void>(),
 		tsCodegenUpdated: createEventHook<void>(),
 	}
+	let activeTransforms = 0
+	let pendingStyleUpdated = false
+	let pendingTsCodegenUpdated = false
+
+	function flushPendingUpdates() {
+		if (activeTransforms > 0)
+			return
+
+		const shouldTriggerStyleUpdated = pendingStyleUpdated
+		const shouldTriggerTsCodegenUpdated = pendingTsCodegenUpdated
+
+		pendingStyleUpdated = false
+		pendingTsCodegenUpdated = false
+
+		if (shouldTriggerStyleUpdated)
+			hooks.styleUpdated.trigger()
+		if (shouldTriggerTsCodegenUpdated)
+			hooks.tsCodegenUpdated.trigger()
+	}
+
+	function queueStyleUpdated() {
+		pendingStyleUpdated = true
+		flushPendingUpdates()
+	}
+
+	function queueTsCodegenUpdated() {
+		pendingTsCodegenUpdated = true
+		flushPendingUpdates()
+	}
 
 	const {
 		transformFilter,
@@ -371,8 +407,16 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		usages,
 		previewUsages,
 		engine,
-		triggerStyleUpdated: () => hooks.styleUpdated.trigger(),
-		triggerTsCodegenUpdated: () => hooks.tsCodegenUpdated.trigger(),
+		beginTransform: () => {
+			activeTransforms++
+		},
+		endTransform: () => {
+			if (activeTransforms > 0)
+				activeTransforms--
+			flushPendingUpdates()
+		},
+		triggerStyleUpdated: queueStyleUpdated,
+		triggerTsCodegenUpdated: queueTsCodegenUpdated,
 	})
 
 	const ctx: IntegrationContext = {
@@ -491,6 +535,9 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		log.debug('Setting up integration context')
 		usages.clear()
 		previewUsages.clear()
+		activeTransforms = 0
+		pendingStyleUpdated = false
+		pendingTsCodegenUpdated = false
 		hooks.styleUpdated.listeners.clear()
 		hooks.tsCodegenUpdated.listeners.clear()
 		engine(null)
@@ -498,9 +545,9 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		await loadConfig()
 		const devPlugin = defineEnginePlugin({
 			name: '@pikacss/integration:dev',
-			preflightUpdated: () => hooks.styleUpdated.trigger(),
-			atomicStyleAdded: () => hooks.styleUpdated.trigger(),
-			autocompleteConfigUpdated: () => hooks.tsCodegenUpdated.trigger(),
+			preflightUpdated: queueStyleUpdated,
+			atomicStyleAdded: queueStyleUpdated,
+			autocompleteConfigUpdated: queueTsCodegenUpdated,
 		})
 		try {
 			const config = resolvedConfig() ?? {}

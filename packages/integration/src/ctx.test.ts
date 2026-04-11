@@ -5,6 +5,7 @@ import { log } from '@pikacss/core'
 import { join } from 'pathe'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createDeferred } from '../../_shared/vitest'
 import { createCtx } from './ctx'
 
 const WORKSPACE_CWD = process.cwd()
@@ -301,6 +302,142 @@ describe('createCtx', () => {
 			.toHaveLength(3)
 		expect(ctx.previewUsages.get('src/complex.ts'))
 			.toHaveLength(1)
+	})
+
+	it('buffers style and ts updates until all concurrent transforms finish', async () => {
+		const firstUse = createDeferred<string[]>()
+		const secondUse = createDeferred<string[]>()
+		let useCallCount = 0
+
+		vi.resetModules()
+		vi.doMock('@pikacss/core', async (importOriginal) => {
+			const actual = await importOriginal<typeof import('@pikacss/core')>()
+			const createEngine = vi.fn(async (config: Record<string, any>) => {
+				const devPlugin = config.plugins?.find((plugin: any) => plugin.name === '@pikacss/integration:dev')
+				return {
+					config,
+					store: {
+						atomicStyleIds: new Map(),
+					},
+					use: vi.fn(async () => {
+						devPlugin?.atomicStyleAdded?.()
+						devPlugin?.autocompleteConfigUpdated?.()
+
+						useCallCount++
+						return useCallCount === 1 ? firstUse.promise : secondUse.promise
+					}),
+					renderLayerOrderDeclaration: vi.fn(() => ''),
+					renderPreflights: vi.fn(async () => ''),
+					renderAtomicStyles: vi.fn(async () => ''),
+				}
+			})
+
+			return {
+				...actual,
+				createEngine,
+			}
+		})
+
+		const { createCtx: createMockedCtx } = await import('./ctx')
+		const ctx = createMockedCtx(createOptions())
+
+		await ctx.setup()
+		const onStyleUpdated = vi.fn()
+		const onTsUpdated = vi.fn()
+
+		ctx.hooks.styleUpdated.on(onStyleUpdated)
+		ctx.hooks.tsCodegenUpdated.on(onTsUpdated)
+
+		const firstTransform = ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
+		const secondTransform = ctx.transform('const b = pika({ color: \'blue\' })', 'src/b.ts')
+
+		expect(onStyleUpdated)
+			.not.toHaveBeenCalled()
+		expect(onTsUpdated)
+			.not.toHaveBeenCalled()
+
+		firstUse.resolve(['pk-a'])
+		await firstTransform
+
+		expect(onStyleUpdated)
+			.not.toHaveBeenCalled()
+		expect(onTsUpdated)
+			.not.toHaveBeenCalled()
+
+		secondUse.resolve(['pk-b'])
+		await secondTransform
+
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(onTsUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(ctx.usages.get('src/a.ts')?.[0]?.atomicStyleIds)
+			.toEqual(['pk-a'])
+		expect(ctx.usages.get('src/b.ts')?.[0]?.atomicStyleIds)
+			.toEqual(['pk-b'])
+	})
+
+	it('waits for the remaining transform when a concurrent transform fails early', async () => {
+		const firstUse = createDeferred<string[]>()
+
+		vi.resetModules()
+		vi.doMock('@pikacss/core', async (importOriginal) => {
+			const actual = await importOriginal<typeof import('@pikacss/core')>()
+			const createEngine = vi.fn(async (config: Record<string, any>) => {
+				const devPlugin = config.plugins?.find((plugin: any) => plugin.name === '@pikacss/integration:dev')
+				return {
+					config,
+					store: {
+						atomicStyleIds: new Map(),
+					},
+					use: vi.fn(async () => {
+						devPlugin?.atomicStyleAdded?.()
+						devPlugin?.autocompleteConfigUpdated?.()
+						return firstUse.promise
+					}),
+					renderLayerOrderDeclaration: vi.fn(() => ''),
+					renderPreflights: vi.fn(async () => ''),
+					renderAtomicStyles: vi.fn(async () => ''),
+				}
+			})
+
+			return {
+				...actual,
+				createEngine,
+			}
+		})
+
+		const { createCtx: createMockedCtx } = await import('./ctx')
+		const ctx = createMockedCtx(createOptions())
+
+		await ctx.setup()
+		const onStyleUpdated = vi.fn()
+		const onTsUpdated = vi.fn()
+
+		ctx.hooks.styleUpdated.on(onStyleUpdated)
+		ctx.hooks.tsCodegenUpdated.on(onTsUpdated)
+
+		const firstTransform = ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
+		const failedTransform = ctx.transform('const broken = pika(foo())', 'src/b.ts')
+
+		await failedTransform
+
+		expect(onStyleUpdated)
+			.not.toHaveBeenCalled()
+		expect(onTsUpdated)
+			.not.toHaveBeenCalled()
+
+		firstUse.resolve(['pk-a'])
+		await firstTransform
+
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(onTsUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(ctx.usages.get('src/a.ts')?.[0]?.atomicStyleIds)
+			.toEqual(['pk-a'])
+		expect(ctx.usages.has('src/b.ts'))
+			.toBe(false)
 	})
 
 	it('warns and skips malformed template, comment, and unterminated call patterns', async () => {

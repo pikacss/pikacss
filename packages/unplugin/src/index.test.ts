@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createDeferred } from '../../_shared/vitest'
 
 const mockReadFileSync = vi.fn()
 const mockCreateCtx = vi.fn()
@@ -362,5 +363,209 @@ describe('unpluginFactory', () => {
 		mockCreateCtx.mockReturnValueOnce(esbuildCtx)
 		const esbuildPlugin = mod.unpluginFactory(undefined, { framework: 'esbuild' } as any) as any
 		await esbuildPlugin.esbuild.setup({ initialOptions: {}, onResolve: vi.fn() } as any)
+	})
+
+	it('defers css and ts writes until concurrent transform handlers settle', async () => {
+		const firstGate = createDeferred()
+		const secondGate = createDeferred()
+		const ctx = createCtxStub()
+
+		ctx.transform = vi.fn(async (...args: any[]) => {
+			const [, id] = args as [string, string]
+
+			await ctx.hooks.styleUpdated.emit()
+			await ctx.hooks.tsCodegenUpdated.emit()
+
+			if (id.endsWith('a.ts')) {
+				await firstGate.promise
+			}
+			else {
+				await secondGate.promise
+			}
+
+			return { code: `transformed:${id}` }
+		})
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
+		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
+
+		const firstTransform = plugin.transform.handler.call({}, 'code', 'src/a.ts')
+		const secondTransform = plugin.transform.handler.call({}, 'code', 'src/b.ts')
+
+		await flushAsyncWork()
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(0)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(0)
+
+		firstGate.resolve()
+		await firstTransform
+		await flushAsyncWork()
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(0)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(0)
+
+		secondGate.resolve()
+		await secondTransform
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(1)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(1)
+	})
+
+	it('waits for the remaining concurrent transform when one handler rejects after queueing writes', async () => {
+		const failedGate = createDeferred()
+		const secondGate = createDeferred()
+		const ctx = createCtxStub()
+
+		ctx.transform = vi.fn(async (...args: any[]) => {
+			const [, id] = args as [string, string]
+
+			await ctx.hooks.styleUpdated.emit()
+			await ctx.hooks.tsCodegenUpdated.emit()
+
+			if (id.endsWith('a.ts')) {
+				await failedGate.promise
+				throw new Error('boom')
+			}
+
+			await secondGate.promise
+			return { code: `transformed:${id}` }
+		})
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
+		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
+
+		const failingTransform = plugin.transform.handler.call({}, 'code', 'src/a.ts')
+		const secondTransform = plugin.transform.handler.call({}, 'code', 'src/b.ts')
+
+		await flushAsyncWork()
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(0)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(0)
+
+		failedGate.resolve()
+		await expect(failingTransform)
+			.rejects.toThrow('boom')
+		await flushAsyncWork()
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(0)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(0)
+
+		secondGate.resolve()
+		await secondTransform
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(1)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(1)
+	})
+
+	it('keeps later generated writes working after a previous write fails', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		ctx.writeCssCodegenFile.mockRejectedValueOnce(new Error('css write failed'))
+		ctx.writeCssCodegenFile.mockResolvedValue(undefined)
+		ctx.writeTsCodegenFile.mockResolvedValue(undefined)
+
+		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
+		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
+
+		await expect(ctx.hooks.styleUpdated.emit())
+			.rejects.toThrow('css write failed')
+		await ctx.hooks.tsCodegenUpdated.emit()
+		await ctx.hooks.styleUpdated.emit()
+
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(3)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(1)
+	})
+
+	it('retries queued ts writes when a shared css+ts flush fails on css first', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		ctx.writeCssCodegenFile.mockRejectedValueOnce(new Error('css write failed'))
+		ctx.writeCssCodegenFile.mockResolvedValue(undefined)
+		ctx.writeTsCodegenFile.mockResolvedValue(undefined)
+
+		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
+		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
+
+		const styleUpdate = ctx.hooks.styleUpdated.emit()
+		const tsUpdate = ctx.hooks.tsCodegenUpdated.emit()
+		const results = await Promise.allSettled([styleUpdate, tsUpdate])
+
+		expect(results.some(result => result.status === 'rejected'))
+			.toBe(true)
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(2)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(1)
+	})
+
+	it('retries queued ts writes when a shared css+ts flush fails on ts after css succeeds', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		ctx.writeCssCodegenFile.mockResolvedValue(undefined)
+		ctx.writeTsCodegenFile.mockRejectedValueOnce(new Error('ts write failed'))
+		ctx.writeTsCodegenFile.mockResolvedValue(undefined)
+
+		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
+		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
+
+		const styleUpdate = ctx.hooks.styleUpdated.emit()
+		const tsUpdate = ctx.hooks.tsCodegenUpdated.emit()
+		const results = await Promise.allSettled([styleUpdate, tsUpdate])
+
+		expect(results.some(result => result.status === 'rejected'))
+			.toBe(true)
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(1)
+		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
+			.toBe(2)
 	})
 })
