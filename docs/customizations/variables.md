@@ -15,23 +15,26 @@ Define CSS custom properties that are injected as preflight styles.
 
 CSS custom properties (variables) enable theming and dynamic value reuse across your styles. PikaCSS registers variables as preflight CSS under `:root` by default, making them available globally.
 
-## Config
+Use semantic buckets when the variable should autocomplete against matching CSS properties. Supported buckets are `colors`, `lengths`, `times`, `numbers`, `easings`, and `fontFamilies`. Put uncategorized variables in `others`.
 
-::: tip Why the nested key?
-The outer `variables` is the plugin configuration field added to `EngineConfig` via [type augmentation](/plugin-development/type-augmentation). The inner `variables` is the actual variable map. This two-level structure keeps each feature's options under a single top-level key.
-:::
+## Config
 
 ```ts
 import { defineEngineConfig } from '@pikacss/core'
 
 export default defineEngineConfig({
   variables: {
-    variables: {
+    colors: {
       '--color-primary': '#3b82f6',
       '--color-secondary': '#64748b',
+    },
+    lengths: {
       '--spacing-sm': '0.5rem',
       '--spacing-md': '1rem',
       '--spacing-lg': '2rem',
+    },
+    others: {
+      '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
     },
   },
 })
@@ -42,7 +45,7 @@ Variables can be scoped to specific selectors:
 ```ts
 defineEngineConfig({
   variables: {
-    variables: {
+    colors: {
       ':root': {
         '--color-bg': '#ffffff',
         '--color-text': '#000000',

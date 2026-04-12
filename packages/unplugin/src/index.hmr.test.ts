@@ -81,7 +81,7 @@ describe('unpluginFactory HMR writes', () => {
 			cwd,
 			config: defineEngineConfig({
 				variables: {
-					variables: {
+					colors: {
 						'--tone-a': 'red',
 						'--tone-b': 'blue',
 						'--tone-c': 'green',

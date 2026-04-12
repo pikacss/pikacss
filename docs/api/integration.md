@@ -43,8 +43,6 @@ Creates an `IntegrationContext` that wires together config loading, engine initi
 
 **Returns:** `IntegrationContext` - A fully constructed `IntegrationContext`. Call `setup()` on the returned context before using transforms.
 
-**Remarks:**
-
 The context uses reactive signals internally so that computed paths (CSS and TS codegen
 file paths) automatically update when `cwd` changes. The `setup()` method must be called
 before any transform or codegen operations - transform calls automatically await the

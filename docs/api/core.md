@@ -1456,7 +1456,13 @@ Configuration object for the `variables` engine option.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `variables` | `Arrayable<VariablesDefinition>` | One or more variable definition objects to register. | — |
+| `colors?` | `Arrayable<VariablesDefinition>` | Color variables. These automatically infer `semanticType: 'color'`. | — |
+| `lengths?` | `Arrayable<VariablesDefinition>` | Length variables. These automatically infer `semanticType: 'length'`. | — |
+| `times?` | `Arrayable<VariablesDefinition>` | Time variables. These automatically infer `semanticType: 'time'`. | — |
+| `numbers?` | `Arrayable<VariablesDefinition>` | Number variables. These automatically infer `semanticType: 'number'`. | — |
+| `easings?` | `Arrayable<VariablesDefinition>` | Easing variables. These automatically infer `semanticType: 'easing'`. | — |
+| `fontFamilies?` | `Arrayable<VariablesDefinition>` | Font-family variables. These automatically infer `semanticType: 'font-family'`. | — |
+| `others?` | `Arrayable<VariablesDefinition>` | Variables without a semantic bucket. These keep the default untyped autocomplete behaviour. | — |
 | `pruneUnused?` | `boolean` | Default pruning policy for variables that are not referenced by any atomic style or preflight. | `true` |
 | `safeList?` | `(`--${string}` & {})[]` | Variable names that should always be emitted regardless of usage. | `[]` |
 
@@ -1466,7 +1472,8 @@ Passed via `EngineConfig.variables` to define CSS custom properties, control pru
 
 ```ts
 const config: VariablesConfig = {
-  variables: { '--color-primary': '#3b82f6' },
+  colors: { '--color-primary': '#3b82f6' },
+  others: { '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)' },
   pruneUnused: true,
   safeList: ['--color-primary'],
 }
@@ -1497,9 +1504,11 @@ const def: VariablesDefinition = {
 
 Semantic type label for a CSS variable, used to derive which CSS properties it can auto-complete as a value for.
 
+**Type:** `"number" | "color" | "font-family" | "length" | "time" | "easing"`
+
 **Remarks:**
 
-Accepts any known `VariableSemanticFamily` (e.g. `'color'`, `'length'`) or an arbitrary string. Known families are expanded to their associated CSS property list at registration time.
+Supported semantic families are `'color'`, `'length'`, `'time'`, `'number'`, `'easing'`, and `'font-family'`. Each expands to the CSS properties with a real autocomplete mapping at registration time.
 
 ```ts
 const type: VariableSemanticType = 'color'

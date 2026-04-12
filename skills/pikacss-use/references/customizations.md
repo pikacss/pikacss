@@ -18,14 +18,18 @@
 
 ## Variables and Theming
 
+Use semantic buckets when variables should autocomplete against matching CSS properties. Supported buckets are `colors`, `lengths`, `times`, `numbers`, `easings`, and `fontFamilies`. Put uncategorized variables in `others`.
+
 ### Basic Variables
 
 ```ts
 export default defineEngineConfig({
   variables: {
-    variables: {
+    colors: {
       '--color-primary': '#3b82f6',
       '--color-text': '#1a1a1a',
+    },
+    lengths: {
       '--spacing-md': '1rem',
     },
   },
@@ -39,7 +43,7 @@ Variables can be scoped to CSS selectors for theme switching:
 ```ts
 export default defineEngineConfig({
   variables: {
-    variables: {
+    colors: {
       // Default (light) — applied to :root
       '--color-bg': '#ffffff',
       '--color-text': '#1a1a1a',
@@ -68,7 +72,7 @@ If dark mode is toggled via a `data-theme` attribute (e.g. `<html data-theme="da
 
 ```ts
 variables: {
-  variables: {
+  colors: {
     '--color-bg': '#ffffff',
     '--color-text': '#1a1a1a',
 
@@ -86,7 +90,7 @@ Toggle: `document.documentElement.setAttribute('data-theme', 'dark')`
 
 ```ts
 variables: {
-  variables: {
+  colors: {
     '--color-bg': '#fff',
     '@media (prefers-color-scheme: dark)': {
       '--color-bg': '#1a1a1a',
@@ -102,7 +106,8 @@ variables: {
 
 ```ts
 variables: {
-  variables: { '--color-accent': '#f00' },
+  colors: { '--color-accent': '#f00' },
+  others: { '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)' },
   pruneUnused: true,
   safeList: ['--color-accent'],
 }

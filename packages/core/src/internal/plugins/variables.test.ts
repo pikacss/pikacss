@@ -21,7 +21,7 @@ describe('variables helpers', () => {
 })
 
 describe('variables plugin', () => {
-	it('renders transitively used variables, respects autocomplete flags, and warns on invalid config shapes', async () => {
+	it('renders transitively used variables, infers semantic buckets, respects autocomplete flags, and warns on invalid config shapes', async () => {
 		const warn = vi.fn()
 		log.setWarnFn((_prefix, ...args) => warn(...args))
 
@@ -30,14 +30,17 @@ describe('variables plugin', () => {
 				{ body: { color: 'var(--alias)' } },
 			],
 			variables: {
-				variables: {
-					'--color': { value: '#fff', semanticType: 'color' },
-					'--alias': { value: 'var(--color)', autocomplete: { asValueOf: ['backgroundColor'], asProperty: false } },
-					'--manual': { value: null, autocomplete: { asValueOf: '-' } },
-					'--mystery': { value: '1rem', semanticType: 'mystery' as any },
+				colors: {
+					'--color': '#fff',
 					'[data-theme="dark"]': {
 						'--color': '#000',
 					},
+				},
+				others: {
+					'--alias': { value: 'var(--color)', autocomplete: { asValueOf: ['backgroundColor'], asProperty: false } },
+					'--manual': { value: null, autocomplete: { asValueOf: '-' } },
+					'--angle': { value: '1turn', semanticType: 'angle' as any },
+					'--mystery': { value: '1rem', semanticType: 'mystery' as any },
 					'.invalid': 'broken' as any,
 				},
 			},
@@ -54,10 +57,15 @@ describe('variables plugin', () => {
 			.toContain('[data-theme="dark"]{--color:#000;}')
 		expect(preflights.includes('--manual'))
 			.toBe(false)
+		expect(engine.config.autocomplete.cssProperties.get('color'))
+			.toContain('var(--color)')
 		expect(engine.config.autocomplete.cssProperties.get('backgroundColor'))
 			.toContain('var(--alias)')
 		expect(engine.config.autocomplete.extraCssProperties.has('--alias'))
 			.toBe(false)
+		expect(warn.mock.calls.some(call => call.join(' ')
+			.includes('Unknown semanticType "angle"')))
+			.toBe(true)
 		expect(warn.mock.calls.some(call => call.join(' ')
 			.includes('Unknown semanticType "mystery"')))
 			.toBe(true)
@@ -66,11 +74,35 @@ describe('variables plugin', () => {
 			.toBe(true)
 	})
 
+	it('merges semantic buckets in order and lets others override earlier buckets', async () => {
+		const engine = await createEngine({
+			variables: {
+				colors: {
+					'--shared': 'red',
+				},
+				others: {
+					'--shared': { value: 'pink', autocomplete: { asValueOf: '-' } },
+					'--plain': '1rem',
+				},
+			},
+		})
+
+		await engine.use({ color: 'var(--shared)', margin: 'var(--plain)' })
+		const css = await engine.renderPreflights(false)
+
+		expect(css)
+			.toContain(':root{--shared:pink;--plain:1rem;}')
+		expect(engine.config.autocomplete.cssProperties.get('color') ?? [])
+			.not.toContain('var(--shared)')
+		expect(engine.config.autocomplete.cssProperties.get('*'))
+			.toContain('var(--plain)')
+	})
+
 	it('keeps safe-listed and pruneUnused=false variables even when they are not referenced', async () => {
 		const engine = await createEngine({
 			variables: {
 				safeList: ['--safe'],
-				variables: {
+				others: {
 					'--safe': 'red',
 					'--kept': { value: 'blue', pruneUnused: false },
 				},
@@ -94,7 +126,7 @@ describe('variables plugin', () => {
 				{ body: { color: 'var(--missing)' } },
 			],
 			variables: {
-				variables: {
+				others: {
 					'--size': '1rem',
 				},
 			},
@@ -115,7 +147,7 @@ describe('variables plugin', () => {
 	it('expands duplicate transitive refs through the variables preflight without duplicating emitted leaves', async () => {
 		const engine = await createEngine({
 			variables: {
-				variables: {
+				others: {
 					'--base': 'red',
 					'--alias-a': 'var(--base)',
 					'--alias-b': 'var(--base)',
@@ -140,7 +172,7 @@ describe('variables plugin', () => {
 	it('skips null-valued variable entries and missing varMap entries during transitive expansion', async () => {
 		const engine = await createEngine({
 			variables: {
-				variables: {
+				others: {
 					'--null-val': { value: null },
 					'--refs-null': { value: 'var(--null-val) var(--nonexistent)' },
 				},
@@ -159,7 +191,7 @@ describe('variables plugin', () => {
 	it('expands transitive variable references through tuple-valued (fallback) entries', async () => {
 		const engine = await createEngine({
 			variables: {
-				variables: {
+				others: {
 					'--base': '1px',
 					'--with-fallback': { value: ['var(--base)', ['solid']] },
 				},
