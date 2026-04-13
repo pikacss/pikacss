@@ -1,17 +1,20 @@
 ---
 title: Define Helpers
-description: Identity helpers for type-safe PikaCSS configuration and plugin authoring.
+description: Define helpers for type-safe PikaCSS configuration and plugin authoring.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - 'packages/core/src/index.ts'
+  - 'packages/core/src/internal/plugin.ts'
+  - 'packages/core/src/types.ts'
+  - 'packages/core/src/internal/plugins/variables.ts'
 category: plugin-development
 order: 40
 ---
 
 # Define Helpers
 
-PikaCSS exports identity helpers that return their input unchanged while providing full TypeScript inference and autocomplete.
+PikaCSS keeps define helpers only for the two places where they materially improve authoring ergonomics: engine configs and plugin definitions.
 
 ## defineEnginePlugin
 
@@ -42,83 +45,22 @@ export default defineEngineConfig({
 })
 ```
 
-## defineStyleDefinition
-
-Returns the given style definition with full type inference for CSS properties and selectors.
+For other typed shapes such as reusable style objects, preflights, keyframes, selectors, shortcuts, or variables definitions, use plain object literals with `satisfies` or an explicit type annotation.
 
 ```ts
-import { defineStyleDefinition } from '@pikacss/core'
+import type { StyleDefinition, VariablesDefinition } from '@pikacss/core'
 
-const card = defineStyleDefinition({
-  'display': 'flex',
-  '$:hover': { opacity: '0.8' },
-})
-```
-
-## definePreflight
-
-Returns the given preflight entry with full type inference.
-
-```ts
-import { definePreflight } from '@pikacss/core'
-
-const reset = definePreflight({
-  layer: 'base',
-  id: 'reset',
-  preflight: '*, *::before, *::after { box-sizing: border-box; }',
-})
-```
-
-## defineKeyframes
-
-Returns the given keyframes definition with full type inference.
-
-```ts
-import { defineKeyframes } from '@pikacss/core'
-
-const fadeIn = defineKeyframes(['fade-in', {
-  from: { opacity: '0' },
-  to: { opacity: '1' },
-}])
-```
-
-## defineSelector
-
-Returns the given selector mapping with full type inference.
-
-```ts
-import { defineSelector } from '@pikacss/core'
-
-const darkMode = defineSelector(['@dark', 'html.dark $'])
-```
-
-## defineShortcut
-
-Returns the given shortcut definition with full type inference.
-
-```ts
-import { defineShortcut } from '@pikacss/core'
-
-const flexCenter = defineShortcut(['flex-center', {
+const card: StyleDefinition = {
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}])
-```
+  '$:hover': { opacity: '0.8' },
+}
 
-## defineVariables
-
-Returns the given variables definition with full type inference for CSS custom property declarations.
-
-```ts
-import { defineVariables } from '@pikacss/core'
-
-const theme = defineVariables({
+const theme = {
   ':root': {
     '--color-primary': '#3b82f6',
     '--spacing-md': '1rem',
   },
-})
+} satisfies VariablesDefinition
 ```
 
 ## Next

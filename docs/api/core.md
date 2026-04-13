@@ -40,7 +40,7 @@ order: 20
 
 ## Package summary
 
-Core engine, style definition helpers, and built-in plugin system
+Core engine, define helpers for config and plugin authoring, and built-in plugin system
 
 Use [Usage guide](/getting-started/usage) when you need conceptual usage guidance instead of exact symbol lookup.
 
@@ -152,132 +152,6 @@ export default defineEnginePlugin({
   name: 'my-plugin',
   configureRawConfig: (config) => ({ ...config, important: true }),
 })
-```
-
-<br>
-<br>
-
-### defineKeyframes(keyframes) {#function-definekeyframes-keyframes}
-
-Identity helper that returns the keyframes definition as-is, providing TypeScript type inference and autocompletion.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `keyframes` | `T` | A keyframes definition: a name string, a tuple, or an object form. |
-
-**Returns:** `T` - The same keyframes definition, unchanged.
-
-**Remarks:**
-
-A compile-time-only helper with no runtime effect.
-
-```ts
-const spin = defineKeyframes(['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }])
-```
-
-<br>
-<br>
-
-### definePreflight(preflight) {#function-definepreflight-preflight}
-
-Identity helper that returns the preflight as-is, providing TypeScript type inference and autocompletion.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `preflight` | `T` | A preflight definition: a function, a static string/object, or a wrapper with `layer`/`id` metadata. |
-
-**Returns:** `T` - The same preflight, unchanged.
-
-**Remarks:**
-
-A compile-time-only helper with no runtime effect. Useful for defining reusable preflight values with type safety.
-
-```ts
-const reset = definePreflight('*, *::before { box-sizing: border-box; }')
-```
-
-<br>
-<br>
-
-### defineSelector(selector) {#function-defineselector-selector}
-
-Identity helper that returns the selector definition as-is, providing TypeScript type inference and autocompletion.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `selector` | `T` | A selector definition: a string redirect, tuple, or object form. |
-
-**Returns:** `T` - The same selector definition, unchanged.
-
-**Remarks:**
-
-A compile-time-only helper with no runtime effect.
-
-```ts
-const hover = defineSelector(['hover', '&:hover'])
-```
-
-<br>
-<br>
-
-### defineShortcut(shortcut) {#function-defineshortcut-shortcut}
-
-Identity helper that returns the shortcut definition as-is, providing TypeScript type inference and autocompletion.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `shortcut` | `T` | A shortcut definition: a string redirect, tuple, or object form. |
-
-**Returns:** `T` - The same shortcut definition, unchanged.
-
-**Remarks:**
-
-A compile-time-only helper with no runtime effect.
-
-```ts
-const btn = defineShortcut(['btn', { padding: '0.5rem 1rem', borderRadius: '0.25rem' }])
-```
-
-<br>
-<br>
-
-### defineStyleDefinition(styleDefinition) {#function-definestyledefinition-styledefinition}
-
-Identity helper that returns the style definition as-is, providing TypeScript type inference and autocompletion.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `styleDefinition` | `T` | A style definition object. |
-
-**Returns:** `T` - The same style definition, unchanged.
-
-**Remarks:**
-
-A compile-time-only helper with no runtime effect. Useful for extracting a reusable style definition with full type safety.
-
-```ts
-const card = defineStyleDefinition({ padding: '1rem', borderRadius: '0.5rem' })
-```
-
-<br>
-<br>
-
-### defineVariables(variables) {#function-definevariables-variables}
-
-Identity helper that returns the variables definition as-is, providing TypeScript type inference and autocompletion.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `variables` | `T` | A nested record of CSS custom property definitions. |
-
-**Returns:** `T` - The same variables definition, unchanged.
-
-**Remarks:**
-
-A compile-time-only helper with no runtime effect.
-
-```ts
-const vars = defineVariables({ '--color-primary': '#3b82f6', '.dark': { '--color-primary': '#60a5fa' } })
 ```
 
 <br>
@@ -748,10 +622,10 @@ Union of valid CSS selector strings for nested style definitions, including CSS 
 
 **Remarks:**
 
-In PikaCSS, pseudo-selectors are prefixed with `$` instead of `:` to avoid collisions with CSS property names in object keys (e.g. `$hover` instead of `:hover`).
+In PikaCSS, pseudo-selectors are prefixed with `$` instead of `:` to avoid collisions with CSS property names in object keys (e.g. `$:hover` instead of `:hover`).
 
 ```ts
-const selector: CSSSelector = '$hover'
+const selector: CSSSelector = '$:hover'
 const atRule: CSSSelector = '@media (min-width: 768px)'
 ```
 
@@ -975,7 +849,7 @@ Passed via `EngineConfig.keyframes` to register `@keyframes` definitions at engi
 
 ```ts
 const config: KeyframesConfig = {
-   definitions: [['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }]],
+  definitions: [['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }]],
   pruneUnused: true,
 }
 ```
@@ -1225,7 +1099,7 @@ Passed via `EngineConfig.selectors` to register selector rules at engine creatio
 
 ```ts
 const config: SelectorsConfig = {
-   definitions: [['hover', '&:hover'], ['focus', '&:focus']],
+  definitions: [['hover', '&:hover'], ['focus', '&:focus']],
 }
 ```
 
@@ -1264,7 +1138,7 @@ Passed via `EngineConfig.shortcuts` to register shortcut rules at engine creatio
 
 ```ts
 const config: ShortcutsConfig = {
-   definitions: [['btn', { padding: '0.5rem 1rem' }]],
+  definitions: [['btn', { padding: '0.5rem 1rem' }]],
 }
 ```
 
@@ -1298,7 +1172,7 @@ This is the primary input type for the `pika()` function. A flat `Properties` ma
 // Flat
 const flat: StyleDefinition = { color: 'red', fontSize: '16px' }
 // Nested
-const nested: StyleDefinition = { '$hover': { color: 'blue' } }
+const nested: StyleDefinition = { '$:hover': { color: 'blue' } }
 ```
 
 <br>
@@ -1314,7 +1188,7 @@ Enables nesting selectors within a style definition to express pseudo-classes, m
 
 ```ts
 const map: StyleDefinitionMap = {
-  '$hover': { color: 'blue' },
+  '$:hover': { color: 'blue' },
   '@media (min-width: 768px)': { fontSize: '18px' },
 }
 ```
@@ -1500,20 +1374,20 @@ const def: VariablesDefinition = {
 
 | Property | Type | Description | Default |
 |---|---|---|---|
+| `keyframes` | `{ 			store: Map<string, ResolvedKeyframesConfig> 			add: (...list: Keyframes[]) => void 		}` | Runtime keyframes management: resolved keyframes store and `add` method for registering keyframes after engine creation. | — |
 | `selectors` | `{ 			resolver: SelectorResolver 			add: (...list: Selector[]) => void 		}` | Runtime selector management: resolver instance and `add` method for registering selectors after engine creation. | — |
 | `shortcuts` | `{ 			resolver: ShortcutResolver 			add: (...list: Shortcut[]) => void 		}` | Runtime shortcut management: resolver instance and `add` method for registering shortcuts after engine creation. | — |
 | `variables` | `{ 			store: Map<string, ResolvedVariable[]> 			add: (variables: VariablesDefinition) => void 		}` | Runtime variable management: resolved variable store and `add` method for registering variables after engine creation. | — |
-| `keyframes` | `{ 			store: Map<string, ResolvedKeyframesConfig> 			add: (...list: Keyframes[]) => void 		}` | Runtime keyframes management: resolved keyframes store and `add` method for registering keyframes after engine creation. | — |
 
 ### EngineConfig (@pikacss/core) {#augmentation-engineconfig-pikacss-core}
 
 | Property | Type | Description | Default |
 |---|---|---|---|
+| `keyframes?` | `KeyframesConfig` | Keyframes definitions configuration. | `undefined` |
 | `selectors?` | `SelectorsConfig` | Selector rules configuration. | `undefined` |
 | `shortcuts?` | `ShortcutsConfig` | Shortcut rules configuration. | `undefined` |
 | `variables?` | `VariablesConfig` | CSS custom properties (variables) configuration. | `undefined` |
 | `important?` | `ImportantConfig` | Controls the `!important` modifier on generated CSS declarations. | `undefined (no `!important` appended by default)` |
-| `keyframes?` | `KeyframesConfig` | Keyframes definitions configuration. | `undefined` |
 
 ## Next
 

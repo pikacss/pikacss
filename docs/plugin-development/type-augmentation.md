@@ -72,15 +72,20 @@ defineEnginePlugin({
 
 ## PikaAugment
 
-The `PikaAugment` namespace provides type-level extension points for the autocomplete system. Plugins can register custom selectors, shortcuts, properties, and property values:
+The `PikaAugment` interface provides type-level extension points for the autocomplete system. Plugins can register custom selectors, shortcuts, properties, and property values:
 
 ```ts
+import type { DefineAutocomplete } from '@pikacss/core'
+
 declare module '@pikacss/core' {
-  namespace PikaAugment {
-    interface Autocomplete {
+  interface PikaAugment {
+    Autocomplete: DefineAutocomplete<{
       Selector: '@my-selector'
       Shortcut: 'my-shortcut'
-    }
+      Layer: never
+      PropertyValue: never
+      CSSPropertyValue: never
+    }>
   }
 }
 ```
@@ -89,6 +94,6 @@ This ensures that custom selectors and shortcuts defined by your plugin appear i
 
 ## Next
 
-- [Define Helpers](/plugin-development/define-helpers) — identity helpers for type inference.
+- [Define Helpers](/plugin-development/define-helpers) — `defineEngineConfig` and `defineEnginePlugin`.
 - [Create a Plugin](/plugin-development/create-a-plugin) — plugin structure and the defineEnginePlugin helper.
 - [Available Hooks](/plugin-development/available-hooks) — all lifecycle hooks you can implement.

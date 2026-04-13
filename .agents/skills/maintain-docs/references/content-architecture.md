@@ -156,12 +156,6 @@ Plugin Development
 = Define Helpers
 == defineEnginePlugin
 == defineEngineConfig
-== defineStyleDefinition
-== definePreflight
-== defineKeyframes
-== defineSelector
-== defineShortcut
-== defineVariables
 
 = API Reference
 == Package Overview

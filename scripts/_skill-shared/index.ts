@@ -31,7 +31,7 @@ export const PACKAGES: PackageDef[] = [
 		dir: 'core',
 		slug: 'core',
 		order: 20,
-		description: 'Core engine, style definition helpers, and built-in plugin system',
+		description: 'Core engine, define helpers for config and plugin authoring, and built-in plugin system',
 		pageTitle: 'Core API reference',
 		guideLink: { text: 'Usage guide', url: '/getting-started/usage' },
 	},

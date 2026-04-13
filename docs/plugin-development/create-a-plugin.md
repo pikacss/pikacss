@@ -45,4 +45,4 @@ Within the same order group, plugins run in the order they appear in the `plugin
 
 - [Available Hooks](/plugin-development/available-hooks) — all lifecycle hooks you can implement.
 - [Type Augmentation](/plugin-development/type-augmentation) — extend PikaCSS types for your plugin.
-- [Define Helpers](/plugin-development/define-helpers) — identity helpers for type inference.
+- [Define Helpers](/plugin-development/define-helpers) — `defineEngineConfig` and `defineEnginePlugin`.

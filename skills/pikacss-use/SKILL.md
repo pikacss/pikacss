@@ -263,14 +263,12 @@ Each plugin is a function imported from its package and added to the `plugins` a
 
 ## Define Helpers
 
-`@pikacss/core` exports type-safe factory helpers for common config items:
+`@pikacss/core` now keeps only two public define helpers:
 
 - `defineEngineConfig(config)` — type-safe engine config
-- `defineStyleDefinition(def)` — type-safe style definition objects
-- `definePreflight(preflight)` — type-safe preflight entries
-- `defineShortcut(shortcut)` — type-safe shortcut definitions
+- `defineEnginePlugin(plugin)` — type-safe plugin definition
 
-Use these when building config fragments in separate files.
+For reusable style objects, preflights, keyframes, selectors, shortcuts, or variable maps, use plain object literals with `satisfies` or explicit type annotations instead of helper wrappers.
 
 ## ESLint
 

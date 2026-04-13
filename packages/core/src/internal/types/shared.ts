@@ -53,7 +53,7 @@ export type InternalProperties = Properties
  * ```ts
  * const def: InternalStyleDefinition = {
  *   color: 'red',
- *   '$hover': { color: 'blue' },
+ *   '$:hover': { color: 'blue' },
  * }
  * ```
  */

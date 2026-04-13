@@ -1,5 +1,4 @@
 import type { StyleDefinition, VariablesDefinition } from '@pikacss/core'
-import { defineStyleDefinition } from '@pikacss/core'
 
 /**
  * Default CSS custom property values for prose typography colors and accents.
@@ -52,7 +51,7 @@ export const typographyVariables = {
  * engine.shortcuts.add(['prose-base', proseBaseStyle])
  * ```
  */
-export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
+export const proseBaseStyle: StyleDefinition = {
 	'color': 'var(--pk-prose-color-body)',
 	'maxWidth': '65ch',
 	'fontSize': '1rem',
@@ -63,7 +62,7 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
 	'$ > :last-child': {
 		marginBottom: '0',
 	},
-})
+}
 
 // Paragraph styles
 /**
@@ -78,7 +77,7 @@ export const proseBaseStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-paragraphs', ['prose-base', proseParagraphsStyle]])
  * ```
  */
-export const proseParagraphsStyle: StyleDefinition = defineStyleDefinition({
+export const proseParagraphsStyle: StyleDefinition = {
 	'$ p': {
 		marginTop: '1.25em',
 		marginBottom: '1.25em',
@@ -90,7 +89,7 @@ export const proseParagraphsStyle: StyleDefinition = defineStyleDefinition({
 		marginTop: '1.2em',
 		marginBottom: '1.2em',
 	},
-})
+}
 
 // Link styles
 /**
@@ -105,7 +104,7 @@ export const proseParagraphsStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-links', ['prose-base', proseLinksStyle]])
  * ```
  */
-export const proseLinksStyle: StyleDefinition = defineStyleDefinition({
+export const proseLinksStyle: StyleDefinition = {
 	'$ a': {
 		color: 'var(--pk-prose-color-links)',
 		textDecoration: 'underline',
@@ -117,7 +116,7 @@ export const proseLinksStyle: StyleDefinition = defineStyleDefinition({
 	'$ a code': {
 		color: 'inherit',
 	},
-})
+}
 
 // Emphasis styles (strong, em)
 /**
@@ -133,7 +132,7 @@ export const proseLinksStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-emphasis', ['prose-base', proseEmphasisStyle]])
  * ```
  */
-export const proseEmphasisStyle: StyleDefinition = defineStyleDefinition({
+export const proseEmphasisStyle: StyleDefinition = {
 	'$ strong': {
 		color: 'var(--pk-prose-color-bold)',
 		fontWeight: '600',
@@ -150,7 +149,7 @@ export const proseEmphasisStyle: StyleDefinition = defineStyleDefinition({
 	'$ em': {
 		fontStyle: 'italic',
 	},
-})
+}
 
 // Keyboard styles
 /**
@@ -165,7 +164,7 @@ export const proseEmphasisStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-kbd', ['prose-base', proseKbdStyle]])
  * ```
  */
-export const proseKbdStyle: StyleDefinition = defineStyleDefinition({
+export const proseKbdStyle: StyleDefinition = {
 	'$ kbd': {
 		color: 'var(--pk-prose-color-kbd)',
 		fontSize: '0.875em',
@@ -178,7 +177,7 @@ export const proseKbdStyle: StyleDefinition = defineStyleDefinition({
 		paddingLeft: '0.375em',
 		boxShadow: '0 0 0 1px var(--pk-prose-kbd-shadows), 0 3px 0 var(--pk-prose-kbd-shadows)',
 	},
-})
+}
 
 // Lists styles
 /**
@@ -194,7 +193,7 @@ export const proseKbdStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-lists', ['prose-base', proseListsStyle]])
  * ```
  */
-export const proseListsStyle: StyleDefinition = defineStyleDefinition({
+export const proseListsStyle: StyleDefinition = {
 	'$ ol': {
 		listStyleType: 'decimal',
 		marginTop: '1.25em',
@@ -283,7 +282,7 @@ export const proseListsStyle: StyleDefinition = defineStyleDefinition({
 		marginTop: '0.5em',
 		paddingLeft: '1.625em',
 	},
-})
+}
 
 // Horizontal rule styles
 /**
@@ -299,7 +298,7 @@ export const proseListsStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-hr', ['prose-base', proseHrStyle]])
  * ```
  */
-export const proseHrStyle: StyleDefinition = defineStyleDefinition({
+export const proseHrStyle: StyleDefinition = {
 	'$ hr': {
 		borderColor: 'var(--pk-prose-color-hr)',
 		borderTopWidth: '1px',
@@ -309,7 +308,7 @@ export const proseHrStyle: StyleDefinition = defineStyleDefinition({
 	'$ hr + *': {
 		marginTop: '0',
 	},
-})
+}
 
 // Headings styles
 /**
@@ -326,7 +325,7 @@ export const proseHrStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-headings', ['prose-base', proseHeadingsStyle]])
  * ```
  */
-export const proseHeadingsStyle: StyleDefinition = defineStyleDefinition({
+export const proseHeadingsStyle: StyleDefinition = {
 	'$ h1': {
 		color: 'var(--pk-prose-color-headings)',
 		fontWeight: '800',
@@ -391,7 +390,7 @@ export const proseHeadingsStyle: StyleDefinition = defineStyleDefinition({
 	'$ h4 + *': {
 		marginTop: '0',
 	},
-})
+}
 
 // Blockquote styles
 /**
@@ -407,7 +406,7 @@ export const proseHeadingsStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-quotes', ['prose-base', proseQuotesStyle]])
  * ```
  */
-export const proseQuotesStyle: StyleDefinition = defineStyleDefinition({
+export const proseQuotesStyle: StyleDefinition = {
 	'$ blockquote': {
 		fontWeight: '500',
 		fontStyle: 'italic',
@@ -428,7 +427,7 @@ export const proseQuotesStyle: StyleDefinition = defineStyleDefinition({
 	'$ blockquote code': {
 		color: 'inherit',
 	},
-})
+}
 
 // Media styles (images, video, figure)
 /**
@@ -444,7 +443,7 @@ export const proseQuotesStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-media', ['prose-base', proseMediaStyle]])
  * ```
  */
-export const proseMediaStyle: StyleDefinition = defineStyleDefinition({
+export const proseMediaStyle: StyleDefinition = {
 	'$ img': {
 		marginTop: '2em',
 		marginBottom: '2em',
@@ -472,7 +471,7 @@ export const proseMediaStyle: StyleDefinition = defineStyleDefinition({
 		lineHeight: '1.4',
 		marginTop: '0.85em',
 	},
-})
+}
 
 // Code styles
 /**
@@ -489,7 +488,7 @@ export const proseMediaStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-code', ['prose-base', proseCodeStyle]])
  * ```
  */
-export const proseCodeStyle: StyleDefinition = defineStyleDefinition({
+export const proseCodeStyle: StyleDefinition = {
 	'$ code': {
 		color: 'var(--pk-prose-color-code)',
 		fontWeight: '600',
@@ -533,7 +532,7 @@ export const proseCodeStyle: StyleDefinition = defineStyleDefinition({
 	'$ pre code::after': {
 		content: 'none',
 	},
-})
+}
 
 // Table styles
 /**
@@ -550,7 +549,7 @@ export const proseCodeStyle: StyleDefinition = defineStyleDefinition({
  * engine.shortcuts.add(['prose-tables', ['prose-base', proseTablesStyle]])
  * ```
  */
-export const proseTablesStyle: StyleDefinition = defineStyleDefinition({
+export const proseTablesStyle: StyleDefinition = {
 	'$ table': {
 		width: '100%',
 		tableLayout: 'auto',
@@ -603,4 +602,4 @@ export const proseTablesStyle: StyleDefinition = defineStyleDefinition({
 	'$ tbody td:last-child, $ tfoot td:last-child': {
 		paddingRight: '0',
 	},
-})
+}

@@ -107,11 +107,11 @@ type CSSPseudos = `${'$'}${CSS.Pseudos}`
 /**
  * Union of valid CSS selector strings for nested style definitions, including CSS at-rules and pseudo-selectors (prefixed with `$`).
  *
- * @remarks In PikaCSS, pseudo-selectors are prefixed with `$` instead of `:` to avoid collisions with CSS property names in object keys (e.g. `$hover` instead of `:hover`).
+ * @remarks In PikaCSS, pseudo-selectors are prefixed with `$` instead of `:` to avoid collisions with CSS property names in object keys (e.g. `$:hover` instead of `:hover`).
  *
  * @example
  * ```ts
- * const selector: CSSSelector = '$hover'
+ * const selector: CSSSelector = '$:hover'
  * const atRule: CSSSelector = '@media (min-width: 768px)'
  * ```
  */
@@ -124,7 +124,7 @@ export type CSSSelector = CSS.AtRules.Nested | CSSPseudos
  *
  * @example
  * ```ts
- * const sel: Selector = '$hover'
+ * const sel: Selector = '$:hover'
  * const custom: Selector = 'dark' // plugin-defined selector
  * ```
  */
@@ -138,7 +138,7 @@ export type Selector = UnionString | ResolvedAutocomplete['Selector'] | CSSSelec
  * @example
  * ```ts
  * const map: StyleDefinitionMap = {
- *   '$hover': { color: 'blue' },
+ *   '$:hover': { color: 'blue' },
  *   '@media (min-width: 768px)': { fontSize: '18px' },
  * }
  * ```
@@ -156,7 +156,7 @@ export type StyleDefinitionMap = {
  * // Flat
  * const flat: StyleDefinition = { color: 'red', fontSize: '16px' }
  * // Nested
- * const nested: StyleDefinition = { '$hover': { color: 'blue' } }
+ * const nested: StyleDefinition = { '$:hover': { color: 'blue' } }
  * ```
  */
 export type StyleDefinition = Properties | StyleDefinitionMap

@@ -119,12 +119,12 @@ defineEnginePlugin({
 ### Signature
 
 ```ts
-transformSelectors?: (selectors: string[]) => string[] | Promise<string[]>
+transformSelectors?: (selectors: string[]) => string[] | void | Promise<string[] | void>
 ```
 
 ### When
 
-Called when selector strings are being resolved during style extraction. Plugins can rewrite, expand, or filter selector values.
+Called when selector strings are being resolved during style extraction. Plugins can rewrite, expand, or filter selector values. Return `void` to leave the current selector list unchanged.
 
 ### Example
 
@@ -144,12 +144,12 @@ defineEnginePlugin({
 ### Signature
 
 ```ts
-transformStyleItems?: (items: InternalStyleItem[]) => InternalStyleItem[] | Promise<InternalStyleItem[]>
+transformStyleItems?: (items: StyleItem[]) => StyleItem[] | void | Promise<StyleItem[] | void>
 ```
 
 ### When
 
-Called when style items are being processed in `engine.use()`. Plugins can inject, remove, or rewrite style items before they are extracted into atomic styles.
+Called when style items are being processed in `engine.use()`. The signature above uses the base exported `StyleItem` alias for readability, but the runtime payload is the resolved, augmentation-aware style item list after any `PikaAugment.StyleItem` extensions are applied. Plugins can inject, remove, or rewrite items before they are extracted into atomic styles. Return `void` to keep the current items unchanged.
 
 ### Example
 
@@ -171,12 +171,12 @@ defineEnginePlugin({
 ### Signature
 
 ```ts
-transformStyleDefinitions?: (definitions: InternalStyleDefinition[]) => InternalStyleDefinition[] | Promise<InternalStyleDefinition[]>
+transformStyleDefinitions?: (definitions: StyleDefinition[]) => StyleDefinition[] | void | Promise<StyleDefinition[] | void>
 ```
 
 ### When
 
-Called after style items are converted to style definitions. Plugins can transform definitions before they are extracted into atomic CSS contents.
+Called after style items are converted to style definitions. The signature above uses the base exported `StyleDefinition` alias for readability, but the runtime payload is the resolved, augmentation-aware definition list after any `PikaAugment.StyleDefinition` extensions are applied. Plugins can transform definitions before they are extracted into atomic CSS contents. Return `void` to keep the current definitions unchanged.
 
 ### Example
 
@@ -262,4 +262,4 @@ defineEnginePlugin({
 
 - [Type Augmentation](/plugin-development/type-augmentation) — extend PikaCSS types.
 - [Create a Plugin](/plugin-development/create-a-plugin) — plugin structure and the defineEnginePlugin helper.
-- [Define Helpers](/plugin-development/define-helpers) — identity helpers for type inference.
+- [Define Helpers](/plugin-development/define-helpers) — `defineEngineConfig` and `defineEnginePlugin`.

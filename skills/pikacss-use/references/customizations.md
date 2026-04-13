@@ -12,7 +12,7 @@
 6. [Per-Style Layer Control (__layer)](#per-style-layer-control)
 7. [Per-Style !important (__important)](#per-style-important)
 8. [CSS Property Syntax](#css-property-syntax)
-9. [Define Helpers](#define-helpers)
+9. [Typed Config Fragments](#typed-config-fragments)
 
 ---
 
@@ -25,11 +25,11 @@ Register variables under `variables.definitions`. Plain values default to `var(-
 ```ts
 export default defineEngineConfig({
   variables: {
-    definitions: defineVariables({
+    definitions: {
       '--color-primary': '#3b82f6',
       '--color-text': '#1a1a1a',
       '--spacing-md': '1rem',
-    }),
+    },
   },
 })
 ```
@@ -41,7 +41,7 @@ Variables can be scoped to CSS selectors for theme switching:
 ```ts
 export default defineEngineConfig({
   variables: {
-    definitions: defineVariables({
+    definitions: {
       // Default (light) — applied to :root
       '--color-bg': '#ffffff',
       '--color-text': '#1a1a1a',
@@ -51,7 +51,7 @@ export default defineEngineConfig({
         '--color-bg': '#1a1a1a',
         '--color-text': '#f5f5f5',
       },
-    }),
+    },
   },
 })
 ```
@@ -70,7 +70,7 @@ If dark mode is toggled via a `data-theme` attribute (e.g. `<html data-theme="da
 
 ```ts
 variables: {
-  definitions: defineVariables({
+  definitions: {
     '--color-bg': '#ffffff',
     '--color-text': '#1a1a1a',
 
@@ -78,7 +78,7 @@ variables: {
       '--color-bg': '#1a1a1a',
       '--color-text': '#f5f5f5',
     },
-  }),
+  },
 }
 ```
 
@@ -88,12 +88,12 @@ Toggle: `document.documentElement.setAttribute('data-theme', 'dark')`
 
 ```ts
 variables: {
-  definitions: defineVariables({
+  definitions: {
     '--color-bg': '#fff',
     '@media (prefers-color-scheme: dark)': {
       '--color-bg': '#1a1a1a',
     },
-  }),
+  },
 }
 ```
 
@@ -104,10 +104,10 @@ variables: {
 
 ```ts
 variables: {
-  definitions: defineVariables({
+  definitions: {
     '--color-accent': '#f00',
     '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
-  }),
+  },
   pruneUnused: true,
   safeList: ['--color-accent'],
 }
@@ -310,14 +310,20 @@ pika({ 'font-size': '16px', 'margin-top': '1rem' })
 
 ---
 
-## Define Helpers
+## Typed Config Fragments
 
-Identity functions from `@pikacss/core` for TypeScript type inference. They accept a value and return it unchanged — useful for extracting reusable config fragments with full editor autocompletion:
+For reusable customization fragments, use plain object literals plus `satisfies` or explicit type annotations. Legacy wrapper helpers should not be suggested anymore.
 
 ```ts
-import { defineStyleDefinition, definePreflight, defineKeyframes, defineSelector, defineShortcut, defineVariables } from '@pikacss/core'
+import type { StyleDefinition, VariablesDefinition } from '@pikacss/core'
 
-const cardStyle = defineStyleDefinition({ padding: '1rem', 'border-radius': '8px' })
-const myReset = definePreflight('*, *::before { box-sizing: border-box; }')
-const spin = defineKeyframes(['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }])
+const cardStyle: StyleDefinition = { padding: '1rem', 'border-radius': '8px' }
+const themeVariables = {
+  '--color-primary': '#3b82f6',
+  '.dark': {
+    '--color-primary': '#60a5fa',
+  },
+} satisfies VariablesDefinition
 ```
+
+Apply the same rule to preflights, keyframes, selectors, and shortcuts: write the config value directly in the shape documented above instead of wrapping it in a helper.
