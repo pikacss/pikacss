@@ -122,7 +122,7 @@ variables: {
 ```ts
 export default defineEngineConfig({
   keyframes: {
-    keyframes: [
+    definitions: [
       ['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }],
       ['fade-in', { '0%': { opacity: '0' }, '100%': { opacity: '1' } }],
     ],
@@ -134,7 +134,7 @@ export default defineEngineConfig({
 
 ```ts
 keyframes: {
-  keyframes: [
+  definitions: [
     { name: 'spin', frames: { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } } },
   ],
 }
@@ -210,7 +210,7 @@ The selector alias and its CSS template must match **the user's chosen dark mode
 
 ```ts
 selectors: {
-  selectors: [
+  definitions: [
     // [alias, actual CSS selector]
     [':hover', '$:hover'],
     [':focus', '$:focus'],
@@ -246,7 +246,7 @@ Named style bundles reusable in pika() calls:
 
 ```ts
 shortcuts: {
-  shortcuts: [
+  definitions: [
     ['flex-center', { display: 'flex', 'align-items': 'center', 'justify-content': 'center' }],
     ['card', {
       padding: '1rem',

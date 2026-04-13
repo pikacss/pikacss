@@ -6,7 +6,7 @@ it('custom selector example output matches engine', async ({ expect }) => {
 	const css = await renderExampleCSS({
 		config: {
 			selectors: {
-				selectors: [
+				definitions: [
 					['@dark', 'html.dark $'],
 				],
 			},

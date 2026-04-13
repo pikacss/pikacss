@@ -966,7 +966,7 @@ Configuration object for the `keyframes` engine option.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `keyframes` | `Keyframes[]` | Array of keyframes definitions to register. | — |
+| `definitions` | `Keyframes[]` | Array of keyframes definitions to register. | — |
 | `pruneUnused?` | `boolean` | Default pruning policy for keyframes that are not referenced by any `animation` or `animation-name` atomic style. | `true` |
 
 **Remarks:**
@@ -975,7 +975,7 @@ Passed via `EngineConfig.keyframes` to register `@keyframes` definitions at engi
 
 ```ts
 const config: KeyframesConfig = {
-  keyframes: [['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }]],
+   definitions: [['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }]],
   pruneUnused: true,
 }
 ```
@@ -1217,7 +1217,7 @@ Configuration object for the `selectors` engine option.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `selectors` | `Selector[]` | Array of selector rule definitions to register. | — |
+| `definitions` | `Selector[]` | Array of selector rule definitions to register. | — |
 
 **Remarks:**
 
@@ -1225,7 +1225,7 @@ Passed via `EngineConfig.selectors` to register selector rules at engine creatio
 
 ```ts
 const config: SelectorsConfig = {
-  selectors: [['hover', '&:hover'], ['focus', '&:focus']],
+   definitions: [['hover', '&:hover'], ['focus', '&:focus']],
 }
 ```
 
@@ -1256,7 +1256,7 @@ Configuration object for the `shortcuts` engine option.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `shortcuts` | `Shortcut[]` | Array of shortcut rule definitions to register. | — |
+| `definitions` | `Shortcut[]` | Array of shortcut rule definitions to register. | — |
 
 **Remarks:**
 
@@ -1264,7 +1264,7 @@ Passed via `EngineConfig.shortcuts` to register shortcut rules at engine creatio
 
 ```ts
 const config: ShortcutsConfig = {
-  shortcuts: [['btn', { padding: '0.5rem 1rem' }]],
+   definitions: [['btn', { padding: '0.5rem 1rem' }]],
 }
 ```
 
@@ -1439,9 +1439,9 @@ Use this form when the variable needs custom autocomplete behaviour or opt-out o
 
 ```ts
 const v: VariableObject = {
- value: '#3b82f6',
- autocomplete: { asValueOf: '*' },
- pruneUnused: false,
+  value: '#3b82f6',
+  autocomplete: { asValueOf: '*' },
+  pruneUnused: false,
 }
 ```
 
@@ -1464,10 +1464,10 @@ Passed via `EngineConfig.variables` to define CSS custom properties, control pru
 
 ```ts
 const config: VariablesConfig = {
-   definitions: {
-     '--color-primary': '#3b82f6',
-     '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
-   },
+  definitions: {
+    '--color-primary': '#3b82f6',
+    '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
+  },
   pruneUnused: true,
   safeList: ['--color-primary'],
 }

@@ -40,13 +40,13 @@ export type Shortcut
  * @example
  * ```ts
  * const config: ShortcutsConfig = {
- *   shortcuts: [['btn', { padding: '0.5rem 1rem' }]],
+ *   definitions: [['btn', { padding: '0.5rem 1rem' }]],
  * }
  * ```
  */
 export interface ShortcutsConfig {
 	/** Array of shortcut rule definitions to register. */
-	shortcuts: Shortcut[]
+	definitions: Shortcut[]
 }
 
 declare module '@pikacss/core' {
@@ -87,7 +87,7 @@ export function shortcuts() {
 		name: 'core:shortcuts',
 
 		rawConfigConfigured(config) {
-			configList = config.shortcuts?.shortcuts ?? []
+			configList = config.shortcuts?.definitions ?? []
 		},
 		configureEngine(_engine) {
 			engine = _engine

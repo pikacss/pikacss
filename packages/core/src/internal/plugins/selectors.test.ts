@@ -6,7 +6,7 @@ describe('selectors plugin', () => {
 	it('registers string, static, and dynamic selectors and records resolved dynamic selectors for autocomplete', async () => {
 		const engine = await createEngine({
 			selectors: {
-				selectors: [
+				definitions: [
 					'group',
 					['hover', '$:hover'],
 					[/^child-(\d+)$/, matched => `$:nth-child(${matched[1]})`, ['child-2']],

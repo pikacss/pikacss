@@ -210,9 +210,9 @@ graph LR
 
 Customization and Official Plugin pages must not use `## Intro` as a heading. Present the introductory content as an opening paragraph directly after the H1, then continue with `## Config`, `## Examples`, etc.
 
-### Double-Layer Config Key Annotation
+### Collection Config Entry Naming
 
-When a plugin's config uses a double-layer key structure (e.g., `selectors: { selectors: [...] }`), add a `:::tip Why the nested key?` container explaining that the outer key is the plugin configuration namespace from type augmentation and the inner key is the actual option. This prevents reader confusion about apparent redundancy.
+When documenting collection-style plugin options, use the canonical `definitions` entry name (for example, `selectors: { definitions: [...] }`, `shortcuts: { definitions: [...] }`, and `keyframes: { definitions: [...] }`). Do not teach or preserve duplicated nested names in examples or explanatory callouts.
 
 ### Content Duplication Prohibition
 

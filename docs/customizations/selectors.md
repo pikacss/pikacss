@@ -19,10 +19,6 @@ The `$` placeholder in a selector value is replaced with the generated atomic cl
 
 ## Config
 
-::: tip Why the nested key?
-The outer `selectors` is the plugin configuration field added to `EngineConfig` via [type augmentation](/plugin-development/type-augmentation). The inner `selectors` is the actual selector list. This two-level structure keeps each feature's options under a single top-level key.
-:::
-
 Selectors can be defined as static pairs or dynamic patterns:
 
 ```ts
@@ -30,7 +26,7 @@ import { defineEngineConfig } from '@pikacss/core'
 
 export default defineEngineConfig({
   selectors: {
-    selectors: [
+    definitions: [
       // Static pair: [name, cssSelector]
       ['@dark', 'html.dark $'],
       ['@light', 'html:not(.dark) $'],

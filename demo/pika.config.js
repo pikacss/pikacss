@@ -14,7 +14,7 @@ export default defineEngineConfig({
 		},
 	},
 	selectors: {
-		selectors: [
+		definitions: [
 			['@light', 'html:not(.dark) $'],
 			['@dark', 'html.dark $'],
 			['@screen-xs', '@media screen and (max-width: 575.9px)'],
@@ -31,7 +31,7 @@ export default defineEngineConfig({
 		],
 	},
 	shortcuts: {
-		shortcuts: [
+		definitions: [
 			['main', {
 				'width': '100dvw',
 				'height': '100dvh',

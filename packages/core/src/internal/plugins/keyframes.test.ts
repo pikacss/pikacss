@@ -6,7 +6,7 @@ describe('keyframes plugin', () => {
 	it('registers tuple keyframes for autocomplete and renders them when animation values use the name', async () => {
 		const engine = await createEngine({
 			keyframes: {
-				keyframes: [
+				definitions: [
 					['fade', { from: { opacity: '0' }, to: { opacity: '1' } }, ['1s ease-in']],
 				],
 			},
@@ -40,7 +40,7 @@ describe('keyframes plugin', () => {
 		const engine = await createEngine({
 			keyframes: {
 				pruneUnused: false,
-				keyframes: [
+				definitions: [
 					{
 						name: 'pulse',
 						frames: { '50%': { opacity: '0.5' } },

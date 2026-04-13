@@ -17,10 +17,6 @@ PikaCSS lets you define keyframe animations in your engine configuration. They a
 
 ## Config
 
-::: tip Why the nested key?
-The outer `keyframes` is the plugin configuration field added to `EngineConfig` via [type augmentation](/plugin-development/type-augmentation). The inner `keyframes` is the actual keyframes list. This two-level structure keeps each feature's options under a single top-level key.
-:::
-
 Keyframes can be defined as tuples or objects:
 
 ```ts
@@ -28,7 +24,7 @@ import { defineEngineConfig } from '@pikacss/core'
 
 export default defineEngineConfig({
   keyframes: {
-    keyframes: [
+    definitions: [
       // Tuple form: [name, frames]
       ['fade-in', {
         from: { opacity: '0' },

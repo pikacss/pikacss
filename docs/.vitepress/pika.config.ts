@@ -7,7 +7,7 @@ export default defineEngineConfig({
 		icons(),
 	],
 	shortcuts: {
-		shortcuts: [
+		definitions: [
 			// Static shortcut
 			['flex-center', {
 				display: 'flex',

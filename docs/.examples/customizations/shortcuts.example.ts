@@ -2,7 +2,7 @@ import { defineEngineConfig } from '@pikacss/core'
 
 export const shortcutsConfig = defineEngineConfig({
 	shortcuts: {
-		shortcuts: [
+		definitions: [
 			['flex-center', {
 				display: 'flex',
 				alignItems: 'center',

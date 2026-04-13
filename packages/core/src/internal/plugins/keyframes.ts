@@ -61,14 +61,14 @@ export type Keyframes
  * @example
  * ```ts
  * const config: KeyframesConfig = {
- *   keyframes: [['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }]],
+ *   definitions: [['spin', { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } }]],
  *   pruneUnused: true,
  * }
  * ```
  */
 export interface KeyframesConfig {
 	/** Array of keyframes definitions to register. */
-	keyframes: Keyframes[]
+	definitions: Keyframes[]
 
 	/**
 	 * Default pruning policy for keyframes that are not referenced by any `animation` or `animation-name` atomic style.
@@ -119,7 +119,7 @@ export function keyframes() {
 			resolveKeyframesConfig = createResolveConfigFn({
 				pruneUnused: config.keyframes?.pruneUnused,
 			})
-			configList = config.keyframes?.keyframes ?? []
+			configList = config.keyframes?.definitions ?? []
 		},
 		configureEngine(engine) {
 			// Register extra properties

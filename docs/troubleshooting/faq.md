@@ -90,7 +90,7 @@ import { defineEngineConfig } from '@pikacss/core'
 
 export default defineEngineConfig({
   selectors: {
-    selectors: [
+    definitions: [
       ['@dark', 'html.dark $'],
       ['@sm', '@media (min-width: 640px)'],
     ],

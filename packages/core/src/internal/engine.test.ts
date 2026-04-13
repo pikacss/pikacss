@@ -49,7 +49,7 @@ describe('createEngine', () => {
 	it('calls extract-level transformStyleItems when a style definition contains nested arrays', async () => {
 		const engine = await createEngine({
 			shortcuts: {
-				shortcuts: [
+				definitions: [
 					['btn', { display: 'flex' }],
 				],
 			},
@@ -195,7 +195,7 @@ describe('engine helpers', () => {
 	it('renders preflight definitions after selector transforms', async () => {
 		const engine = await createEngine({
 			selectors: {
-				selectors: [
+				definitions: [
 					['hover', '$:hover'],
 				],
 			},

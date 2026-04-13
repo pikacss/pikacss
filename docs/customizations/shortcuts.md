@@ -17,10 +17,6 @@ Shortcuts let you define named style combinations that can be referenced as stri
 
 ## Config
 
-::: tip Why the nested key?
-The outer `shortcuts` is the plugin configuration field added to `EngineConfig` via [type augmentation](/plugin-development/type-augmentation). The inner `shortcuts` is the actual shortcut list. This two-level structure keeps each feature's options under a single top-level key.
-:::
-
 Shortcuts can be defined as static pairs or dynamic patterns:
 
 ```ts
@@ -28,7 +24,7 @@ import { defineEngineConfig } from '@pikacss/core'
 
 export default defineEngineConfig({
   shortcuts: {
-    shortcuts: [
+    definitions: [
       // Static pair: [name, styleDefinition]
       ['flex-center', {
         display: 'flex',

@@ -43,13 +43,13 @@ export type Selector
  * @example
  * ```ts
  * const config: SelectorsConfig = {
- *   selectors: [['hover', '&:hover'], ['focus', '&:focus']],
+ *   definitions: [['hover', '&:hover'], ['focus', '&:focus']],
  * }
  * ```
  */
 export interface SelectorsConfig {
 	/** Array of selector rule definitions to register. */
-	selectors: Selector[]
+	definitions: Selector[]
 }
 declare module '@pikacss/core' {
 	interface EngineConfig {
@@ -89,7 +89,7 @@ export function selectors() {
 		name: 'core:selectors',
 
 		rawConfigConfigured(config) {
-			configList = config.selectors?.selectors ?? []
+			configList = config.selectors?.definitions ?? []
 		},
 		configureEngine(_engine) {
 			engine = _engine

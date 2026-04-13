@@ -6,7 +6,7 @@ describe('shortcuts plugin', () => {
 	it('resolves shortcut strings in style items and __shortcut definitions while exposing autocomplete metadata', async () => {
 		const engine = await createEngine({
 			shortcuts: {
-				shortcuts: [
+				definitions: [
 					'plain',
 					['btn', { display: 'flex', alignItems: 'center' }],
 					[/^m-(\d+)$/, matched => ({ margin: `${matched[1]}px` }), ['m-4']],
