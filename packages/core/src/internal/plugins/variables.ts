@@ -1,30 +1,8 @@
 import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
-import { VARIABLE_SEMANTIC_FAMILY_PROPERTIES } from '../generated-property-semantics'
 import { defineEnginePlugin } from '../plugin'
 import { log } from '../utils'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
-
-const VARIABLE_SEMANTIC_TYPE_PROPERTIES = {
-	'color': VARIABLE_SEMANTIC_FAMILY_PROPERTIES.color,
-	'length': VARIABLE_SEMANTIC_FAMILY_PROPERTIES.length,
-	'time': VARIABLE_SEMANTIC_FAMILY_PROPERTIES.time,
-	'number': VARIABLE_SEMANTIC_FAMILY_PROPERTIES.number,
-	'easing': VARIABLE_SEMANTIC_FAMILY_PROPERTIES.easing,
-	'font-family': VARIABLE_SEMANTIC_FAMILY_PROPERTIES['font-family'],
-} as const
-
-/**
- * Semantic type label for a CSS variable, used to derive which CSS properties it can auto-complete as a value for.
- *
- * @remarks Supported semantic families are `'color'`, `'length'`, `'time'`, `'number'`, `'easing'`, and `'font-family'`. Each expands to the CSS properties with a real autocomplete mapping at registration time.
- *
- * @example
- * ```ts
- * const type: VariableSemanticType = 'color'
- * ```
- */
-export type VariableSemanticType = keyof typeof VARIABLE_SEMANTIC_TYPE_PROPERTIES
 
 /**
  * Controls how a CSS variable participates in the autocomplete type surface.
@@ -40,7 +18,7 @@ export interface VariableAutocomplete {
 	/**
 	 * CSS properties (or `'*'` for all, `'-'` for none) where this variable should appear as a `var()` value suggestion.
 	 *
-	 * @default undefined (inferred from `semanticType`, or `'*'` if neither is set)
+	 * @default undefined (`'*'` when unset)
 	 */
 	asValueOf?: Arrayable<UnionString | '*' | '-' | ResolvedCSSProperty>
 	/**
@@ -54,13 +32,12 @@ export interface VariableAutocomplete {
 /**
  * Expanded object form of a CSS variable definition with optional metadata.
  *
- * @remarks Use this form when the variable needs semantic typing, custom autocomplete behaviour, or opt-out of unused-pruning.
+ * @remarks Use this form when the variable needs custom autocomplete behaviour or opt-out of unused-pruning.
  *
  * @example
  * ```ts
  * const v: VariableObject = {
  *   value: '#3b82f6',
- *   semanticType: 'color',
  *   autocomplete: { asValueOf: '*' },
  *   pruneUnused: false,
  * }
@@ -74,15 +51,9 @@ export interface VariableObject {
 	 */
 	value?: ResolvedCSSProperties[`--${string}`]
 	/**
-	 * Semantic family labels controlling which CSS properties this variable auto-completes as a value for.
-	 *
-	 * @default undefined (all properties when `autocomplete.asValueOf` is also unset)
-	 */
-	semanticType?: Arrayable<VariableSemanticType>
-	/**
 	 * Fine-grained control over this variable's autocomplete behaviour.
 	 *
-	 * @default undefined (inferred from `semanticType`)
+	 * @default undefined (`'*'` value suggestions when unset)
 	 */
 	autocomplete?: VariableAutocomplete
 	/**
@@ -96,12 +67,12 @@ export interface VariableObject {
 /**
  * A CSS variable value, either a plain CSS value string/number or a `VariableObject` with metadata.
  *
- * @remarks Use the short form for simple values. Use `VariableObject` when semantic typing, autocomplete control, or pruning opt-out is needed.
+ * @remarks Use the short form for simple values. Use `VariableObject` when autocomplete control or pruning opt-out is needed.
  *
  * @example
  * ```ts
  * const simple: Variable = '#fff'
- * const rich: Variable = { value: '#fff', semanticType: 'color' }
+ * const rich: Variable = { value: '#fff', autocomplete: { asValueOf: ['color'] } }
  * ```
  */
 export type Variable = ResolvedCSSProperties[`--${string}`] | VariableObject
@@ -131,34 +102,18 @@ export type VariablesDefinition = {
  * @example
  * ```ts
  * const config: VariablesConfig = {
- *   colors: { '--color-primary': '#3b82f6' },
- *   others: { '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)' },
+ *   definitions: {
+ *     '--color-primary': '#3b82f6',
+ *     '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
+ *   },
  *   pruneUnused: true,
  *   safeList: ['--color-primary'],
  * }
  * ```
  */
 export interface VariablesConfig {
-	/** Color variables. These automatically infer `semanticType: 'color'`. */
-	colors?: Arrayable<VariablesDefinition>
-
-	/** Length variables. These automatically infer `semanticType: 'length'`. */
-	lengths?: Arrayable<VariablesDefinition>
-
-	/** Time variables. These automatically infer `semanticType: 'time'`. */
-	times?: Arrayable<VariablesDefinition>
-
-	/** Number variables. These automatically infer `semanticType: 'number'`. */
-	numbers?: Arrayable<VariablesDefinition>
-
-	/** Easing variables. These automatically infer `semanticType: 'easing'`. */
-	easings?: Arrayable<VariablesDefinition>
-
-	/** Font-family variables. These automatically infer `semanticType: 'font-family'`. */
-	fontFamilies?: Arrayable<VariablesDefinition>
-
-	/** Variables without a semantic bucket. These keep the default untyped autocomplete behaviour. */
-	others?: Arrayable<VariablesDefinition>
+	/** CSS variable definitions to register. Later entries override earlier ones when keys overlap. */
+	definitions?: Arrayable<VariablesDefinition>
 
 	/**
 	 * Default pruning policy for variables that are not referenced by any atomic style or preflight.
@@ -338,29 +293,15 @@ function normalizeVariablesConfig(config?: VariablesConfig): VariablesDefinition
 		return []
 
 	const merged: VariablesDefinition = {}
-	mergeVariablesBucket(merged, config.colors, 'color')
-	mergeVariablesBucket(merged, config.lengths, 'length')
-	mergeVariablesBucket(merged, config.times, 'time')
-	mergeVariablesBucket(merged, config.numbers, 'number')
-	mergeVariablesBucket(merged, config.easings, 'easing')
-	mergeVariablesBucket(merged, config.fontFamilies, 'font-family')
-	mergeVariablesBucket(merged, config.others)
+
+	if (config.definitions != null) {
+		[config.definitions].flat()
+			.forEach(definition => mergeVariablesDefinition(merged, definition))
+	}
 
 	return Object.keys(merged).length > 0
 		? [merged]
 		: []
-}
-
-function mergeVariablesBucket(
-	target: VariablesDefinition,
-	definitions: Arrayable<VariablesDefinition> | undefined,
-	semanticType?: VariableSemanticType,
-) {
-	if (definitions == null)
-		return
-
-	[definitions].flat()
-		.forEach(definition => mergeVariablesDefinition(target, applyBucketSemanticType(definition, semanticType)))
 }
 
 function mergeVariablesDefinition(target: VariablesDefinition, source: VariablesDefinition): VariablesDefinition {
@@ -374,54 +315,6 @@ function mergeVariablesDefinition(target: VariablesDefinition, source: Variables
 	}
 
 	return target
-}
-
-function applyBucketSemanticType(definition: VariablesDefinition, semanticType?: VariableSemanticType): VariablesDefinition {
-	const result: VariablesDefinition = {}
-
-	for (const [key, value] of Object.entries(definition)) {
-		if (key.startsWith('--')) {
-			if (semanticType == null) {
-				result[key as keyof VariablesDefinition] = value as Variable
-				continue
-			}
-
-			if (isPlainObjectRecord(value)) {
-				const variableValue = value as VariableObject
-				result[key as keyof VariablesDefinition] = {
-					...variableValue,
-					semanticType: mergeSemanticTypes(semanticType, variableValue.semanticType),
-				}
-				continue
-			}
-
-			result[key as keyof VariablesDefinition] = {
-				value: value as ResolvedCSSProperties[`--${string}`],
-				semanticType,
-			}
-			continue
-		}
-
-		result[key as keyof VariablesDefinition] = isPlainObjectRecord(value)
-			? applyBucketSemanticType(value as VariablesDefinition, semanticType)
-			: value as Variable
-	}
-
-	return result
-}
-
-function mergeSemanticTypes(
-	semanticType: VariableSemanticType,
-	existingSemanticType?: Arrayable<VariableSemanticType>,
-): Arrayable<VariableSemanticType> {
-	const merged = Array.from(new Set([
-		semanticType,
-		...(existingSemanticType == null ? [] : [existingSemanticType].flat()),
-	]))
-
-	return merged.length === 1
-		? merged[0]!
-		: merged
 }
 
 function isPlainObjectRecord(value: unknown): value is Record<string, unknown> {
@@ -439,7 +332,6 @@ function createResolveVariablesFn({
 				const isObject = isPlainObjectRecord(value)
 				const {
 					value: varValue,
-					semanticType,
 					autocomplete = {},
 					pruneUnused = defaultPruneUnused,
 				} = (isObject ? value : { value }) as VariableObject
@@ -449,9 +341,7 @@ function createResolveVariablesFn({
 					selector: levels.length > 0 ? levels : [':root'],
 					autocomplete: {
 						asValueOf: resolveAutocompleteValueTargets({
-							name: key,
 							asValueOf: autocomplete.asValueOf,
-							semanticType,
 						}),
 						asProperty: autocomplete.asProperty ?? true,
 					},
@@ -474,21 +364,13 @@ function createResolveVariablesFn({
 }
 
 function resolveAutocompleteValueTargets({
-	name,
 	asValueOf,
-	semanticType,
 }: {
-	name: string
 	asValueOf?: Arrayable<UnionString | '*' | '-' | ResolvedCSSProperty>
-	semanticType?: Arrayable<VariableSemanticType>
 }) {
 	const explicitTargets = asValueOf == null
 		? []
 		: [asValueOf].flat()
-				.map(value => String(value))
-	const semanticTypes = semanticType == null
-		? []
-		: [semanticType].flat()
 				.map(value => String(value))
 
 	if (explicitTargets.includes('-'))
@@ -496,21 +378,11 @@ function resolveAutocompleteValueTargets({
 
 	const targets = new Set<string>()
 
-	if (asValueOf == null && semanticTypes.length === 0)
+	if (asValueOf == null)
 		targets.add('*')
 
 	explicitTargets.forEach((target) => {
 		targets.add(target)
-	})
-
-	semanticTypes.forEach((family) => {
-		const properties = VARIABLE_SEMANTIC_TYPE_PROPERTIES[family as VariableSemanticType]
-		if (properties != null) {
-			properties.forEach(property => targets.add(property))
-			return
-		}
-
-		log.warn(`Unknown semanticType "${family}" for variable "${name}". Skipping semantic autocomplete expansion.`)
 	})
 
 	if (targets.has('*'))

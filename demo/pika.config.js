@@ -9,7 +9,7 @@ export default defineEngineConfig({
 		reset(),
 	],
 	variables: {
-		colors: {
+		definitions: {
 			'--color-primary': '#ff007f',
 		},
 	},

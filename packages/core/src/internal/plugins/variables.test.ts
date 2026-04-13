@@ -21,7 +21,7 @@ describe('variables helpers', () => {
 })
 
 describe('variables plugin', () => {
-	it('renders transitively used variables, infers semantic buckets, respects autocomplete flags, and warns on invalid config shapes', async () => {
+	it('renders transitively used variables, respects autocomplete flags, and warns on invalid config shapes', async () => {
 		const warn = vi.fn()
 		log.setWarnFn((_prefix, ...args) => warn(...args))
 
@@ -30,17 +30,13 @@ describe('variables plugin', () => {
 				{ body: { color: 'var(--alias)' } },
 			],
 			variables: {
-				colors: {
+				definitions: {
 					'--color': '#fff',
 					'[data-theme="dark"]': {
 						'--color': '#000',
 					},
-				},
-				others: {
 					'--alias': { value: 'var(--color)', autocomplete: { asValueOf: ['backgroundColor'], asProperty: false } },
 					'--manual': { value: null, autocomplete: { asValueOf: '-' } },
-					'--angle': { value: '1turn', semanticType: 'angle' as any },
-					'--mystery': { value: '1rem', semanticType: 'mystery' as any },
 					'.invalid': 'broken' as any,
 				},
 			},
@@ -57,33 +53,29 @@ describe('variables plugin', () => {
 			.toContain('[data-theme="dark"]{--color:#000;}')
 		expect(preflights.includes('--manual'))
 			.toBe(false)
-		expect(engine.config.autocomplete.cssProperties.get('color'))
+		expect(engine.config.autocomplete.cssProperties.get('*'))
 			.toContain('var(--color)')
 		expect(engine.config.autocomplete.cssProperties.get('backgroundColor'))
 			.toContain('var(--alias)')
 		expect(engine.config.autocomplete.extraCssProperties.has('--alias'))
 			.toBe(false)
 		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Unknown semanticType "angle"')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Unknown semanticType "mystery"')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
 			.includes('Invalid variables scope for selector ".invalid"')))
 			.toBe(true)
 	})
 
-	it('merges semantic buckets in order and lets others override earlier buckets', async () => {
+	it('merges definitions in order and lets later entries override earlier ones', async () => {
 		const engine = await createEngine({
 			variables: {
-				colors: {
-					'--shared': 'red',
-				},
-				others: {
-					'--shared': { value: 'pink', autocomplete: { asValueOf: '-' } },
-					'--plain': '1rem',
-				},
+				definitions: [
+					{
+						'--shared': 'red',
+					},
+					{
+						'--shared': { value: 'pink', autocomplete: { asValueOf: '-' } },
+						'--plain': '1rem',
+					},
+				],
 			},
 		})
 
@@ -102,7 +94,7 @@ describe('variables plugin', () => {
 		const engine = await createEngine({
 			variables: {
 				safeList: ['--safe'],
-				others: {
+				definitions: {
 					'--safe': 'red',
 					'--kept': { value: 'blue', pruneUnused: false },
 				},
@@ -126,7 +118,7 @@ describe('variables plugin', () => {
 				{ body: { color: 'var(--missing)' } },
 			],
 			variables: {
-				others: {
+				definitions: {
 					'--size': '1rem',
 				},
 			},
@@ -147,7 +139,7 @@ describe('variables plugin', () => {
 	it('expands duplicate transitive refs through the variables preflight without duplicating emitted leaves', async () => {
 		const engine = await createEngine({
 			variables: {
-				others: {
+				definitions: {
 					'--base': 'red',
 					'--alias-a': 'var(--base)',
 					'--alias-b': 'var(--base)',
@@ -172,7 +164,7 @@ describe('variables plugin', () => {
 	it('skips null-valued variable entries and missing varMap entries during transitive expansion', async () => {
 		const engine = await createEngine({
 			variables: {
-				others: {
+				definitions: {
 					'--null-val': { value: null },
 					'--refs-null': { value: 'var(--null-val) var(--nonexistent)' },
 				},
@@ -191,7 +183,7 @@ describe('variables plugin', () => {
 	it('expands transitive variable references through tuple-valued (fallback) entries', async () => {
 		const engine = await createEngine({
 			variables: {
-				others: {
+				definitions: {
 					'--base': '1px',
 					'--with-fallback': { value: ['var(--base)', ['solid']] },
 				},

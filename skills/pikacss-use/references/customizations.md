@@ -18,20 +18,18 @@
 
 ## Variables and Theming
 
-Use semantic buckets when variables should autocomplete against matching CSS properties. Supported buckets are `colors`, `lengths`, `times`, `numbers`, `easings`, and `fontFamilies`. Put uncategorized variables in `others`.
+Register variables under `variables.definitions`. Plain values default to `var(--token)` suggestions for all CSS properties. Use the object form when you need manual autocomplete control or want to disable suggestions with `autocomplete.asValueOf: '-'`.
 
 ### Basic Variables
 
 ```ts
 export default defineEngineConfig({
   variables: {
-    colors: {
+    definitions: defineVariables({
       '--color-primary': '#3b82f6',
       '--color-text': '#1a1a1a',
-    },
-    lengths: {
       '--spacing-md': '1rem',
-    },
+    }),
   },
 })
 ```
@@ -43,7 +41,7 @@ Variables can be scoped to CSS selectors for theme switching:
 ```ts
 export default defineEngineConfig({
   variables: {
-    colors: {
+    definitions: defineVariables({
       // Default (light) — applied to :root
       '--color-bg': '#ffffff',
       '--color-text': '#1a1a1a',
@@ -53,7 +51,7 @@ export default defineEngineConfig({
         '--color-bg': '#1a1a1a',
         '--color-text': '#f5f5f5',
       },
-    },
+    }),
   },
 })
 ```
@@ -72,7 +70,7 @@ If dark mode is toggled via a `data-theme` attribute (e.g. `<html data-theme="da
 
 ```ts
 variables: {
-  colors: {
+  definitions: defineVariables({
     '--color-bg': '#ffffff',
     '--color-text': '#1a1a1a',
 
@@ -80,7 +78,7 @@ variables: {
       '--color-bg': '#1a1a1a',
       '--color-text': '#f5f5f5',
     },
-  },
+  }),
 }
 ```
 
@@ -90,12 +88,12 @@ Toggle: `document.documentElement.setAttribute('data-theme', 'dark')`
 
 ```ts
 variables: {
-  colors: {
+  definitions: defineVariables({
     '--color-bg': '#fff',
     '@media (prefers-color-scheme: dark)': {
       '--color-bg': '#1a1a1a',
     },
-  },
+  }),
 }
 ```
 
@@ -106,8 +104,10 @@ variables: {
 
 ```ts
 variables: {
-  colors: { '--color-accent': '#f00' },
-  others: { '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)' },
+  definitions: defineVariables({
+    '--color-accent': '#f00',
+    '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
+  }),
   pruneUnused: true,
   safeList: ['--color-accent'],
 }

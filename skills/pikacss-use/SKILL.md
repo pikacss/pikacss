@@ -170,12 +170,12 @@ These options are added to `EngineConfig` via TypeScript module augmentation by 
 | `important` | `ImportantConfig` | Add `!important` to all utilities |
 | `selectors` | `SelectorsConfig` | Named selector aliases (pseudo-classes, media queries) |
 | `shortcuts` | `ShortcutsConfig` | Named style shortcuts reusable in `pika()` calls |
-| `variables` | `VariablesConfig` | CSS custom properties grouped by semantic buckets, with scoping and pruning |
+| `variables` | `VariablesConfig` | CSS custom properties registered under `definitions`, with scoping, autocomplete control, and pruning |
 | `keyframes` | `KeyframesConfig` | Named `@keyframes` definitions with pruning |
 
 For detailed usage of these options (variables with dark mode, keyframes, preflights, selectors config, shortcuts with nested selectors, `__layer`/`__important` per-style control), see `references/customizations.md`.
 
-**Dark mode / theming note**: When configuring `variables` buckets with scoped selectors and `selectors` aliases for dark mode, the scoped key and alias CSS template must match **the project's actual dark mode mechanism** (class-based `html.dark`, data-attribute `[data-theme="dark"]`, or media query). Read the reference for examples of each approach.
+**Dark mode / theming note**: When configuring `variables.definitions` with scoped selectors and `selectors` aliases for dark mode, the scoped key and alias CSS template must match **the project's actual dark mode mechanism** (class-based `html.dark`, data-attribute `[data-theme="dark"]`, or media query). Read the reference for examples of each approach.
 
 ### cssImports vs preflights
 

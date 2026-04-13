@@ -1393,11 +1393,11 @@ A CSS variable value, either a plain CSS value string/number or a `VariableObjec
 
 **Remarks:**
 
-Use the short form for simple values. Use `VariableObject` when semantic typing, autocomplete control, or pruning opt-out is needed.
+Use the short form for simple values. Use `VariableObject` when autocomplete control or pruning opt-out is needed.
 
 ```ts
 const simple: Variable = '#fff'
-const rich: Variable = { value: '#fff', semanticType: 'color' }
+const rich: Variable = { value: '#fff', autocomplete: { asValueOf: ['color'] } }
 ```
 
 <br>
@@ -1409,7 +1409,7 @@ Controls how a CSS variable participates in the autocomplete type surface.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `asValueOf?` | `Arrayable<UnionString \| '*' \| '-' \| ResolvedCSSProperty>` | CSS properties (or `'*'` for all, `'-'` for none) where this variable should appear as a `var()` value suggestion. | `undefined (inferred from `semanticType`, or `'*'` if neither is set)` |
+| `asValueOf?` | `Arrayable<UnionString \| '*' \| '-' \| ResolvedCSSProperty>` | CSS properties (or `'*'` for all, `'-'` for none) where this variable should appear as a `var()` value suggestion. | `undefined (`'*'` when unset)` |
 | `asProperty?` | `boolean` | Whether this variable name should appear as an extra CSS property in the autocomplete surface. | `true` |
 
 **Remarks:**
@@ -1430,20 +1430,18 @@ Expanded object form of a CSS variable definition with optional metadata.
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `value?` | `ResolvedCSSProperties[`--${string}`]` | The CSS value assigned to this variable. | `undefined (variable is registered for autocomplete only, no value emitted)` |
-| `semanticType?` | `Arrayable<VariableSemanticType>` | Semantic family labels controlling which CSS properties this variable auto-completes as a value for. | `undefined (all properties when `autocomplete.asValueOf` is also unset)` |
-| `autocomplete?` | `VariableAutocomplete` | Fine-grained control over this variable's autocomplete behaviour. | `undefined (inferred from `semanticType`)` |
+| `autocomplete?` | `VariableAutocomplete` | Fine-grained control over this variable's autocomplete behaviour. | `undefined (`'*'` value suggestions when unset)` |
 | `pruneUnused?` | `boolean` | Whether this variable should be pruned from the output when it is not referenced by any atomic style or preflight. | `true (inherits from `VariablesConfig.pruneUnused`)` |
 
 **Remarks:**
 
-Use this form when the variable needs semantic typing, custom autocomplete behaviour, or opt-out of unused-pruning.
+Use this form when the variable needs custom autocomplete behaviour or opt-out of unused-pruning.
 
 ```ts
 const v: VariableObject = {
-  value: '#3b82f6',
-  semanticType: 'color',
-  autocomplete: { asValueOf: '*' },
-  pruneUnused: false,
+ value: '#3b82f6',
+ autocomplete: { asValueOf: '*' },
+ pruneUnused: false,
 }
 ```
 
@@ -1456,13 +1454,7 @@ Configuration object for the `variables` engine option.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `colors?` | `Arrayable<VariablesDefinition>` | Color variables. These automatically infer `semanticType: 'color'`. | — |
-| `lengths?` | `Arrayable<VariablesDefinition>` | Length variables. These automatically infer `semanticType: 'length'`. | — |
-| `times?` | `Arrayable<VariablesDefinition>` | Time variables. These automatically infer `semanticType: 'time'`. | — |
-| `numbers?` | `Arrayable<VariablesDefinition>` | Number variables. These automatically infer `semanticType: 'number'`. | — |
-| `easings?` | `Arrayable<VariablesDefinition>` | Easing variables. These automatically infer `semanticType: 'easing'`. | — |
-| `fontFamilies?` | `Arrayable<VariablesDefinition>` | Font-family variables. These automatically infer `semanticType: 'font-family'`. | — |
-| `others?` | `Arrayable<VariablesDefinition>` | Variables without a semantic bucket. These keep the default untyped autocomplete behaviour. | — |
+| `definitions?` | `Arrayable<VariablesDefinition>` | CSS variable definitions to register. Later entries override earlier ones when keys overlap. | — |
 | `pruneUnused?` | `boolean` | Default pruning policy for variables that are not referenced by any atomic style or preflight. | `true` |
 | `safeList?` | `(`--${string}` & {})[]` | Variable names that should always be emitted regardless of usage. | `[]` |
 
@@ -1472,8 +1464,10 @@ Passed via `EngineConfig.variables` to define CSS custom properties, control pru
 
 ```ts
 const config: VariablesConfig = {
-  colors: { '--color-primary': '#3b82f6' },
-  others: { '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)' },
+   definitions: {
+     '--color-primary': '#3b82f6',
+     '--shadow-elevated': '0 12px 40px rgb(0 0 0 / 0.12)',
+   },
   pruneUnused: true,
   safeList: ['--color-primary'],
 }
@@ -1495,23 +1489,6 @@ const def: VariablesDefinition = {
   '--color-primary': '#3b82f6',
   '.dark': { '--color-primary': '#60a5fa' },
 }
-```
-
-<br>
-<br>
-
-### VariableSemanticType {#type-variablesemantictype}
-
-Semantic type label for a CSS variable, used to derive which CSS properties it can auto-complete as a value for.
-
-**Type:** `"number" | "color" | "font-family" | "length" | "time" | "easing"`
-
-**Remarks:**
-
-Supported semantic families are `'color'`, `'length'`, `'time'`, `'number'`, `'easing'`, and `'font-family'`. Each expands to the CSS properties with a real autocomplete mapping at registration time.
-
-```ts
-const type: VariableSemanticType = 'color'
 ```
 
 <br>
