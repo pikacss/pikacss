@@ -59,8 +59,7 @@
 		"@nuxt/schema": "catalog:"
 	},
 	"dependencies": {
-		"@pikacss/unplugin-pikacss": "workspace:*",
-		"pathe": "catalog:"
+		"@pikacss/unplugin-pikacss": "workspace:*"
 	},
 	"devDependencies": {
 		"@nuxt/kit": "catalog:",

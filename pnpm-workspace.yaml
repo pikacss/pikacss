@@ -10,12 +10,10 @@ packages:
   - packages/*
 
 catalog:
-  '@braintree/sanitize-url': ^7.1.2
   '@clack/prompts': ^1.2.0
   '@deviltea/eslint-config': ^7.0.0
   '@deviltea/tsconfig': ^0.0.9
   '@iconify-json/line-md': ^1.2.16
-  '@iconify-json/mdi': ^1.2.3
   '@iconify/utils': ^3.1.0
   '@mdn/browser-compat-data': ^7.3.9
   '@nuxt/kit': ^4.4.2
@@ -24,11 +22,8 @@ catalog:
   '@types/node': ^24.12.0
   '@vitejs/plugin-vue': ^6.0.5
   '@vitest/coverage-v8': ^4.1.2
+  '@webref/css': ^8.5.3
   alien-signals: ^3.1.2
-  cytoscape: ^3.33.1
-  cytoscape-cose-bilkent: ^4.1.0
-  dayjs: ^1.11.20
-  debug: ^4.4.3
   esbuild: ^0.27.4
   eslint: ^10.1.0
   globby: ^16.2.0
@@ -42,11 +37,9 @@ catalog:
   mdn-data: ^2.27.1
   mermaid: ^11.13.0
   ofetch: ^1.5.1
-  oxc-parser: ^0.121.0
   pathe: ^2.0.3
   perfect-debounce: ^2.1.0
   pkg-pr-new: ^0.0.63
-  pkg-size: ^2.4.0
   publint: ^0.3.18
   repomix: ^1.13.1
   simple-git-hooks: ^2.13.1
@@ -62,7 +55,6 @@ catalog:
   vitepress-plugin-mermaid: ^2.0.17
   vitest: ^4.1.2
   vue: ^3.5.31
-  vue-eslint-parser: ^10.4.0
   vue-tsc: ^3.2.6
   web-features: ^3.22.1
   zx: ^8.8.5
