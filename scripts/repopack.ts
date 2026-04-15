@@ -44,7 +44,7 @@ async function main() {
 	for (const pkg of packages.filter(n => !n.startsWith('_'))) {
 		console.log(`Packing package: ${pkg}...`)
 		const pkgInclude = `packages/${pkg}/src/**/*,packages/${pkg}/tests/**/*`
-		const pkgIgnore = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/csstype.ts'
+		const pkgIgnore = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/generated/**'
 
 		const resPkg = await $`repomix . --output repomix/repomix-${pkg}.txt --style plain --compress --remove-empty-lines --top-files-len 10 --include ${pkgInclude} --ignore ${pkgIgnore} --no-security-check`.quiet()
 
@@ -70,7 +70,7 @@ async function main() {
 	const allPkgIncludes = packages.map(pkg => `packages/${pkg}/src/**/*,packages/${pkg}/tests/**/*`)
 		.join(',')
 	const allInclude = `${docsInclude},${allPkgIncludes}`
-	const allPkgIgnores = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/csstype.ts'
+	const allPkgIgnores = '**/node_modules/**,**/dist/**,**/coverage/**,packages/core/src/generated/**'
 	const commonIgnore = '**/node_modules/**,docs/.vitepress/**,docs/**/*.svg,docs/public/**,**/dist/**,**/coverage/**'
 	const allIgnore = `${commonIgnore},${allPkgIgnores}`
 

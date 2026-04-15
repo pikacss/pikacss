@@ -45,7 +45,7 @@ Validation: `pnpm maintain-docs:gen-api` + `pnpm maintain-jsdocs:lint`
 - `dist/`, `coverage/`, generated outputs
 - `*.test.ts`, `*.spec.ts`
 - `pika.gen.ts`, `pika.gen.css`
-- `csstype.ts`
+- `generated-*.ts`
 
 ## Execution guide
 

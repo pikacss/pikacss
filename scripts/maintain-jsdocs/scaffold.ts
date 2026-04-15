@@ -9,7 +9,7 @@ import {
 	workspaceRoot,
 } from '../_skill-shared'
 
-const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'csstype.ts', 'generated-']
+const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'generated-']
 const RE_LINE_INDENT = /^(\s*)/
 const RE_TODO_FILL = /@todo FILL/g
 const RE_EXCESSIVE_NEWLINES = /\n{3,}/g

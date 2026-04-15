@@ -9,7 +9,7 @@ import {
 	workspaceRoot,
 } from '../_skill-shared'
 
-const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'csstype.ts', 'generated-', '/dist/', '/coverage/', '/node_modules/']
+const EXCLUDED_PATTERNS = ['.test.ts', '.spec.ts', 'pika.gen.', 'generated-', '/dist/', '/coverage/', '/node_modules/']
 const RE_BACKTICK_CODE_SPAN = /`[^`]*`/g
 const RE_LITERAL_ESCAPES = /\\n|\\t|\\r/
 const RE_UNFILLED_TODO = /@todo\s+FILL/i

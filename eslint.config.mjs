@@ -16,7 +16,7 @@ export default await deviltea(
 			'./docs/**/*.md',
 			'./skills/**/*.md',
 			// Ignore the generated files
-			'packages/core/src/csstype.ts',
+			'packages/core/src/generated/**',
 		],
 	},
 	pikacss(),
