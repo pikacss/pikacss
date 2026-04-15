@@ -1,27 +1,32 @@
 /**
  * CSS TypeScript type definitions generator.
  *
- * Reads CSS metadata from `mdn-data` and `@mdn/browser-compat-data` and generates
- * a self-contained TypeScript file at `packages/core/src/csstype.ts`.
+ * Reads processed CSS metadata from `scripts/css-data` and generates
+	* a self-contained TypeScript file at `packages/core/src/generated/csstype.ts`.
  *
  * Usage:
- *   pnpm tsx packages/core/scripts/generate-csstype.ts
+ *   pnpm generate:core:csstype
  */
 
-import type { CSSAtRuleData, CSSPropertyData, CSSSelectorData, CSSSyntaxData } from './mdn-data-types'
+import type {
+	ProcessedCssAtRule,
+	ProcessedCssCompatibility,
+	ProcessedCssProperty,
+	ProcessedCssSelector,
+	ProcessedCssSyntax,
+} from './types'
 import fs from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import bcd from '@mdn/browser-compat-data'
-// @ts-expect-error - mdn-data doesn't have types, so we import as any and assert types above
-import mdnData from 'mdn-data'
+import process from 'node:process'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'pathe'
-import { features as webFeatures } from 'web-features'
+
+import { loadProcessedCssData } from './index'
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const OUTPUT_PATH = path.resolve(__dirname, '..', 'src', 'csstype.ts')
+const OUTPUT_PATH = path.resolve(__dirname, '..', '..', 'packages', 'core', 'src', 'generated', 'csstype.ts')
 const RE_OPTIONAL_MULTIPLIER = /\{[\d,]+\}\s*$/
 const RE_OPTIONAL_SUFFIX = /[?+*#]+\s*$/
 const RE_FUNCTION_CALL = /^[\w-]+\(/
@@ -41,216 +46,16 @@ const RE_GENERIC_SUFFIX = /<.*>$/
 // 1. DATA LOADING
 // ---------------------------------------------------------------------------
 
-const mdnProperties = mdnData.css.properties as Record<string, CSSPropertyData>
-const mdnSyntaxes = mdnData.css.syntaxes as Record<string, CSSSyntaxData>
-const mdnAtRules = mdnData.css.atRules as Record<string, CSSAtRuleData>
-const mdnSelectors = mdnData.css.selectors as Record<string, CSSSelectorData>
-
-// Patch syntaxes with missing entries
-const patchedSyntaxes: Record<string, CSSSyntaxData> = {
-	...mdnSyntaxes,
-	'hex-color': { syntax: '<string>' },
-	'reversed-counter-name': { syntax: '<string>' },
-	'dashed-ident': { syntax: '<string>' },
-	'unicode-range-token': { syntax: '<string>' },
-	'declaration-value': { syntax: '<string>' },
-	'autospace': { syntax: 'no-autospace | [ ideograph-alpha || ideograph-numeric || punctuation ] || [ insert | replace ]' },
-	'content-list': { syntax: '[ <string> | <image> | <attr()> | <quote> | <counter> ]+' },
-	// SVG paint
-	'paint': { syntax: 'none | child | child(<integer>) | <color> | <url> [ none | <color> ]? | context-fill | context-stroke' },
-	'dasharray': { syntax: '[ <length> | <percentage> | <number> ]#' },
+interface PropertyEntry extends Pick<ProcessedCssProperty, 'syntax' | 'initial' | 'inherited' | 'status' | 'compatibility'> {
+	mdnUrl?: string
+	groups: string[]
 }
 
-// SVG properties to merge
-const svgProperties: Record<string, Pick<CSSPropertyData, 'syntax' | 'initial' | 'inherited'>> = {
-	'alignment-baseline': {
-		syntax: 'auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical',
-		initial: 'see property description',
-		inherited: false,
-	},
-	'baseline-shift': {
-		syntax: 'baseline | sub | super | <percentage> | <length>',
-		initial: 'baseline',
-		inherited: false,
-	},
-	'clip-rule': {
-		syntax: 'nonzero | evenodd',
-		initial: 'nonzero',
-		inherited: true,
-	},
-	'color-interpolation': {
-		syntax: 'auto | sRGB | linearRGB',
-		initial: 'sRGB',
-		inherited: true,
-	},
-	'color-rendering': {
-		syntax: 'auto | optimizeSpeed | optimizeQuality',
-		initial: 'auto',
-		inherited: true,
-	},
-	'dominant-baseline': {
-		syntax: 'auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge',
-		initial: 'auto',
-		inherited: false,
-	},
-	'fill': {
-		syntax: '<paint>',
-		initial: 'black',
-		inherited: true,
-	},
-	'fill-opacity': {
-		syntax: '<number>',
-		initial: '1',
-		inherited: true,
-	},
-	'fill-rule': {
-		syntax: 'nonzero | evenodd',
-		initial: 'nonzero',
-		inherited: true,
-	},
-	'flood-color': {
-		syntax: 'currentColor | <color>',
-		initial: 'black',
-		inherited: false,
-	},
-	'flood-opacity': {
-		syntax: '<number>',
-		initial: '1',
-		inherited: false,
-	},
-	'glyph-orientation-vertical': {
-		syntax: 'auto | <angle> | <number>',
-		initial: 'auto',
-		inherited: true,
-	},
-	'lighting-color': {
-		syntax: 'currentColor | <color>',
-		initial: 'white',
-		inherited: false,
-	},
-	'marker': {
-		syntax: 'none | <url>',
-		initial: 'none',
-		inherited: true,
-	},
-	'marker-end': {
-		syntax: 'none | <url>',
-		initial: 'none',
-		inherited: true,
-	},
-	'marker-mid': {
-		syntax: 'none | <url>',
-		initial: 'none',
-		inherited: true,
-	},
-	'marker-start': {
-		syntax: 'none | <url>',
-		initial: 'none',
-		inherited: true,
-	},
-	'shape-rendering': {
-		syntax: 'auto | optimizeSpeed | crispEdges | geometricPrecision',
-		initial: 'auto',
-		inherited: true,
-	},
-	'stop-color': {
-		syntax: 'currentColor | <color>',
-		initial: 'black',
-		inherited: false,
-	},
-	'stop-opacity': {
-		syntax: '<number>',
-		initial: '1',
-		inherited: false,
-	},
-	'stroke': {
-		syntax: '<paint>',
-		initial: 'none',
-		inherited: true,
-	},
-	'stroke-dasharray': {
-		syntax: 'none | <dasharray>',
-		initial: 'none',
-		inherited: true,
-	},
-	'stroke-dashoffset': {
-		syntax: '<percentage> | <length>',
-		initial: '0',
-		inherited: true,
-	},
-	'stroke-linecap': {
-		syntax: 'butt | round | square',
-		initial: 'butt',
-		inherited: true,
-	},
-	'stroke-linejoin': {
-		syntax: 'miter | round | bevel',
-		initial: 'miter',
-		inherited: true,
-	},
-	'stroke-miterlimit': {
-		syntax: '<number>',
-		initial: '4',
-		inherited: true,
-	},
-	'stroke-opacity': {
-		syntax: '<number>',
-		initial: '1',
-		inherited: true,
-	},
-	'stroke-width': {
-		syntax: '<percentage> | <length>',
-		initial: '1',
-		inherited: true,
-	},
-	'text-anchor': {
-		syntax: 'start | middle | end',
-		initial: 'start',
-		inherited: true,
-	},
-	'vector-effect': {
-		syntax: 'non-scaling-stroke | none',
-		initial: 'none',
-		inherited: false,
-	},
-}
-
-// Build merged property map — mdn-data properties + SVG-only properties
-interface PropertyEntry {
-	syntax: string
-	initial: string | string[]
-	inherited: boolean
-	mdn_url?: string
-	status?: string
-	groups?: string[]
-}
-
-const allProperties: Record<string, PropertyEntry> = {}
-
-for (const [name, data] of Object.entries(mdnProperties)) {
-	// Skip custom properties and internal entries
-	if (name === '--*')
-		continue
-	allProperties[name] = {
-		syntax: data.syntax,
-		initial: data.initial,
-		inherited: data.inherited,
-		mdn_url: data.mdn_url,
-		status: data.status,
-		groups: data.groups,
-	}
-}
-
-// Merge SVG properties (only add if not already present)
-for (const [name, data] of Object.entries(svgProperties)) {
-	if (!allProperties[name]) {
-		allProperties[name] = {
-			syntax: data.syntax,
-			initial: typeof data.initial === 'string' ? data.initial : '',
-			inherited: data.inherited,
-		}
-	}
-}
+const processedCssData = loadProcessedCssData()
+const allProperties: Record<string, PropertyEntry> = processedCssData.properties
+const patchedSyntaxes: Record<string, ProcessedCssSyntax> = processedCssData.syntaxes
+const processedAtRules: Record<string, ProcessedCssAtRule> = processedCssData.atRules
+const processedSelectors: Record<string, ProcessedCssSelector> = processedCssData.selectors
 
 // ---------------------------------------------------------------------------
 // 2. CSS SYNTAX PARSER
@@ -368,7 +173,7 @@ function dedup(components: TypeComponent[]): TypeComponent[] {
 
 function parseSyntaxToTypes(
 	syntax: string,
-	syntaxes: Record<string, CSSSyntaxData>,
+	syntaxes: Record<string, ProcessedCssSyntax>,
 	visited?: Set<string>,
 ): TypeComponent[] {
 	if (!syntax)
@@ -427,7 +232,7 @@ function splitAlternatives(syntax: string): string[] {
 
 function parseAlternative(
 	alt: string,
-	syntaxes: Record<string, CSSSyntaxData>,
+	syntaxes: Record<string, ProcessedCssSyntax>,
 	visited: Set<string>,
 	components: TypeComponent[],
 ): void {
@@ -580,7 +385,7 @@ function tokenizeTopLevel(s: string): string[] {
 
 function extractFromComplex(
 	s: string,
-	syntaxes: Record<string, CSSSyntaxData>,
+	syntaxes: Record<string, ProcessedCssSyntax>,
 	visited: Set<string>,
 	components: TypeComponent[],
 ): void {
@@ -617,7 +422,7 @@ function extractFromComplex(
 
 function resolveDataType(
 	typeName: string,
-	syntaxes: Record<string, CSSSyntaxData>,
+	syntaxes: Record<string, ProcessedCssSyntax>,
 	visited: Set<string>,
 	components: TypeComponent[],
 ): void {
@@ -664,8 +469,9 @@ interface ResolvedPropertyType {
 	syntax: string
 	initial: string | string[]
 	inherited: boolean
-	mdn_url?: string
+	mdnUrl?: string
 	status?: string
+	compatibility?: ProcessedCssCompatibility
 }
 
 function toCamelCase(kebab: string): string {
@@ -715,8 +521,9 @@ function resolveAllProperties(): ResolvedPropertyType[] {
 			syntax: data.syntax,
 			initial: data.initial,
 			inherited: data.inherited,
-			mdn_url: data.mdn_url,
+			mdnUrl: data.mdnUrl,
 			status: data.status,
+			compatibility: data.compatibility,
 		})
 	}
 
@@ -841,45 +648,22 @@ function formatBaselineDate(dateStr: string): string {
 	return `${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`
 }
 
-function getBaselineStatus(propertyName: string): string {
-	const bcdProp = (bcd.css as any)?.properties?.[propertyName]
-	const compatData = bcdProp?.__compat
-	if (!compatData)
+export function getBaselineStatus(compatibility: ProcessedCssCompatibility | undefined): string {
+	if (!compatibility)
 		return ''
 
-	// Extract web-features tag from BCD tags
-	const tags: string[] = compatData.tags || []
-	const wfTag = tags.find((t: string) => t.startsWith('web-features:'))
-	if (!wfTag)
-		return ''
-
-	const featureId = wfTag.replace('web-features:', '')
-	const feature = webFeatures[featureId as keyof typeof webFeatures]
-	if (feature.kind !== 'feature')
-		return ''
-
-	const compatKey = `css.properties.${propertyName}`
-	const status = feature.status.by_compat_key?.[compatKey] ?? feature.status
-	if (status.baseline === 'high') {
-		const since = status.baseline_high_date ? ` (since ${formatBaselineDate(status.baseline_high_date)})` : ''
+	if (compatibility.baseline.level === 'high') {
+		const since = compatibility.baseline.baselineHighDate ? ` (since ${formatBaselineDate(compatibility.baseline.baselineHighDate)})` : ''
 		return `✅ Baseline: Widely available${since}`
 	}
-	if (status.baseline === 'low') {
-		const since = status.baseline_low_date ? ` (since ${formatBaselineDate(status.baseline_low_date)})` : ''
+	if (compatibility.baseline.level === 'low') {
+		const since = compatibility.baseline.baselineLowDate ? ` (since ${formatBaselineDate(compatibility.baseline.baselineLowDate)})` : ''
 		return `⚠️ Baseline: Newly available${since}`
 	}
-	return '❌ Baseline: Not widely available'
-}
+	if (compatibility.baseline.level === false)
+		return '❌ Baseline: Not widely available'
 
-function getBcdStatus(propertyName: string): { experimental: boolean, deprecated: boolean } {
-	const bcdProp = (bcd.css as any)?.properties?.[propertyName]
-	const compatData = bcdProp?.__compat
-	if (!compatData?.status)
-		return { experimental: false, deprecated: false }
-	return {
-		experimental: compatData.status.experimental === true,
-		deprecated: compatData.status.deprecated === true,
-	}
+	return ''
 }
 
 function generateJSDoc(prop: ResolvedPropertyType): string {
@@ -887,26 +671,25 @@ function generateJSDoc(prop: ResolvedPropertyType): string {
 	lines.push('  /**')
 
 	// Baseline status
-	const baseline = getBaselineStatus(prop.name)
+	const baseline = getBaselineStatus(prop.compatibility)
 	if (baseline) {
 		lines.push(`   * ${baseline}`)
 	}
 
 	// Deprecated / Experimental tags
-	const bcdSt = getBcdStatus(prop.name)
-	if (bcdSt.deprecated) {
+	if (prop.compatibility?.deprecated) {
 		lines.push(`   *`)
 		lines.push(`   * @deprecated`)
 	}
-	if (bcdSt.experimental) {
+	if (prop.compatibility?.experimental) {
 		lines.push(`   *`)
 		lines.push(`   * @experimental`)
 	}
 
 	// MDN URL
-	if (prop.mdn_url) {
+	if (prop.mdnUrl) {
 		lines.push(`   *`)
-		lines.push(`   * @see ${prop.mdn_url}`)
+		lines.push(`   * @see ${prop.mdnUrl}`)
 	}
 
 	lines.push(`   */`)
@@ -920,20 +703,9 @@ function generateJSDoc(prop: ResolvedPropertyType): string {
 function collectPseudos(): string[] {
 	const pseudos = new Set<string>()
 
-	// From mdn-data selectors
-	for (const name of Object.keys(mdnSelectors)) {
+	for (const name of Object.keys(processedSelectors)) {
 		if (name.startsWith(':')) {
 			pseudos.add(name)
-		}
-	}
-
-	// From browser-compat-data
-	const bcdSelectors = (bcd.css as any)?.selectors
-	if (bcdSelectors) {
-		for (const name of Object.keys(bcdSelectors)) {
-			if (name.startsWith(':')) {
-				pseudos.add(name)
-			}
 		}
 	}
 
@@ -941,12 +713,27 @@ function collectPseudos(): string[] {
 		.sort()
 }
 
-function collectAtRules(): { regular: string[], nested: string[] } {
+export function collectAtRulesFromProcessedData(atRules: Record<string, ProcessedCssAtRule>): { regular: string[], nested: string[] } {
 	const regularAtRules = new Set<string>()
 	const nestedAtRules = new Set<string>()
 
-	for (const [name, data] of Object.entries(mdnAtRules)) {
+	for (const [name, data] of Object.entries(atRules)) {
 		if (name.startsWith('@')) {
+			if (data.kind === 'nested') {
+				nestedAtRules.add(name)
+
+				if (data.syntax.includes(' {\n') && data.syntax.endsWith('\n}') === false) {
+					regularAtRules.add(name)
+				}
+
+				continue
+			}
+
+			if (data.kind === 'regular') {
+				regularAtRules.add(name)
+				continue
+			}
+
 			const syntax = data.syntax
 			if (syntax.includes(' {\n') && syntax.includes('\n}')) {
 				nestedAtRules.add(name)
@@ -970,6 +757,10 @@ function collectAtRules(): { regular: string[], nested: string[] } {
 			.from(nestedAtRules)
 			.sort(),
 	}
+}
+
+function collectAtRules(): { regular: string[], nested: string[] } {
+	return collectAtRulesFromProcessedData(processedAtRules)
 }
 
 // ---------------------------------------------------------------------------
@@ -1050,7 +841,7 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	const lines: string[] = []
 
 	// Header
-	lines.push('// This file is auto-generated by scripts/generate-csstype.ts')
+	lines.push('// This file is auto-generated by scripts/css-data/generate-csstype.ts')
 	lines.push('// DO NOT EDIT MANUALLY')
 	lines.push(`// Generated on ${new Date()
 		.toISOString()
@@ -1166,6 +957,10 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 	return lines.join('\n')
 }
 
+export function generateCssTypeOutput(): string {
+	return emitOutput(resolveAllProperties())
+}
+
 function buildPropertyTypeRef(prop: ResolvedPropertyType, _fromInterface: boolean): string {
 	const genericArgs: string[] = []
 	if (prop.needsLength)
@@ -1201,4 +996,8 @@ function main(): void {
 	console.log('Done!')
 }
 
-main()
+if (process.argv[1] != null && import.meta.url === pathToFileURL(process.argv[1]).href) {
+	if (process.argv[1] != null && import.meta.url === pathToFileURL(process.argv[1]).href) {
+		main()
+	}
+}

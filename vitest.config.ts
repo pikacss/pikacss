@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
 	test: {
-		projects: ['packages/*/vitest.config.ts', 'docs/vitest.config.ts'],
+		projects: ['packages/*/vitest.config.ts', 'docs/vitest.config.ts', 'scripts/*/vitest.config.ts'],
 		coverage: {
 			exclude: [
 				'**/*.config.*',
@@ -11,8 +11,7 @@ export default defineConfig({
 				'**/scripts/**',
 				'**/dist/**',
 				'**/coverage/**',
-				'**/src/**/generated-*.ts',
-				'**/src/csstype.ts',
+				'**/src/generated/*.ts',
 				'**/*.bench.*',
 			],
 		},
