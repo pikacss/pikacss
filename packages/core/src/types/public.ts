@@ -1,5 +1,6 @@
-import type * as CSS from './csstype'
-import type { FromKebab, GetValue, Nullish, ResolvedAutocomplete, ResolvedAutocompleteCSSPropertyValue, ResolvedAutocompletePropertyValue, ResolvedExtraCSSProperty, ResolvedExtraProperty, ToKebab, UnionString } from './internal/types'
+import type * as CSS from '../generated/csstype'
+import type { ResolvedAutocomplete, ResolvedAutocompleteCSSPropertyValue, ResolvedAutocompletePropertyValue, ResolvedExtraCSSProperty, ResolvedExtraProperty } from './resolved'
+import type { FromKebab, GetValue, Nullish, ToKebab, UnionString } from './utils'
 
 /**
  * Mapping of CSS custom property names (starting with `--`) to their string values.

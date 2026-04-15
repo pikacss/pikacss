@@ -1,4 +1,4 @@
-import { PROPERTY_EFFECTS } from './generated-shorthand-map'
+import { PROPERTY_EFFECTS } from './generated/property-effects'
 
 const UNIVERSAL_EFFECT = '*'
 const propertyEffectsLookup: Record<string, readonly string[]> = PROPERTY_EFFECTS

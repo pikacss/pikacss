@@ -1,4 +1,4 @@
-import type { Properties, PropertyValue, StyleDefinition, StyleItem } from '../../types'
+import type { Properties, PropertyValue, StyleDefinition, StyleItem } from './public'
 import type { Nullish } from './utils'
 
 /**

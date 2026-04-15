@@ -1,22 +1,22 @@
-import type { EngineConfig } from './internal/types'
+import type { EngineConfig } from './types'
 
 /* c8 ignore start */
 export {
 	createEngine,
 	type Engine,
 	sortLayerNames,
-} from './internal/engine'
+} from './engine'
 
 export {
 	defineEnginePlugin,
 	type EnginePlugin,
-} from './internal/plugin'
+} from './plugin'
 
-export type * from './internal/plugins/important'
-export type * from './internal/plugins/keyframes'
-export type * from './internal/plugins/selectors'
-export type * from './internal/plugins/shortcuts'
-export type * from './internal/plugins/variables'
+export type * from './plugins/important'
+export type * from './plugins/keyframes'
+export type * from './plugins/selectors'
+export type * from './plugins/shortcuts'
+export type * from './plugins/variables'
 
 export type {
 	AutocompleteConfig,
@@ -32,16 +32,7 @@ export type {
 	PreflightFn,
 	ResolvedLayerName,
 	ResolvedPreflight,
-} from './internal/types'
-
-export type * from './internal/types/utils'
-
-export {
-	appendAutocomplete,
-	createLogger,
-	log,
-	renderCSSStyleBlocks,
-} from './internal/utils'
+} from './types'
 
 export type {
 	CSSProperty,
@@ -52,6 +43,15 @@ export type {
 	StyleDefinitionMap,
 	StyleItem,
 } from './types'
+
+export type * from './types/utils'
+
+export {
+	appendAutocomplete,
+	createLogger,
+	log,
+	renderCSSStyleBlocks,
+} from './utils'
 
 // define* helpers
 /**
