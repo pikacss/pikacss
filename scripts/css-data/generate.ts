@@ -9,8 +9,10 @@ import type {
 	ProcessedCssShorthand,
 	ProcessedCssSource,
 	ProcessedCssSourceName,
+	ProcessedCssSourcePresence,
 	ProcessedCssSyntax,
 } from './types'
+import { createRequire } from 'node:module'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import bcd from '@mdn/browser-compat-data'
@@ -542,7 +544,15 @@ function buildProcessedProperties(webrefProperties: Record<string, WebrefCssProp
 		const shorthand = buildShorthand(name, mdnProperty, webrefProperty)
 		const compatibility = buildCompatibility(name)
 
+		const sourcePresence: ProcessedCssSourcePresence = {
+			webref: webrefProperty != null,
+			mdnData: mdnProperty != null,
+			bcd: getBcdProperty(name) != null,
+			webFeatures: compatibility?.baseline?.featureId != null,
+		}
+
 		properties[name] = {
+			sourcePresence,
 			syntax: syntax.value,
 			syntaxSource: syntax.source,
 			initial: initial.value,
@@ -726,7 +736,42 @@ function buildProcessedSelectors(webrefSelectors: Record<string, WebrefCssSelect
 	return sortEntries(selectors)
 }
 
+const DATA_SOURCE_PACKAGES = [
+	'@mdn/browser-compat-data',
+	'@webref/css',
+	'mdn-data',
+	'web-features',
+] as const
+
+async function checkDataSourceVersions(): Promise<void> {
+	const require = createRequire(import.meta.url)
+	console.log('Checking data source package versions...')
+
+	for (const pkg of DATA_SOURCE_PACKAGES) {
+		try {
+			const pkgJsonPath = require.resolve(`${pkg}/package.json`)
+			const { version: installedVersion } = (await import(pkgJsonPath, { with: { type: 'json' } })).default as { version: string }
+			const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`)
+			const { version: latestVersion } = await res.json() as { version: string }
+
+			if (installedVersion === latestVersion) {
+				console.log(`  \x1B[32m✓ ${pkg}: ${installedVersion} (up to date)\x1B[0m`)
+			}
+			else {
+				console.log(`  \x1B[33m⚠ ${pkg}: ${installedVersion} → ${latestVersion} (outdated)\x1B[0m`)
+			}
+		}
+		catch (err) {
+			console.log(`  \x1B[33m⚠ ${pkg}: failed to check version (${(err as Error).message})\x1B[0m`)
+		}
+	}
+}
+
 export async function generateProcessedCssData(): Promise<ProcessedCssData> {
+	if (!process.argv.includes('--skip-version-check')) {
+		await checkDataSourceVersions()
+	}
+
 	const webrefCss = await loadWebrefCssIndex()
 	return {
 		properties: buildProcessedProperties(webrefCss.properties),

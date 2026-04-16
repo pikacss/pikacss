@@ -39,7 +39,15 @@ export interface ProcessedCssShorthand {
 	resetLonghandsSource: ProcessedCssSource
 }
 
+export interface ProcessedCssSourcePresence {
+	webref: boolean
+	mdnData: boolean
+	bcd: boolean
+	webFeatures: boolean
+}
+
 export interface ProcessedCssProperty {
+	sourcePresence: ProcessedCssSourcePresence
 	syntax: string
 	syntaxSource: ProcessedCssSource
 	initial: string | string[]

@@ -13,6 +13,7 @@ import type {
 	ProcessedCssCompatibility,
 	ProcessedCssProperty,
 	ProcessedCssSelector,
+	ProcessedCssSourcePresence,
 	ProcessedCssSyntax,
 } from './types'
 import fs from 'node:fs'
@@ -41,12 +42,14 @@ const RE_EMPTY_CALL_SUFFIX = /\(\)$/
 const RE_VENDOR_PREFIX = /^-(webkit|moz|ms|o)-/
 const RE_KEBAB_SEGMENT = /-([a-z0-9])/gi
 const RE_GENERIC_SUFFIX = /<.*>$/
+const RE_QUOTED_LITERAL = /"([^"]+)"/g
+const RE_UPPERCASE_START = /^[A-Z]/
 
 // ---------------------------------------------------------------------------
 // 1. DATA LOADING
 // ---------------------------------------------------------------------------
 
-interface PropertyEntry extends Pick<ProcessedCssProperty, 'syntax' | 'initial' | 'inherited' | 'status' | 'compatibility'> {
+interface PropertyEntry extends Pick<ProcessedCssProperty, 'syntax' | 'initial' | 'inherited' | 'status' | 'compatibility' | 'sourcePresence'> {
 	mdnUrl?: string
 	groups: string[]
 }
@@ -472,6 +475,7 @@ interface ResolvedPropertyType {
 	mdnUrl?: string
 	status?: string
 	compatibility?: ProcessedCssCompatibility
+	sourcePresence?: ProcessedCssSourcePresence
 }
 
 function toCamelCase(kebab: string): string {
@@ -524,6 +528,7 @@ function resolveAllProperties(): ResolvedPropertyType[] {
 			mdnUrl: data.mdnUrl,
 			status: data.status,
 			compatibility: data.compatibility,
+			sourcePresence: data.sourcePresence,
 		})
 	}
 
@@ -666,36 +671,6 @@ export function getBaselineStatus(compatibility: ProcessedCssCompatibility | und
 	return ''
 }
 
-function generateJSDoc(prop: ResolvedPropertyType): string {
-	const lines: string[] = []
-	lines.push('  /**')
-
-	// Baseline status
-	const baseline = getBaselineStatus(prop.compatibility)
-	if (baseline) {
-		lines.push(`   * ${baseline}`)
-	}
-
-	// Deprecated / Experimental tags
-	if (prop.compatibility?.deprecated) {
-		lines.push(`   *`)
-		lines.push(`   * @deprecated`)
-	}
-	if (prop.compatibility?.experimental) {
-		lines.push(`   *`)
-		lines.push(`   * @experimental`)
-	}
-
-	// MDN URL
-	if (prop.mdnUrl) {
-		lines.push(`   *`)
-		lines.push(`   * @see ${prop.mdnUrl}`)
-	}
-
-	lines.push(`   */`)
-	return lines.join('\n')
-}
-
 // ---------------------------------------------------------------------------
 // 6. PSEUDOS AND AT-RULES
 // ---------------------------------------------------------------------------
@@ -833,6 +808,114 @@ const DATA_TYPE_DEFINITIONS: Record<string, string> = {
 	'VisualBox': '"border-box" | "content-box" | "padding-box"',
 }
 
+const MAX_DISPLAYED_KEYWORDS = 20
+
+function collectKeywordsFromDataType(typeName: string, keywords: Set<string>, visited: Set<string>): void {
+	const baseName = typeName.replace(RE_GENERIC_SUFFIX, '')
+	if (visited.has(baseName))
+		return
+	visited.add(baseName)
+
+	const def = DATA_TYPE_DEFINITIONS[typeName]
+		|| DATA_TYPE_DEFINITIONS[`${baseName}<TLength>`]
+		|| DATA_TYPE_DEFINITIONS[`${baseName}<TTime>`]
+		|| DATA_TYPE_DEFINITIONS[`${baseName}<TLength, TTime>`]
+		|| DATA_TYPE_DEFINITIONS[baseName]
+
+	if (!def)
+		return
+
+	const literalMatches = def.matchAll(RE_QUOTED_LITERAL)
+	for (const m of literalMatches) {
+		keywords.add(m[1])
+	}
+
+	const parts = def.split('|')
+		.map((p: string) => p.trim())
+	for (const part of parts) {
+		if (part.startsWith('"') || part === 'UnionString' || part === 'TLength' || part === 'TTime')
+			continue
+		const refName = part.replace(RE_GENERIC_SUFFIX, '')
+		if (refName && RE_UPPERCASE_START.test(refName)) {
+			collectKeywordsFromDataType(refName, keywords, visited)
+		}
+	}
+}
+
+function extractAllKeywords(components: TypeComponent[]): string[] {
+	const keywords = new Set<string>()
+	const visited = new Set<string>()
+
+	for (const c of components) {
+		if (c.kind === 'literal' && c.value != null) {
+			keywords.add(c.value)
+		}
+		else if (c.kind === 'datatype' && c.value) {
+			collectKeywordsFromDataType(c.value, keywords, visited)
+		}
+	}
+
+	return [...keywords].sort()
+}
+
+function generateJSDoc(prop: ResolvedPropertyType): string {
+	const lines: string[] = []
+	lines.push('  /**')
+
+	// Baseline status
+	const baseline = getBaselineStatus(prop.compatibility)
+	if (baseline) {
+		lines.push(`   * ${baseline}`)
+	}
+
+	// Keyword values - fully expanded from components and DataType definitions
+	const allKeywords = extractAllKeywords(prop.components)
+	if (allKeywords.length > 0) {
+		lines.push(`   *`)
+		if (allKeywords.length <= MAX_DISPLAYED_KEYWORDS) {
+			lines.push(`   * 🔑 Values: ${allKeywords.map(k => `\`${k}\``)
+				.join(' | ')}`)
+		}
+		else {
+			const shown = allKeywords.slice(0, MAX_DISPLAYED_KEYWORDS)
+			lines.push(`   * 🔑 Values: ${shown.map(k => `\`${k}\``)
+				.join(' | ')}, ... and ${allKeywords.length - MAX_DISPLAYED_KEYWORDS} more`)
+		}
+	}
+
+	// Source provenance markers
+	if (prop.sourcePresence) {
+		const sp = prop.sourcePresence
+		const markers = [
+			`webref ${sp.webref ? '✓' : '✗'}`,
+			`mdn-data ${sp.mdnData ? '✓' : '✗'}`,
+			`BCD ${sp.bcd ? '✓' : '✗'}`,
+			`web-features ${sp.webFeatures ? '✓' : '✗'}`,
+		]
+		lines.push(`   *`)
+		lines.push(`   * 📦 Sources: ${markers.join(' | ')}`)
+	}
+
+	// Deprecated / Experimental tags
+	if (prop.compatibility?.deprecated) {
+		lines.push(`   *`)
+		lines.push(`   * @deprecated`)
+	}
+	if (prop.compatibility?.experimental) {
+		lines.push(`   *`)
+		lines.push(`   * @experimental`)
+	}
+
+	// MDN URL
+	if (prop.mdnUrl) {
+		lines.push(`   *`)
+		lines.push(`   * @see ${prop.mdnUrl}`)
+	}
+
+	lines.push(`   */`)
+	return lines.join('\n')
+}
+
 // ---------------------------------------------------------------------------
 // 8. CODE EMITTER
 // ---------------------------------------------------------------------------
@@ -925,6 +1008,46 @@ function emitOutput(properties: ResolvedPropertyType[]): string {
 		const sep = i === pseudos.length - 1 ? ';' : ''
 		lines.push(`  | "${pseudos[i]}"${sep}`)
 	}
+	lines.push('')
+
+	// CSSPseudos (pre-expanded with `$` prefix)
+	lines.push('export type CSSPseudos =')
+	for (let i = 0; i < pseudos.length; i++) {
+		const sep = i === pseudos.length - 1 ? ';' : ''
+		lines.push(`  | "$${pseudos[i]}"${sep}`)
+	}
+	lines.push('')
+
+	// Autocomplete utility types
+	lines.push('type AutocompleteLookup<TValueMap, TRelatedKeys extends string> = [TValueMap] extends [never] ? never : TRelatedKeys extends keyof TValueMap ? TValueMap[TRelatedKeys] : never;')
+	lines.push('type PropertyInputAtom<TValueMap, BaseValue, TRelatedKeys extends string> = UnionString | BaseValue | AutocompleteLookup<TValueMap, TRelatedKeys | "*">;')
+	lines.push('export type PropertyInputValue<TValueMap, BaseValue, TRelatedKeys extends string = never> =')
+	lines.push('  | PropertyInputAtom<TValueMap, BaseValue, TRelatedKeys>')
+	lines.push('  | [value: PropertyInputAtom<TValueMap, BaseValue, TRelatedKeys>, fallback: Array<PropertyInputAtom<TValueMap, BaseValue, TRelatedKeys>>]')
+	lines.push('  | null')
+	lines.push('  | undefined;')
+	lines.push('')
+
+	// PropertiesInput interface (camelCase)
+	lines.push('export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TTime = DefaultTTime> {')
+	for (const prop of properties) {
+		const jsdoc = generateJSDoc(prop)
+		const typeRef = buildPropertyTypeRef(prop, true)
+		lines.push(jsdoc)
+		lines.push(`  ${prop.camelName}?: PropertyInputValue<TValueMap, ${typeRef}, PropertyRelatedNames[${JSON.stringify(prop.camelName)}]> | undefined;`)
+	}
+	lines.push('}')
+	lines.push('')
+
+	// PropertiesHyphenInput interface (kebab-case)
+	lines.push('export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLength, TTime = DefaultTTime> {')
+	for (const prop of sortedByKebab) {
+		const jsdoc = generateJSDoc(prop)
+		const typeRef = buildPropertyTypeRef(prop, true)
+		lines.push(jsdoc)
+		lines.push(`  ${JSON.stringify(prop.name)}?: PropertyInputValue<TValueMap, ${typeRef}, PropertyHyphenRelatedNames[${JSON.stringify(prop.name)}]> | undefined;`)
+	}
+	lines.push('}')
 	lines.push('')
 
 	// Property namespace

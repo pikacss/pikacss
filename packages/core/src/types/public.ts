@@ -63,18 +63,8 @@ type CSSPropertyInputValue<BaseValue, RelatedKey extends string> = PropertyValue
 	| _CssPropertiesValueWildcard
 >
 
-type Properties_CSS_Camel = {
-	[Key in keyof CSS.Properties]?: CSSPropertyInputValue<
-		CSS.Properties[Key],
-		Extract<CSS.PropertyRelatedNames[Extract<Key, keyof CSS.PropertyRelatedNames>], string>
-	>
-}
-type Properties_CSS_Hyphen = {
-	[Key in keyof CSS.PropertiesHyphen]?: CSSPropertyInputValue<
-		CSS.PropertiesHyphen[Key],
-		Extract<CSS.PropertyHyphenRelatedNames[Extract<Key, keyof CSS.PropertyHyphenRelatedNames>], string>
-	>
-}
+type Properties_CSS_Camel = CSS.PropertiesInput<ResolvedAutocompleteCSSPropertyValue>
+type Properties_CSS_Hyphen = CSS.PropertiesHyphenInput<ResolvedAutocompleteCSSPropertyValue>
 type Properties_CSS_Vars = {
 	[K in `--${string}` & {}]?: PropertyValue<
 		| UnionString
@@ -104,7 +94,7 @@ type Properties_Extra = {
  */
 export interface Properties extends Properties_CSS_Camel, Properties_CSS_Hyphen, Properties_CSS_Vars, Properties_ExtraCSS, Properties_Extra {}
 
-type CSSPseudos = `${'$'}${CSS.Pseudos}`
+type CSSPseudos = CSS.CSSPseudos
 /**
  * Union of valid CSS selector strings for nested style definitions, including CSS at-rules and pseudo-selectors (prefixed with `$`).
  *
