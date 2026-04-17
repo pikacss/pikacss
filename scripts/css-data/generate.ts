@@ -743,9 +743,10 @@ const DATA_SOURCE_PACKAGES = [
 	'web-features',
 ] as const
 
-async function checkDataSourceVersions(): Promise<void> {
+async function checkDataSourceVersions(): Promise<boolean> {
 	const require = createRequire(import.meta.url)
 	console.log('Checking data source package versions...')
+	let passed = true
 
 	for (const pkg of DATA_SOURCE_PACKAGES) {
 		try {
@@ -759,17 +760,24 @@ async function checkDataSourceVersions(): Promise<void> {
 			}
 			else {
 				console.log(`  \x1B[33m⚠ ${pkg}: ${installedVersion} → ${latestVersion} (outdated)\x1B[0m`)
+				passed = false
 			}
 		}
 		catch (err) {
 			console.log(`  \x1B[33m⚠ ${pkg}: failed to check version (${(err as Error).message})\x1B[0m`)
+			passed = false
 		}
 	}
+
+	return passed
 }
 
 export async function generateProcessedCssData(): Promise<ProcessedCssData> {
 	if (!process.argv.includes('--skip-version-check')) {
-		await checkDataSourceVersions()
+		const passed = await checkDataSourceVersions()
+		if (!passed) {
+			throw new Error('Data source version check failed. Update dependencies or rerun with --skip-version-check to bypass.')
+		}
 	}
 
 	const webrefCss = await loadWebrefCssIndex()
