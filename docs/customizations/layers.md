@@ -4,7 +4,7 @@ description: Control CSS cascade ordering with @layer declarations in PikaCSS.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/engine.ts'
+  - 'packages/core/src/engine.ts'
 category: customizations
 order: 10
 ---

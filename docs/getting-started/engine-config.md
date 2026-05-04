@@ -4,8 +4,8 @@ description: Complete reference for all PikaCSS engine configuration options.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/types.ts'
-  - 'packages/core/src/internal/engine.ts'
+  - 'packages/core/src/types/public.ts'
+  - 'packages/core/src/engine.ts'
 category: getting-started
 order: 40
 ---

@@ -4,8 +4,8 @@ description: Inject base CSS styles before utility classes in PikaCSS.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/engine.ts'
-  - 'packages/core/src/internal/types.ts'
+  - 'packages/core/src/engine.ts'
+  - 'packages/core/src/types/public.ts'
 category: customizations
 order: 30
 ---

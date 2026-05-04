@@ -5,22 +5,22 @@ outline: [2, 3]
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
+  - 'packages/core/src/engine.ts'
   - 'packages/core/src/index.ts'
-  - 'packages/core/src/internal/engine.ts'
-  - 'packages/core/src/internal/plugin.ts'
-  - 'packages/core/src/internal/plugins/important.ts'
-  - 'packages/core/src/internal/plugins/keyframes.ts'
-  - 'packages/core/src/internal/plugins/selectors.ts'
-  - 'packages/core/src/internal/plugins/shortcuts.ts'
-  - 'packages/core/src/internal/plugins/variables.ts'
-  - 'packages/core/src/internal/types/autocomplete.ts'
-  - 'packages/core/src/internal/types/engine.ts'
-  - 'packages/core/src/internal/types/preflight.ts'
-  - 'packages/core/src/internal/types/resolved.ts'
-  - 'packages/core/src/internal/types/shared.ts'
-  - 'packages/core/src/internal/types/utils.ts'
-  - 'packages/core/src/internal/utils.ts'
-  - 'packages/core/src/types.ts'
+  - 'packages/core/src/plugin.ts'
+  - 'packages/core/src/plugins/important.ts'
+  - 'packages/core/src/plugins/keyframes.ts'
+  - 'packages/core/src/plugins/selectors.ts'
+  - 'packages/core/src/plugins/shortcuts.ts'
+  - 'packages/core/src/plugins/variables.ts'
+  - 'packages/core/src/types/autocomplete.ts'
+  - 'packages/core/src/types/engine.ts'
+  - 'packages/core/src/types/preflight.ts'
+  - 'packages/core/src/types/public.ts'
+  - 'packages/core/src/types/resolved.ts'
+  - 'packages/core/src/types/shared.ts'
+  - 'packages/core/src/types/utils.ts'
+  - 'packages/core/src/utils.ts'
 category: api
 order: 20
 ---
@@ -34,7 +34,7 @@ order: 20
 
 - Package: `@pikacss/core`
 - Generated from the exported surface and JSDoc in `packages/core/src/index.ts`.
-- Source files: `packages/core/src/index.ts`, `packages/core/src/internal/engine.ts`, `packages/core/src/internal/plugin.ts`, `packages/core/src/internal/plugins/important.ts`, `packages/core/src/internal/plugins/keyframes.ts`, `packages/core/src/internal/plugins/selectors.ts`, `packages/core/src/internal/plugins/shortcuts.ts`, `packages/core/src/internal/plugins/variables.ts`, `packages/core/src/internal/types/autocomplete.ts`, `packages/core/src/internal/types/engine.ts`, `packages/core/src/internal/types/preflight.ts`, `packages/core/src/internal/types/resolved.ts`, `packages/core/src/internal/types/shared.ts`, `packages/core/src/internal/types/utils.ts`, `packages/core/src/internal/utils.ts`, `packages/core/src/types.ts`
+- Source files: `packages/core/src/engine.ts`, `packages/core/src/index.ts`, `packages/core/src/plugin.ts`, `packages/core/src/plugins/important.ts`, `packages/core/src/plugins/keyframes.ts`, `packages/core/src/plugins/selectors.ts`, `packages/core/src/plugins/shortcuts.ts`, `packages/core/src/plugins/variables.ts`, `packages/core/src/types/autocomplete.ts`, `packages/core/src/types/engine.ts`, `packages/core/src/types/preflight.ts`, `packages/core/src/types/public.ts`, `packages/core/src/types/resolved.ts`, `packages/core/src/types/shared.ts`, `packages/core/src/types/utils.ts`, `packages/core/src/utils.ts`
 
 </details>
 
@@ -618,7 +618,7 @@ function getDefault(prop: CSSProperty): string { return '' }
 
 Union of valid CSS selector strings for nested style definitions, including CSS at-rules and pseudo-selectors (prefixed with `$`).
 
-**Type:** `"@container" | "@counter-style" | "@document" | "@font-face" | "@font-feature-values" | "@font-palette-values" | "@keyframes" | "@layer" | "@media" | "@page" | "@position-try" | "@property" | "@scope" | "@starting-style" | "@supports" | "@view-transition" | "$::-moz-progress-bar" | "$::-moz-range-progress" | "$::-moz-range-thumb" | "$::-moz-range-track" | "$::-ms-browse" | "$::-ms-check" | "$::-ms-clear" | "$::-ms-expand" | "$::-ms-fill" | "$::-ms-fill-lower" | "$::-ms-fill-upper" | "$::-ms-reveal" | "$::-ms-thumb" | "$::-ms-ticks-after" | "$::-ms-ticks-before" | "$::-ms-tooltip" | "$::-ms-track" | "$::-ms-value" | "$::-webkit-progress-bar" | "$::-webkit-progress-inner-value" | "$::-webkit-progress-value" | "$::-webkit-slider-runnable-track" | "$::-webkit-slider-thumb" | "$::after" | "$::backdrop" | "$::before" | "$::checkmark" | "$::cue" | "$::cue()" | "$::cue-region" | "$::cue-region()" | "$::details-content" | "$::file-selector-button" | "$::first-letter" | "$::first-line" | "$::grammar-error" | "$::highlight()" | "$::marker" | "$::part()" | "$::picker()" | "$::picker-icon" | "$::placeholder" | "$::scroll-marker" | "$::scroll-marker-group" | "$::selection" | "$::slotted()" | "$::spelling-error" | "$::target-text" | "$::view-transition" | "$::view-transition-group()" | "$::view-transition-image-pair()" | "$::view-transition-new()" | "$::view-transition-old()" | "$:active" | "$:active-view-transition" | "$:active-view-transition-type()" | "$:any-link" | "$:autofill" | "$:blank" | "$:buffering" | "$:checked" | "$:current" | "$:default" | "$:defined" | "$:dir()" | "$:disabled" | "$:empty" | "$:enabled" | "$:first" | "$:first-child" | "$:first-of-type" | "$:focus" | "$:focus-visible" | "$:focus-within" | "$:fullscreen" | "$:future" | "$:has()" | "$:has-slotted" | "$:host" | "$:host()" | "$:host-context()" | "$:hover" | "$:in-range" | "$:indeterminate" | "$:invalid" | "$:is()" | "$:lang()" | "$:last-child" | "$:last-of-type" | "$:left" | "$:link" | "$:local-link" | "$:modal" | "$:muted" | "$:not()" | "$:nth-child()" | "$:nth-last-child()" | "$:nth-last-of-type()" | "$:nth-of-type()" | "$:only-child" | "$:only-of-type" | "$:open" | "$:optional" | "$:out-of-range" | "$:past" | "$:paused" | "$:picture-in-picture" | "$:placeholder-shown" | "$:playing" | "$:popover-open" | "$:read-only" | "$:read-write" | "$:required" | "$:right" | "$:root" | "$:scope" | "$:seeking" | "$:stalled" | "$:state()" | "$:target" | "$:target-current" | "$:target-within" | "$:user-invalid" | "$:user-valid" | "$:valid" | "$:visited" | "$:volume-locked" | "$:where()" | "$:xr-overlay"`
+**Type:** `"@-webkit-keyframes" | "@container" | "@counter-style" | "@document" | "@font-face" | "@font-feature-values" | "@font-palette-values" | "@keyframes" | "@layer" | "@media" | "@page" | "@position-try" | "@property" | "@scope" | "@starting-style" | "@supports" | "@view-transition" | "$::-moz-progress-bar" | "$::-moz-range-progress" | "$::-moz-range-thumb" | "$::-moz-range-track" | "$::-ms-browse" | "$::-ms-check" | "$::-ms-clear" | "$::-ms-expand" | "$::-ms-fill" | "$::-ms-fill-lower" | "$::-ms-fill-upper" | "$::-ms-reveal" | "$::-ms-thumb" | "$::-ms-ticks-after" | "$::-ms-ticks-before" | "$::-ms-tooltip" | "$::-ms-track" | "$::-ms-value" | "$::-webkit-progress-bar" | "$::-webkit-progress-inner-value" | "$::-webkit-progress-value" | "$::-webkit-slider-runnable-track" | "$::-webkit-slider-thumb" | "$::after" | "$::backdrop" | "$::before" | "$::checkmark" | "$::clear-icon" | "$::color-swatch" | "$::column" | "$::cue" | "$::cue()" | "$::cue-region" | "$::cue-region()" | "$::details-content" | "$::field-component" | "$::field-separator" | "$::field-text" | "$::file-selector-button" | "$::first-letter" | "$::first-line" | "$::grammar-error" | "$::highlight()" | "$::marker" | "$::nth-fragment()" | "$::part()" | "$::picker()" | "$::picker-icon" | "$::placeholder" | "$::reveal-icon" | "$::scroll-button()" | "$::scroll-marker" | "$::scroll-marker-group" | "$::search-text" | "$::selection" | "$::slider-fill" | "$::slider-thumb" | "$::slider-track" | "$::slotted()" | "$::spelling-error" | "$::step-control" | "$::step-down" | "$::step-up" | "$::target-text" | "$::view-transition" | "$::view-transition-group()" | "$::view-transition-group-children()" | "$::view-transition-image-pair()" | "$::view-transition-new()" | "$::view-transition-old()" | "$:active" | "$:active-view-transition" | "$:active-view-transition-type()" | "$:after" | "$:animated-image" | "$:any-link" | "$:autofill" | "$:before" | "$:blank" | "$:buffering" | "$:checked" | "$:current" | "$:current()" | "$:default" | "$:defined" | "$:dir()" | "$:disabled" | "$:empty" | "$:enabled" | "$:first" | "$:first-child" | "$:first-letter" | "$:first-line" | "$:first-of-page" | "$:first-of-type" | "$:focus" | "$:focus-visible" | "$:focus-within" | "$:fullscreen" | "$:future" | "$:has()" | "$:has-slotted" | "$:heading" | "$:heading()" | "$:high-value" | "$:host" | "$:host()" | "$:host-context()" | "$:hover" | "$:in-range" | "$:indeterminate" | "$:interest-source" | "$:interest-target" | "$:invalid" | "$:is()" | "$:lang()" | "$:last-child" | "$:last-of-page" | "$:last-of-type" | "$:left" | "$:link" | "$:link-to()" | "$:local-link" | "$:low-value" | "$:matches()" | "$:modal" | "$:muted" | "$:not()" | "$:nth()" | "$:nth-child()" | "$:nth-col()" | "$:nth-last-child()" | "$:nth-last-col()" | "$:nth-last-of-type()" | "$:nth-of-page()" | "$:nth-of-type()" | "$:only-child" | "$:only-of-type" | "$:open" | "$:optimal-value" | "$:optional" | "$:out-of-range" | "$:past" | "$:paused" | "$:picture-in-picture" | "$:placeholder-shown" | "$:playing" | "$:popover-open" | "$:read-only" | "$:read-write" | "$:required" | "$:right" | "$:root" | "$:scope" | "$:seeking" | "$:snapped" | "$:snapped-block" | "$:snapped-inline" | "$:snapped-x" | "$:snapped-y" | "$:stalled" | "$:start-of-page" | "$:state()" | "$:target" | "$:target-after" | "$:target-before" | "$:target-current" | "$:target-within" | "$:unchecked" | "$:user-invalid" | "$:user-valid" | "$:valid" | "$:visited" | "$:volume-locked" | "$:where()" | "$:xr-overlay"`
 
 **Remarks:**
 

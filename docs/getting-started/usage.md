@@ -4,8 +4,8 @@ description: Learn how to write styles with pika() and see common usage patterns
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/engine.ts'
-  - 'packages/core/src/types.ts'
+  - 'packages/core/src/engine.ts'
+  - 'packages/core/src/types/public.ts'
 category: getting-started
 order: 30
 ---

@@ -4,10 +4,10 @@ description: Extend PikaCSS TypeScript interfaces with module augmentation.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/types/engine.ts'
-  - 'packages/core/src/internal/types/shared.ts'
-  - 'packages/core/src/internal/types/autocomplete.ts'
-  - 'packages/core/src/types.ts'
+  - 'packages/core/src/types/engine.ts'
+  - 'packages/core/src/types/shared.ts'
+  - 'packages/core/src/types/autocomplete.ts'
+  - 'packages/core/src/types/public.ts'
 category: plugin-development
 order: 30
 ---

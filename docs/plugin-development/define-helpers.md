@@ -5,9 +5,9 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - 'packages/core/src/index.ts'
-  - 'packages/core/src/internal/plugin.ts'
-  - 'packages/core/src/types.ts'
-  - 'packages/core/src/internal/plugins/variables.ts'
+  - 'packages/core/src/plugin.ts'
+  - 'packages/core/src/types/public.ts'
+  - 'packages/core/src/plugins/variables.ts'
 category: plugin-development
 order: 40
 ---

@@ -4,7 +4,7 @@ description: Define CSS @keyframes animations in PikaCSS engine configuration.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/plugins/keyframes.ts'
+  - 'packages/core/src/plugins/keyframes.ts'
 category: customizations
 order: 50
 ---

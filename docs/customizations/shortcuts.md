@@ -4,7 +4,7 @@ description: Define reusable style aliases that expand to full style definitions
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/plugins/shortcuts.ts'
+  - 'packages/core/src/plugins/shortcuts.ts'
 category: customizations
 order: 70
 ---

@@ -5,8 +5,8 @@ relatedPackages:
   - '@pikacss/core'
   - '@pikacss/unplugin-pikacss'
 relatedSources:
-  - 'packages/core/src/internal/types/autocomplete.ts'
-  - 'packages/core/src/internal/utils.ts'
+  - 'packages/core/src/types/autocomplete.ts'
+  - 'packages/core/src/utils.ts'
   - 'packages/integration/src/tsCodegen.ts'
   - 'packages/unplugin/src/types.ts'
 category: customizations

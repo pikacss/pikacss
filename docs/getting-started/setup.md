@@ -11,9 +11,9 @@ relatedSources:
   - 'packages/unplugin/src/types.ts'
   - 'packages/integration/src/ctx.ts'
   - 'packages/integration/src/tsCodegen.ts'
-  - 'packages/core/src/internal/plugins/selectors.ts'
-  - 'packages/core/src/internal/plugins/shortcuts.ts'
-  - 'packages/core/src/internal/plugins/variables.ts'
+  - 'packages/core/src/plugins/selectors.ts'
+  - 'packages/core/src/plugins/shortcuts.ts'
+  - 'packages/core/src/plugins/variables.ts'
 category: getting-started
 order: 20
 ---

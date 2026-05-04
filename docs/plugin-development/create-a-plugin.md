@@ -4,7 +4,7 @@ description: Learn how to create a PikaCSS engine plugin with defineEnginePlugin
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/plugin.ts'
+  - 'packages/core/src/plugin.ts'
 category: plugin-development
 order: 10
 ---

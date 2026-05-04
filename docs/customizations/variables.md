@@ -5,7 +5,7 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - 'packages/core/src/index.ts'
-  - 'packages/core/src/internal/plugins/variables.ts'
+  - 'packages/core/src/plugins/variables.ts'
 category: customizations
 order: 40
 ---

@@ -7,9 +7,9 @@ relatedPackages:
   - '@pikacss/nuxt-pikacss'
   - '@pikacss/eslint-config'
 relatedSources:
-  - 'packages/core/src/internal/engine.ts'
-  - 'packages/core/src/internal/types/engine.ts'
-  - 'packages/core/src/internal/plugins/selectors.ts'
+  - 'packages/core/src/engine.ts'
+  - 'packages/core/src/types/engine.ts'
+  - 'packages/core/src/plugins/selectors.ts'
   - 'packages/integration/src/ctx.ts'
   - 'packages/integration/src/ctx.transform-utils.ts'
   - 'packages/integration/src/tsCodegen.ts'

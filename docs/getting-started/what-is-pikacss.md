@@ -4,7 +4,7 @@ description: An overview of PikaCSS, the instant on-demand atomic CSS-in-JS engi
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/engine.ts'
+  - 'packages/core/src/engine.ts'
 category: getting-started
 order: 10
 ---

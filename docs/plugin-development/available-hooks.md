@@ -4,8 +4,8 @@ description: Complete reference of PikaCSS engine plugin lifecycle hooks.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/plugin.ts'
-  - 'packages/core/src/internal/engine.ts'
+  - 'packages/core/src/plugin.ts'
+  - 'packages/core/src/engine.ts'
 category: plugin-development
 order: 20
 ---

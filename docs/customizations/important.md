@@ -4,7 +4,7 @@ description: Make all generated atomic CSS declarations use !important.
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/plugins/important.ts'
+  - 'packages/core/src/plugins/important.ts'
 category: customizations
 order: 20
 ---

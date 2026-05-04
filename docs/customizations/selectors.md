@@ -4,7 +4,7 @@ description: Define custom selector mappings for concise nested style definition
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
-  - 'packages/core/src/internal/plugins/selectors.ts'
+  - 'packages/core/src/plugins/selectors.ts'
 category: customizations
 order: 60
 ---
