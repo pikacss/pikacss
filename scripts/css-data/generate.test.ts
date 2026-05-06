@@ -1,7 +1,7 @@
 import type { ProcessedCssData, ProcessedCssSource, ProcessedCssSourceKind, ProcessedCssSourceName } from './types'
 import fs from 'node:fs'
 import os from 'node:os'
-import path from 'node:path'
+import path from 'pathe'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { buildProcessedAtRule, buildProcessedSelector, generateAndWriteProcessedCssData, generateProcessedCssData, MANUAL_PROPERTY_PATCHES, MANUAL_SHORTHAND_LONGHANDS, MANUAL_SYNTAX_PATCHES, resolvePropertyGroupsFromValues, resolvePropertyMdnUrlFromValues, resolvePropertyStatusFromValue } from './generate'
 import { collectAtRulesFromProcessedData, generateCssTypeOutput, getBaselineStatus } from './generate-csstype'
@@ -202,9 +202,11 @@ describe('generateProcessedCssData', () => {
 	})
 
 	it('keeps checked-in core generated outputs in sync with their generators', () => {
-		expect(fs.readFileSync(path.resolve(process.cwd(), 'packages/core/src/generated/csstype.ts'), 'utf8'))
+		expect(fs.readFileSync(path.resolve(process.cwd(), 'packages/core/src/generated/csstype.ts'), 'utf8')
+			.replace(/\r\n/g, '\n'))
 			.toBe(generateCssTypeOutput())
-		expect(fs.readFileSync(path.resolve(process.cwd(), 'packages/core/src/generated/property-effects.ts'), 'utf8'))
+		expect(fs.readFileSync(path.resolve(process.cwd(), 'packages/core/src/generated/property-effects.ts'), 'utf8')
+			.replace(/\r\n/g, '\n'))
 			.toBe(generatePropertyEffectsOutput())
 	})
 
