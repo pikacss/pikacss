@@ -3282,6 +3282,169 @@
 				"note": "No groups available in mdn-data."
 			}
 		},
+		"-webkit-border-after": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": [
+				"border-block-end-width",
+				"border-block-end-style",
+				"border-block-end-color"
+			],
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"border-block-end-color",
+					"border-block-end-style",
+					"border-block-end-width"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "derived",
+					"source": "mdn-data",
+					"note": "Longhands derived from mdn-data fallback fields for -webkit-border-after."
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for -webkit-border-after."
+				}
+			}
+		},
+		"-webkit-border-after-color": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-color'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "currentcolor",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
+		"-webkit-border-after-style": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-style'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "none",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
+		"-webkit-border-after-width": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-width'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "medium",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
 		"-webkit-border-before": {
 			"sourcePresence": {
 				"webref": false,
@@ -3289,21 +3452,21 @@
 				"bcd": true,
 				"webFeatures": false
 			},
-			"syntax": "<'border-width'> || <'border-style'> || <color>",
+			"syntax": "<'border-top'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
 			"initial": [
-				"border-width",
-				"border-style",
-				"color"
+				"border-block-start-width",
+				"border-block-start-style",
+				"border-block-start-color"
 			],
 			"initialSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"inherited": true,
+			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3328,9 +3491,9 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"border-style",
-					"border-width",
-					"color"
+					"border-block-start-color",
+					"border-block-start-style",
+					"border-block-start-width"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -3372,7 +3535,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "<color>",
+			"syntax": "<'border-top-color'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3382,7 +3545,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"inherited": true,
+			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3407,7 +3570,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "<'border-style'>",
+			"syntax": "<'border-top-style'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3417,7 +3580,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"inherited": true,
+			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3442,7 +3605,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "<'border-width'>",
+			"syntax": "<'border-top-width'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3452,7 +3615,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"inherited": true,
+			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3532,6 +3695,169 @@
 				"note": "No groups available in mdn-data."
 			}
 		},
+		"-webkit-border-end": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": [
+				"border-inline-end-width",
+				"border-inline-end-style",
+				"border-inline-end-color"
+			],
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"border-inline-end-color",
+					"border-inline-end-style",
+					"border-inline-end-width"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "derived",
+					"source": "mdn-data",
+					"note": "Longhands derived from mdn-data fallback fields for -webkit-border-end."
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for -webkit-border-end."
+				}
+			}
+		},
+		"-webkit-border-end-color": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-color'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "currentcolor",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
+		"-webkit-border-end-style": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-style'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "none",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
+		"-webkit-border-end-width": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-width'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "medium",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
 		"-webkit-border-radius": {
 			"sourcePresence": {
 				"webref": true,
@@ -3580,6 +3906,169 @@
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for -webkit-border-radius."
 				}
+			}
+		},
+		"-webkit-border-start": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": [
+				"border-inline-start-width",
+				"border-inline-start-style",
+				"border-inline-start-color"
+			],
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"border-inline-start-color",
+					"border-inline-start-style",
+					"border-inline-start-width"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "derived",
+					"source": "mdn-data",
+					"note": "Longhands derived from mdn-data fallback fields for -webkit-border-start."
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for -webkit-border-start."
+				}
+			}
+		},
+		"-webkit-border-start-color": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-color'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "currentcolor",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
+		"-webkit-border-start-style": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-style'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "none",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			}
+		},
+		"-webkit-border-start-width": {
+			"sourcePresence": {
+				"webref": false,
+				"mdnData": true,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'border-top-width'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"initial": "medium",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"groups": [
+				"WebKit Extensions"
+			],
+			"groupsSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "nonstandard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			}
 		},
 		"-webkit-border-top-left-radius": {
@@ -4349,7 +4838,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "[ <length> | <number> ]{1,4}",
+			"syntax": "<'border-image-outset'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -4380,7 +4869,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "[ stretch | repeat | round | space ]{1,2}",
+			"syntax": "<'border-image-repeat'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -4411,7 +4900,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "[ <number> | <percentage> ]{1,4} fill?",
+			"syntax": "<'border-image-slice'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -4442,7 +4931,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "none | <image>",
+			"syntax": "<'border-image-source'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -4473,7 +4962,7 @@
 				"bcd": false,
 				"webFeatures": false
 			},
-			"syntax": "[ <length-percentage> | <number> | auto ]{1,4}",
+			"syntax": "<'border-image-width'>",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -13651,7 +14140,7 @@
 				"webref": true,
 				"mdnData": false,
 				"bcd": true,
-				"webFeatures": false
+				"webFeatures": true
 			},
 			"syntax": "none | [ <basic-shape> <geometry-box>?]{1,2}",
 			"syntaxSource": {
@@ -13686,11 +14175,13 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": null,
+					"level": false,
+					"featureId": "border-shape",
 					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
+						"kind": "derived",
+						"source": "web-features",
+						"via": "@mdn/browser-compat-data",
+						"note": "Resolved baseline from web-features feature border-shape."
 					}
 				}
 			}
@@ -17043,7 +17534,56 @@
 				}
 			}
 		},
-		"column-rule-edge-inset": {
+		"column-rule-inset": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'column-rule-inset-cap'> [ / <'column-rule-inset-junction'> ]?",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "see individual properties",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "Inherited flag defaulted to false because upstream data omitted it."
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"column-rule-inset-cap-end",
+					"column-rule-inset-cap-start",
+					"column-rule-inset-junction-end",
+					"column-rule-inset-junction-start"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "extracted",
+					"source": "@webref/css"
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for column-rule-inset."
+				}
+			}
+		},
+		"column-rule-inset-cap": {
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
@@ -17075,8 +17615,8 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"column-rule-edge-inset-end",
-					"column-rule-edge-inset-start"
+					"column-rule-inset-cap-end",
+					"column-rule-inset-cap-start"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -17086,11 +17626,11 @@
 				"resetLonghandsSource": {
 					"kind": "default",
 					"source": "generated-fallback",
-					"note": "No resetLonghands available for column-rule-edge-inset."
+					"note": "No resetLonghands available for column-rule-inset-cap."
 				}
 			}
 		},
-		"column-rule-edge-inset-end": {
+		"column-rule-inset-cap-end": {
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
@@ -17119,7 +17659,7 @@
 				"note": "No groups available in mdn-data."
 			}
 		},
-		"column-rule-edge-inset-start": {
+		"column-rule-inset-cap-start": {
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
@@ -17146,55 +17686,6 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
-			}
-		},
-		"column-rule-inset": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<'column-rule-edge-inset'> [ / <'column-rule-interior-inset'> ]?",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "see individual properties",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"column-rule-edge-inset-end",
-					"column-rule-edge-inset-start",
-					"column-rule-interior-inset-end",
-					"column-rule-interior-inset-start"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "extracted",
-					"source": "@webref/css"
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for column-rule-inset."
-				}
 			}
 		},
 		"column-rule-inset-end": {
@@ -17229,8 +17720,8 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"column-rule-edge-inset-end",
-					"column-rule-interior-inset-end"
+					"column-rule-inset-cap-end",
+					"column-rule-inset-junction-end"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -17242,6 +17733,111 @@
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for column-rule-inset-end."
 				}
+			}
+		},
+		"column-rule-inset-junction": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<length-percentage> [ <length-percentage> ]?",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "see individual properties",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "Inherited flag defaulted to false because upstream data omitted it."
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"column-rule-inset-junction-end",
+					"column-rule-inset-junction-start"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "extracted",
+					"source": "@webref/css"
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for column-rule-inset-junction."
+				}
+			}
+		},
+		"column-rule-inset-junction-end": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<length-percentage>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "0",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			}
+		},
+		"column-rule-inset-junction-start": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<length-percentage>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "0",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
 			}
 		},
 		"column-rule-inset-start": {
@@ -17276,8 +17872,8 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"column-rule-edge-inset-start",
-					"column-rule-interior-inset-start"
+					"column-rule-inset-cap-start",
+					"column-rule-inset-junction-start"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -17289,111 +17885,6 @@
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for column-rule-inset-start."
 				}
-			}
-		},
-		"column-rule-interior-inset": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<length-percentage> [ <length-percentage> ]?",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "see individual properties",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"column-rule-interior-inset-end",
-					"column-rule-interior-inset-start"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "extracted",
-					"source": "@webref/css"
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for column-rule-interior-inset."
-				}
-			}
-		},
-		"column-rule-interior-inset-end": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<length-percentage>",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "0",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			}
-		},
-		"column-rule-interior-inset-start": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<length-percentage>",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "0",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
 			}
 		},
 		"column-rule-style": {
@@ -21400,7 +21891,7 @@
 				"webref": true,
 				"mdnData": true,
 				"bcd": true,
-				"webFeatures": false
+				"webFeatures": true
 			},
 			"syntax": "standard | no-limit | constrained | <dynamic-range-limit-mix()>",
 			"syntaxSource": {
@@ -21446,11 +21937,13 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": null,
+					"level": false,
+					"featureId": "dynamic-range-limit",
 					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
+						"kind": "derived",
+						"source": "web-features",
+						"via": "@mdn/browser-compat-data",
+						"note": "Resolved baseline from web-features feature dynamic-range-limit."
 					}
 				}
 			}
@@ -34721,16 +35214,14 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "high",
+					"level": false,
 					"featureId": "overscroll-behavior",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature overscroll-behavior."
-					},
-					"baselineLowDate": "2022-09-12",
-					"baselineHighDate": "2025-03-12"
+					}
 				}
 			}
 		},
@@ -34785,16 +35276,14 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "high",
+					"level": false,
 					"featureId": "overscroll-behavior",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature overscroll-behavior."
-					},
-					"baselineLowDate": "2022-09-12",
-					"baselineHighDate": "2025-03-12"
+					}
 				}
 			}
 		},
@@ -34849,16 +35338,14 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "high",
+					"level": false,
 					"featureId": "overscroll-behavior",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature overscroll-behavior."
-					},
-					"baselineLowDate": "2022-09-12",
-					"baselineHighDate": "2025-03-12"
+					}
 				}
 			}
 		},
@@ -34913,16 +35400,14 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "high",
+					"level": false,
 					"featureId": "overscroll-behavior",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature overscroll-behavior."
-					},
-					"baselineLowDate": "2022-09-12",
-					"baselineHighDate": "2025-03-12"
+					}
 				}
 			}
 		},
@@ -34977,16 +35462,14 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "high",
+					"level": false,
 					"featureId": "overscroll-behavior",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature overscroll-behavior."
-					},
-					"baselineLowDate": "2022-09-12",
-					"baselineHighDate": "2025-03-12"
+					}
 				}
 			}
 		},
@@ -36069,6 +36552,35 @@
 					},
 					"baselineLowDate": "2024-03-22"
 				}
+			}
+		},
+		"path-length": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "none | @@ unknown symbol \"number [0,∞]\"",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "none",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
 			}
 		},
 		"pause": {
@@ -37994,7 +38506,56 @@
 				"note": "No groups available in mdn-data."
 			}
 		},
-		"row-rule-edge-inset": {
+		"row-rule-inset": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'column-rule-inset-cap'> [ / <'column-rule-inset-junction'> ]?",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "see individual properties",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "Inherited flag defaulted to false because upstream data omitted it."
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"row-rule-inset-cap-end",
+					"row-rule-inset-cap-start",
+					"row-rule-inset-junction-end",
+					"row-rule-inset-junction-start"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "extracted",
+					"source": "@webref/css"
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for row-rule-inset."
+				}
+			}
+		},
+		"row-rule-inset-cap": {
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
@@ -38026,8 +38587,8 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"row-rule-edge-inset-end",
-					"row-rule-edge-inset-start"
+					"row-rule-inset-cap-end",
+					"row-rule-inset-cap-start"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -38037,11 +38598,11 @@
 				"resetLonghandsSource": {
 					"kind": "default",
 					"source": "generated-fallback",
-					"note": "No resetLonghands available for row-rule-edge-inset."
+					"note": "No resetLonghands available for row-rule-inset-cap."
 				}
 			}
 		},
-		"row-rule-edge-inset-end": {
+		"row-rule-inset-cap-end": {
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
@@ -38070,7 +38631,7 @@
 				"note": "No groups available in mdn-data."
 			}
 		},
-		"row-rule-edge-inset-start": {
+		"row-rule-inset-cap-start": {
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
@@ -38097,55 +38658,6 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
-			}
-		},
-		"row-rule-inset": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<'column-rule-edge-inset'> [ / <'column-rule-interior-inset'> ]?",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "see individual properties",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"row-rule-edge-inset-end",
-					"row-rule-edge-inset-start",
-					"row-rule-interior-inset-end",
-					"row-rule-interior-inset-start"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "extracted",
-					"source": "@webref/css"
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for row-rule-inset."
-				}
 			}
 		},
 		"row-rule-inset-end": {
@@ -38180,8 +38692,8 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"row-rule-edge-inset-end",
-					"row-rule-interior-inset-end"
+					"row-rule-inset-cap-end",
+					"row-rule-inset-junction-end"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -38193,6 +38705,111 @@
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for row-rule-inset-end."
 				}
+			}
+		},
+		"row-rule-inset-junction": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<length-percentage> [ <length-percentage> ]?",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "see individual properties",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "Inherited flag defaulted to false because upstream data omitted it."
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"row-rule-inset-junction-end",
+					"row-rule-inset-junction-start"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "extracted",
+					"source": "@webref/css"
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for row-rule-inset-junction."
+				}
+			}
+		},
+		"row-rule-inset-junction-end": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<length-percentage>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "0",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			}
+		},
+		"row-rule-inset-junction-start": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<length-percentage>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "0",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
 			}
 		},
 		"row-rule-inset-start": {
@@ -38227,8 +38844,8 @@
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
-					"row-rule-edge-inset-start",
-					"row-rule-interior-inset-start"
+					"row-rule-inset-cap-start",
+					"row-rule-inset-junction-start"
 				],
 				"resetLonghands": [],
 				"longhandsSource": {
@@ -38240,111 +38857,6 @@
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for row-rule-inset-start."
 				}
-			}
-		},
-		"row-rule-interior-inset": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<length-percentage> [ <length-percentage> ]?",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "see individual properties",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"row-rule-interior-inset-end",
-					"row-rule-interior-inset-start"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "extracted",
-					"source": "@webref/css"
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for row-rule-interior-inset."
-				}
-			}
-		},
-		"row-rule-interior-inset-end": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<length-percentage>",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "0",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			}
-		},
-		"row-rule-interior-inset-start": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<length-percentage>",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "0",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
 			}
 		},
 		"row-rule-style": {
@@ -38796,53 +39308,6 @@
 				}
 			}
 		},
-		"rule-edge-inset": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<'column-rule-edge-inset'>",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "see individual properties",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"column-rule-edge-inset",
-					"row-rule-edge-inset"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "extracted",
-					"source": "@webref/css"
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for rule-edge-inset."
-				}
-			}
-		},
 		"rule-inset": {
 			"sourcePresence": {
 				"webref": true,
@@ -38887,6 +39352,52 @@
 					"kind": "default",
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for rule-inset."
+				}
+			}
+		},
+		"rule-inset-cap": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'column-rule-inset-cap'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "see individual properties",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "Inherited flag defaulted to false because upstream data omitted it."
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"column-rule-inset-cap"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "extracted",
+					"source": "@webref/css"
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for rule-inset-cap."
 				}
 			}
 		},
@@ -38937,6 +39448,52 @@
 				}
 			}
 		},
+		"rule-inset-junction": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "<'column-rule-inset-junction'>",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "see individual properties",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "Inherited flag defaulted to false because upstream data omitted it."
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			},
+			"shorthand": {
+				"mode": "shorthand",
+				"longhands": [
+					"column-rule-inset-junction"
+				],
+				"resetLonghands": [],
+				"longhandsSource": {
+					"kind": "extracted",
+					"source": "@webref/css"
+				},
+				"resetLonghandsSource": {
+					"kind": "default",
+					"source": "generated-fallback",
+					"note": "No resetLonghands available for rule-inset-junction."
+				}
+			}
+		},
 		"rule-inset-start": {
 			"sourcePresence": {
 				"webref": true,
@@ -38981,53 +39538,6 @@
 					"kind": "default",
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for rule-inset-start."
-				}
-			}
-		},
-		"rule-interior-inset": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "<'column-rule-interior-inset'>",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "see individual properties",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"column-rule-interior-inset",
-					"row-rule-interior-inset"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "extracted",
-					"source": "@webref/css"
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for rule-interior-inset."
 				}
 			}
 		},
@@ -39205,12 +39715,12 @@
 				"bcd": true,
 				"webFeatures": true
 			},
-			"syntax": "<length> | <percentage>",
+			"syntax": "<length-percentage> | auto",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"initial": "0",
+			"initial": "auto",
 			"initialSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -39268,12 +39778,12 @@
 				"bcd": true,
 				"webFeatures": true
 			},
-			"syntax": "<length> | <percentage>",
+			"syntax": "<length-percentage> | auto",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"initial": "0",
+			"initial": "auto",
 			"initialSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42288,35 +42798,6 @@
 				}
 			}
 		},
-		"shape-subtract": {
-			"sourcePresence": {
-				"webref": true,
-				"mdnData": false,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "none | [ <basic-shape> | <uri> ]+",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"initial": "none",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			},
-			"groups": [],
-			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
-			}
-		},
 		"slider-orientation": {
 			"sourcePresence": {
 				"webref": true,
@@ -45321,6 +45802,35 @@
 				}
 			}
 		},
+		"text-fit": {
+			"sourcePresence": {
+				"webref": true,
+				"mdnData": false,
+				"bcd": false,
+				"webFeatures": false
+			},
+			"syntax": "[ none | grow | shrink ] [consistent | per-line | per-line-all]? <percentage>?",
+			"syntaxSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"initial": "none",
+			"initialSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"inherited": false,
+			"inheritedSource": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			},
+			"groups": [],
+			"groupsSource": {
+				"kind": "default",
+				"source": "generated-fallback",
+				"note": "No groups available in mdn-data."
+			}
+		},
 		"text-group-align": {
 			"sourcePresence": {
 				"webref": true,
@@ -46371,7 +46881,7 @@
 				"bcd": true,
 				"webFeatures": false
 			},
-			"syntax": "none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-range'> [ '/' <'timeline-trigger-exit-range'> ]? ]#",
+			"syntax": "none | [ <'timeline-trigger-name'> <'timeline-trigger-source'> <'timeline-trigger-activation-range'> [ '/' <'timeline-trigger-active-range'> ]? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46379,8 +46889,8 @@
 			"initial": [
 				"timeline-trigger-name",
 				"timeline-trigger-source",
-				"timeline-trigger-range",
-				"timeline-trigger-exit-range"
+				"timeline-trigger-activation-range",
+				"timeline-trigger-active-range"
 			],
 			"initialSource": {
 				"kind": "extracted",
@@ -46451,31 +46961,44 @@
 		"timeline-trigger-activation-range": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "[ <'timeline-trigger-activation-range-start'> <'timeline-trigger-activation-range-end'>? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"initial": "see individual properties",
+			"initial": [
+				"timeline-trigger-activation-range-start",
+				"timeline-trigger-activation-range-end"
+			],
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Animations"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-activation-range",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"shorthand": {
 				"mode": "shorthand",
@@ -46518,30 +47041,41 @@
 		"timeline-trigger-activation-range-end": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"initial": "normal",
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Animations"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-activation-range-end",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -46567,30 +47101,41 @@
 		"timeline-trigger-activation-range-start": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"initial": "normal",
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Animations"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-activation-range-start",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -46616,31 +47161,44 @@
 		"timeline-trigger-active-range": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "[ <'timeline-trigger-active-range-start'> <'timeline-trigger-active-range-end'>? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"initial": "see individual properties",
+			"initial": [
+				"timeline-trigger-active-range-start",
+				"timeline-trigger-active-range-end"
+			],
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "Inherited flag defaulted to false because upstream data omitted it."
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Animations"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-active-range",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"shorthand": {
 				"mode": "shorthand",
@@ -46683,30 +47241,41 @@
 		"timeline-trigger-active-range-end": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"initial": "auto",
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Animations"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-active-range-end",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -46732,30 +47301,41 @@
 		"timeline-trigger-active-range-start": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"initial": "auto",
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Animations"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-active-range-start",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -46776,147 +47356,6 @@
 						"note": "No web-features tag found in browser-compat-data."
 					}
 				}
-			}
-		},
-		"timeline-trigger-exit-range": {
-			"sourcePresence": {
-				"webref": false,
-				"mdnData": true,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "[ <'timeline-trigger-exit-range-start'> <'timeline-trigger-exit-range-end'>? ]#",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"initial": [
-				"timeline-trigger-exit-range-start",
-				"timeline-trigger-exit-range-end"
-			],
-			"initialSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"groups": [
-				"CSS Animations"
-			],
-			"groupsSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-exit-range",
-			"mdnUrlSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"status": "standard",
-			"statusSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"timeline-trigger-exit-range-end",
-					"timeline-trigger-exit-range-start"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "derived",
-					"source": "mdn-data",
-					"note": "Longhands derived from mdn-data fallback fields for timeline-trigger-exit-range."
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for timeline-trigger-exit-range."
-				}
-			}
-		},
-		"timeline-trigger-exit-range-end": {
-			"sourcePresence": {
-				"webref": false,
-				"mdnData": true,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"initial": "auto",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"groups": [
-				"CSS Animations"
-			],
-			"groupsSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-exit-range-end",
-			"mdnUrlSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"status": "standard",
-			"statusSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			}
-		},
-		"timeline-trigger-exit-range-start": {
-			"sourcePresence": {
-				"webref": false,
-				"mdnData": true,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "[ auto | normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"initial": "auto",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"groups": [
-				"CSS Animations"
-			],
-			"groupsSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-exit-range-start",
-			"mdnUrlSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"status": "standard",
-			"statusSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
 			}
 		},
 		"timeline-trigger-name": {
@@ -46977,147 +47416,6 @@
 						"note": "No web-features tag found in browser-compat-data."
 					}
 				}
-			}
-		},
-		"timeline-trigger-range": {
-			"sourcePresence": {
-				"webref": false,
-				"mdnData": true,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "[ <'timeline-trigger-range-start'> <'timeline-trigger-range-end'>? ]#",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"initial": [
-				"timeline-trigger-range-start",
-				"timeline-trigger-range-end"
-			],
-			"initialSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"groups": [
-				"CSS Animations"
-			],
-			"groupsSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-range",
-			"mdnUrlSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"status": "standard",
-			"statusSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"shorthand": {
-				"mode": "shorthand",
-				"longhands": [
-					"timeline-trigger-range-end",
-					"timeline-trigger-range-start"
-				],
-				"resetLonghands": [],
-				"longhandsSource": {
-					"kind": "derived",
-					"source": "mdn-data",
-					"note": "Longhands derived from mdn-data fallback fields for timeline-trigger-range."
-				},
-				"resetLonghandsSource": {
-					"kind": "default",
-					"source": "generated-fallback",
-					"note": "No resetLonghands available for timeline-trigger-range."
-				}
-			}
-		},
-		"timeline-trigger-range-end": {
-			"sourcePresence": {
-				"webref": false,
-				"mdnData": true,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"initial": "normal",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"groups": [
-				"CSS Animations"
-			],
-			"groupsSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-range-end",
-			"mdnUrlSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"status": "standard",
-			"statusSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			}
-		},
-		"timeline-trigger-range-start": {
-			"sourcePresence": {
-				"webref": false,
-				"mdnData": true,
-				"bcd": false,
-				"webFeatures": false
-			},
-			"syntax": "[ normal | <length-percentage> | <timeline-range-name> <length-percentage>? ]#",
-			"syntaxSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"initial": "normal",
-			"initialSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"inherited": false,
-			"inheritedSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"groups": [
-				"CSS Animations"
-			],
-			"groupsSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-trigger-range-start",
-			"mdnUrlSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
-			},
-			"status": "standard",
-			"statusSource": {
-				"kind": "extracted",
-				"source": "mdn-data"
 			}
 		},
 		"timeline-trigger-source": {
@@ -50399,6 +50697,13 @@
 				"source": "mdn-data"
 			}
 		},
+		"attr-unit": {
+			"syntax": "<custom-ident>",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
 		"attr()": {
 			"syntax": "attr( <attr-name> <attr-type>? , <declaration-value>? )",
 			"source": {
@@ -51335,13 +51640,6 @@
 				"source": "mdn-data"
 			}
 		},
-		"feature-index": {
-			"syntax": "<integer [0,∞]>",
-			"source": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			}
-		},
 		"feature-tag-value": {
 			"syntax": "<string> [ <integer> | on | off ]?",
 			"source": {
@@ -51440,6 +51738,27 @@
 				"source": "mdn-data"
 			}
 		},
+		"font-family-name": {
+			"syntax": "<string> | <custom-ident>+",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
+		"font-feature-index": {
+			"syntax": "<integer>",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
+		"font-feature-value-name": {
+			"syntax": "<ident>",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
 		"font-features-tech": {
 			"syntax": "[features-opentype | features-aat | features-graphite]",
 			"source": {
@@ -51455,7 +51774,7 @@
 			}
 		},
 		"font-src": {
-			"syntax": "<url> [ format( <font-format> ) ]? [ tech( <font-tech># ) ]? | local( <family-name> )",
+			"syntax": "<url> [ format( <font-format> ) ]? [ tech( <font-tech># ) ]? | local( <font-family-name> )",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -51580,18 +51899,39 @@
 				"source": "mdn-data"
 			}
 		},
+		"generic-font-complete": {
+			"syntax": "serif | sans-serif | system-ui | cursive | fantasy | math | monospace",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
+		"generic-font-family": {
+			"syntax": "<generic-font-script-specific>| <generic-font-complete> | <generic-font-incomplete>",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
+		"generic-font-incomplete": {
+			"syntax": "ui-serif | ui-sans-serif | ui-monospace | ui-rounded",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
+		"generic-font-script-specific": {
+			"syntax": "generic(fangsong) | generic(kai) | generic(khmer-mul) | generic(nastaliq)",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
 		"generic-incomplete": {
 			"syntax": "ui-serif | ui-sans-serif | ui-monospace | ui-rounded",
 			"source": {
 				"kind": "extracted",
 				"source": "mdn-data"
-			}
-		},
-		"generic-script-specific": {
-			"syntax": "generic(fangsong) | generic(kai) | generic(khmer-mul) | generic(nastaliq)",
-			"source": {
-				"kind": "extracted",
-				"source": "@webref/css"
 			}
 		},
 		"generic-voice": {
@@ -52149,7 +52489,7 @@
 			}
 		},
 		"link-condition": {
-			"syntax": "<link-condition-base> [ with <navigation-param-expression> ]?",
+			"syntax": "<link-condition-base> [ with <navigation-match> ]?",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -52491,8 +52831,15 @@
 				"source": "@webref/css"
 			}
 		},
+		"navigation-location-between-test": {
+			"syntax": "between : <navigation-location> and <navigation-location>",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
 		"navigation-location-keyword": {
-			"syntax": "at | from | to",
+			"syntax": "at | with | from | to",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -52505,50 +52852,22 @@
 				"source": "@webref/css"
 			}
 		},
-		"navigation-param": {
-			"syntax": "<navigation-param-key-value> | <navigation-param-function>",
+		"navigation-match": {
+			"syntax": "<pattern-match-type>( <navigation-match-target> )",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
 			}
 		},
-		"navigation-param-and": {
-			"syntax": "<navigation-param-expression> [ \"and\" <navigation-param-expression> ]*",
-			"source": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			}
-		},
-		"navigation-param-expression": {
-			"syntax": "( <navigation-param-and> ) | ( <navigation-param-or> ) | <navigation-param>",
-			"source": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			}
-		},
-		"navigation-param-function": {
-			"syntax": "navigation-param( <ident> )",
-			"source": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			}
-		},
-		"navigation-param-key-value": {
-			"syntax": "( <ident> : <string> )",
-			"source": {
-				"kind": "extracted",
-				"source": "@webref/css"
-			}
-		},
-		"navigation-param-or": {
-			"syntax": "<navigation-param-expression> [ \"or\" <navigation-param-expression> ]*",
+		"navigation-match-target": {
+			"syntax": "navigation-at | navigation-with | navigation-from | navigation-to",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
 			}
 		},
 		"navigation-test": {
-			"syntax": "<navigation-location-test> | <navigation-type-test>",
+			"syntax": "<navigation-location-test> | <navigation-location-between-test> | <navigation-type-test>",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -52793,6 +53112,13 @@
 				"source": "@webref/css"
 			}
 		},
+		"pattern-match-type": {
+			"syntax": "match-pattern | match-params | match-url",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
 		"perspective()": {
 			"syntax": "perspective( [ <length [0,∞]> | none ] )",
 			"source": {
@@ -53011,7 +53337,7 @@
 			}
 		},
 		"random-cache-key": {
-			"syntax": "auto | <random-name> | fixed <number [0,1]>",
+			"syntax": "<dashed-ident> || element-scoped || [ property-scoped | property-index-scoped | <random-ua-ident> ]",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -53024,8 +53350,15 @@
 				"source": "@webref/css"
 			}
 		},
-		"random-name": {
-			"syntax": "<dashed-ident> [ element | property index? ]?",
+		"random-key": {
+			"syntax": "auto | <random-cache-key> | fixed <number [0,1]>",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
+		"random-ua-ident": {
+			"syntax": "<custom-ident>",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -53877,6 +54210,13 @@
 			"source": {
 				"kind": "extracted",
 				"source": "mdn-data"
+			}
+		},
+		"system-font-family-name": {
+			"syntax": "caption | icon | menu | message-box | small-caption | status-bar",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
 			}
 		},
 		"tan()": {

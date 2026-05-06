@@ -1,13 +1,14 @@
 minimumReleaseAge: 4320
-shellEmulator: true
-trustPolicy: no-downgrade
-strictDepBuilds: true
-blockExoticSubdeps: true
 
+shellEmulator: true
+
+trustPolicy: no-downgrade
 packages:
   - docs
   - demo
   - packages/*
+
+blockExoticSubdeps: true
 
 catalog:
   '@clack/prompts': ^1.2.0
@@ -15,14 +16,14 @@ catalog:
   '@deviltea/tsconfig': ^0.0.9
   '@iconify-json/line-md': ^1.2.16
   '@iconify/utils': ^3.1.0
-  '@mdn/browser-compat-data': ^7.3.9
+  '@mdn/browser-compat-data': ^7.3.14
   '@nuxt/kit': ^4.4.2
   '@nuxt/schema': ^4.4.2
   '@shikijs/vitepress-twoslash': ^3.23.0
   '@types/node': ^24.12.0
   '@vitejs/plugin-vue': ^6.0.5
   '@vitest/coverage-v8': ^4.1.2
-  '@webref/css': ^8.5.3
+  '@webref/css': ^8.5.4
   alien-signals: ^3.1.2
   esbuild: ^0.27.4
   eslint: ^10.1.0
@@ -34,7 +35,7 @@ catalog:
   lint-staged: ^16.4.0
   local-pkg: ^1.1.2
   magic-string: ^0.30.21
-  mdn-data: ^2.27.1
+  mdn-data: ^2.28.0
   mermaid: ^11.13.0
   ofetch: ^1.5.1
   pathe: ^2.0.3
@@ -56,7 +57,7 @@ catalog:
   vitest: ^4.1.2
   vue: ^3.5.31
   vue-tsc: ^3.2.6
-  web-features: ^3.22.1
+  web-features: ^3.26.0
   zx: ^8.8.5
 
 ignoredBuiltDependencies:
@@ -65,3 +66,5 @@ ignoredBuiltDependencies:
 onlyBuiltDependencies:
   - core-js
   - simple-git-hooks
+
+strictDepBuilds: true

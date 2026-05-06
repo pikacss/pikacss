@@ -22,8 +22,8 @@ catalogs:
       specifier: ^3.1.0
       version: 3.1.0
     '@mdn/browser-compat-data':
-      specifier: ^7.3.9
-      version: 7.3.9
+      specifier: ^7.3.14
+      version: 7.3.14
     '@nuxt/kit':
       specifier: ^4.4.2
       version: 4.4.2
@@ -43,8 +43,8 @@ catalogs:
       specifier: ^4.1.2
       version: 4.1.2
     '@webref/css':
-      specifier: ^8.5.3
-      version: 8.5.3
+      specifier: ^8.5.4
+      version: 8.5.4
     alien-signals:
       specifier: ^3.1.2
       version: 3.1.2
@@ -79,8 +79,8 @@ catalogs:
       specifier: ^0.30.21
       version: 0.30.21
     mdn-data:
-      specifier: ^2.27.1
-      version: 2.27.1
+      specifier: ^2.28.0
+      version: 2.28.0
     mermaid:
       specifier: ^11.13.0
       version: 11.13.0
@@ -145,8 +145,8 @@ catalogs:
       specifier: ^3.2.6
       version: 3.2.6
     web-features:
-      specifier: ^3.22.1
-      version: 3.22.1
+      specifier: ^3.26.0
+      version: 3.26.0
     zx:
       specifier: ^8.8.5
       version: 8.8.5
@@ -166,7 +166,7 @@ importers:
         version: 0.0.9(@types/node@24.12.0)(typescript@5.9.3)
       '@mdn/browser-compat-data':
         specifier: 'catalog:'
-        version: 7.3.9
+        version: 7.3.14
       '@pikacss/core':
         specifier: workspace:*
         version: link:packages/core
@@ -181,7 +181,7 @@ importers:
         version: 4.1.2(vitest@4.1.2(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(happy-dom@20.8.9)(vite@8.0.3(@emnapi/core@1.7.1)(@emnapi/runtime@1.7.1)(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
       '@webref/css':
         specifier: 'catalog:'
-        version: 8.5.3(css-tree@3.2.1)
+        version: 8.5.4(css-tree@3.2.1)
       eslint:
         specifier: 'catalog:'
         version: 10.1.0(jiti@2.6.1)
@@ -197,9 +197,12 @@ importers:
       lint-staged:
         specifier: 'catalog:'
         version: 16.4.0
+      local-pkg:
+        specifier: 'catalog:'
+        version: 1.1.2
       mdn-data:
         specifier: 'catalog:'
-        version: 2.27.1
+        version: 2.28.0
       pathe:
         specifier: 'catalog:'
         version: 2.0.3
@@ -229,7 +232,7 @@ importers:
         version: 4.1.2(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(happy-dom@20.8.9)(vite@8.0.3(@emnapi/core@1.7.1)(@emnapi/runtime@1.7.1)(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       web-features:
         specifier: 'catalog:'
-        version: 3.22.1
+        version: 3.26.0
       zx:
         specifier: 'catalog:'
         version: 8.8.5
@@ -1026,8 +1029,8 @@ packages:
     resolution: {integrity: sha512-f5DRIOZf7wxogefH03RjMPMdBF7ADTWUMoOs9kaJo06EfwF+aFhMZMDZxHg/Xe12hptN9xoZjGso2fdjapBRIA==}
     engines: {node: '>=10'}
 
-  '@mdn/browser-compat-data@7.3.9':
-    resolution: {integrity: sha512-ARxwDFfq4uhRSd9Wr1FMaxeKKIFDPyMnSoLe/8WX+nNXbKDILf1H8KDJW9nzu2QTR0hQ37jDCzAgyaNYdLzACQ==}
+  '@mdn/browser-compat-data@7.3.14':
+    resolution: {integrity: sha512-Mqll0z0todYcAOqr+2hnYZRFe7+CwyU14lj86vzAGDJVeqnp618ybGzwHTI7sxyhd/46FFtJAlZNUmL1YHSX+Q==}
 
   '@mermaid-js/mermaid-mindmap@9.3.0':
     resolution: {integrity: sha512-IhtYSVBBRYviH1Ehu8gk69pMDF8DSRqXBRDMWrEfHoaMruHeaP2DXA3PBnuwsMaCdPQhlUUcy/7DBLAEIXvCAw==}
@@ -1932,8 +1935,8 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
-  '@webref/css@8.5.3':
-    resolution: {integrity: sha512-UQ0rOmt01faB6uzFa+jHQBCz9/TIeDgQjzlY3Zt2hqE/MlQQC8v4zWDP7cY+BSDmS8vaMXUtotcMamrwMYzfSQ==}
+  '@webref/css@8.5.4':
+    resolution: {integrity: sha512-3t4LuTww0lNpJRi3k/Obb74xWc9+YVGcO0DNoc5k3+dmqIklcj3KHKBk4GHMwj4+zMwJXLpK7F2R9r3qTZg2Ag==}
     peerDependencies:
       css-tree: ^3.2.1
 
@@ -1961,6 +1964,9 @@ packages:
 
   ajv@6.14.0:
     resolution: {integrity: sha512-IWrosm/yrn43eiKqkfkHis7QioDleaXQHdDVPKg0FSwwd/DuvyX79TZnFOnYpB7dcsFAMmtFztZuXPDvSePkFw==}
+
+  ajv@6.15.0:
+    resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
 
   ajv@8.18.0:
     resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
@@ -3462,6 +3468,9 @@ packages:
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
 
+  mdn-data@2.28.0:
+    resolution: {integrity: sha512-uy9AS1yt+wW5eUEefgE3lOpqPghanUttycV0GXKbiXyBjwvbeE8XPj4u1C+voRfz7dEjwU4NDHTMfZ/s/JtZrQ==}
+
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
@@ -4215,6 +4224,10 @@ packages:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
 
+  tinyglobby@0.2.16:
+    resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
+    engines: {node: '>=12.0.0'}
+
   tinypool@2.1.0:
     resolution: {integrity: sha512-Pugqs6M0m7Lv1I7FtxN4aoyToKg1C4tu+/381vH35y8oENM/Ai7f7C4StcoK4/+BSw9ebcS8jRiVrORFKCALLw==}
     engines: {node: ^20.0.0 || >=22.0.0}
@@ -4684,8 +4697,8 @@ packages:
       typescript:
         optional: true
 
-  web-features@3.22.1:
-    resolution: {integrity: sha512-aHlGO8NhNf19aQH5yWd6gFMEWZZh0W91bRMBlNLTaEASF0Ko1Rm4KnY/9rV69lYd9LyQTaJQBVae4PtDxfFJdg==}
+  web-features@3.26.0:
+    resolution: {integrity: sha512-1qXkBvgi2H1uZ3AmP9GOOF5+LrlO94bJxgh6Kh12yW6wYQQtjXv7ou3ADo3dIuHB98WlHtGp8bjd/w8UQI6tHw==}
 
   web-tree-sitter@0.26.8:
     resolution: {integrity: sha512-4sUwi7ZyOrIk5KLgYLkc2A/F0LFMQnBhfb+2Cdl7ik4ePJ6JD+fk4ofI2sA5eGawBKBaK4Vntt7Ww5KcEsay4A==}
@@ -5437,7 +5450,7 @@ snapshots:
       string-argv: 0.3.2
       type-detect: 4.1.0
 
-  '@mdn/browser-compat-data@7.3.9': {}
+  '@mdn/browser-compat-data@7.3.14': {}
 
   '@mermaid-js/mermaid-mindmap@9.3.0':
     dependencies:
@@ -6099,7 +6112,7 @@ snapshots:
       '@typescript-eslint/parser': 8.56.1(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3)
       '@typescript-eslint/typescript-estree': 8.56.1(typescript@5.9.3)
       '@typescript-eslint/utils': 8.56.1(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3)
-      ajv: 6.14.0
+      ajv: 6.15.0
       eslint: 10.1.0(jiti@2.6.1)
       json-stable-stringify-without-jsonify: 1.0.1
       lodash.merge: 4.6.2
@@ -6151,7 +6164,7 @@ snapshots:
       debug: 4.4.3
       minimatch: 10.2.5
       semver: 7.7.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ts-api-utils: 2.5.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -6443,7 +6456,7 @@ snapshots:
     dependencies:
       vue: 3.5.31(typescript@5.9.3)
 
-  '@webref/css@8.5.3(css-tree@3.2.1)':
+  '@webref/css@8.5.4(css-tree@3.2.1)':
     dependencies:
       css-tree: 3.2.1
 
@@ -6463,6 +6476,13 @@ snapshots:
       ajv: 8.18.0
 
   ajv@6.14.0:
+    dependencies:
+      fast-deep-equal: 3.1.3
+      fast-json-stable-stringify: 2.1.0
+      json-schema-traverse: 0.4.1
+      uri-js: 4.4.1
+
+  ajv@6.15.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-json-stable-stringify: 2.1.0
@@ -8080,6 +8100,8 @@ snapshots:
 
   mdn-data@2.27.1: {}
 
+  mdn-data@2.28.0: {}
+
   mdurl@2.0.0: {}
 
   media-typer@1.1.0: {}
@@ -9040,6 +9062,11 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
 
+  tinyglobby@0.2.16:
+    dependencies:
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
+
   tinypool@2.1.0: {}
 
   tinyrainbow@3.1.0: {}
@@ -9554,7 +9581,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  web-features@3.22.1: {}
+  web-features@3.26.0: {}
 
   web-tree-sitter@0.26.8: {}
 

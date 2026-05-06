@@ -12,10 +12,10 @@ import type {
 	ProcessedCssSourcePresence,
 	ProcessedCssSyntax,
 } from './types'
-import { createRequire } from 'node:module'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import bcd from '@mdn/browser-compat-data'
+import { getPackageInfoSync } from 'local-pkg'
 // @ts-expect-error - mdn-data doesn't have types, so we import as any and assert a minimal shape below
 import mdnData from 'mdn-data'
 import { features as webFeatures } from 'web-features'
@@ -744,22 +744,26 @@ const DATA_SOURCE_PACKAGES = [
 ] as const
 
 async function checkDataSourceVersions(): Promise<boolean> {
-	const require = createRequire(import.meta.url)
 	console.log('Checking data source package versions...')
 	let passed = true
 
 	for (const pkg of DATA_SOURCE_PACKAGES) {
 		try {
-			const pkgJsonPath = require.resolve(`${pkg}/package.json`)
-			const { version: installedVersion } = (await import(pkgJsonPath, { with: { type: 'json' } })).default as { version: string }
+			const info = getPackageInfoSync(pkg)
+			if (!info) {
+				console.log(`  \x1B[33m⚠ ${pkg}: not found\x1B[0m`)
+				passed = false
+				continue
+			}
+
 			const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`)
 			const { version: latestVersion } = await res.json() as { version: string }
 
-			if (installedVersion === latestVersion) {
-				console.log(`  \x1B[32m✓ ${pkg}: ${installedVersion} (up to date)\x1B[0m`)
+			if (info.version === latestVersion) {
+				console.log(`  \x1B[32m✓ ${pkg}: ${info.version} (up to date)\x1B[0m`)
 			}
 			else {
-				console.log(`  \x1B[33m⚠ ${pkg}: ${installedVersion} → ${latestVersion} (outdated)\x1B[0m`)
+				console.log(`  \x1B[33m⚠ ${pkg}: ${info.version} → ${latestVersion} (outdated)\x1B[0m`)
 				passed = false
 			}
 		}
