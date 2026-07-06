@@ -472,7 +472,9 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    *
    * 🔑 Values: `auto` | `no-ellipsis`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   blockEllipsis?: Property.BlockEllipsis | undefined;
   /**
@@ -1653,10 +1655,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   columnRule?: Property.ColumnRule<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleBreak?: Property.ColumnRuleBreak | undefined;
   /**
@@ -1670,48 +1675,87 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   columnRuleColor?: Property.ColumnRuleColor | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  columnRuleInset?: Property.ColumnRuleInset<TLength> | undefined;
+  columnRuleInset?: Property.ColumnRuleInset | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  columnRuleInsetCap?: Property.ColumnRuleInsetCap<TLength> | undefined;
+  columnRuleInsetCap?: Property.ColumnRuleInsetCap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetCapEnd?: Property.ColumnRuleInsetCapEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetCapStart?: Property.ColumnRuleInsetCapStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetEnd?: Property.ColumnRuleInsetEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  columnRuleInsetJunction?: Property.ColumnRuleInsetJunction<TLength> | undefined;
+  columnRuleInsetJunction?: Property.ColumnRuleInsetJunction | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetJunctionEnd?: Property.ColumnRuleInsetJunctionEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetJunctionStart?: Property.ColumnRuleInsetJunctionStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetStart?: Property.ColumnRuleInsetStart<TLength> | undefined;
   /**
@@ -1725,10 +1769,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   columnRuleStyle?: Property.ColumnRuleStyle | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleVisibilityItems?: Property.ColumnRuleVisibilityItems | undefined;
   /**
@@ -1886,7 +1933,9 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    *
    * 🔑 Values: `auto` | `collapse` | `discard` | `fragments` | `overflow` | `paginate`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   continue?: Property.Continue | undefined;
   /**
@@ -2240,7 +2289,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   counterReset?: Property.CounterReset | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -2376,7 +2425,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   eventTriggerSource?: Property.EventTriggerSource | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jun 2026)
    *
    * 🔑 Values: `content` | `fixed`
    *
@@ -2520,6 +2569,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    * @see https://developer.mozilla.org/docs/Web/CSS/flex-grow
    */
   flexGrow?: Property.FlexGrow | undefined;
+  /**
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
+   */
+  flexLineCount?: Property.FlexLineCount | undefined;
   /**
    * ✅ Baseline: Widely available (since Mar 2018)
    *
@@ -2919,7 +2975,9 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    *
    * 🔑 Values: `auto` | `content-block-size` | `content-height` | `content-inline-size` | `content-width`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   frameSizing?: Property.FrameSizing | undefined;
   /**
@@ -3533,7 +3591,9 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   linkParameters?: Property.LinkParameters | undefined;
   /**
@@ -3753,7 +3813,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   markerStart?: Property.MarkerStart | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `alpha` | `border-box` | `bottom` | `center` | `content-box` | `exclude` | `fill-box` | `intersect` | `left` | `luminance` | `margin-box` | `match-source` | `no-repeat` | `padding-box` | `repeat` | `repeat-x` | `repeat-y` | `right` | `round`, ... and 5 more
    *
@@ -3824,7 +3884,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskBorderWidth?: Property.MaskBorderWidth<TLength> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -3832,7 +3892,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskClip?: Property.MaskClip | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `exclude` | `intersect` | `subtract`
    *
@@ -3842,7 +3902,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskComposite?: Property.MaskComposite | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -3852,7 +3912,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskImage?: Property.MaskImage | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `alpha` | `luminance` | `match-source`
    *
@@ -3862,7 +3922,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskMode?: Property.MaskMode | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `border-box` | `content-box` | `fill-box` | `padding-box` | `stroke-box` | `view-box`
    *
@@ -3872,7 +3932,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskOrigin?: Property.MaskOrigin | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `bottom` | `center` | `left` | `right` | `top`
    *
@@ -3882,7 +3942,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskPosition?: Property.MaskPosition<TLength> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `no-repeat` | `repeat` | `repeat-x` | `repeat-y` | `round` | `space`
    *
@@ -3892,7 +3952,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   maskRepeat?: Property.MaskRepeat | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `contain` | `cover`
    *
@@ -3982,7 +4042,9 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   maxLines?: Property.MaxLines | undefined;
   /**
@@ -5074,12 +5136,15 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   paintOrder?: Property.PaintOrder | undefined;
   /**
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  pathLength?: Property.PathLength | undefined;
+  pathLength?: Property.PathLength<TLength> | undefined;
   /**
    *
    * 🔑 Values: `medium` | `none` | `strong` | `weak` | `x-strong` | `x-weak`
@@ -5189,7 +5254,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
   /**
    * ❌ Baseline: Not widely available
    *
-   * 🔑 Values: `auto` | `none`
+   * 🔑 Values: `auto` | `match-parent` | `none` | `normal`
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -5365,90 +5430,147 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   rowGap?: Property.RowGap<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRule?: Property.RowRule<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleBreak?: Property.RowRuleBreak | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleColor?: Property.RowRuleColor | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  rowRuleInset?: Property.RowRuleInset<TLength> | undefined;
+  rowRuleInset?: Property.RowRuleInset | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  rowRuleInsetCap?: Property.RowRuleInsetCap<TLength> | undefined;
+  rowRuleInsetCap?: Property.RowRuleInsetCap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetCapEnd?: Property.RowRuleInsetCapEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetCapStart?: Property.RowRuleInsetCapStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetEnd?: Property.RowRuleInsetEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  rowRuleInsetJunction?: Property.RowRuleInsetJunction<TLength> | undefined;
+  rowRuleInsetJunction?: Property.RowRuleInsetJunction | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetJunctionEnd?: Property.RowRuleInsetJunctionEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetJunctionStart?: Property.RowRuleInsetJunctionStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetStart?: Property.RowRuleInsetStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleStyle?: Property.RowRuleStyle | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleVisibilityItems?: Property.RowRuleVisibilityItems | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleWidth?: Property.RowRuleWidth<TLength> | undefined;
   /**
@@ -5489,77 +5611,117 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   rubyPosition?: Property.RubyPosition | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rule?: Property.Rule<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleBreak?: Property.RuleBreak | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleColor?: Property.RuleColor | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  ruleInset?: Property.RuleInset<TLength> | undefined;
+  ruleInset?: Property.RuleInset | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  ruleInsetCap?: Property.RuleInsetCap<TLength> | undefined;
+  ruleInsetCap?: Property.RuleInsetCap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleInsetEnd?: Property.RuleInsetEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  ruleInsetJunction?: Property.RuleInsetJunction<TLength> | undefined;
+  ruleInsetJunction?: Property.RuleInsetJunction | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleInsetStart?: Property.RuleInsetStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `column-over-row` | `row-over-column`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleOverlap?: Property.RuleOverlap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleStyle?: Property.RuleStyle | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleVisibilityItems?: Property.RuleVisibilityItems | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleWidth?: Property.RuleWidth<TLength> | undefined;
   /**
@@ -6498,7 +6660,9 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
   textEmphasisStyle?: Property.TextEmphasisStyle | undefined;
   /**
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   textFit?: Property.TextFit | undefined;
   /**
@@ -7001,12 +7165,15 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    */
   viewTransitionName?: Property.ViewTransitionName | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
    *
    * @experimental
+   *
+   * @see https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-transition-scope
    */
   viewTransitionScope?: Property.ViewTransitionScope | undefined;
   /**
@@ -7391,7 +7558,7 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
   WebkitFlexShrink?: Property.WebkitFlexShrink | undefined;
   /**
    *
-   * 🔑 Values: `nowrap` | `wrap` | `wrap-reverse`
+   * 🔑 Values: `nowrap`
    *
    * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
    */
@@ -7765,6 +7932,13 @@ export interface Properties<TLength = DefaultTLength, TTime = DefaultTTime> {
    * @see https://developer.mozilla.org/docs/Web/CSS/will-change
    */
   willChange?: Property.WillChange | undefined;
+  /**
+   *
+   * 🔑 Values: `move` | `none`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   */
+  windowDrag?: Property.WindowDrag | undefined;
   /**
    * ✅ Baseline: Widely available (since Jan 2018)
    *
@@ -8169,6 +8343,7 @@ export interface PropertyRelatedNames {
   flexDirection: "flexDirection" | "flex-direction";
   flexFlow: "flexFlow" | "flex-flow";
   flexGrow: "flexGrow" | "flex-grow";
+  flexLineCount: "flexLineCount" | "flex-line-count";
   flexShrink: "flexShrink" | "flex-shrink";
   flexWrap: "flexWrap" | "flex-wrap";
   float: "float" | "float";
@@ -8796,6 +8971,7 @@ export interface PropertyRelatedNames {
   widows: "widows" | "widows";
   width: "width" | "width";
   willChange: "willChange" | "will-change";
+  windowDrag: "windowDrag" | "window-drag";
   wordBreak: "wordBreak" | "word-break";
   wordSpaceTransform: "wordSpaceTransform" | "word-space-transform";
   wordSpacing: "wordSpacing" | "word-spacing";
@@ -9609,7 +9785,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
   "-webkit-flex-shrink"?: Property.WebkitFlexShrink | undefined;
   /**
    *
-   * 🔑 Values: `nowrap` | `wrap` | `wrap-reverse`
+   * 🔑 Values: `nowrap`
    *
    * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
    */
@@ -10390,7 +10566,9 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    *
    * 🔑 Values: `auto` | `no-ellipsis`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "block-ellipsis"?: Property.BlockEllipsis | undefined;
   /**
@@ -11571,10 +11749,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "column-rule"?: Property.ColumnRule<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-break"?: Property.ColumnRuleBreak | undefined;
   /**
@@ -11588,48 +11769,87 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "column-rule-color"?: Property.ColumnRuleColor | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "column-rule-inset"?: Property.ColumnRuleInset<TLength> | undefined;
+  "column-rule-inset"?: Property.ColumnRuleInset | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "column-rule-inset-cap"?: Property.ColumnRuleInsetCap<TLength> | undefined;
+  "column-rule-inset-cap"?: Property.ColumnRuleInsetCap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-cap-end"?: Property.ColumnRuleInsetCapEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-cap-start"?: Property.ColumnRuleInsetCapStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-end"?: Property.ColumnRuleInsetEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "column-rule-inset-junction"?: Property.ColumnRuleInsetJunction<TLength> | undefined;
+  "column-rule-inset-junction"?: Property.ColumnRuleInsetJunction | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-junction-end"?: Property.ColumnRuleInsetJunctionEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-junction-start"?: Property.ColumnRuleInsetJunctionStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-start"?: Property.ColumnRuleInsetStart<TLength> | undefined;
   /**
@@ -11643,10 +11863,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "column-rule-style"?: Property.ColumnRuleStyle | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-visibility-items"?: Property.ColumnRuleVisibilityItems | undefined;
   /**
@@ -11804,7 +12027,9 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    *
    * 🔑 Values: `auto` | `collapse` | `discard` | `fragments` | `overflow` | `paginate`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "continue"?: Property.Continue | undefined;
   /**
@@ -12158,7 +12383,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "counter-reset"?: Property.CounterReset | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -12294,7 +12519,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "event-trigger-source"?: Property.EventTriggerSource | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jun 2026)
    *
    * 🔑 Values: `content` | `fixed`
    *
@@ -12438,6 +12663,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    * @see https://developer.mozilla.org/docs/Web/CSS/flex-grow
    */
   "flex-grow"?: Property.FlexGrow | undefined;
+  /**
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
+   */
+  "flex-line-count"?: Property.FlexLineCount | undefined;
   /**
    * ✅ Baseline: Widely available (since Mar 2018)
    *
@@ -12837,7 +13069,9 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    *
    * 🔑 Values: `auto` | `content-block-size` | `content-height` | `content-inline-size` | `content-width`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "frame-sizing"?: Property.FrameSizing | undefined;
   /**
@@ -13451,7 +13685,9 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "link-parameters"?: Property.LinkParameters | undefined;
   /**
@@ -13671,7 +13907,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "marker-start"?: Property.MarkerStart | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `alpha` | `border-box` | `bottom` | `center` | `content-box` | `exclude` | `fill-box` | `intersect` | `left` | `luminance` | `margin-box` | `match-source` | `no-repeat` | `padding-box` | `repeat` | `repeat-x` | `repeat-y` | `right` | `round`, ... and 5 more
    *
@@ -13742,7 +13978,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-border-width"?: Property.MaskBorderWidth<TLength> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -13750,7 +13986,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-clip"?: Property.MaskClip | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `exclude` | `intersect` | `subtract`
    *
@@ -13760,7 +13996,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-composite"?: Property.MaskComposite | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -13770,7 +14006,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-image"?: Property.MaskImage | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `alpha` | `luminance` | `match-source`
    *
@@ -13780,7 +14016,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-mode"?: Property.MaskMode | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `border-box` | `content-box` | `fill-box` | `padding-box` | `stroke-box` | `view-box`
    *
@@ -13790,7 +14026,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-origin"?: Property.MaskOrigin | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `bottom` | `center` | `left` | `right` | `top`
    *
@@ -13800,7 +14036,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-position"?: Property.MaskPosition<TLength> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `no-repeat` | `repeat` | `repeat-x` | `repeat-y` | `round` | `space`
    *
@@ -13810,7 +14046,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "mask-repeat"?: Property.MaskRepeat | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `contain` | `cover`
    *
@@ -13900,7 +14136,9 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "max-lines"?: Property.MaxLines | undefined;
   /**
@@ -14518,12 +14756,15 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "paint-order"?: Property.PaintOrder | undefined;
   /**
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "path-length"?: Property.PathLength | undefined;
+  "path-length"?: Property.PathLength<TLength> | undefined;
   /**
    *
    * 🔑 Values: `medium` | `none` | `strong` | `weak` | `x-strong` | `x-weak`
@@ -14633,7 +14874,7 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
   /**
    * ❌ Baseline: Not widely available
    *
-   * 🔑 Values: `auto` | `none`
+   * 🔑 Values: `auto` | `match-parent` | `none` | `normal`
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -14809,90 +15050,147 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "row-gap"?: Property.RowGap<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule"?: Property.RowRule<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-break"?: Property.RowRuleBreak | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-color"?: Property.RowRuleColor | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "row-rule-inset"?: Property.RowRuleInset<TLength> | undefined;
+  "row-rule-inset"?: Property.RowRuleInset | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "row-rule-inset-cap"?: Property.RowRuleInsetCap<TLength> | undefined;
+  "row-rule-inset-cap"?: Property.RowRuleInsetCap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-cap-end"?: Property.RowRuleInsetCapEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-cap-start"?: Property.RowRuleInsetCapStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-end"?: Property.RowRuleInsetEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "row-rule-inset-junction"?: Property.RowRuleInsetJunction<TLength> | undefined;
+  "row-rule-inset-junction"?: Property.RowRuleInsetJunction | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-junction-end"?: Property.RowRuleInsetJunctionEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-junction-start"?: Property.RowRuleInsetJunctionStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-start"?: Property.RowRuleInsetStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-style"?: Property.RowRuleStyle | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-visibility-items"?: Property.RowRuleVisibilityItems | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-width"?: Property.RowRuleWidth<TLength> | undefined;
   /**
@@ -14933,77 +15231,117 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "ruby-position"?: Property.RubyPosition | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule"?: Property.Rule<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-break"?: Property.RuleBreak | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-color"?: Property.RuleColor | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "rule-inset"?: Property.RuleInset<TLength> | undefined;
+  "rule-inset"?: Property.RuleInset | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "rule-inset-cap"?: Property.RuleInsetCap<TLength> | undefined;
+  "rule-inset-cap"?: Property.RuleInsetCap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-inset-end"?: Property.RuleInsetEnd<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "rule-inset-junction"?: Property.RuleInsetJunction<TLength> | undefined;
+  "rule-inset-junction"?: Property.RuleInsetJunction | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-inset-start"?: Property.RuleInsetStart<TLength> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `column-over-row` | `row-over-column`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-overlap"?: Property.RuleOverlap | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-style"?: Property.RuleStyle | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-visibility-items"?: Property.RuleVisibilityItems | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-width"?: Property.RuleWidth<TLength> | undefined;
   /**
@@ -15942,7 +16280,9 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
   "text-emphasis-style"?: Property.TextEmphasisStyle | undefined;
   /**
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "text-fit"?: Property.TextFit | undefined;
   /**
@@ -16445,12 +16785,15 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    */
   "view-transition-name"?: Property.ViewTransitionName | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
    *
    * @experimental
+   *
+   * @see https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-transition-scope
    */
   "view-transition-scope"?: Property.ViewTransitionScope | undefined;
   /**
@@ -16568,6 +16911,13 @@ export interface PropertiesHyphen<TLength = DefaultTLength, TTime = DefaultTTime
    * @see https://developer.mozilla.org/docs/Web/CSS/will-change
    */
   "will-change"?: Property.WillChange | undefined;
+  /**
+   *
+   * 🔑 Values: `move` | `none`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   */
+  "window-drag"?: Property.WindowDrag | undefined;
   /**
    * ✅ Baseline: Widely available (since Jan 2018)
    *
@@ -17133,6 +17483,7 @@ export interface PropertyHyphenRelatedNames {
   "flex-direction": "flex-direction" | "flexDirection";
   "flex-flow": "flex-flow" | "flexFlow";
   "flex-grow": "flex-grow" | "flexGrow";
+  "flex-line-count": "flex-line-count" | "flexLineCount";
   "flex-shrink": "flex-shrink" | "flexShrink";
   "flex-wrap": "flex-wrap" | "flexWrap";
   "float": "float" | "float";
@@ -17599,6 +17950,7 @@ export interface PropertyHyphenRelatedNames {
   "widows": "widows" | "widows";
   "width": "width" | "width";
   "will-change": "will-change" | "willChange";
+  "window-drag": "window-drag" | "windowDrag";
   "word-break": "word-break" | "wordBreak";
   "word-space-transform": "word-space-transform" | "wordSpaceTransform";
   "word-spacing": "word-spacing" | "wordSpacing";
@@ -17809,6 +18161,7 @@ export type Pseudos =
   | ":matches()"
   | ":modal"
   | ":muted"
+  | ":nav-source"
   | ":not()"
   | ":nth()"
   | ":nth-child()"
@@ -17987,6 +18340,7 @@ export type CSSPseudos =
   | "$:matches()"
   | "$:modal"
   | "$:muted"
+  | "$:nav-source"
   | "$:not()"
   | "$:nth()"
   | "$:nth-child()"
@@ -18508,7 +18862,9 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    *
    * 🔑 Values: `auto` | `no-ellipsis`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   blockEllipsis?: PropertyInputValue<TValueMap, Property.BlockEllipsis, PropertyRelatedNames["blockEllipsis"]> | undefined;
   /**
@@ -19689,10 +20045,13 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   columnRule?: PropertyInputValue<TValueMap, Property.ColumnRule<TLength>, PropertyRelatedNames["columnRule"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleBreak?: PropertyInputValue<TValueMap, Property.ColumnRuleBreak, PropertyRelatedNames["columnRuleBreak"]> | undefined;
   /**
@@ -19706,48 +20065,87 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   columnRuleColor?: PropertyInputValue<TValueMap, Property.ColumnRuleColor, PropertyRelatedNames["columnRuleColor"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  columnRuleInset?: PropertyInputValue<TValueMap, Property.ColumnRuleInset<TLength>, PropertyRelatedNames["columnRuleInset"]> | undefined;
+  columnRuleInset?: PropertyInputValue<TValueMap, Property.ColumnRuleInset, PropertyRelatedNames["columnRuleInset"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  columnRuleInsetCap?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCap<TLength>, PropertyRelatedNames["columnRuleInsetCap"]> | undefined;
+  columnRuleInsetCap?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCap, PropertyRelatedNames["columnRuleInsetCap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetCapEnd?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCapEnd<TLength>, PropertyRelatedNames["columnRuleInsetCapEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetCapStart?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCapStart<TLength>, PropertyRelatedNames["columnRuleInsetCapStart"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetEnd?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetEnd<TLength>, PropertyRelatedNames["columnRuleInsetEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  columnRuleInsetJunction?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunction<TLength>, PropertyRelatedNames["columnRuleInsetJunction"]> | undefined;
+  columnRuleInsetJunction?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunction, PropertyRelatedNames["columnRuleInsetJunction"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetJunctionEnd?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunctionEnd<TLength>, PropertyRelatedNames["columnRuleInsetJunctionEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetJunctionStart?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunctionStart<TLength>, PropertyRelatedNames["columnRuleInsetJunctionStart"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleInsetStart?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetStart<TLength>, PropertyRelatedNames["columnRuleInsetStart"]> | undefined;
   /**
@@ -19761,10 +20159,13 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   columnRuleStyle?: PropertyInputValue<TValueMap, Property.ColumnRuleStyle, PropertyRelatedNames["columnRuleStyle"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   columnRuleVisibilityItems?: PropertyInputValue<TValueMap, Property.ColumnRuleVisibilityItems, PropertyRelatedNames["columnRuleVisibilityItems"]> | undefined;
   /**
@@ -19922,7 +20323,9 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    *
    * 🔑 Values: `auto` | `collapse` | `discard` | `fragments` | `overflow` | `paginate`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   continue?: PropertyInputValue<TValueMap, Property.Continue, PropertyRelatedNames["continue"]> | undefined;
   /**
@@ -20276,7 +20679,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   counterReset?: PropertyInputValue<TValueMap, Property.CounterReset, PropertyRelatedNames["counterReset"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -20412,7 +20815,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   eventTriggerSource?: PropertyInputValue<TValueMap, Property.EventTriggerSource, PropertyRelatedNames["eventTriggerSource"]> | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jun 2026)
    *
    * 🔑 Values: `content` | `fixed`
    *
@@ -20556,6 +20959,13 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    * @see https://developer.mozilla.org/docs/Web/CSS/flex-grow
    */
   flexGrow?: PropertyInputValue<TValueMap, Property.FlexGrow, PropertyRelatedNames["flexGrow"]> | undefined;
+  /**
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
+   */
+  flexLineCount?: PropertyInputValue<TValueMap, Property.FlexLineCount, PropertyRelatedNames["flexLineCount"]> | undefined;
   /**
    * ✅ Baseline: Widely available (since Mar 2018)
    *
@@ -20955,7 +21365,9 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    *
    * 🔑 Values: `auto` | `content-block-size` | `content-height` | `content-inline-size` | `content-width`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   frameSizing?: PropertyInputValue<TValueMap, Property.FrameSizing, PropertyRelatedNames["frameSizing"]> | undefined;
   /**
@@ -21569,7 +21981,9 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   linkParameters?: PropertyInputValue<TValueMap, Property.LinkParameters, PropertyRelatedNames["linkParameters"]> | undefined;
   /**
@@ -21789,7 +22203,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   markerStart?: PropertyInputValue<TValueMap, Property.MarkerStart, PropertyRelatedNames["markerStart"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `alpha` | `border-box` | `bottom` | `center` | `content-box` | `exclude` | `fill-box` | `intersect` | `left` | `luminance` | `margin-box` | `match-source` | `no-repeat` | `padding-box` | `repeat` | `repeat-x` | `repeat-y` | `right` | `round`, ... and 5 more
    *
@@ -21860,7 +22274,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskBorderWidth?: PropertyInputValue<TValueMap, Property.MaskBorderWidth<TLength>, PropertyRelatedNames["maskBorderWidth"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -21868,7 +22282,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskClip?: PropertyInputValue<TValueMap, Property.MaskClip, PropertyRelatedNames["maskClip"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `exclude` | `intersect` | `subtract`
    *
@@ -21878,7 +22292,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskComposite?: PropertyInputValue<TValueMap, Property.MaskComposite, PropertyRelatedNames["maskComposite"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -21888,7 +22302,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskImage?: PropertyInputValue<TValueMap, Property.MaskImage, PropertyRelatedNames["maskImage"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `alpha` | `luminance` | `match-source`
    *
@@ -21898,7 +22312,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskMode?: PropertyInputValue<TValueMap, Property.MaskMode, PropertyRelatedNames["maskMode"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `border-box` | `content-box` | `fill-box` | `padding-box` | `stroke-box` | `view-box`
    *
@@ -21908,7 +22322,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskOrigin?: PropertyInputValue<TValueMap, Property.MaskOrigin, PropertyRelatedNames["maskOrigin"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `bottom` | `center` | `left` | `right` | `top`
    *
@@ -21918,7 +22332,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskPosition?: PropertyInputValue<TValueMap, Property.MaskPosition<TLength>, PropertyRelatedNames["maskPosition"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `no-repeat` | `repeat` | `repeat-x` | `repeat-y` | `round` | `space`
    *
@@ -21928,7 +22342,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   maskRepeat?: PropertyInputValue<TValueMap, Property.MaskRepeat, PropertyRelatedNames["maskRepeat"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `contain` | `cover`
    *
@@ -22018,7 +22432,9 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   maxLines?: PropertyInputValue<TValueMap, Property.MaxLines, PropertyRelatedNames["maxLines"]> | undefined;
   /**
@@ -23110,12 +23526,15 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   paintOrder?: PropertyInputValue<TValueMap, Property.PaintOrder, PropertyRelatedNames["paintOrder"]> | undefined;
   /**
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  pathLength?: PropertyInputValue<TValueMap, Property.PathLength, PropertyRelatedNames["pathLength"]> | undefined;
+  pathLength?: PropertyInputValue<TValueMap, Property.PathLength<TLength>, PropertyRelatedNames["pathLength"]> | undefined;
   /**
    *
    * 🔑 Values: `medium` | `none` | `strong` | `weak` | `x-strong` | `x-weak`
@@ -23225,7 +23644,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
   /**
    * ❌ Baseline: Not widely available
    *
-   * 🔑 Values: `auto` | `none`
+   * 🔑 Values: `auto` | `match-parent` | `none` | `normal`
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -23401,90 +23820,147 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   rowGap?: PropertyInputValue<TValueMap, Property.RowGap<TLength>, PropertyRelatedNames["rowGap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRule?: PropertyInputValue<TValueMap, Property.RowRule<TLength>, PropertyRelatedNames["rowRule"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleBreak?: PropertyInputValue<TValueMap, Property.RowRuleBreak, PropertyRelatedNames["rowRuleBreak"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleColor?: PropertyInputValue<TValueMap, Property.RowRuleColor, PropertyRelatedNames["rowRuleColor"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  rowRuleInset?: PropertyInputValue<TValueMap, Property.RowRuleInset<TLength>, PropertyRelatedNames["rowRuleInset"]> | undefined;
+  rowRuleInset?: PropertyInputValue<TValueMap, Property.RowRuleInset, PropertyRelatedNames["rowRuleInset"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  rowRuleInsetCap?: PropertyInputValue<TValueMap, Property.RowRuleInsetCap<TLength>, PropertyRelatedNames["rowRuleInsetCap"]> | undefined;
+  rowRuleInsetCap?: PropertyInputValue<TValueMap, Property.RowRuleInsetCap, PropertyRelatedNames["rowRuleInsetCap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetCapEnd?: PropertyInputValue<TValueMap, Property.RowRuleInsetCapEnd<TLength>, PropertyRelatedNames["rowRuleInsetCapEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetCapStart?: PropertyInputValue<TValueMap, Property.RowRuleInsetCapStart<TLength>, PropertyRelatedNames["rowRuleInsetCapStart"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetEnd?: PropertyInputValue<TValueMap, Property.RowRuleInsetEnd<TLength>, PropertyRelatedNames["rowRuleInsetEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  rowRuleInsetJunction?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunction<TLength>, PropertyRelatedNames["rowRuleInsetJunction"]> | undefined;
+  rowRuleInsetJunction?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunction, PropertyRelatedNames["rowRuleInsetJunction"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetJunctionEnd?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunctionEnd<TLength>, PropertyRelatedNames["rowRuleInsetJunctionEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetJunctionStart?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunctionStart<TLength>, PropertyRelatedNames["rowRuleInsetJunctionStart"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleInsetStart?: PropertyInputValue<TValueMap, Property.RowRuleInsetStart<TLength>, PropertyRelatedNames["rowRuleInsetStart"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleStyle?: PropertyInputValue<TValueMap, Property.RowRuleStyle, PropertyRelatedNames["rowRuleStyle"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleVisibilityItems?: PropertyInputValue<TValueMap, Property.RowRuleVisibilityItems, PropertyRelatedNames["rowRuleVisibilityItems"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rowRuleWidth?: PropertyInputValue<TValueMap, Property.RowRuleWidth<TLength>, PropertyRelatedNames["rowRuleWidth"]> | undefined;
   /**
@@ -23525,77 +24001,117 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   rubyPosition?: PropertyInputValue<TValueMap, Property.RubyPosition, PropertyRelatedNames["rubyPosition"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   rule?: PropertyInputValue<TValueMap, Property.Rule<TLength>, PropertyRelatedNames["rule"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleBreak?: PropertyInputValue<TValueMap, Property.RuleBreak, PropertyRelatedNames["ruleBreak"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleColor?: PropertyInputValue<TValueMap, Property.RuleColor, PropertyRelatedNames["ruleColor"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  ruleInset?: PropertyInputValue<TValueMap, Property.RuleInset<TLength>, PropertyRelatedNames["ruleInset"]> | undefined;
+  ruleInset?: PropertyInputValue<TValueMap, Property.RuleInset, PropertyRelatedNames["ruleInset"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  ruleInsetCap?: PropertyInputValue<TValueMap, Property.RuleInsetCap<TLength>, PropertyRelatedNames["ruleInsetCap"]> | undefined;
+  ruleInsetCap?: PropertyInputValue<TValueMap, Property.RuleInsetCap, PropertyRelatedNames["ruleInsetCap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleInsetEnd?: PropertyInputValue<TValueMap, Property.RuleInsetEnd<TLength>, PropertyRelatedNames["ruleInsetEnd"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  ruleInsetJunction?: PropertyInputValue<TValueMap, Property.RuleInsetJunction<TLength>, PropertyRelatedNames["ruleInsetJunction"]> | undefined;
+  ruleInsetJunction?: PropertyInputValue<TValueMap, Property.RuleInsetJunction, PropertyRelatedNames["ruleInsetJunction"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleInsetStart?: PropertyInputValue<TValueMap, Property.RuleInsetStart<TLength>, PropertyRelatedNames["ruleInsetStart"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `column-over-row` | `row-over-column`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleOverlap?: PropertyInputValue<TValueMap, Property.RuleOverlap, PropertyRelatedNames["ruleOverlap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleStyle?: PropertyInputValue<TValueMap, Property.RuleStyle, PropertyRelatedNames["ruleStyle"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleVisibilityItems?: PropertyInputValue<TValueMap, Property.RuleVisibilityItems, PropertyRelatedNames["ruleVisibilityItems"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   ruleWidth?: PropertyInputValue<TValueMap, Property.RuleWidth<TLength>, PropertyRelatedNames["ruleWidth"]> | undefined;
   /**
@@ -24534,7 +25050,9 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
   textEmphasisStyle?: PropertyInputValue<TValueMap, Property.TextEmphasisStyle, PropertyRelatedNames["textEmphasisStyle"]> | undefined;
   /**
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   textFit?: PropertyInputValue<TValueMap, Property.TextFit, PropertyRelatedNames["textFit"]> | undefined;
   /**
@@ -25037,12 +25555,15 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    */
   viewTransitionName?: PropertyInputValue<TValueMap, Property.ViewTransitionName, PropertyRelatedNames["viewTransitionName"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
    *
    * @experimental
+   *
+   * @see https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-transition-scope
    */
   viewTransitionScope?: PropertyInputValue<TValueMap, Property.ViewTransitionScope, PropertyRelatedNames["viewTransitionScope"]> | undefined;
   /**
@@ -25427,7 +25948,7 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
   WebkitFlexShrink?: PropertyInputValue<TValueMap, Property.WebkitFlexShrink, PropertyRelatedNames["WebkitFlexShrink"]> | undefined;
   /**
    *
-   * 🔑 Values: `nowrap` | `wrap` | `wrap-reverse`
+   * 🔑 Values: `nowrap`
    *
    * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
    */
@@ -25801,6 +26322,13 @@ export interface PropertiesInput<TValueMap = never, TLength = DefaultTLength, TT
    * @see https://developer.mozilla.org/docs/Web/CSS/will-change
    */
   willChange?: PropertyInputValue<TValueMap, Property.WillChange, PropertyRelatedNames["willChange"]> | undefined;
+  /**
+   *
+   * 🔑 Values: `move` | `none`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   */
+  windowDrag?: PropertyInputValue<TValueMap, Property.WindowDrag, PropertyRelatedNames["windowDrag"]> | undefined;
   /**
    * ✅ Baseline: Widely available (since Jan 2018)
    *
@@ -26717,7 +27245,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
   "-webkit-flex-shrink"?: PropertyInputValue<TValueMap, Property.WebkitFlexShrink, PropertyHyphenRelatedNames["-webkit-flex-shrink"]> | undefined;
   /**
    *
-   * 🔑 Values: `nowrap` | `wrap` | `wrap-reverse`
+   * 🔑 Values: `nowrap`
    *
    * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
    */
@@ -27498,7 +28026,9 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    *
    * 🔑 Values: `auto` | `no-ellipsis`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "block-ellipsis"?: PropertyInputValue<TValueMap, Property.BlockEllipsis, PropertyHyphenRelatedNames["block-ellipsis"]> | undefined;
   /**
@@ -28679,10 +29209,13 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "column-rule"?: PropertyInputValue<TValueMap, Property.ColumnRule<TLength>, PropertyHyphenRelatedNames["column-rule"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-break"?: PropertyInputValue<TValueMap, Property.ColumnRuleBreak, PropertyHyphenRelatedNames["column-rule-break"]> | undefined;
   /**
@@ -28696,48 +29229,87 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "column-rule-color"?: PropertyInputValue<TValueMap, Property.ColumnRuleColor, PropertyHyphenRelatedNames["column-rule-color"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "column-rule-inset"?: PropertyInputValue<TValueMap, Property.ColumnRuleInset<TLength>, PropertyHyphenRelatedNames["column-rule-inset"]> | undefined;
+  "column-rule-inset"?: PropertyInputValue<TValueMap, Property.ColumnRuleInset, PropertyHyphenRelatedNames["column-rule-inset"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "column-rule-inset-cap"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCap<TLength>, PropertyHyphenRelatedNames["column-rule-inset-cap"]> | undefined;
+  "column-rule-inset-cap"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCap, PropertyHyphenRelatedNames["column-rule-inset-cap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-cap-end"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCapEnd<TLength>, PropertyHyphenRelatedNames["column-rule-inset-cap-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-cap-start"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetCapStart<TLength>, PropertyHyphenRelatedNames["column-rule-inset-cap-start"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-end"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetEnd<TLength>, PropertyHyphenRelatedNames["column-rule-inset-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "column-rule-inset-junction"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunction<TLength>, PropertyHyphenRelatedNames["column-rule-inset-junction"]> | undefined;
+  "column-rule-inset-junction"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunction, PropertyHyphenRelatedNames["column-rule-inset-junction"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-junction-end"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunctionEnd<TLength>, PropertyHyphenRelatedNames["column-rule-inset-junction-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-junction-start"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetJunctionStart<TLength>, PropertyHyphenRelatedNames["column-rule-inset-junction-start"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-inset-start"?: PropertyInputValue<TValueMap, Property.ColumnRuleInsetStart<TLength>, PropertyHyphenRelatedNames["column-rule-inset-start"]> | undefined;
   /**
@@ -28751,10 +29323,13 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "column-rule-style"?: PropertyInputValue<TValueMap, Property.ColumnRuleStyle, PropertyHyphenRelatedNames["column-rule-style"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "column-rule-visibility-items"?: PropertyInputValue<TValueMap, Property.ColumnRuleVisibilityItems, PropertyHyphenRelatedNames["column-rule-visibility-items"]> | undefined;
   /**
@@ -28912,7 +29487,9 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    *
    * 🔑 Values: `auto` | `collapse` | `discard` | `fragments` | `overflow` | `paginate`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "continue"?: PropertyInputValue<TValueMap, Property.Continue, PropertyHyphenRelatedNames["continue"]> | undefined;
   /**
@@ -29266,7 +29843,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "counter-reset"?: PropertyInputValue<TValueMap, Property.CounterReset, PropertyHyphenRelatedNames["counter-reset"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -29402,7 +29979,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "event-trigger-source"?: PropertyInputValue<TValueMap, Property.EventTriggerSource, PropertyHyphenRelatedNames["event-trigger-source"]> | undefined;
   /**
-   * ❌ Baseline: Not widely available
+   * ⚠️ Baseline: Newly available (since Jun 2026)
    *
    * 🔑 Values: `content` | `fixed`
    *
@@ -29546,6 +30123,13 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    * @see https://developer.mozilla.org/docs/Web/CSS/flex-grow
    */
   "flex-grow"?: PropertyInputValue<TValueMap, Property.FlexGrow, PropertyHyphenRelatedNames["flex-grow"]> | undefined;
+  /**
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
+   */
+  "flex-line-count"?: PropertyInputValue<TValueMap, Property.FlexLineCount, PropertyHyphenRelatedNames["flex-line-count"]> | undefined;
   /**
    * ✅ Baseline: Widely available (since Mar 2018)
    *
@@ -29945,7 +30529,9 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    *
    * 🔑 Values: `auto` | `content-block-size` | `content-height` | `content-inline-size` | `content-width`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "frame-sizing"?: PropertyInputValue<TValueMap, Property.FrameSizing, PropertyHyphenRelatedNames["frame-sizing"]> | undefined;
   /**
@@ -30559,7 +31145,9 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "link-parameters"?: PropertyInputValue<TValueMap, Property.LinkParameters, PropertyHyphenRelatedNames["link-parameters"]> | undefined;
   /**
@@ -30779,7 +31367,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "marker-start"?: PropertyInputValue<TValueMap, Property.MarkerStart, PropertyHyphenRelatedNames["marker-start"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `alpha` | `border-box` | `bottom` | `center` | `content-box` | `exclude` | `fill-box` | `intersect` | `left` | `luminance` | `margin-box` | `match-source` | `no-repeat` | `padding-box` | `repeat` | `repeat-x` | `repeat-y` | `right` | `round`, ... and 5 more
    *
@@ -30850,7 +31438,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-border-width"?: PropertyInputValue<TValueMap, Property.MaskBorderWidth<TLength>, PropertyHyphenRelatedNames["mask-border-width"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -30858,7 +31446,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-clip"?: PropertyInputValue<TValueMap, Property.MaskClip, PropertyHyphenRelatedNames["mask-clip"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `add` | `exclude` | `intersect` | `subtract`
    *
@@ -30868,7 +31456,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-composite"?: PropertyInputValue<TValueMap, Property.MaskComposite, PropertyHyphenRelatedNames["mask-composite"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `none`
    *
@@ -30878,7 +31466,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-image"?: PropertyInputValue<TValueMap, Property.MaskImage, PropertyHyphenRelatedNames["mask-image"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `alpha` | `luminance` | `match-source`
    *
@@ -30888,7 +31476,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-mode"?: PropertyInputValue<TValueMap, Property.MaskMode, PropertyHyphenRelatedNames["mask-mode"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `border-box` | `content-box` | `fill-box` | `padding-box` | `stroke-box` | `view-box`
    *
@@ -30898,7 +31486,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-origin"?: PropertyInputValue<TValueMap, Property.MaskOrigin, PropertyHyphenRelatedNames["mask-origin"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `bottom` | `center` | `left` | `right` | `top`
    *
@@ -30908,7 +31496,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-position"?: PropertyInputValue<TValueMap, Property.MaskPosition<TLength>, PropertyHyphenRelatedNames["mask-position"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `no-repeat` | `repeat` | `repeat-x` | `repeat-y` | `round` | `space`
    *
@@ -30918,7 +31506,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "mask-repeat"?: PropertyInputValue<TValueMap, Property.MaskRepeat, PropertyHyphenRelatedNames["mask-repeat"]> | undefined;
   /**
-   * ⚠️ Baseline: Newly available (since Dec 2023)
+   * ✅ Baseline: Widely available (since Jun 2026)
    *
    * 🔑 Values: `contain` | `cover`
    *
@@ -31008,7 +31596,9 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "max-lines"?: PropertyInputValue<TValueMap, Property.MaxLines, PropertyHyphenRelatedNames["max-lines"]> | undefined;
   /**
@@ -31626,12 +32216,15 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "paint-order"?: PropertyInputValue<TValueMap, Property.PaintOrder, PropertyHyphenRelatedNames["paint-order"]> | undefined;
   /**
+   * ✅ Baseline: Widely available (since Jul 2022)
    *
    * 🔑 Values: `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "path-length"?: PropertyInputValue<TValueMap, Property.PathLength, PropertyHyphenRelatedNames["path-length"]> | undefined;
+  "path-length"?: PropertyInputValue<TValueMap, Property.PathLength<TLength>, PropertyHyphenRelatedNames["path-length"]> | undefined;
   /**
    *
    * 🔑 Values: `medium` | `none` | `strong` | `weak` | `x-strong` | `x-weak`
@@ -31741,7 +32334,7 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
   /**
    * ❌ Baseline: Not widely available
    *
-   * 🔑 Values: `auto` | `none`
+   * 🔑 Values: `auto` | `match-parent` | `none` | `normal`
    *
    * 📦 Sources: webref ✓ | mdn-data ✓ | BCD ✓ | web-features ✓
    *
@@ -31917,90 +32510,147 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "row-gap"?: PropertyInputValue<TValueMap, Property.RowGap<TLength>, PropertyHyphenRelatedNames["row-gap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule"?: PropertyInputValue<TValueMap, Property.RowRule<TLength>, PropertyHyphenRelatedNames["row-rule"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-break"?: PropertyInputValue<TValueMap, Property.RowRuleBreak, PropertyHyphenRelatedNames["row-rule-break"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-color"?: PropertyInputValue<TValueMap, Property.RowRuleColor, PropertyHyphenRelatedNames["row-rule-color"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "row-rule-inset"?: PropertyInputValue<TValueMap, Property.RowRuleInset<TLength>, PropertyHyphenRelatedNames["row-rule-inset"]> | undefined;
+  "row-rule-inset"?: PropertyInputValue<TValueMap, Property.RowRuleInset, PropertyHyphenRelatedNames["row-rule-inset"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "row-rule-inset-cap"?: PropertyInputValue<TValueMap, Property.RowRuleInsetCap<TLength>, PropertyHyphenRelatedNames["row-rule-inset-cap"]> | undefined;
+  "row-rule-inset-cap"?: PropertyInputValue<TValueMap, Property.RowRuleInsetCap, PropertyHyphenRelatedNames["row-rule-inset-cap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-cap-end"?: PropertyInputValue<TValueMap, Property.RowRuleInsetCapEnd<TLength>, PropertyHyphenRelatedNames["row-rule-inset-cap-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-cap-start"?: PropertyInputValue<TValueMap, Property.RowRuleInsetCapStart<TLength>, PropertyHyphenRelatedNames["row-rule-inset-cap-start"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-end"?: PropertyInputValue<TValueMap, Property.RowRuleInsetEnd<TLength>, PropertyHyphenRelatedNames["row-rule-inset-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "row-rule-inset-junction"?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunction<TLength>, PropertyHyphenRelatedNames["row-rule-inset-junction"]> | undefined;
+  "row-rule-inset-junction"?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunction, PropertyHyphenRelatedNames["row-rule-inset-junction"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-junction-end"?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunctionEnd<TLength>, PropertyHyphenRelatedNames["row-rule-inset-junction-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-junction-start"?: PropertyInputValue<TValueMap, Property.RowRuleInsetJunctionStart<TLength>, PropertyHyphenRelatedNames["row-rule-inset-junction-start"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-inset-start"?: PropertyInputValue<TValueMap, Property.RowRuleInsetStart<TLength>, PropertyHyphenRelatedNames["row-rule-inset-start"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-style"?: PropertyInputValue<TValueMap, Property.RowRuleStyle, PropertyHyphenRelatedNames["row-rule-style"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-visibility-items"?: PropertyInputValue<TValueMap, Property.RowRuleVisibilityItems, PropertyHyphenRelatedNames["row-rule-visibility-items"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "row-rule-width"?: PropertyInputValue<TValueMap, Property.RowRuleWidth<TLength>, PropertyHyphenRelatedNames["row-rule-width"]> | undefined;
   /**
@@ -32041,77 +32691,117 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "ruby-position"?: PropertyInputValue<TValueMap, Property.RubyPosition, PropertyHyphenRelatedNames["ruby-position"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 185 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule"?: PropertyInputValue<TValueMap, Property.Rule<TLength>, PropertyHyphenRelatedNames["rule"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `intersection` | `none` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-break"?: PropertyInputValue<TValueMap, Property.RuleBreak, PropertyHyphenRelatedNames["rule-break"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `AccentColor` | `AccentColorText` | `ActiveBorder` | `ActiveCaption` | `ActiveText` | `AppWorkspace` | `Background` | `ButtonBorder` | `ButtonFace` | `ButtonHighlight` | `ButtonShadow` | `ButtonText` | `Canvas` | `CanvasText` | `CaptionText` | `Field` | `FieldText` | `GrayText` | `Highlight` | `HighlightText`, ... and 172 more
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-color"?: PropertyInputValue<TValueMap, Property.RuleColor, PropertyHyphenRelatedNames["rule-color"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "rule-inset"?: PropertyInputValue<TValueMap, Property.RuleInset<TLength>, PropertyHyphenRelatedNames["rule-inset"]> | undefined;
+  "rule-inset"?: PropertyInputValue<TValueMap, Property.RuleInset, PropertyHyphenRelatedNames["rule-inset"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "rule-inset-cap"?: PropertyInputValue<TValueMap, Property.RuleInsetCap<TLength>, PropertyHyphenRelatedNames["rule-inset-cap"]> | undefined;
+  "rule-inset-cap"?: PropertyInputValue<TValueMap, Property.RuleInsetCap, PropertyHyphenRelatedNames["rule-inset-cap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-inset-end"?: PropertyInputValue<TValueMap, Property.RuleInsetEnd<TLength>, PropertyHyphenRelatedNames["rule-inset-end"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
-  "rule-inset-junction"?: PropertyInputValue<TValueMap, Property.RuleInsetJunction<TLength>, PropertyHyphenRelatedNames["rule-inset-junction"]> | undefined;
+  "rule-inset-junction"?: PropertyInputValue<TValueMap, Property.RuleInsetJunction, PropertyHyphenRelatedNames["rule-inset-junction"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 🔑 Values: `overlap-join`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-inset-start"?: PropertyInputValue<TValueMap, Property.RuleInsetStart<TLength>, PropertyHyphenRelatedNames["rule-inset-start"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `column-over-row` | `row-over-column`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-overlap"?: PropertyInputValue<TValueMap, Property.RuleOverlap, PropertyHyphenRelatedNames["rule-overlap"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `dashed` | `dotted` | `double` | `groove` | `hidden` | `inset` | `none` | `outset` | `ridge` | `solid`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-style"?: PropertyInputValue<TValueMap, Property.RuleStyle, PropertyHyphenRelatedNames["rule-style"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `around` | `between` | `normal`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-visibility-items"?: PropertyInputValue<TValueMap, Property.RuleVisibilityItems, PropertyHyphenRelatedNames["rule-visibility-items"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `medium` | `thick` | `thin`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
+   *
+   * @experimental
    */
   "rule-width"?: PropertyInputValue<TValueMap, Property.RuleWidth<TLength>, PropertyHyphenRelatedNames["rule-width"]> | undefined;
   /**
@@ -33050,7 +33740,9 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
   "text-emphasis-style"?: PropertyInputValue<TValueMap, Property.TextEmphasisStyle, PropertyHyphenRelatedNames["text-emphasis-style"]> | undefined;
   /**
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   *
+   * @experimental
    */
   "text-fit"?: PropertyInputValue<TValueMap, Property.TextFit, PropertyHyphenRelatedNames["text-fit"]> | undefined;
   /**
@@ -33553,12 +34245,15 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    */
   "view-transition-name"?: PropertyInputValue<TValueMap, Property.ViewTransitionName, PropertyHyphenRelatedNames["view-transition-name"]> | undefined;
   /**
+   * ❌ Baseline: Not widely available
    *
    * 🔑 Values: `all` | `none`
    *
-   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✗
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✓ | web-features ✓
    *
    * @experimental
+   *
+   * @see https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-transition-scope
    */
   "view-transition-scope"?: PropertyInputValue<TValueMap, Property.ViewTransitionScope, PropertyHyphenRelatedNames["view-transition-scope"]> | undefined;
   /**
@@ -33676,6 +34371,13 @@ export interface PropertiesHyphenInput<TValueMap = never, TLength = DefaultTLeng
    * @see https://developer.mozilla.org/docs/Web/CSS/will-change
    */
   "will-change"?: PropertyInputValue<TValueMap, Property.WillChange, PropertyHyphenRelatedNames["will-change"]> | undefined;
+  /**
+   *
+   * 🔑 Values: `move` | `none`
+   *
+   * 📦 Sources: webref ✓ | mdn-data ✗ | BCD ✗ | web-features ✗
+   */
+  "window-drag"?: PropertyInputValue<TValueMap, Property.WindowDrag, PropertyHyphenRelatedNames["window-drag"]> | undefined;
   /**
    * ✅ Baseline: Widely available (since Jan 2018)
    *
@@ -33918,13 +34620,13 @@ export namespace Property {
 
   export type Border<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
-  export type BorderBlock<TLength = DefaultTLength> = Globals | DataType.Color | DataType.LineWidth<TLength> | DataType.LineStyle;
+  export type BorderBlock<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
   export type BorderBlockClip<TLength = DefaultTLength> = Globals | "none" | TLength;
 
   export type BorderBlockColor = Globals | DataType.Color;
 
-  export type BorderBlockEnd<TLength = DefaultTLength> = Globals | DataType.Color | DataType.LineWidth<TLength> | DataType.LineStyle;
+  export type BorderBlockEnd<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
   export type BorderBlockEndClip<TLength = DefaultTLength> = Globals | "none" | TLength;
 
@@ -33936,7 +34638,7 @@ export namespace Property {
 
   export type BorderBlockEndWidth<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength>;
 
-  export type BorderBlockStart<TLength = DefaultTLength> = Globals | DataType.Color | DataType.LineWidth<TLength> | DataType.LineStyle;
+  export type BorderBlockStart<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
   export type BorderBlockStartClip<TLength = DefaultTLength> = Globals | "none" | TLength;
 
@@ -33992,13 +34694,13 @@ export namespace Property {
 
   export type BorderImageWidth<TLength = DefaultTLength> = Globals | TLength;
 
-  export type BorderInline<TLength = DefaultTLength> = Globals | DataType.Color | DataType.LineWidth<TLength> | DataType.LineStyle;
+  export type BorderInline<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
   export type BorderInlineClip<TLength = DefaultTLength> = Globals | "none" | TLength;
 
   export type BorderInlineColor = Globals | DataType.Color;
 
-  export type BorderInlineEnd<TLength = DefaultTLength> = Globals | DataType.Color | DataType.LineWidth<TLength> | DataType.LineStyle;
+  export type BorderInlineEnd<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
   export type BorderInlineEndClip<TLength = DefaultTLength> = Globals | "none" | TLength;
 
@@ -34010,7 +34712,7 @@ export namespace Property {
 
   export type BorderInlineEndWidth<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength>;
 
-  export type BorderInlineStart<TLength = DefaultTLength> = Globals | DataType.Color | DataType.LineWidth<TLength> | DataType.LineStyle;
+  export type BorderInlineStart<TLength = DefaultTLength> = Globals | DataType.LineWidth<TLength> | DataType.LineStyle | DataType.Color;
 
   export type BorderInlineStartClip<TLength = DefaultTLength> = Globals | "none" | TLength;
 
@@ -34168,23 +34870,23 @@ export namespace Property {
 
   export type ColumnRuleColor = Globals | DataType.Color;
 
-  export type ColumnRuleInset<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInset = Globals;
 
-  export type ColumnRuleInsetCap<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetCap = Globals;
 
-  export type ColumnRuleInsetCapEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetCapEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type ColumnRuleInsetCapStart<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetCapStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type ColumnRuleInsetEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type ColumnRuleInsetJunction<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetJunction = Globals;
 
-  export type ColumnRuleInsetJunctionEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetJunctionEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type ColumnRuleInsetJunctionStart<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetJunctionStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type ColumnRuleInsetStart<TLength = DefaultTLength> = Globals | TLength;
+  export type ColumnRuleInsetStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
   export type ColumnRuleStyle = Globals | DataType.LineStyle;
 
@@ -34363,6 +35065,8 @@ export namespace Property {
   export type FlexFlow = Globals | "row" | "row-reverse" | "column" | "column-reverse" | "nowrap" | "wrap" | "wrap-reverse";
 
   export type FlexGrow = Globals;
+
+  export type FlexLineCount = Globals;
 
   export type FlexShrink = Globals;
 
@@ -34958,7 +35662,7 @@ export namespace Property {
 
   export type PaintOrder = Globals | "normal";
 
-  export type PathLength = Globals | "none";
+  export type PathLength<TLength = DefaultTLength> = Globals | "none" | TLength;
 
   export type Pause<TTime = DefaultTTime> = Globals | TTime | "none" | "x-weak" | "weak" | "medium" | "strong" | "x-strong";
 
@@ -34986,7 +35690,7 @@ export namespace Property {
 
   export type Position = Globals | "static" | "relative" | "absolute" | "sticky" | "fixed";
 
-  export type PositionAnchor = Globals | "auto" | "none";
+  export type PositionAnchor = Globals | "normal" | "auto" | "none" | "match-parent";
 
   export type PositionArea = Globals | "none" | DataType.PositionArea;
 
@@ -35030,23 +35734,23 @@ export namespace Property {
 
   export type RowRuleColor = Globals | DataType.Color;
 
-  export type RowRuleInset<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInset = Globals;
 
-  export type RowRuleInsetCap<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetCap = Globals;
 
-  export type RowRuleInsetCapEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetCapEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type RowRuleInsetCapStart<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetCapStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type RowRuleInsetEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type RowRuleInsetJunction<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetJunction = Globals;
 
-  export type RowRuleInsetJunctionEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetJunctionEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type RowRuleInsetJunctionStart<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetJunctionStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type RowRuleInsetStart<TLength = DefaultTLength> = Globals | TLength;
+  export type RowRuleInsetStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
   export type RowRuleStyle = Globals | DataType.LineStyle;
 
@@ -35068,15 +35772,15 @@ export namespace Property {
 
   export type RuleColor = Globals | DataType.Color;
 
-  export type RuleInset<TLength = DefaultTLength> = Globals | TLength;
+  export type RuleInset = Globals;
 
-  export type RuleInsetCap<TLength = DefaultTLength> = Globals | TLength;
+  export type RuleInsetCap = Globals;
 
-  export type RuleInsetEnd<TLength = DefaultTLength> = Globals | TLength;
+  export type RuleInsetEnd<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
-  export type RuleInsetJunction<TLength = DefaultTLength> = Globals | TLength;
+  export type RuleInsetJunction = Globals;
 
-  export type RuleInsetStart<TLength = DefaultTLength> = Globals | TLength;
+  export type RuleInsetStart<TLength = DefaultTLength> = Globals | TLength | "overlap-join";
 
   export type RuleOverlap = Globals | "row-over-column" | "column-over-row";
 
@@ -35520,7 +36224,7 @@ export namespace Property {
 
   export type WebkitFlexShrink = Globals;
 
-  export type WebkitFlexWrap = Globals | "nowrap" | "wrap" | "wrap-reverse";
+  export type WebkitFlexWrap = Globals | "nowrap";
 
   export type WebkitJustifyContent = Globals | "normal" | DataType.ContentDistribution | DataType.ContentPosition;
 
@@ -35617,6 +36321,8 @@ export namespace Property {
   export type Width<TLength = DefaultTLength> = Globals | "auto" | TLength | "min-content" | "max-content" | "fit-content" | "width" | "height" | "block" | "inline" | "self-block" | "self-inline";
 
   export type WillChange = Globals | "auto" | DataType.AnimateableFeature;
+
+  export type WindowDrag = Globals | "none" | "move";
 
   export type WordBreak = Globals | "normal" | "break-all" | "keep-all" | "break-word" | "auto-phrase";
 
