@@ -1,0 +1,20 @@
+name: security-audit
+
+on:
+  schedule:
+    - cron: '0 21 * * 0' # weekly, Sunday 21:00 UTC (Monday 05:00 Asia/Taipei)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm audit --audit-level=moderate
