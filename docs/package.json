@@ -7,7 +7,7 @@
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"scripts": {
 		"dev": "vitepress dev .",
