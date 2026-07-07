@@ -180,8 +180,12 @@ export const builtInFontsProviders: Record<BuiltinFontsProvider, FontsProviderDe
 			const familyParam = fonts.map((font) => {
 				const familyName = encodeFamilyName(font.name)
 				const weights = dedupeStrings(font.weights)
-				if (weights.length === 0)
+				if (weights.length === 0) {
+					// Mirror the default (400) regular + italic pair when no weights are given
+					if (font.italic)
+						return `${familyName}:400,400i`
 					return familyName
+				}
 				if (font.italic) {
 					const variants = weights.flatMap(weight => [weight, `${weight}i`])
 					return `${familyName}:${variants.join(',')}`
@@ -203,7 +207,14 @@ export const builtInFontsProviders: Record<BuiltinFontsProvider, FontsProviderDe
 			const params = fonts.map((font) => {
 				const familyName = toProviderSlug(font.name)
 				const weights = dedupeStrings(font.weights)
-				const axis = weights.length > 0 ? `@${weights.join(',')}` : ''
+				// Fontshare encodes italic as weight code + 1 (e.g. italic 400 is 401)
+				const codes = font.italic
+					? weights.flatMap((weight) => {
+							const numeric = Number(weight)
+							return Number.isNaN(numeric) ? [weight] : [weight, String(numeric + 1)]
+						})
+					: weights
+				const axis = codes.length > 0 ? `@${codes.join(',')}` : ''
 				return `f[]=${encodeURIComponent(`${familyName}${axis}`)}`
 			})
 
@@ -239,8 +250,11 @@ function createGoogleStyleFamilyParams(fonts: readonly FontsProviderFontEntry[])
 	return fonts.map((font) => {
 		const familyName = encodeFamilyName(font.name)
 		const weights = dedupeStrings(font.weights)
-		if (weights.length === 0)
+		if (weights.length === 0) {
+			if (font.italic)
+				return `family=${familyName}:ital@0;1`
 			return `family=${familyName}`
+		}
 		if (font.italic) {
 			const pairs = weights.flatMap(weight => [`0,${weight}`, `1,${weight}`])
 			return `family=${familyName}:ital,wght@${pairs.join(';')}`

@@ -253,16 +253,16 @@ export const proseListsStyle: StyleDefinition = {
 		marginTop: '0.75em',
 		marginBottom: '0.75em',
 	},
-	'$ > ul > li > :first-child': {
+	'$ > ul > li > p:first-child': {
 		marginTop: '1.25em',
 	},
-	'$ > ul > li > :last-child': {
+	'$ > ul > li > p:last-child': {
 		marginBottom: '1.25em',
 	},
-	'$ > ol > li > :first-child': {
+	'$ > ol > li > p:first-child': {
 		marginTop: '1.25em',
 	},
-	'$ > ol > li > :last-child': {
+	'$ > ol > li > p:last-child': {
 		marginBottom: '1.25em',
 	},
 	'$ ul ul, $ ul ol, $ ol ul, $ ol ol': {
@@ -301,6 +301,8 @@ export const proseListsStyle: StyleDefinition = {
 export const proseHrStyle: StyleDefinition = {
 	'$ hr': {
 		borderColor: 'var(--pk-prose-color-hr)',
+		// Explicit style keeps the rule visible when a reset sets `border: 0`
+		borderTopStyle: 'solid',
 		borderTopWidth: '1px',
 		marginTop: '3em',
 		marginBottom: '3em',

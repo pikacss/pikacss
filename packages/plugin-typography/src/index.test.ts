@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { typography } from './index'
-import { typographyVariables } from './styles'
+import { proseHrStyle, proseListsStyle, typographyVariables } from './styles'
 
 function createEngine() {
 	return {
@@ -38,6 +38,27 @@ describe('typography plugin', () => {
 				'prose-code',
 				'prose-tables',
 			]))
+	})
+
+	it('scopes list-item edge margins to paragraphs so nested-list margins stay intact', () => {
+		for (const list of ['ul', 'ol']) {
+			expect(proseListsStyle)
+				.toHaveProperty([`$ > ${list} > li > p:first-child`])
+			expect(proseListsStyle)
+				.toHaveProperty([`$ > ${list} > li > p:last-child`])
+			expect(proseListsStyle)
+				.not.toHaveProperty([`$ > ${list} > li > :first-child`])
+			expect(proseListsStyle)
+				.not.toHaveProperty([`$ > ${list} > li > :last-child`])
+		}
+	})
+
+	it('declares an explicit hr border style so resets with `border: 0` do not hide it', () => {
+		expect(proseHrStyle['$ hr'])
+			.toMatchObject({
+				borderTopStyle: 'solid',
+				borderTopWidth: '1px',
+			})
 	})
 
 	it('merges custom variables before registering shortcuts', async () => {

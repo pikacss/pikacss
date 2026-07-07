@@ -272,6 +272,44 @@ describe('fonts plugin', () => {
 			.toContainEqual(['font-ui', { fontFamily: 'var(--pk-font-ui)' }])
 	})
 
+	it('parses variable-font weight ranges in string entries', async () => {
+		const plugin = fonts()
+		const engine = createEngine()
+		const customProvider = vi.fn(() => [])
+
+		plugin.configureRawConfig?.({
+			fonts: {
+				provider: 'custom',
+				fonts: {
+					sans: 'Inter:100..900',
+					serif: 'Roboto Serif:400,500..700',
+				},
+				providers: {
+					custom: {
+						buildImportUrls: customProvider,
+					},
+				},
+			},
+		} as any)
+
+		await plugin.configureEngine?.(engine as any)
+
+		expect(customProvider)
+			.toHaveBeenCalledWith(
+				[
+					expect.objectContaining({
+						name: 'Inter',
+						weights: ['100..900'],
+					}),
+					expect.objectContaining({
+						name: 'Roboto Serif',
+						weights: ['400', '500..700'],
+					}),
+				],
+				expect.anything(),
+			)
+	})
+
 	it('keeps setup side effects minimal when the fonts config is omitted', async () => {
 		const plugin = fonts()
 		const engine = createEngine()

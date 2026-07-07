@@ -38,6 +38,22 @@ describe('reset plugin', () => {
 			}))
 	})
 
+	it('preserves a user-configured reset layer weight', async () => {
+		const plugin = reset()
+		const engine = createEngine()
+		const config = {
+			layers: {
+				reset: 5,
+			},
+		}
+
+		plugin.configureRawConfig?.(config as any)
+		await plugin.configureEngine?.(engine as any)
+
+		expect(config.layers)
+			.toEqual({ reset: 5 })
+	})
+
 	it('keeps the configured layer but skips preflight registration for unknown runtime reset values', async () => {
 		const plugin = reset()
 		const engine = createEngine()

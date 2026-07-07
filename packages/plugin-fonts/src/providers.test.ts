@@ -92,6 +92,75 @@ describe('builtInFontsProviders', () => {
 			.toBe('https://fonts.bunny.net/css?family=Sora&display=swap')
 	})
 
+	it('emits the italic axis for weightless italic families on Google-style and Bunny providers', () => {
+		expect(builtInFontsProviders.google.buildImportUrls?.([
+			{
+				name: 'Inter',
+				weights: [],
+				italic: true,
+			},
+		], {
+			provider: 'google',
+			display: 'swap',
+			options: {},
+		}))
+			.toBe('https://fonts.googleapis.com/css2?family=Inter:ital@0;1&display=swap')
+
+		expect(builtInFontsProviders.coollabs.buildImportUrls?.([
+			{
+				name: 'Inter',
+				weights: [],
+				italic: true,
+			},
+		], {
+			provider: 'coollabs',
+			display: 'swap',
+			options: {},
+		}))
+			.toBe('https://api.fonts.coollabs.io/css2?family=Inter:ital@0;1&display=swap')
+
+		expect(builtInFontsProviders.bunny.buildImportUrls?.([
+			{
+				name: 'Inter',
+				weights: [],
+				italic: true,
+			},
+		], {
+			provider: 'bunny',
+			display: 'swap',
+			options: {},
+		}))
+			.toBe('https://fonts.bunny.net/css?family=Inter:400,400i&display=swap')
+	})
+
+	it('requests Fontshare italic weight codes as weight + 1 and keeps non-numeric weights untouched', () => {
+		expect(builtInFontsProviders.fontshare.buildImportUrls?.([
+			{
+				name: 'Satoshi',
+				weights: ['400', '700'],
+				italic: true,
+			},
+		], {
+			provider: 'fontshare',
+			display: 'swap',
+			options: {},
+		}))
+			.toBe('https://api.fontshare.com/v2/css?f[]=satoshi%40400%2C401%2C700%2C701&display=swap')
+
+		expect(builtInFontsProviders.fontshare.buildImportUrls?.([
+			{
+				name: 'Satoshi',
+				weights: ['100..900'],
+				italic: true,
+			},
+		], {
+			provider: 'fontshare',
+			display: 'swap',
+			options: {},
+		}))
+			.toBe('https://api.fontshare.com/v2/css?f[]=satoshi%40100..900&display=swap')
+	})
+
 	it('builds Fontshare URLs and returns empty results for providers that intentionally skip imports', () => {
 		expect(builtInFontsProviders.fontshare.buildImportUrls?.([
 			{

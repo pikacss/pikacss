@@ -112,7 +112,7 @@ describe('icons plugin', () => {
 
 		expect(style)
 			.toMatchObject({
-				'--svg-icon': 'var(--pk-svg-icon-mdi-home)',
+				'--svg-icon': expect.stringMatching(/^var\(--pk-svg-icon-mdi-home-[0-9a-z]+\)$/),
 				'-webkit-mask': 'var(--svg-icon) no-repeat',
 				'background-color': 'currentColor',
 			})
@@ -473,6 +473,93 @@ describe('icons plugin', () => {
 			.toHaveBeenCalledTimes(1)
 		expect(warn)
 			.toHaveBeenCalledWith('failed to load icon "i-mdi:missing"')
+	})
+
+	it('generates distinct CSS variable names for icon ids that sanitize to the same string', async () => {
+		const { icons } = await import('./index')
+		const engine = createEngine()
+		const plugin = icons()
+
+		// Both bodies sanitize to 'mdi-home-alert' when ':' is replaced with '-'
+		mockStringToIcon
+			.mockReturnValueOnce({ prefix: 'mdi', name: 'home-alert' })
+			.mockReturnValueOnce({ prefix: 'mdi-home', name: 'alert' })
+		mockLoadIcon
+			.mockResolvedValueOnce('<svg><path d="a" /></svg>')
+			.mockResolvedValueOnce('<svg><path d="b" /></svg>')
+
+		await plugin.configureRawConfig?.({ icons: {} } as any)
+		await plugin.configureEngine?.(engine as any)
+
+		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
+		const style1 = await shortcutEntry.value(['i-mdi:home-alert', 'mdi:home-alert', 'bg'])
+		const style2 = await shortcutEntry.value(['i-mdi-home:alert', 'mdi-home:alert', 'bg'])
+
+		expect(style1['--svg-icon'])
+			.not.toBe(style2['--svg-icon'])
+		expect(engine.variables.add)
+			.toHaveBeenCalledTimes(2)
+	})
+
+	it('matches the longest prefix first when prefixes overlap', async () => {
+		const { icons } = await import('./index')
+		const engine = createEngine()
+		const plugin = icons()
+
+		await plugin.configureRawConfig?.({
+			icons: {
+				prefix: ['i-', 'i-custom-'],
+			},
+		} as any)
+		await plugin.configureEngine?.(engine as any)
+
+		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
+
+		expect(shortcutEntry.shortcut.exec('i-custom-mdi:home')?.[1])
+			.toBe('mdi:home')
+		expect(shortcutEntry.shortcut.exec('i-mdi:home')?.[1])
+			.toBe('mdi:home')
+	})
+
+	it('retries CDN collection loading after a failed fetch instead of caching the failure', async () => {
+		const { icons } = await import('./index')
+		const engine = createEngine()
+		const warn = vi.fn()
+		const plugin = icons()
+
+		log.setWarnFn((_prefix, ...args) => warn(...args))
+		mockStringToIcon.mockReturnValue({ prefix: 'mdi', name: 'bell' })
+		mockLoadIcon.mockResolvedValue(null)
+		mockLoadNodeIcon.mockResolvedValue(null)
+		mockFetch
+			.mockRejectedValueOnce(new Error('network'))
+			.mockResolvedValueOnce({ prefix: 'mdi' })
+		mockQuicklyValidateIconSet.mockReturnValue({ prefix: 'mdi' })
+		mockSearchForIcon.mockResolvedValue('<svg><circle /></svg>')
+
+		await plugin.configureRawConfig?.({
+			icons: {
+				cdn: 'https://cdn.example.com/{collection}.json',
+			},
+		} as any)
+		await plugin.configureEngine?.(engine as any)
+
+		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
+
+		// First call fails to fetch the collection
+		expect(await shortcutEntry.value(['i-mdi:bell', 'mdi:bell', 'auto']))
+			.toEqual({})
+		expect(warn)
+			.toHaveBeenCalledWith('failed to load icon "i-mdi:bell"')
+
+		// Second call retries the fetch and succeeds
+		const style = await shortcutEntry.value(['i-mdi:bell', 'mdi:bell', 'auto'])
+		expect(style)
+			.toMatchObject({
+				background: 'var(--svg-icon) no-repeat',
+			})
+		expect(mockFetch)
+			.toHaveBeenCalledTimes(2)
 	})
 
 	it('falls back to empty config when icons is not specified in configureRawConfig', async () => {

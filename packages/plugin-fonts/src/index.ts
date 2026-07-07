@@ -25,7 +25,8 @@ export type {
 	FontsProviderOptions,
 }
 
-const RE_FONT_WITH_WEIGHTS = /^(.*?):([\d,]+)$/
+// Weights accept plain values (400), variable-font ranges (100..900), and comma-separated lists
+const RE_FONT_WITH_WEIGHTS = /^(.*?):(\d+(?:\.\.\d+)?(?:,\d+(?:\.\.\d+)?)*)$/
 const RE_QUOTED_FAMILY_NAME = /^['"].*['"]$/
 const RE_CSS_FUNCTION_NAME = /^[a-z-]+\(/i
 
@@ -176,7 +177,7 @@ export interface FontsPluginOptions {
 	 */
 	families?: Record<string, string | string[]>
 	/**
-	 * Additional CSS `@import url(...)` rules injected before provider-generated imports.
+	 * Additional stylesheet URLs, each wrapped in an `@import url("...")` rule and injected before provider-generated imports.
 	 *
 	 * @default `[]`
 	 */

@@ -73,7 +73,7 @@ export function reset(): EnginePlugin {
 				style = config.reset
 			}
 			config.layers ??= {}
-			config.layers.reset = -1
+			config.layers.reset ??= -1
 		},
 		configureEngine: async (engine) => {
 			const resetCss = resetStyles[style]

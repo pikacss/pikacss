@@ -200,6 +200,20 @@ export function icons(): EnginePlugin {
 const globalColonRE = /:/g
 const currentColorRE = /currentColor/
 
+function hashIconId(value: string) {
+	// Simple deterministic 32-bit hash (djb2 variant), base36-encoded
+	let hash = 5381
+	for (let i = 0; i < value.length; i++)
+		hash = ((hash * 33) ^ value.charCodeAt(i)) >>> 0
+	return hash.toString(36)
+}
+
+function createIconVariableName(prefix: string, body: string) {
+	// Replacing ':' with '-' can collide (e.g. 'mdi:home-alert' vs 'mdi-home:alert'),
+	// so append a short hash of the original icon id to keep names collision-free
+	return `--${prefix}svg-icon-${body.replace(globalColonRE, '-')}-${hashIconId(body)}`
+}
+
 function normalizePrefixes(prefix: Exclude<IconsConfig['prefix'], undefined>) {
 	const prefixes = [prefix].flat()
 		.filter(Boolean)
@@ -211,7 +225,9 @@ function escapeRegExp(value: string) {
 }
 
 function createShortcutRegExp(prefixes: string[]) {
-	return new RegExp(`^(?:${prefixes.map(escapeRegExp)
+	// Longest prefix first so overlapping prefixes (e.g. 'i-' and 'i-custom-') match correctly
+	const sorted = [...prefixes].sort((a, b) => b.length - a.length)
+	return new RegExp(`^(?:${sorted.map(escapeRegExp)
 		.join('|')})([\\w:-]+)(?:\\?(mask|bg|auto))?$`)
 }
 
@@ -296,6 +312,8 @@ async function loadCollectionFromCdn(cdn: string, collection: string, cache: Map
 				return quicklyValidateIconSet(response) ?? undefined
 			}
 			catch {
+				// Drop the failed entry so the next request retries instead of caching the failure forever
+				cache.delete(collection)
 				return undefined
 			}
 		})())
@@ -417,7 +435,7 @@ function createIconsPlugin(): EnginePlugin {
 					}
 
 					const url = `url("data:image/svg+xml;utf8,${encodeSvgForCss(resolved.svg)}")`
-					const varName = `--${engine.config.prefix}svg-icon-${body.replace(globalColonRE, '-')}`
+					const varName = createIconVariableName(engine.config.prefix, body)
 					if (engine.variables.store.has(varName) === false) {
 						engine.variables.add({
 							[varName]: {
