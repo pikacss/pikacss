@@ -13,6 +13,12 @@ Use this file as the repository-level control plane for Copilot customization.
 - Keep review-only criteria inside dedicated review agents.
 - Treat prompt-adjacent runtime packages as reusable primitives, not as the identity of a skill.
 
+### Skill Locations (intentional split — do not "unify")
+
+- `skills/` (repo root) is the **published, consumer-facing** skill set, installed by end users via `npx skills add pikacss/pikacss --skill pikacss-use` (see `docs/integrations/agent-skills.md`). Its path is part of the public contract.
+- `.agents/skills/` hosts **internal maintenance** skills (`maintain-docs`, `maintain-jsdocs`, `maintain-tests`); `.agents/*.agent.md` are the paired implementation/review agent definitions.
+- `scripts/maintain-docs/*` hardcodes the `.agents/skills/maintain-docs/` path; moving skills breaks those scripts.
+
 ## Repo Facts
 
 | | |
@@ -38,6 +44,8 @@ pnpm --filter @pikacss/<package> typecheck
 pnpm --filter @pikacss/<package> build
 pnpm --filter @pikacss/docs typecheck
 pnpm docs:dev
+pnpm playground:dev
+pnpm playground:build
 pnpm newpkg
 pnpm newplugin
 pnpm maintain-docs:analyze
@@ -127,9 +135,36 @@ core  (no internal deps)
               └── nuxt
 
 plugin-*  →  depend on core
+(plugin-reset, plugin-icons, plugin-fonts, plugin-typography, plugin-design-tokens)
 ```
 
 Each package uses `src/index.ts` as the entry point, keeps tests co-located with source files, and carries local `tsconfig`, `tsdown`, and `vitest` config files.
+
+Non-package workspaces: `docs/` (VitePress site), `demo/` (static Vue showcase), `playground/` (in-browser WebContainer playground; see `playground/README.md`).
+
+## Workspace Apps
+
+- `playground/` boots real Vite projects inside a WebContainer. Its `src/templates/<name>/` directories (solid-ts is the default) are **data served into the container**, not app code: excluded from the app tsconfig, from repo ESLint, and from the playground's own PikaCSS scan. Template `package.json` files must reference **published** `@pikacss/*` versions — `workspace:` cannot resolve inside the container.
+- `demo/` and `playground/` use a hyphenated `type-check` script on purpose: it needs generated files (`pika.gen.ts`, `vfs.d.ts`) from a prior dev/build run, so it is excluded from the repo-wide `pnpm typecheck`. Run `build` first, then `type-check`.
+- The playground deploys to `https://pikacss.github.io/playground/` via `deploy-docs.yml` (copied into the docs dist). GitHub Pages cannot send COOP/COEP headers, so `playground/public/coi-serviceworker.min.js` provides cross-origin isolation — keep the script tag first in `playground/index.html`.
+
+## Engine Invariants
+
+Correctness rules encoded by regression tests — do not "simplify" them away:
+
+- Core plugin order in `createEngine` keeps `important()` **after** `shortcuts()`, so `!important` applies to shortcut-expanded declarations and never to the `__shortcut` reference.
+- Transformed `pika()` output uses **single-quoted** string literals (`ctx.ts` `quoteSingle`), because the call may sit inside a double-quoted Vue template attribute.
+- The atomic style ID placeholder `%` is not treated as a placeholder when directly preceded by a digit (`@supports (width: 50%)`), and selector normalization never rewrites quoted content.
+- `AbstractResolver` rule mutations (add/remove) clear the whole resolution cache; recursively expanded results may depend on any rule.
+- During one `renderPreflights` pass each preflight function runs exactly once (`engine.invokePreflight` memoization); the variables pruning preflight reuses those results.
+- Plugins that load external files must register them via `engine.addConfigDependency(path)` so the unplugin reloads on change (used by `plugin-design-tokens`).
+
+## Maintenance Playbook
+
+- Every confirmed bug fix lands together with a minimal co-located regression test that fails without the fix.
+- Downstream packages test against built upstream `dist/` output: rebuild the upstream package (`pnpm --filter @pikacss/core build`) before validating consumers.
+- New plugin package checklist: `pnpm newplugin <name>` → implement (`defineEnginePlugin` + `declare module '@pikacss/core'` augmentation, factory named after the plugin) → register in `scripts/_skill-shared/index.ts` `PACKAGES` → docs page + template (`.agents/skills/maintain-docs/templates/pages/...`) + example triple in `docs/.examples/` → sidebar entry in `docs/.vitepress/sidebarAndNav.ts` → `pnpm maintain-docs:gen-api` until zero JSDoc gaps → package `README.md`.
+- Coverage thresholds (95% branches) are enforced per package; when a fix adds branches, add tests covering the new branches in the same change.
 
 ## Request Routing
 
