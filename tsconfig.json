@@ -9,7 +9,8 @@
 		"./packages/plugin-fonts/tsconfig.json",
 		"./packages/plugin-reset/tsconfig.json",
 		"./packages/plugin-typography/tsconfig.json",
-		"./packages/eslint-config/tsconfig.json"
+		"./packages/eslint-config/tsconfig.json",
+		"./packages/plugin-design-tokens/tsconfig.json"
 	],
 	"references": [
 		{

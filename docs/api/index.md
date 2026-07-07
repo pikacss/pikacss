@@ -10,6 +10,7 @@ relatedPackages:
   - '@pikacss/plugin-icons'
   - '@pikacss/plugin-fonts'
   - '@pikacss/plugin-typography'
+  - '@pikacss/plugin-design-tokens'
   - '@pikacss/eslint-config'
 relatedSources:
   - 'scripts/_skill-shared/index.ts'
@@ -41,6 +42,7 @@ PikaCSS is composed of several packages, each with a focused API.
 | [`@pikacss/plugin-icons`](/api/plugin-icons) | Icon shortcuts via Iconify |
 | [`@pikacss/plugin-fonts`](/api/plugin-fonts) | Web font loading |
 | [`@pikacss/plugin-typography`](/api/plugin-typography) | Prose typography styles |
+| [`@pikacss/plugin-design-tokens`](/api/plugin-design-tokens) | W3C design tokens to CSS variables |
 
 ### Tooling
 
@@ -60,6 +62,7 @@ graph TD
     icons["@pikacss/plugin-icons"]
     fonts["@pikacss/plugin-fonts"]
     typography["@pikacss/plugin-typography"]
+    designTokens["@pikacss/plugin-design-tokens"]
 
     integration --> core
     unplugin --> integration
@@ -68,6 +71,7 @@ graph TD
     icons --> core
     fonts --> core
     typography --> core
+    designTokens --> core
 ```
 
 ## Next

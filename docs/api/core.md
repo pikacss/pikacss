@@ -207,7 +207,7 @@ Built-in engine plugin that appends `!important` to generated CSS declarations.
 
 **Remarks:**
 
-When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default.
+When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default. An explicit `__important` flag is propagated into nested selector blocks (which may override it with their own explicit flag). The `__shortcut` reference is never modified.
 
 ```ts
 createEngine({ plugins: [important()] })
@@ -391,8 +391,28 @@ The PikaCSS engine: manages atomic style resolution, rendering, preflights, and 
 | `pluginHooks` | `` | Reference to the plugin hook dispatcher for invoking lifecycle hooks. | — |
 | `extract` | `ExtractFn` | The extraction function that decomposes style definitions into atomic style contents. | — |
 | `store` | `EngineStore` | The engine's runtime store holding registered atomic styles and their ID mappings. | — |
+| `configDependencies` | `Set<string>` | Absolute paths of external files this engine's config depends on (e.g. token files loaded by plugins). | — |
 
 **Methods:**
+
+#### invokePreflight(fn, isFormatted)
+
+Invokes a preflight function, memoizing the result while a `renderPreflights` pass is active.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `fn` | `PreflightFn` | The preflight function to invoke. |
+| `isFormatted` | `boolean` | Whether the preflight should produce formatted output. |
+
+**Returns:** `Promise<string \| PreflightDefinition>` - A promise of the preflight result.
+
+#### addConfigDependency(path)
+
+Registers an external file path as a config dependency of this engine.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `path` | `string` | The file path (ideally absolute) the current config was derived from. |
 
 #### notifyPreflightUpdated()
 
@@ -442,7 +462,7 @@ Processes style items through the plugin pipeline and registers the resulting at
 |---|---|---|
 | `itemList` | `InternalStyleItem[]` | Style items to process: string references (shortcuts) and/or style definition objects. |
 
-**Returns:** `Promise<string[]>` - An array of atomic style IDs (and unresolved string references) in insertion order.
+**Returns:** `Promise<string[]>` - An array containing any unresolved string references first, followed by atomic style IDs in resolution order.
 
 #### renderPreflights(isFormatted)
 
@@ -618,7 +638,7 @@ function getDefault(prop: CSSProperty): string { return '' }
 
 Union of valid CSS selector strings for nested style definitions, including CSS at-rules and pseudo-selectors (prefixed with `$`).
 
-**Type:** `"@-webkit-keyframes" | "@container" | "@counter-style" | "@document" | "@font-face" | "@font-feature-values" | "@font-palette-values" | "@keyframes" | "@layer" | "@media" | "@page" | "@position-try" | "@property" | "@scope" | "@starting-style" | "@supports" | "@view-transition" | "$::-moz-progress-bar" | "$::-moz-range-progress" | "$::-moz-range-thumb" | "$::-moz-range-track" | "$::-ms-browse" | "$::-ms-check" | "$::-ms-clear" | "$::-ms-expand" | "$::-ms-fill" | "$::-ms-fill-lower" | "$::-ms-fill-upper" | "$::-ms-reveal" | "$::-ms-thumb" | "$::-ms-ticks-after" | "$::-ms-ticks-before" | "$::-ms-tooltip" | "$::-ms-track" | "$::-ms-value" | "$::-webkit-progress-bar" | "$::-webkit-progress-inner-value" | "$::-webkit-progress-value" | "$::-webkit-slider-runnable-track" | "$::-webkit-slider-thumb" | "$::after" | "$::backdrop" | "$::before" | "$::checkmark" | "$::clear-icon" | "$::color-swatch" | "$::column" | "$::cue" | "$::cue()" | "$::cue-region" | "$::cue-region()" | "$::details-content" | "$::field-component" | "$::field-separator" | "$::field-text" | "$::file-selector-button" | "$::first-letter" | "$::first-line" | "$::grammar-error" | "$::highlight()" | "$::marker" | "$::nth-fragment()" | "$::part()" | "$::picker()" | "$::picker-icon" | "$::placeholder" | "$::reveal-icon" | "$::scroll-button()" | "$::scroll-marker" | "$::scroll-marker-group" | "$::search-text" | "$::selection" | "$::slider-fill" | "$::slider-thumb" | "$::slider-track" | "$::slotted()" | "$::spelling-error" | "$::step-control" | "$::step-down" | "$::step-up" | "$::target-text" | "$::view-transition" | "$::view-transition-group()" | "$::view-transition-group-children()" | "$::view-transition-image-pair()" | "$::view-transition-new()" | "$::view-transition-old()" | "$:active" | "$:active-view-transition" | "$:active-view-transition-type()" | "$:after" | "$:animated-image" | "$:any-link" | "$:autofill" | "$:before" | "$:blank" | "$:buffering" | "$:checked" | "$:current" | "$:current()" | "$:default" | "$:defined" | "$:dir()" | "$:disabled" | "$:empty" | "$:enabled" | "$:first" | "$:first-child" | "$:first-letter" | "$:first-line" | "$:first-of-page" | "$:first-of-type" | "$:focus" | "$:focus-visible" | "$:focus-within" | "$:fullscreen" | "$:future" | "$:has()" | "$:has-slotted" | "$:heading" | "$:heading()" | "$:high-value" | "$:host" | "$:host()" | "$:host-context()" | "$:hover" | "$:in-range" | "$:indeterminate" | "$:interest-source" | "$:interest-target" | "$:invalid" | "$:is()" | "$:lang()" | "$:last-child" | "$:last-of-page" | "$:last-of-type" | "$:left" | "$:link" | "$:link-to()" | "$:local-link" | "$:low-value" | "$:matches()" | "$:modal" | "$:muted" | "$:not()" | "$:nth()" | "$:nth-child()" | "$:nth-col()" | "$:nth-last-child()" | "$:nth-last-col()" | "$:nth-last-of-type()" | "$:nth-of-page()" | "$:nth-of-type()" | "$:only-child" | "$:only-of-type" | "$:open" | "$:optimal-value" | "$:optional" | "$:out-of-range" | "$:past" | "$:paused" | "$:picture-in-picture" | "$:placeholder-shown" | "$:playing" | "$:popover-open" | "$:read-only" | "$:read-write" | "$:required" | "$:right" | "$:root" | "$:scope" | "$:seeking" | "$:snapped" | "$:snapped-block" | "$:snapped-inline" | "$:snapped-x" | "$:snapped-y" | "$:stalled" | "$:start-of-page" | "$:state()" | "$:target" | "$:target-after" | "$:target-before" | "$:target-current" | "$:target-within" | "$:unchecked" | "$:user-invalid" | "$:user-valid" | "$:valid" | "$:visited" | "$:volume-locked" | "$:where()" | "$:xr-overlay"`
+**Type:** `"@-webkit-keyframes" | "@container" | "@counter-style" | "@document" | "@font-face" | "@font-feature-values" | "@font-palette-values" | "@keyframes" | "@layer" | "@media" | "@page" | "@position-try" | "@property" | "@scope" | "@starting-style" | "@supports" | "@view-transition" | "$::-moz-progress-bar" | "$::-moz-range-progress" | "$::-moz-range-thumb" | "$::-moz-range-track" | "$::-ms-browse" | "$::-ms-check" | "$::-ms-clear" | "$::-ms-expand" | "$::-ms-fill" | "$::-ms-fill-lower" | "$::-ms-fill-upper" | "$::-ms-reveal" | "$::-ms-thumb" | "$::-ms-ticks-after" | "$::-ms-ticks-before" | "$::-ms-tooltip" | "$::-ms-track" | "$::-ms-value" | "$::-webkit-progress-bar" | "$::-webkit-progress-inner-value" | "$::-webkit-progress-value" | "$::-webkit-slider-runnable-track" | "$::-webkit-slider-thumb" | "$::after" | "$::backdrop" | "$::before" | "$::checkmark" | "$::clear-icon" | "$::color-swatch" | "$::column" | "$::cue" | "$::cue()" | "$::cue-region" | "$::cue-region()" | "$::details-content" | "$::field-component" | "$::field-separator" | "$::field-text" | "$::file-selector-button" | "$::first-letter" | "$::first-line" | "$::grammar-error" | "$::highlight()" | "$::marker" | "$::nth-fragment()" | "$::part()" | "$::picker()" | "$::picker-icon" | "$::placeholder" | "$::reveal-icon" | "$::scroll-button()" | "$::scroll-marker" | "$::scroll-marker-group" | "$::search-text" | "$::selection" | "$::slider-fill" | "$::slider-thumb" | "$::slider-track" | "$::slotted()" | "$::spelling-error" | "$::step-control" | "$::step-down" | "$::step-up" | "$::target-text" | "$::view-transition" | "$::view-transition-group()" | "$::view-transition-group-children()" | "$::view-transition-image-pair()" | "$::view-transition-new()" | "$::view-transition-old()" | "$:active" | "$:active-view-transition" | "$:active-view-transition-type()" | "$:after" | "$:animated-image" | "$:any-link" | "$:autofill" | "$:before" | "$:blank" | "$:buffering" | "$:checked" | "$:current" | "$:current()" | "$:default" | "$:defined" | "$:dir()" | "$:disabled" | "$:empty" | "$:enabled" | "$:first" | "$:first-child" | "$:first-letter" | "$:first-line" | "$:first-of-page" | "$:first-of-type" | "$:focus" | "$:focus-visible" | "$:focus-within" | "$:fullscreen" | "$:future" | "$:has()" | "$:has-slotted" | "$:heading" | "$:heading()" | "$:high-value" | "$:host" | "$:host()" | "$:host-context()" | "$:hover" | "$:in-range" | "$:indeterminate" | "$:interest-source" | "$:interest-target" | "$:invalid" | "$:is()" | "$:lang()" | "$:last-child" | "$:last-of-page" | "$:last-of-type" | "$:left" | "$:link" | "$:link-to()" | "$:local-link" | "$:low-value" | "$:matches()" | "$:modal" | "$:muted" | "$:nav-source" | "$:not()" | "$:nth()" | "$:nth-child()" | "$:nth-col()" | "$:nth-last-child()" | "$:nth-last-col()" | "$:nth-last-of-type()" | "$:nth-of-page()" | "$:nth-of-type()" | "$:only-child" | "$:only-of-type" | "$:open" | "$:optimal-value" | "$:optional" | "$:out-of-range" | "$:past" | "$:paused" | "$:picture-in-picture" | "$:placeholder-shown" | "$:playing" | "$:popover-open" | "$:read-only" | "$:read-write" | "$:required" | "$:right" | "$:root" | "$:scope" | "$:seeking" | "$:snapped" | "$:snapped-block" | "$:snapped-inline" | "$:snapped-x" | "$:snapped-y" | "$:stalled" | "$:start-of-page" | "$:state()" | "$:target" | "$:target-after" | "$:target-before" | "$:target-current" | "$:target-within" | "$:unchecked" | "$:user-invalid" | "$:user-valid" | "$:valid" | "$:visited" | "$:volume-locked" | "$:where()" | "$:xr-overlay"`
 
 **Remarks:**
 
@@ -777,6 +797,21 @@ Wrapping `Obj` in a tuple prevents distributive collapse when `Obj` is `never`.
 ```ts
 type V = GetValue<{ a: number }, 'a'> // number
 type N = GetValue<{ a: number }, 'b'> // never
+```
+
+<br>
+<br>
+
+### ImportantConfig {#interface-importantconfig}
+
+Configuration object for the `important` engine option.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `default?` | `boolean` | Whether `!important` is appended to every generated declaration by default. | `false` |
+
+```ts
+const config: ImportantConfig = { default: true }
 ```
 
 <br>

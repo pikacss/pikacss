@@ -61,6 +61,7 @@ export const sidebar: DefaultTheme.SidebarItem[] = [
 			{ text: 'Typography', link: '/official-plugins/typography' },
 			{ text: 'Icons', link: '/official-plugins/icons' },
 			{ text: 'Fonts', link: '/official-plugins/fonts' },
+			{ text: 'Design Tokens', link: '/official-plugins/design-tokens' },
 		],
 	},
 	{
@@ -86,6 +87,7 @@ export const sidebar: DefaultTheme.SidebarItem[] = [
 			{ text: 'Plugin Icons', link: '/api/plugin-icons' },
 			{ text: 'Plugin Fonts', link: '/api/plugin-fonts' },
 			{ text: 'Plugin Typography', link: '/api/plugin-typography' },
+			{ text: 'Plugin Design Tokens', link: '/api/plugin-design-tokens' },
 			{ text: 'ESLint Config', link: '/api/eslint-config' },
 		],
 	},

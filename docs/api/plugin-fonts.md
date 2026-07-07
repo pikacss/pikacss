@@ -185,7 +185,7 @@ Configuration options for the fonts plugin.
 | `provider?` | `FontsProvider` | Default font provider used for all font entries that do not specify their own. | ``'google'`` |
 | `fonts?` | `Record<string, FontFamilyEntry \| FontFamilyEntry[]>` | Font families grouped by shortcut token. Each token produces a `font-<token>` CSS shortcut. | ``{}`` |
 | `families?` | `Record<string, string \| string[]>` | Raw `font-family` CSS stacks grouped by shortcut token; no provider loading is performed. | ``{}`` |
-| `imports?` | `string \| string[]` | Additional CSS `@import url(...)` rules injected before provider-generated imports. | ``[]`` |
+| `imports?` | `string \| string[]` | Additional stylesheet URLs, each wrapped in an `@import url("...")` rule and injected before provider-generated imports. | ``[]`` |
 | `faces?` | `FontFaceDefinition[]` | Custom `@font-face` definitions injected as preflight CSS. | ``[]`` |
 | `display?` | `string` | CSS `font-display` value applied to all provider-generated imports. | ``'swap'`` |
 | `providers?` | `Record<string, FontsProviderDefinition>` | Custom font provider implementations keyed by provider name. | ``{}`` |

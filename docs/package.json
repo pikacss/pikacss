@@ -20,6 +20,8 @@
 	},
 	"devDependencies": {
 		"@pikacss/core": "workspace:*",
+		"@pikacss/integration": "workspace:*",
+		"@pikacss/plugin-design-tokens": "workspace:*",
 		"@pikacss/plugin-icons": "workspace:*",
 		"@pikacss/plugin-reset": "workspace:*",
 		"@pikacss/plugin-typography": "workspace:*",

@@ -101,6 +101,15 @@ export const PACKAGES: PackageDef[] = [
 		guideLink: { text: 'Typography plugin', url: '/official-plugins/typography' },
 	},
 	{
+		name: '@pikacss/plugin-design-tokens',
+		dir: 'plugin-design-tokens',
+		slug: 'plugin-design-tokens',
+		order: 95,
+		description: 'W3C design tokens to CSS variables',
+		pageTitle: 'Plugin Design Tokens API reference',
+		guideLink: { text: 'Design Tokens plugin', url: '/official-plugins/design-tokens' },
+	},
+	{
 		name: '@pikacss/eslint-config',
 		dir: 'eslint-config',
 		slug: 'eslint-config',

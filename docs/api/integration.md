@@ -144,9 +144,11 @@ Discriminated union representing the outcome of loading an engine configuration 
 
 **Remarks:**
 
-Three shapes are possible: an inline config (no file), a successfully loaded file-based
-config, or a failed/missing load (all fields `null`). The `file` and `content` fields are
-populated only when the config was loaded from disk, enabling hot-reload detection.
+Four shapes are possible: an inline config (no file), a successfully loaded file-based
+config, a file that exists but failed to evaluate (path and content kept so integrations
+can watch it and reload after a fix), or a missing load (all fields `null`). The `file`
+and `content` fields are populated whenever the config file was found on disk, enabling
+hot-reload detection.
 
 <br>
 <br>

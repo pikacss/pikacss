@@ -96,5 +96,5 @@ const config = {
 ## Next
 
 - [Typography plugin](/official-plugins/typography)
-- [ESLint Config API reference](/api/eslint-config)
+- [Plugin Design Tokens API reference](/api/plugin-design-tokens)
 - [API reference overview](/api/)

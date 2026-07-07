@@ -102,6 +102,8 @@ Official Plugins
 == Config {table: prefix, mode, scale, collections, customizations, autoInstall, cwd, cdn, unit, extraProperties, processor, autocomplete}
 = Fonts
 == Config {table: provider, fonts, families, imports, faces, display, providers, providerOptions}
+= Design Tokens
+== Config {table: sources, themes, prefix, root, pruneUnused}
 
 Plugin Development
 = Create a Plugin

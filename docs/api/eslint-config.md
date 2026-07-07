@@ -125,5 +125,5 @@ export default [pikacss({ fnName: 'css' })]
 ## Next
 
 - [ESLint setup](/getting-started/eslint-config)
-- [Plugin Typography API reference](/api/plugin-typography)
+- [Plugin Design Tokens API reference](/api/plugin-design-tokens)
 - [API reference overview](/api/)
