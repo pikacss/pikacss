@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { createEngine } from '../engine'
 import { important } from './important'
 
 describe('important plugin', () => {
@@ -80,6 +81,58 @@ describe('important plugin', () => {
 			.toEqual([
 				{ color: 'red !important' },
 			])
+	})
+
+	it('propagates an explicit __important flag into nested selector blocks', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: false } })
+
+		expect(plugin.transformStyleDefinitions?.([
+			{ '__important': true, 'color': 'red', '$:hover': { color: 'blue' } },
+		] as any))
+			.toEqual([
+				{ 'color': 'red !important', '$:hover': { __important: true, color: 'blue' } },
+			])
+
+		plugin.rawConfigConfigured?.({ important: { default: true } })
+		expect(plugin.transformStyleDefinitions?.([
+			{ '__important': false, 'color': 'red', '$:hover': { color: 'blue' } },
+		] as any))
+			.toEqual([
+				{ 'color': 'red', '$:hover': { __important: false, color: 'blue' } },
+			])
+	})
+
+	it('never modifies the __shortcut reference', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: true } })
+
+		expect(plugin.transformStyleDefinitions?.([
+			{ __shortcut: 'btn', color: 'red' },
+		] as any))
+			.toEqual([
+				{ __shortcut: 'btn', color: 'red !important' },
+			])
+	})
+
+	it('applies !important to shortcut-expanded declarations end-to-end', async () => {
+		const engine = await createEngine({
+			important: { default: true },
+			shortcuts: {
+				definitions: [['btn', { display: 'flex' }]],
+			},
+		})
+
+		const idsFromString = await engine.use('btn')
+		const idsFromDefinition = await engine.use({ __shortcut: 'btn', color: 'red' })
+		const css = await engine.renderAtomicStyles(false, {
+			atomicStyleIds: [...idsFromString, ...idsFromDefinition],
+		})
+
+		expect(css)
+			.toContain('display:flex !important;')
+		expect(css)
+			.toContain('color:red !important;')
 	})
 
 	it('does not duplicate !important markers that are already present in property values', () => {

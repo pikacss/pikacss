@@ -8,7 +8,23 @@ describe('normalizeSelectors', () => {
 			selectors: ['$:hover, [data-kind$="$"]', '% > $'],
 			defaultSelector: '.pk-a',
 		}))
-			.toEqual(['.pk-a:hover,[data-kind$=".pk-a"]', '% > .pk-a'])
+			.toEqual(['.pk-a:hover,[data-kind$="$"]', '% > .pk-a'])
+	})
+
+	it('leaves quoted content untouched during comma and placeholder normalization', () => {
+		expect(normalizeSelectors({
+			selectors: ['[data-title="a, b"] $', '[data-price="$5"] $', '[data-x=\'50%\'] $'],
+			defaultSelector: '.%',
+		}))
+			.toEqual(['[data-title="a, b"] .%', '[data-price="$5"] .%', '[data-x=\'50%\'] .%'])
+	})
+
+	it('treats digit-prefixed percent signs as literal percentages', () => {
+		expect(normalizeSelectors({
+			selectors: ['@supports (width: 50%)'],
+			defaultSelector: '.%',
+		}))
+			.toEqual(['@supports (width: 50%)'])
 	})
 })
 

@@ -46,6 +46,32 @@ describe('recursiveResolver', () => {
 			.toBe(false)
 	})
 
+	it('invalidates cached results when a rule with the same key is re-registered', async () => {
+		const resolver = new StringResolver()
+
+		resolver.addStaticRule({ key: 'hover', string: 'hover', resolved: ['$:hover'] })
+		expect(await resolver.resolve('hover'))
+			.toEqual(['$:hover'])
+
+		resolver.addStaticRule({ key: 'hover', string: 'hover', resolved: ['$:focus'] })
+		expect(await resolver.resolve('hover'))
+			.toEqual(['$:focus'])
+	})
+
+	it('invalidates recursively expanded results when an upstream rule changes', async () => {
+		const resolver = new StringResolver()
+
+		resolver.addStaticRule({ key: 'a', string: 'a', resolved: ['b'] })
+		resolver.addStaticRule({ key: 'b', string: 'b', resolved: ['X'] })
+		expect(await resolver.resolve('a'))
+			.toEqual(['X'])
+
+		resolver.removeStaticRule('b')
+		resolver.addStaticRule({ key: 'b', string: 'b', resolved: ['Y'] })
+		expect(await resolver.resolve('a'))
+			.toEqual(['Y'])
+	})
+
 	it('returns the original string when it encounters circular references or resolver errors', async () => {
 		const resolver = new StringResolver()
 

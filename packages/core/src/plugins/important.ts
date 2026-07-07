@@ -2,7 +2,20 @@ import type { InternalPropertyValue, InternalStyleDefinition, Nullish } from '..
 import { defineEnginePlugin } from '../plugin'
 import { isPropertyValue } from '../utils'
 
-interface ImportantConfig {
+/**
+ * Configuration object for the `important` engine option.
+ *
+ * @example
+ * ```ts
+ * const config: ImportantConfig = { default: true }
+ * ```
+ */
+export interface ImportantConfig {
+	/**
+	 * Whether `!important` is appended to every generated declaration by default.
+	 *
+	 * @default false
+	 */
 	default?: boolean
 }
 
@@ -37,7 +50,7 @@ function modifyPropertyValue(value: InternalPropertyValue): InternalPropertyValu
  *
  * @returns An `EnginePlugin` that intercepts `transformStyleDefinitions` to conditionally append `!important` to every property value.
  *
- * @remarks When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default.
+ * @remarks When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default. An explicit `__important` flag is propagated into nested selector blocks (which may override it with their own explicit flag). The `__shortcut` reference is never modified.
  *
  * @example
  * ```ts
@@ -46,6 +59,18 @@ function modifyPropertyValue(value: InternalPropertyValue): InternalPropertyValu
  */
 export function important() {
 	let defaultValue: boolean
+
+	function propagateExplicitFlag(v: unknown, flag: boolean): unknown {
+		if (Array.isArray(v)) {
+			// Style item list: propagate into object items, leave string references untouched.
+			return v.map(item => (typeof item === 'object' && item !== null && !Array.isArray(item))
+				? { __important: flag, ...item }
+				: item)
+		}
+		// Nested style definition: inherit the flag unless it sets its own.
+		return { __important: flag, ...(v as Record<string, unknown>) }
+	}
+
 	return defineEnginePlugin({
 		name: 'core:important',
 
@@ -61,20 +86,22 @@ export function important() {
 		transformStyleDefinitions(styleDefinitions) {
 			return styleDefinitions.map<InternalStyleDefinition>((styleDefinition) => {
 				const { __important, ...rest } = styleDefinition as Record<string, unknown> & { __important?: boolean | Nullish }
-				const value = __important
-				const important = value ?? defaultValue
+				const explicit = __important
+				const important = explicit ?? defaultValue
 
-				if (important === false)
+				if (important === false && explicit == null)
 					return rest as InternalStyleDefinition
 
 				return Object.fromEntries(
 					Object.entries(rest)
 						.map(([k, v]) => {
-							if (isPropertyValue(v)) {
-								return [k, modifyPropertyValue(v)]
-							}
+							if (k === '__shortcut')
+								return [k, v]
 
-							return [k, v]
+							if (isPropertyValue(v))
+								return [k, important ? modifyPropertyValue(v) : v]
+
+							return [k, explicit == null ? v : propagateExplicitFlag(v, explicit)]
 						}) as any,
 				) as InternalStyleDefinition
 			})

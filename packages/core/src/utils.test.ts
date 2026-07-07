@@ -150,6 +150,19 @@ describe('basic utilities', () => {
 			.toEqual(['var(--brand)'])
 	})
 
+	it('deduplicates record entries and reports no change for repeated values', () => {
+		const map = new Map<string, string[]>()
+
+		expect(appendAutocompleteRecordEntries(map, { color: ['red', 'blue'] }))
+			.toBe(true)
+		expect(appendAutocompleteRecordEntries(map, { color: 'red' }))
+			.toBe(false)
+		expect(appendAutocompleteRecordEntries(map, { color: ['red', 'green'] }))
+			.toBe(true)
+		expect(map.get('color'))
+			.toEqual(['red', 'blue', 'green'])
+	})
+
 	it('renders nested CSS blocks and skips empty selectors', () => {
 		const blocks = new Map([
 			['.empty', { properties: [], children: new Map() }],
@@ -167,5 +180,25 @@ describe('basic utilities', () => {
 			.toBe('.card{color:red;&:hover{color:blue;}}')
 		expect(renderCSSStyleBlocks(blocks, true))
 			.toBe('.card {\n  color: red;\n  &:hover {\n    color: blue;\n  }\n}')
+	})
+
+	it('skips blocks whose children contain no renderable content', () => {
+		const blocks = new Map([
+			['.outer', {
+				properties: [],
+				children: new Map([
+					['.inner', { properties: [], children: new Map() }],
+				]),
+			}],
+			['.kept', {
+				properties: [],
+				children: new Map([
+					['.deep', { properties: [{ property: 'color', value: 'red' }] }],
+				]),
+			}],
+		]) as any
+
+		expect(renderCSSStyleBlocks(blocks, false))
+			.toBe('.kept{.deep{color:red;}}')
 	})
 })

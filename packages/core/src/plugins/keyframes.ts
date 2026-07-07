@@ -153,7 +153,8 @@ export function keyframes() {
 				const maybeUsedName = new Set<string>()
 				engine.store.atomicStyles.forEach(({ content: { property, value } }) => {
 					if (property === 'animation-name') {
-						value.forEach(name => maybeUsedName.add(name))
+						value.forEach(name => addToSet(maybeUsedName, ...name.split(',')
+							.map(v => v.trim())))
 						return
 					}
 

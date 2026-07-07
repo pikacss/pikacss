@@ -109,6 +109,59 @@ describe('variables plugin', () => {
 			.toEqual(expect.arrayContaining(['var(--safe)', 'var(--kept)']))
 	})
 
+	it('emits the transitive dependencies of safe-listed and pruneUnused=false variables', async () => {
+		const engine = await createEngine({
+			variables: {
+				safeList: ['--alias'],
+				definitions: {
+					'--alias': 'var(--base)',
+					'--base': 'red',
+					'--kept': { value: 'var(--kept-dep)', pruneUnused: false },
+					'--kept-dep': 'blue',
+				},
+			},
+		})
+
+		const preflights = await engine.renderPreflights(false)
+
+		expect(preflights)
+			.toContain('--alias:var(--base)')
+		expect(preflights)
+			.toContain('--base:red')
+		expect(preflights)
+			.toContain('--kept-dep:blue')
+	})
+
+	it('detects variable references containing whitespace inside var()', async () => {
+		const engine = await createEngine({
+			variables: {
+				definitions: { '--sp': '4px' },
+			},
+		})
+
+		await engine.use({ margin: 'var( --sp )' })
+
+		expect(await engine.renderPreflights(false))
+			.toContain('--sp:4px')
+	})
+
+	it('executes each user preflight function only once per render pass', async () => {
+		const fn = vi.fn(() => ({ body: { color: 'var(--fg)' } }))
+		const engine = await createEngine({
+			preflights: [fn],
+			variables: {
+				definitions: { '--fg': 'black' },
+			},
+		})
+
+		const css = await engine.renderPreflights(false)
+
+		expect(fn)
+			.toHaveBeenCalledTimes(1)
+		expect(css)
+			.toContain('--fg:black')
+	})
+
 	it('ignores failing auxiliary preflights and missing referenced variables while still rendering known ones', async () => {
 		const engine = await createEngine({
 			preflights: [

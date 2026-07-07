@@ -447,4 +447,37 @@ describe('engine helpers', () => {
 		expect(css)
 			.toContain('display: block;')
 	})
+
+	it('treats digit-prefixed percent signs in selectors as literal percentages', async () => {
+		const engine = await createEngine()
+
+		const ids = await engine.use({ '@supports (width: 50%)': { color: 'red' } })
+		const css = await engine.renderAtomicStyles(false, { atomicStyleIds: ids })
+
+		expect(css)
+			.toContain('@supports (width: 50%){')
+		expect(css)
+			.toContain(`.${ids[0]}{color:red;}`)
+	})
+
+	it('registers config dependencies added by plugins', async () => {
+		const engine = await createEngine()
+
+		engine.addConfigDependency('/tmp/design.md')
+		engine.addConfigDependency('/tmp/design.md')
+
+		expect(engine.configDependencies)
+			.toEqual(new Set(['/tmp/design.md']))
+	})
+
+	it('does not duplicate autocomplete entries when variables are re-added', async () => {
+		const engine = await createEngine()
+
+		engine.variables.add({ '--x': 'red' })
+		engine.variables.add({ '--x': 'red' })
+
+		const suggestions = engine.config.autocomplete.cssProperties.get('*') ?? []
+		expect(suggestions.filter(s => s === 'var(--x)'))
+			.toHaveLength(1)
+	})
 })

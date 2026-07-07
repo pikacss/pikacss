@@ -112,7 +112,7 @@ export abstract class AbstractResolver<T> {
 	 * @param rule - The static rule to register.
 	 * @returns `this` for chaining.
 	 *
-	 * @remarks Overwrites any existing static rule with the same key.
+	 * @remarks Overwrites any existing static rule with the same key. The entire resolution cache is cleared because cached results (including recursively expanded ones) may depend on the previous rule.
 	 *
 	 * @example
 	 * ```ts
@@ -122,6 +122,7 @@ export abstract class AbstractResolver<T> {
 	addStaticRule(rule: StaticRule<T>) {
 		log.debug(`Adding static rule: ${rule.key}`)
 		this.staticRulesMap.set(rule.key, rule)
+		this._resolvedResultsMap.clear()
 		return this
 	}
 
@@ -131,7 +132,7 @@ export abstract class AbstractResolver<T> {
 	 * @param key - The key of the static rule to remove.
 	 * @returns `this` for chaining.
 	 *
-	 * @remarks Logs a warning if the key does not exist. Also evicts the cached result for the rule's input string.
+	 * @remarks Logs a warning if the key does not exist. The entire resolution cache is cleared because cached results (including recursively expanded ones) may depend on the removed rule.
 	 *
 	 * @example
 	 * ```ts
@@ -147,7 +148,7 @@ export abstract class AbstractResolver<T> {
 
 		log.debug(`Removing static rule: ${key}`)
 		this.staticRulesMap.delete(key)
-		this._resolvedResultsMap.delete(rule.string)
+		this._resolvedResultsMap.clear()
 		return this
 	}
 
@@ -157,7 +158,7 @@ export abstract class AbstractResolver<T> {
 	 * @param rule - The dynamic rule to register.
 	 * @returns `this` for chaining.
 	 *
-	 * @remarks Overwrites any existing dynamic rule with the same key.
+	 * @remarks Overwrites any existing dynamic rule with the same key. The entire resolution cache is cleared because cached results (including recursively expanded ones) may depend on the previous rule.
 	 *
 	 * @example
 	 * ```ts
@@ -167,6 +168,7 @@ export abstract class AbstractResolver<T> {
 	addDynamicRule(rule: DynamicRule<T>) {
 		log.debug(`Adding dynamic rule: ${rule.key}`)
 		this.dynamicRulesMap.set(rule.key, rule)
+		this._resolvedResultsMap.clear()
 		return this
 	}
 
@@ -176,7 +178,7 @@ export abstract class AbstractResolver<T> {
 	 * @param key - The key of the dynamic rule to remove.
 	 * @returns `this` for chaining.
 	 *
-	 * @remarks Iterates through all cached results and deletes any whose input string matches the removed rule's pattern. Logs a warning if the key does not exist.
+	 * @remarks Logs a warning if the key does not exist. The entire resolution cache is cleared because cached results (including recursively expanded ones) may depend on the removed rule.
 	 *
 	 * @example
 	 * ```ts
@@ -191,14 +193,8 @@ export abstract class AbstractResolver<T> {
 		}
 
 		log.debug(`Removing dynamic rule: ${key}`)
-		const matchedResolvedStringList = Array.from(this._resolvedResultsMap.keys())
-			.filter((string) => {
-				rule.stringPattern.lastIndex = 0
-				return rule.stringPattern.test(string)
-			})
 		this.dynamicRulesMap.delete(key)
-		matchedResolvedStringList.forEach(string => this._resolvedResultsMap.delete(string))
-		log.debug(`  - Cleared ${matchedResolvedStringList.length} cached results`)
+		this._resolvedResultsMap.clear()
 		return this
 	}
 

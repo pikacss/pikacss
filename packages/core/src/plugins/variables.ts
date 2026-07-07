@@ -207,7 +207,7 @@ export function variables() {
 
 			engine.addPreflight({
 				id: 'core:variables',
-				preflight: async (engine) => {
+				preflight: async (engine, isFormatted) => {
 					const used = new Set<string>()
 
 					// 1. Collect vars referenced by atomic styles.
@@ -216,11 +216,12 @@ export function variables() {
 							.forEach(name => used.add(normalizeVariableName(name)))
 					})
 
-					// 2. Collect vars referenced by other preflights (skip self to avoid recursion).
+					// 2. Collect vars referenced by other preflights (skip self to avoid
+					// recursion). `invokePreflight` memoizes per render pass, so each
+					// preflight function still executes only once per render.
 					const otherPreflights = engine.config.preflights.filter(p => p.id !== 'core:variables')
 					const preflightResults = await Promise.all(
-						otherPreflights.map(({ fn }) => Promise.resolve()
-							.then(() => fn(engine, false))
+						otherPreflights.map(({ fn }) => engine.invokePreflight(fn, isFormatted)
 							.catch(() => null)),
 					)
 					preflightResults.forEach((result) => {
@@ -236,7 +237,17 @@ export function variables() {
 						varMap.set(name, list)
 					}
 
-					// 4. Expand `used` transitively: if a used variable's value references
+					// 4. Seed transitive expansion with variables that are emitted
+					// unconditionally (safe-listed or pruneUnused: false), so their
+					// dependencies are emitted too.
+					for (const [name, entries] of varMap.entries()) {
+						if (used.has(name))
+							continue
+						if (safeSet.has(name) || entries.some(entry => entry.pruneUnused === false))
+							used.add(name)
+					}
+
+					// 5. Expand `used` transitively: if a used variable's value references
 					// other variables, those must also be considered used.
 					const queue = Array.from(used)
 					while (queue.length > 0) {
@@ -391,7 +402,7 @@ function resolveAutocompleteValueTargets({
 	return [...targets]
 }
 
-const VAR_NAME_RE = /var\((--[\w-]+)/g
+const VAR_NAME_RE = /var\(\s*(--[\w-]+)/g
 
 /**
  * Extracts all CSS variable names referenced via `var(--*)` calls in a string.

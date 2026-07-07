@@ -22,6 +22,25 @@ describe('keyframes plugin', () => {
 			.toContain('@keyframes fade{from{opacity:0;}to{opacity:1;}}')
 	})
 
+	it('emits all keyframes referenced by a comma-separated animation-name value', async () => {
+		const engine = await createEngine({
+			keyframes: {
+				definitions: [
+					['fade', { from: { opacity: '0' }, to: { opacity: '1' } }],
+					['spin', { from: { rotate: '0deg' }, to: { rotate: '360deg' } }],
+				],
+			},
+		})
+
+		await engine.use({ animationName: 'fade, spin' })
+
+		const css = await engine.renderPreflights(false)
+		expect(css)
+			.toContain('@keyframes fade')
+		expect(css)
+			.toContain('@keyframes spin')
+	})
+
 	it('accepts runtime string keyframes as autocomplete-only entries without registering frames', async () => {
 		const engine = await createEngine()
 

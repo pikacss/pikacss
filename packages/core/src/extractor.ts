@@ -2,6 +2,7 @@ import type { ExtractedStyleContent, InternalPropertyValue, InternalStyleDefinit
 import {
 	ATOMIC_STYLE_ID_PLACEHOLDER,
 	ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
+	hasAtomicStyleIdPlaceholder,
 } from './constants'
 import { isPropertyValue, toKebab } from './utils'
 
@@ -22,6 +23,33 @@ const RE_SPLIT = /\s*,\s*/g
 const DEFAULT_SELECTOR_PLACEHOLDER_RE_GLOBAL = /\$/g
 const ATTRIBUTE_SUFFIX_MATCH = '$='
 const ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL = /\$=/g
+
+/**
+ * Applies a transform to the parts of a selector outside quoted segments,
+ * leaving single- and double-quoted content (e.g. attribute values) untouched.
+ */
+function transformOutsideQuotes(str: string, transform: (segment: string) => string): string {
+	let result = ''
+	let segmentStart = 0
+	for (let i = 0; i < str.length; i++) {
+		const ch = str[i]!
+		if (ch === '"' || ch === '\'') {
+			result += transform(str.slice(segmentStart, i))
+			let j = i + 1
+			while (j < str.length && str[j] !== ch) {
+				if (str[j] === '\\')
+					j++
+				j++
+			}
+			const end = Math.min(j, str.length - 1)
+			result += str.slice(i, end + 1)
+			i = end
+			segmentStart = i + 1
+		}
+	}
+	result += transform(str.slice(segmentStart))
+	return result
+}
 /**
  * Normalizes selector strings by replacing placeholders (`$` → `defaultSelector`, `%` → atomic style ID placeholder) and splitting comma-separated selectors.
  * @internal
@@ -31,7 +59,7 @@ const ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL = /\$=/g
  * @param options.defaultSelector - The selector template that replaces `$` placeholders.
  * @returns An array of normalized selector strings with all placeholders resolved.
  *
- * @remarks The `$` character in a selector is replaced with the engine's `defaultSelector`. The `%` character is the atomic style ID placeholder, preserved for later substitution. Attribute suffix matches (`$=`) are protected from the `$` replacement.
+ * @remarks The `$` character in a selector is replaced with the engine's `defaultSelector`. The `%` character is the atomic style ID placeholder, preserved for later substitution. Attribute suffix matches (`$=`) are protected from the `$` replacement. Content inside single or double quotes is never rewritten, and a `%` directly preceded by a digit (e.g. `@supports (width: 50%)`) is treated as a literal percentage.
  *
  * @example
  * ```ts
@@ -47,22 +75,23 @@ export function normalizeSelectors({
 	defaultSelector: string
 }) {
 	const normalized = selectors.map(s =>
-		replaceBySplitAndJoin(
-			s.replace(RE_SPLIT, ','),
-			ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
-			a => replaceBySplitAndJoin(
-				a,
-				ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL,
-				b => replaceBySplitAndJoin(
-					b,
-					DEFAULT_SELECTOR_PLACEHOLDER_RE_GLOBAL,
-					null,
-					defaultSelector,
+		transformOutsideQuotes(s, segment =>
+			replaceBySplitAndJoin(
+				segment.replace(RE_SPLIT, ','),
+				ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
+				a => replaceBySplitAndJoin(
+					a,
+					ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL,
+					b => replaceBySplitAndJoin(
+						b,
+						DEFAULT_SELECTOR_PLACEHOLDER_RE_GLOBAL,
+						null,
+						defaultSelector,
+					),
+					ATTRIBUTE_SUFFIX_MATCH,
 				),
-				ATTRIBUTE_SUFFIX_MATCH,
-			),
-			ATOMIC_STYLE_ID_PLACEHOLDER,
-		),
+				ATOMIC_STYLE_ID_PLACEHOLDER,
+			)),
 	)
 
 	return normalized
@@ -159,7 +188,7 @@ export async function extract({
 					defaultSelector,
 				})
 
-				if (selector.length === 0 || selector.every(s => s.includes(ATOMIC_STYLE_ID_PLACEHOLDER) === false))
+				if (selector.length === 0 || selector.every(s => hasAtomicStyleIdPlaceholder(s) === false))
 					selector.push(defaultSelector)
 
 				result.push({

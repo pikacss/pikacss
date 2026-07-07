@@ -2,7 +2,7 @@ import type { EngineStore } from './atomic-style'
 import type { ExtractFn } from './extractor'
 import type { AtomicStyle, AutocompleteContribution, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
 import { createEngineStore, getAtomicStyleBaseKey, optimizeAtomicStyleContents, resolveAtomicStyle } from './atomic-style'
-import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX, LAYER_SELECTOR_PREFIX } from './constants'
+import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX, hasAtomicStyleIdPlaceholder, LAYER_SELECTOR_PREFIX } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
@@ -73,12 +73,14 @@ export { getAtomicStyleId, optimizeAtomicStyleContents } from './atomic-style'
  */
 export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	log.debug('Creating engine with config:', config)
+	// `important()` must come after `shortcuts()` so that `!important` is applied
+	// to shortcut-expanded definitions and never to the `__shortcut` reference itself.
 	const corePlugins = [
-		important(),
 		variables(),
 		keyframes(),
 		selectors(),
 		shortcuts(),
+		important(),
 	]
 	log.debug('Core plugins loaded:', corePlugins.length)
 	const plugins = resolvePlugins([...corePlugins, ...(config.plugins || [])])
@@ -145,6 +147,20 @@ export class Engine {
 	store: EngineStore = createEngineStore()
 
 	/**
+	 * Absolute paths of external files this engine's config depends on (e.g. token files loaded by plugins).
+	 *
+	 * @remarks Plugins register paths via `addConfigDependency` during `configureEngine`. Integration layers (e.g. the unplugin) watch these files and re-create the engine when they change.
+	 */
+	configDependencies: Set<string> = new Set()
+
+	/**
+	 * Per-render memoization of preflight function invocations.
+	 *
+	 * @remarks Non-null only while `renderPreflights` is running. Ensures each preflight function executes at most once per render, even when plugins (e.g. the variables pruning preflight) need to inspect other preflights' output.
+	 */
+	private _activePreflightInvocations: Map<PreflightFn, Promise<string | PreflightDefinition>> | null = null
+
+	/**
 	 * Creates an engine instance from a resolved configuration.
 	 *
 	 * @param config - The fully resolved engine configuration.
@@ -165,6 +181,52 @@ export class Engine {
 			transformStyleItems: styleItems => hooks.transformStyleItems(this.config.plugins, styleItems),
 			transformStyleDefinitions: styleDefinitions => hooks.transformStyleDefinitions(this.config.plugins, styleDefinitions),
 		})
+	}
+
+	/**
+	 * Invokes a preflight function, memoizing the result while a `renderPreflights` pass is active.
+	 *
+	 * @param fn - The preflight function to invoke.
+	 * @param isFormatted - Whether the preflight should produce formatted output.
+	 * @returns A promise of the preflight result.
+	 *
+	 * @remarks During a render pass each function executes at most once; concurrent callers (e.g. the variables pruning preflight scanning other preflights for `var()` usage) share the same promise. Outside a render pass the function is invoked directly without caching.
+	 *
+	 * @example
+	 * ```ts
+	 * const result = await engine.invokePreflight(preflight.fn, false)
+	 * ```
+	 */
+	invokePreflight(fn: PreflightFn, isFormatted: boolean): Promise<string | PreflightDefinition> {
+		const cache = this._activePreflightInvocations
+		if (cache == null) {
+			return Promise.resolve()
+				.then(() => fn(this, isFormatted))
+		}
+
+		let invocation = cache.get(fn)
+		if (invocation == null) {
+			invocation = Promise.resolve()
+				.then(() => fn(this, isFormatted))
+			cache.set(fn, invocation)
+		}
+		return invocation
+	}
+
+	/**
+	 * Registers an external file path as a config dependency of this engine.
+	 *
+	 * @param path - The file path (ideally absolute) the current config was derived from.
+	 *
+	 * @remarks Call from a plugin (typically in `configureEngine`) after loading data from disk. Integration layers watch registered paths and rebuild the engine when any of them changes.
+	 *
+	 * @example
+	 * ```ts
+	 * engine.addConfigDependency('/project/design.md')
+	 * ```
+	 */
+	addConfigDependency(path: string) {
+		this.configDependencies.add(path)
 	}
 
 	/**
@@ -274,7 +336,7 @@ export class Engine {
 	 * Processes style items through the plugin pipeline and registers the resulting atomic styles in the store.
 	 *
 	 * @param itemList - Style items to process: string references (shortcuts) and/or style definition objects.
-	 * @returns An array of atomic style IDs (and unresolved string references) in insertion order.
+	 * @returns An array containing any unresolved string references first, followed by atomic style IDs in resolution order.
 	 *
 	 * @remarks Runs `transformStyleItems` and `extractStyleDefinition` hooks, resolves each extracted content into an atomic style, deduplicates by base key, and fires `atomicStyleAdded` for new entries.
 	 *
@@ -330,17 +392,24 @@ export class Engine {
 		log.debug('Rendering preflights...')
 		const lineEnd = isFormatted ? '\n' : ''
 
-		const rendered: { layer?: string, css: string }[] = (await Promise.all(
-			this.config.preflights.map(async ({ layer, fn }) => {
-				const result = await fn(this, isFormatted)
-				const css = (
-					typeof result === 'string'
-						? result
-						: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
-				).trim()
-				return { layer, css }
-			}),
-		)).filter(r => r.css)
+		this._activePreflightInvocations = new Map()
+		let rendered: { layer?: string, css: string }[]
+		try {
+			rendered = (await Promise.all(
+				this.config.preflights.map(async ({ layer, fn }) => {
+					const result = await this.invokePreflight(fn, isFormatted)
+					const css = (
+						typeof result === 'string'
+							? result
+							: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
+					).trim()
+					return { layer, css }
+				}),
+			)).filter(r => r.css)
+		}
+		finally {
+			this._activePreflightInvocations = null
+		}
 		log.debug(`Rendered ${rendered.length} preflights`)
 
 		const { unlayeredParts, layerGroups } = groupRenderedPreflightsByLayer(rendered)
@@ -782,14 +851,14 @@ function renderAtomicStylesCss({ atomicStyles, isPreview, isFormatted }: {
 	atomicStyles
 		.forEach(({ id, content: { selector: rawSelector, property, value } }) => {
 			const { selector } = splitLayerSelector(rawSelector)
-			const isValidSelector = selector.some(s => s.includes(ATOMIC_STYLE_ID_PLACEHOLDER))
+			const isValidSelector = selector.some(s => hasAtomicStyleIdPlaceholder(s))
 			if (isValidSelector === false || value == null)
 				return
 
 			const renderObject = {
 				selector: isPreview
 					? selector
-					: selector.map(s => s.replace(ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, id)),
+					: selector.map(s => s.replace(ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, () => id)),
 				properties: value.map(v => ({ property, value: v })),
 			}
 

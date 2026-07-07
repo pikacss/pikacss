@@ -1,4 +1,4 @@
-import type { Arrayable, AutocompleteConfig, AutocompleteContribution, CSSStyleBlocks, InternalPropertyValue, ResolvedEngineConfig } from './types'
+import type { Arrayable, AutocompleteConfig, AutocompleteContribution, CSSStyleBlockBody, CSSStyleBlocks, InternalPropertyValue, ResolvedEngineConfig } from './types'
 
 /**
  * Creates a scoped logger with configurable log-level functions and a toggleable debug mode.
@@ -96,13 +96,13 @@ const numOfChars = chars.length
  * @param num - The non-negative integer to encode.
  * @returns A short alphabetic string unique to the given integer.
  *
- * @remarks Used to generate compact, human-readable atomic style class IDs. The encoding is deterministic: the same number always produces the same string.
+ * @remarks Used to generate compact, human-readable atomic style class IDs. The encoding is deterministic (the same number always produces the same string) and least-significant-digit first: `52` maps to `'aa'`, `53` to `'ba'`, and so on.
  *
  * @example
  * ```ts
  * numberToChars(0)  // 'a'
  * numberToChars(51) // 'Z'
- * numberToChars(52) // 'ba'
+ * numberToChars(52) // 'aa'
  * ```
  */
 export function numberToChars(num: number) {
@@ -308,13 +308,14 @@ export function appendAutocompleteEntries(set: Set<string>, values?: Arrayable<s
  * @param entries - A record mapping keys to single or arrayed string values, or `undefined` to skip.
  * @returns `true` if at least one entry was added or extended; `false` if the input was nullish or empty.
  *
- * @remarks Existing map entries are extended (not replaced) with the new values, maintaining all previously registered suggestions for a given key. This accumulative behavior allows multiple plugins to contribute value suggestions for the same property.
+ * @remarks Existing map entries are extended (not replaced) with the new values, maintaining all previously registered suggestions for a given key. This accumulative behavior allows multiple plugins to contribute value suggestions for the same property. Values already present for a key are skipped, and the function returns `false` when nothing new was added.
  *
  * @example
  * ```ts
  * const map = new Map<string, string[]>()
  * appendAutocompleteRecordEntries(map, { color: ['red', 'blue'] }) // true
  * appendAutocompleteRecordEntries(map, { color: 'green' })         // true (now ['red','blue','green'])
+ * appendAutocompleteRecordEntries(map, { color: 'green' })         // false (no change)
  * ```
  */
 export function appendAutocompleteRecordEntries(map: Map<string, string[]>, entries?: Record<string, Arrayable<string>>) {
@@ -323,12 +324,14 @@ export function appendAutocompleteRecordEntries(map: Map<string, string[]>, entr
 
 	let changed = false
 	for (const [key, value] of Object.entries(entries)) {
-		const nextValues = [value].flat()
-		if (nextValues.length === 0)
+		const current = map.get(key)
+		const existing = new Set(current)
+		const added = [value].flat()
+			.filter(v => !existing.has(v))
+		if (added.length === 0)
 			continue
 
-		const current = map.get(key) || []
-		map.set(key, [...current, ...nextValues])
+		map.set(key, [...(current ?? []), ...added])
 		changed = true
 	}
 
@@ -407,18 +410,32 @@ export function renderCSSStyleBlocks(blocks: CSSStyleBlocks, isFormatted: boolea
 	const propertySpace = isFormatted ? ' ' : ''
 	const lineEnd = isFormatted ? '\n' : ''
 	const lines: string[] = []
-	blocks.forEach(({ properties, children }, selector) => {
-		if (properties.length === 0 && (children == null || children.size === 0))
+	blocks.forEach((blockBody, selector) => {
+		if (hasRenderableBlockContent(blockBody) === false)
 			return
 
+		const { properties, children } = blockBody
+		const childrenCss = (children != null && children.size > 0)
+			? renderCSSStyleBlocks(children, isFormatted, depth + 1)
+			: ''
 		lines.push(...[
 			`${blockIndent}${selector}${selectorEnd}{`,
 			...properties.map(({ property, value }) => `${blockBodyIndent}${property}:${propertySpace}${value};`),
-			...(children != null && children.size > 0)
-				? [renderCSSStyleBlocks(children, isFormatted, depth + 1)]
-				: [],
+			...(childrenCss !== '' ? [childrenCss] : []),
 			`${blockIndent}}`,
 		])
 	})
 	return lines.join(lineEnd)
+}
+
+function hasRenderableBlockContent(blockBody: CSSStyleBlockBody): boolean {
+	if (blockBody.properties.length > 0)
+		return true
+	if (blockBody.children == null)
+		return false
+	for (const child of blockBody.children.values()) {
+		if (hasRenderableBlockContent(child))
+			return true
+	}
+	return false
 }
