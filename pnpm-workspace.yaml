@@ -6,6 +6,8 @@ minimumReleaseAgeExclude:
   - '@mdn/browser-compat-data'
   - '@mdn/data'
   - web-features
+  - '@deviltea/eslint-config'
+  - '@deviltea/tsconfig'
 
 shellEmulator: true
 
@@ -22,8 +24,8 @@ packages:
   - packages/*
 catalog:
   '@clack/prompts': ^1.6.0
-  '@deviltea/eslint-config': ^7.0.0
-  '@deviltea/tsconfig': ^0.0.9
+  '@deviltea/eslint-config': ^8.0.2
+  '@deviltea/tsconfig': ^0.0.10
   '@iconify-json/line-md': ^1.2.16
   '@iconify/utils': ^3.1.3
   '@mdn/browser-compat-data': ^8.0.5

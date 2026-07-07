@@ -1,4 +1,3 @@
-/* eslint-disable e18e/prefer-static-regex */
 import type { TscDiagnostics } from '../types'
 import { execFile } from 'node:child_process'
 import { resolve } from 'node:path'
