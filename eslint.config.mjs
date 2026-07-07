@@ -10,6 +10,10 @@ export default await deviltea(
 		},
 		ignores: [
 			'./.github/**/*',
+			// Playground templates are standalone starters served into the
+			// WebContainer; they keep their own upstream code style.
+			'./playground/src/templates/**/*',
+			'./playground/public/**/*',
 			'./.agents/**/*',
 			'.planning/**/*',
 			'./docs/.examples/**/*',

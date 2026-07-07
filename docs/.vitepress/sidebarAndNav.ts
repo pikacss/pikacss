@@ -17,6 +17,8 @@ export const nav: DefaultTheme.NavItem[] = [
 		],
 	},
 	{ text: 'API Reference', link: '/api/' },
+	// Deployed next to the docs by deploy-docs.yml; not a VitePress page.
+	{ text: 'Playground', link: 'https://pikacss.github.io/playground/', target: '_blank' },
 ]
 
 export const sidebar: DefaultTheme.SidebarItem[] = [

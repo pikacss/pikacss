@@ -21,12 +21,14 @@ trustPolicyExclude:
 packages:
   - docs
   - demo
+  - playground
   - packages/*
 catalog:
   '@clack/prompts': ^1.6.0
   '@deviltea/eslint-config': ^8.0.2
   '@deviltea/tsconfig': ^0.0.10
   '@iconify-json/line-md': ^1.2.16
+  '@iconify-json/vscode-icons': ^1.2.37
   '@iconify/utils': ^3.1.3
   '@mdn/browser-compat-data': ^8.0.5
   '@nuxt/kit': ^4.4.8
@@ -35,21 +37,34 @@ catalog:
   '@types/node': ^24.13.2
   '@vitejs/plugin-vue': ^6.0.7
   '@vitest/coverage-v8': ^4.1.9
+  '@vue/tsconfig': ^0.8.1
+  '@vueuse/core': ^14.1.0
+  '@webcontainer/api': ^1.6.1
   '@webref/css': ^8.6.1
+  '@xterm/addon-fit': ^0.11.0
+  '@xterm/addon-web-links': ^0.12.0
+  '@xterm/xterm': ^6.0.0
   alien-signals: ^3.2.1
   bumpp: ^11.1.0
+  dockview-core: ^4.13.1
+  dockview-vue: ^4.13.1
   esbuild: ^0.28.1
   eslint: ^10.6.0
   globby: ^16.2.0
   gray-matter: ^4.0.3
   happy-dom: ^20.10.6
+  ignore: ^7.0.5
+  is-binary-path: ^3.0.0
   jiti: ^2.7.0
+  json5: ^2.2.3
   klona: ^2.0.6
   lint-staged: ^16.4.0
   local-pkg: ^1.2.1
+  lz-string: ^1.5.0
   magic-string: ^0.30.21
   mdn-data: ^2.28.1
   mermaid: ^11.16.0
+  monaco-editor: ^0.55.1
   ofetch: ^1.5.1
   pathe: ^2.0.3
   perfect-debounce: ^2.1.0
@@ -70,6 +85,7 @@ catalog:
   vitepress-plugin-mermaid: ^2.0.17
   vitest: ^4.1.9
   vue: ^3.5.39
+  vue-router: ^4.6.4
   vue-tsc: ^3.3.6
   web-features: ^3.32.0
   zx: ^8.8.5

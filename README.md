@@ -72,6 +72,13 @@
 
 ---
 
+## Quick Links
+
+- 📚 Documentation: <https://pikacss.github.io/>
+- 🛝 Playground (in-browser, no install): <https://pikacss.github.io/playground/>
+
+---
+
 ## Features
 - 🥰 Framework Agnostic
   > It is decoupled from any framework, so you can use it with any framework!

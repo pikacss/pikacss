@@ -1,0 +1,32 @@
+# PikaCSS Playground
+
+An in-browser playground for PikaCSS, built with Vue 3, [WebContainers](https://webcontainers.io/), Monaco, and dockview. It boots a real Vite project inside the browser, installs dependencies with npm, and runs the dev server — so the full PikaCSS transform/codegen pipeline works exactly like a local setup.
+
+## Templates
+
+| Template | Framework | Entry |
+|---|---|---|
+| `solid-ts` (default) | SolidJS + TSX | `src/App.tsx` |
+| `vue-ts` | Vue 3 SFC | `src/App.vue` |
+| `react-ts` | React 19 | `src/App.tsx` |
+
+Templates live in `src/templates/<name>/` and are bundled into virtual modules by `plugins/vite-plugin-vfs.ts`. Each template is a standalone Vite project wired with `@pikacss/unplugin-pikacss` (published version — WebContainer installs from the npm registry). Template edits are persisted into the URL hash (lz-string compressed) so playground states are shareable.
+
+## Development
+
+```bash
+pnpm --filter @pikacss/playground dev
+pnpm --filter @pikacss/playground build
+# Requires generated files (pika.gen.ts / vfs.d.ts); run dev or build first:
+pnpm --filter @pikacss/playground type-check
+```
+
+## Deployment
+
+Deployed to `https://pikacss.github.io/playground/` by `.github/workflows/deploy-docs.yml`, which copies the built output into the docs dist under `playground/`. GitHub Pages cannot send the COOP/COEP headers WebContainers require, so `public/coi-serviceworker.min.js` installs a service worker that injects them (`index.html` loads it first).
+
+## Notes for maintainers
+
+- `src/templates/**` is data, not app code: it is excluded from the app tsconfig, from the repo ESLint run, and from the playground's own PikaCSS scan (`vite.config.ts` → `scan.exclude`).
+- Template `package.json` files must reference **published** `@pikacss/*` versions; `workspace:` protocols cannot resolve inside the WebContainer.
+- The `type-check` script (hyphenated, like `demo/`) is intentionally not part of the repo-wide `pnpm typecheck`, because it needs generated files from a prior dev/build run.

@@ -37,6 +37,8 @@
 		"type-bench": "tsx ./scripts/type-bench/index.ts",
 		"docs:build": "pnpm -r --filter=@pikacss/docs run build",
 		"docs:preview": "pnpm -r --filter=@pikacss/docs run preview",
+		"playground:dev": "pnpm -r --filter=@pikacss/playground run dev",
+		"playground:build": "pnpm -r --filter=@pikacss/playground run build",
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm test:css-data && pnpm -r --filter='./packages/*' run test",
 		"lint": "eslint --fix .",

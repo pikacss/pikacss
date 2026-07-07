@@ -35,7 +35,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: build
-        run: pnpm build && pnpm docs:build
+        run: pnpm build && pnpm docs:build && pnpm playground:build
 
       - name: push dist to pikacss.github.io
         env:
@@ -47,6 +47,10 @@ jobs:
           dist_dir="docs/.vitepress/dist"
           rm -rf "$dist_dir/.git"
           touch "$dist_dir/.nojekyll"
+
+          # Serve the playground under /playground/ next to the docs.
+          rm -rf "$dist_dir/playground"
+          cp -R playground/dist "$dist_dir/playground"
 
           cd "$dist_dir"
           git init --initial-branch=main

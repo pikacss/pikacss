@@ -1,0 +1,14 @@
+import pikacss from '@pikacss/unplugin-pikacss/vite'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    pikacss({
+      tsCodegen: './src/pika.gen.ts',
+      cssCodegen: './src/pika.gen.css',
+    }),
+    react(),
+  ],
+})
