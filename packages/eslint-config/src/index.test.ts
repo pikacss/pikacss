@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import packageJson from '../package.json'
 import pikacss, { plugin, recommended } from './index'
 import noDynamicArgs from './rules/no-dynamic-args'
 
@@ -9,7 +10,7 @@ describe('plugin export', () => {
 			.toMatchObject({
 				meta: {
 					name: '@pikacss/eslint-config',
-					version: '1.0.0',
+					version: packageJson.version,
 				},
 				rules: {
 					'no-dynamic-args': noDynamicArgs,

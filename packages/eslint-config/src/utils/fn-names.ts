@@ -65,6 +65,39 @@ export function buildFnNamePatterns(fnName: string = 'pika') {
 	}
 }
 
+const wrapperNodeTypes = new Set([
+	'TSNonNullExpression',
+	'TSAsExpression',
+	'TSSatisfiesExpression',
+	'TSTypeAssertion',
+	'ParenthesizedExpression',
+])
+
+/**
+ * Unwraps TypeScript assertion wrappers and parenthesized expressions.
+ * @internal
+ *
+ * @param node - Expression node possibly wrapped in `!`, `as`, `satisfies`, `<T>`, or parentheses.
+ * @returns The innermost unwrapped expression node.
+ *
+ * @remarks
+ * Handles `TSNonNullExpression` (`pika!`), `TSAsExpression` (`pika as X`),
+ * `TSSatisfiesExpression`, `TSTypeAssertion` (`<X>pika`), and
+ * `ParenthesizedExpression` — recursively, so nested wrappers are peeled off.
+ *
+ * @example
+ * ```ts
+ * // Given an AST node for `(pika as X)!`
+ * unwrapExpression(node) // Identifier node for `pika`
+ * ```
+ */
+function unwrapExpression(node: any): any {
+	let current = node
+	while (current != null && wrapperNodeTypes.has(current.type))
+		current = current.expression
+	return current
+}
+
 /**
  * Extracts the full callee name from a call-expression AST node.
  * @internal
@@ -77,8 +110,9 @@ export function buildFnNamePatterns(fnName: string = 'pika') {
  * @remarks
  * Handles plain identifiers (`pika`), non-computed member expressions
  * (`pika.str`), computed literal keys (`pika['str']`), and static
- * template-literal keys (`` pika[`str`] ``). Returns `null` for anything
- * more complex.
+ * template-literal keys (`` pika[`str`] ``). TypeScript assertion wrappers
+ * (`pika!`, `pika as X`, `pika satisfies X`, `<X>pika`) and parentheses are
+ * unwrapped before extraction. Returns `null` for anything more complex.
  *
  * @example
  * ```ts
@@ -90,27 +124,30 @@ export function getCalleeName(node: {
 	type: string
 	callee: any
 }): string | null {
-	const { callee } = node
+	const callee = unwrapExpression(node.callee)
 	if (callee.type === 'Identifier') {
 		return callee.name
 	}
-	if (callee.type !== 'MemberExpression' || callee.object.type !== 'Identifier')
+	if (callee.type !== 'MemberExpression')
+		return null
+	const calleeObject = unwrapExpression(callee.object)
+	if (calleeObject.type !== 'Identifier')
 		return null
 	if (
 		!callee.computed
 		&& callee.property.type === 'Identifier'
 	) {
-		return `${callee.object.name}.${callee.property.name}`
+		return `${calleeObject.name}.${callee.property.name}`
 	}
 	if (callee.computed) {
 		if (callee.property.type === 'Literal' && typeof callee.property.value === 'string')
-			return `${callee.object.name}.${callee.property.value}`
+			return `${calleeObject.name}.${callee.property.value}`
 		if (
 			callee.property.type === 'TemplateLiteral'
 			&& callee.property.expressions.length === 0
 			&& callee.property.quasis.length === 1
 		) {
-			return `${callee.object.name}.${callee.property.quasis[0]!.value.cooked ?? ''}`
+			return `${calleeObject.name}.${callee.property.quasis[0]!.value.cooked ?? ''}`
 		}
 	}
 	return null

@@ -1,4 +1,5 @@
 import type { ESLint, Linter } from 'eslint'
+import packageJson from '../package.json'
 import { rules } from './rules'
 
 /**
@@ -40,8 +41,8 @@ export interface PikacssConfigOptions {
  */
 export const plugin: ESLint.Plugin = {
 	meta: {
-		name: '@pikacss/eslint-config',
-		version: '1.0.0',
+		name: packageJson.name,
+		version: packageJson.version,
 	},
 	rules,
 }

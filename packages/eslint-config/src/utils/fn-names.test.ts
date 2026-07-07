@@ -98,7 +98,76 @@ describe('getCalleeName', () => {
 			.toBe('pika.')
 	})
 
+	it('unwraps TypeScript assertion wrappers and parentheses around callees', () => {
+		// pika!(...)
+		expect(getCalleeName({
+			type: 'CallExpression',
+			callee: {
+				type: 'TSNonNullExpression',
+				expression: { type: 'Identifier', name: 'pika' },
+			},
+		}))
+			.toBe('pika')
+
+		// (pika as X)(...)
+		expect(getCalleeName({
+			type: 'CallExpression',
+			callee: {
+				type: 'TSAsExpression',
+				expression: { type: 'Identifier', name: 'pika' },
+			},
+		}))
+			.toBe('pika')
+
+		// (pika satisfies X)(...)
+		expect(getCalleeName({
+			type: 'CallExpression',
+			callee: {
+				type: 'TSSatisfiesExpression',
+				expression: { type: 'Identifier', name: 'pika' },
+			},
+		}))
+			.toBe('pika')
+
+		// (<X>pika)(...), with an explicit ParenthesizedExpression node
+		expect(getCalleeName({
+			type: 'CallExpression',
+			callee: {
+				type: 'ParenthesizedExpression',
+				expression: {
+					type: 'TSTypeAssertion',
+					expression: { type: 'Identifier', name: 'pika' },
+				},
+			},
+		}))
+			.toBe('pika')
+
+		// (pika as X)!.str(...)
+		expect(getCalleeName({
+			type: 'CallExpression',
+			callee: {
+				type: 'TSNonNullExpression',
+				expression: {
+					type: 'MemberExpression',
+					computed: false,
+					object: {
+						type: 'TSAsExpression',
+						expression: { type: 'Identifier', name: 'pika' },
+					},
+					property: { type: 'Identifier', name: 'str' },
+				},
+			},
+		}))
+			.toBe('pika.str')
+	})
+
 	it('returns null for unsupported callee shapes', () => {
+		expect(getCalleeName({
+			type: 'CallExpression',
+			callee: { type: 'CallExpression' },
+		}))
+			.toBeNull()
+
 		expect(getCalleeName({
 			type: 'CallExpression',
 			callee: {
