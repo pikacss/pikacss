@@ -2,6 +2,7 @@
 import type { Nullish } from '@pikacss/core'
 import type { FnUtils } from './types'
 import { log } from '@pikacss/core'
+import { stripLiteral } from 'strip-literal'
 
 /**
  * Describes a single matched `pika()` function call found in source code, including its position and raw text.
@@ -133,6 +134,8 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
 	return depth === 0 ? end : -1
 }
 
+const FUNCTION_KEYWORD_BEFORE_RE = /\bfunction\s*(?:\*\s*)?$/
+
 /**
  * Scans source code and returns all `pika()` function call matches found by the provided regex.
  * @internal
@@ -142,9 +145,13 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
  * @returns An array of `FunctionCallMatch` objects, one per matched call. Malformed calls (unbalanced parentheses) are logged and skipped.
  *
  * @remarks
- * Correctly handles nested parentheses, string literals, template expressions,
- * line comments, and block comments within function arguments. Each match
- * includes the full call snippet for later evaluation.
+ * Scanning runs against a literal-stripped copy of the source (comments and
+ * string/template contents blanked out, offsets preserved), so `pika(` inside
+ * strings or comments never matches and parentheses inside literals never
+ * confuse the depth counter. Matches preceded by `.` (member access such as
+ * `obj.pika(...)`) or a `function` keyword (declarations) are skipped. Each
+ * match includes the full call snippet, sliced from the original code, for
+ * later evaluation.
  *
  * @example
  * ```ts
@@ -153,73 +160,47 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
  * // [{ fnName: 'pika', start: 0, end: 25, snippet: "pika('bg:red', 'c:white')" }]
  * ```
  */
+const IDENTIFIER_PREFIX_RE = /^[$_a-z][\w$]*/i
+
 export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>): FunctionCallMatch[] {
 	const RE = fnUtils.RE
+	// Literal-stripped copy with identical offsets: string/template contents and
+	// comments are blanked out, so they can be told apart from real code.
+	const stripped = stripLiteral(code)
 	const result: FunctionCallMatch[] = []
+	RE.lastIndex = 0
 	let matched: RegExpExecArray | Nullish = RE.exec(code)
 
 	while (matched != null) {
 		const fnName = matched[1]!
 		const start = matched.index
+		const identifier = IDENTIFIER_PREFIX_RE.exec(fnName)![0]
+
+		// Skip matches whose identifier sits inside a string or comment, member
+		// accesses (`obj.pika(...)`), and function declarations — none of them
+		// are style call sites.
+		const before = stripped.slice(0, start)
+		if (
+			stripped.slice(start, start + identifier.length) !== identifier
+			|| stripped[start - 1] === '.'
+			|| FUNCTION_KEYWORD_BEFORE_RE.test(before)
+		) {
+			matched = RE.exec(code)
+			continue
+		}
+
+		// Count paren depth on the stripped copy: parens inside literals are
+		// blanked, and parens inside `${...}` expressions are balanced code.
 		let end = start + fnName.length
 		let depth = 1
-		let inString: '\'' | '"' | '`' | false = false
-		let isEscaped = false
 
-		while (depth > 0 && end < code.length) {
+		while (depth > 0 && end < stripped.length - 1) {
 			end++
-			const char = code[end]
-
-			if (isEscaped) {
-				isEscaped = false
-				continue
-			}
-
-			if (char === '\\') {
-				isEscaped = true
-				continue
-			}
-
-			if (inString !== false) {
-				if (char === inString) {
-					inString = false
-				}
-				else if (inString === '`' && char === '$' && code[end + 1] === '{') {
-					const templateExpressionEnd = findTemplateExpressionEnd(code, end + 1)
-					if (templateExpressionEnd === -1) {
-						log.warn(`Malformed template literal expression in function call at position ${start}`)
-						break
-					}
-					end = templateExpressionEnd
-				}
-				continue
-			}
-
-			if (char === '(') {
+			const char = stripped[end]
+			if (char === '(')
 				depth++
-			}
-			else if (char === ')') {
+			else if (char === ')')
 				depth--
-			}
-			else if (char === '\'' || char === '"' || char === '`') {
-				inString = char
-			}
-			else if (char === '/' && code[end + 1] === '/') {
-				const lineEnd = code.indexOf('\n', end)
-				if (lineEnd === -1) {
-					log.warn(`Unclosed function call at position ${start}`)
-					break
-				}
-				end = lineEnd
-			}
-			else if (char === '/' && code[end + 1] === '*') {
-				const commentEnd = code.indexOf('*/', end + 2)
-				if (commentEnd === -1) {
-					log.warn(`Unclosed comment in function call at position ${start}`)
-					break
-				}
-				end = commentEnd + 1
-			}
 		}
 
 		if (depth !== 0) {
@@ -230,6 +211,8 @@ export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>): F
 
 		const snippet = code.slice(start, end + 1)
 		result.push({ fnName, start, end, snippet })
+		// Resume scanning after the call so its contents are never re-matched.
+		RE.lastIndex = end + 1
 		matched = RE.exec(code)
 	}
 

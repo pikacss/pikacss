@@ -279,6 +279,49 @@ describe('createCtx', () => {
 			.toBe(false)
 	})
 
+	it('triggers regeneration when the last style call is removed from a file', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const onStyleUpdated = vi.fn()
+		ctx.hooks.styleUpdated.on(onStyleUpdated)
+
+		await ctx.transform('const value = pika({ color: \'red\' })', 'src/removed.ts')
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+
+		await ctx.transform('const value = 1', 'src/removed.ts')
+		expect(ctx.usages.has('src/removed.ts'))
+			.toBe(false)
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(2)
+	})
+
+	it('keeps valid calls when a sibling call in the same file fails to evaluate', async () => {
+		const cwd = await createTempDir()
+		const error = vi.fn()
+		log.setErrorFn(error)
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+
+		const result = await ctx.transform([
+			'const ok = pika({ color: \'red\' })',
+			'const broken = pika({ color: localVariable })',
+		].join('\n'), 'src/partial.ts')
+
+		expect(result?.code)
+			.toContain('\'pk-')
+		expect(result?.code)
+			.toContain('pika({ color: localVariable })')
+		expect(ctx.usages.get('src/partial.ts'))
+			.toHaveLength(1)
+		expect(error.mock.calls.some(call => call.join(' ')
+			.includes('Failed to transform')))
+			.toBe(true)
+	})
+
 	it('handles bracket-call variants, nested template expressions, and comments while transforming', async () => {
 		const cwd = await createTempDir()
 		const ctx = createCtx(createOptions({
@@ -455,18 +498,9 @@ describe('createCtx', () => {
 		expect(await ctx.transform('const c = pika({ color: \'red\' //', 'src/unclosed-line-comment.ts'))
 			.toBeUndefined()
 
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Malformed template literal expression in function call')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Unclosed comment in function call')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Unclosed function call')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
+		expect(warn.mock.calls.filter(call => call.join(' ')
 			.includes('Malformed function call')))
-			.toBe(true)
+			.toHaveLength(3)
 	})
 
 	it('skips TypeScript generation when it is disabled and performs full CSS scanning', async () => {
@@ -571,12 +605,13 @@ describe('createCtx', () => {
 			.toBe(true)
 	})
 
-	it('returns null config data when an existing config file throws during evaluation', async () => {
+	it('keeps the config file path and content when the config file throws during evaluation', async () => {
 		const cwd = await createTempDir()
 		const error = vi.fn()
 		log.setErrorFn(error)
 		const configPath = join(cwd, 'pika.config.ts')
-		await writeFile(configPath, 'throw new Error("invalid config")')
+		const configContent = 'throw new Error("invalid config")'
+		await writeFile(configPath, configContent)
 
 		const ctx = createCtx(createOptions({
 			cwd,
@@ -585,12 +620,14 @@ describe('createCtx', () => {
 		}))
 
 		await withProcessCwd(cwd, async () => {
+			// The path and content are preserved so integrations can keep
+			// watching the config file and reload once the user fixes it.
 			expect(await ctx.loadConfig())
-				.toEqual({ config: null, file: null, content: null })
+				.toEqual({ config: null, file: configPath, content: configContent })
 		})
 
 		expect(error.mock.calls.some(call => call.join(' ')
-			.includes('Failed to load config file: invalid config')))
+			.includes('Failed to evaluate config file: invalid config')))
 			.toBe(true)
 	})
 

@@ -72,14 +72,17 @@ export interface IntegrationContextOptions {
  * Discriminated union representing the outcome of loading an engine configuration file.
  *
  * @remarks
- * Three shapes are possible: an inline config (no file), a successfully loaded file-based
- * config, or a failed/missing load (all fields `null`). The `file` and `content` fields are
- * populated only when the config was loaded from disk, enabling hot-reload detection.
+ * Four shapes are possible: an inline config (no file), a successfully loaded file-based
+ * config, a file that exists but failed to evaluate (path and content kept so integrations
+ * can watch it and reload after a fix), or a missing load (all fields `null`). The `file`
+ * and `content` fields are populated whenever the config file was found on disk, enabling
+ * hot-reload detection.
  */
 export type LoadedConfigResult
 	= | { config: EngineConfig, file: null, content: null }
 		| { config: null, file: null, content: null }
 		| { config: EngineConfig, file: string, content: string }
+		| { config: null, file: string, content: string }
 
 /**
  * The main build-tool integration context that bridges the PikaCSS engine with bundler plugins.

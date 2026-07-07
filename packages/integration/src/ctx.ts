@@ -62,17 +62,28 @@ async function evaluateConfigModule(resolvedConfigPath: string): Promise<LoadedC
 		import.meta.url,
 		{
 			interopDefault: true,
+			// Without this, files imported by the config are cached process-wide
+			// and edits to them would be invisible to config reloads.
+			moduleCache: false,
 		},
 	)
 	const content = await readFile(resolvedConfigPath, 'utf-8')
-	const config = (await jiti.evalModule(
-		content,
-		{
-			id: resolvedConfigPath,
-			forceTranspile: true,
-		},
-	) as { default: EngineConfig }).default
-	return { config: klona(config), file: resolvedConfigPath, content }
+	try {
+		const config = (await jiti.evalModule(
+			content,
+			{
+				id: resolvedConfigPath,
+				forceTranspile: true,
+			},
+		) as { default: EngineConfig }).default
+		return { config: klona(config), file: resolvedConfigPath, content }
+	}
+	catch (error: any) {
+		// Keep the file path and content so integrations can still watch the
+		// config file and reload once the user fixes it.
+		log.error(`Failed to evaluate config file: ${error.message}`, error)
+		return { config: null, file: resolvedConfigPath, content }
+	}
 }
 
 function usePaths({
@@ -237,6 +248,21 @@ function useTransform({
 	triggerTsCodegenUpdated: () => void
 }) {
 	const fnUtils = createFnUtils(fnName)
+
+	// Single quotes are required: the transformed call may sit inside a
+	// double-quoted Vue template attribute (e.g. :class="pika(...)").
+	function quoteSingle(value: string) {
+		return `'${value.replace(/\\/g, '\\\\')
+			.replace(/'/g, '\\\'')}'`
+	}
+
+	function serializeNames(names: string[], format: 'string' | 'array') {
+		return format === 'array'
+			? `[${names.map(quoteSingle)
+				.join(', ')}]`
+			: quoteSingle(names.join(' '))
+	}
+
 	async function transform(code: string, id: string) {
 		const _engine = engine()
 		if (_engine == null)
@@ -246,14 +272,22 @@ function useTransform({
 		try {
 			log.debug(`Transforming file: ${id}`)
 
+			const hadUsages = usages.has(id)
 			usages.delete(id)
 			previewUsages.delete(id)
 
 			// Find all target function calls
 			const functionCalls = findFunctionCalls(code, fnUtils)
 
-			if (functionCalls.length === 0)
+			if (functionCalls.length === 0) {
+				if (hadUsages) {
+					// The file previously contributed styles; regenerate outputs
+					// so removed styles disappear from the codegen files.
+					triggerStyleUpdated()
+					triggerTsCodegenUpdated()
+				}
 				return
+			}
 			log.debug(`Found ${functionCalls.length} style function calls in ${id}`)
 
 			const usageList: UsageRecord[] = []
@@ -261,39 +295,51 @@ function useTransform({
 
 			const transformed = new MagicString(code)
 			for (const fnCall of functionCalls) {
-				const functionCallStr = fnCall.snippet
-				const argsStr = `[${functionCallStr.slice(fnCall.fnName.length + 1, -1)}]`
-				// eslint-disable-next-line no-new-func
-				const args = new Function(`return ${argsStr}`)() as Parameters<Engine['use']>
-				const names = await _engine.use(...args)
-				const usage: UsageRecord = {
-					atomicStyleIds: names,
-					params: args,
-				}
-				usageList.push(usage)
-				if (fnUtils.isPreview(fnCall.fnName)) {
-					previewUsageList.push(usage)
-				}
+				try {
+					const functionCallStr = fnCall.snippet
+					const argsStr = `[${functionCallStr.slice(fnCall.fnName.length + 1, -1)}]`
+					// eslint-disable-next-line no-new-func
+					const args = new Function(`return ${argsStr}`)() as Parameters<Engine['use']>
+					const names = await _engine.use(...args)
 
-				let transformedContent: string
-				if (fnUtils.isNormal(fnCall.fnName)) {
-					transformedContent = transformedFormat === 'array'
-						? `[${names.map(n => `'${n}'`)
-							.join(', ')}]`
-						: `'${names.join(' ')}'`
-				}
-				else if (fnUtils.isForceString(fnCall.fnName)) {
-					transformedContent = `'${names.join(' ')}'`
-				}
-				else if (fnUtils.isForceArray(fnCall.fnName)) {
-					transformedContent = `[${names.map(n => `'${n}'`)
-						.join(', ')}]`
-				}
-				else {
-					throw new Error(`Unexpected function name: ${fnCall.fnName}`)
-				}
+					let transformedContent: string
+					if (fnUtils.isNormal(fnCall.fnName)) {
+						transformedContent = serializeNames(names, transformedFormat)
+					}
+					else if (fnUtils.isForceString(fnCall.fnName)) {
+						transformedContent = serializeNames(names, 'string')
+					}
+					else if (fnUtils.isForceArray(fnCall.fnName)) {
+						transformedContent = serializeNames(names, 'array')
+					}
+					else {
+						throw new Error(`Unexpected function name: ${fnCall.fnName}`)
+					}
 
-				transformed.update(fnCall.start, fnCall.end + 1, transformedContent)
+					transformed.update(fnCall.start, fnCall.end + 1, transformedContent)
+
+					const usage: UsageRecord = {
+						atomicStyleIds: names,
+						params: args,
+					}
+					usageList.push(usage)
+					if (fnUtils.isPreview(fnCall.fnName)) {
+						previewUsageList.push(usage)
+					}
+				}
+				catch (error: any) {
+					// One un-evaluable call (e.g. referencing local variables) must not
+					// discard the other valid calls in the same file.
+					log.error(`Failed to transform "${fnCall.fnName}(...)" call at ${isAbsolute(id) ? id : join(cwd(), id)}:${fnCall.start}: ${error.message}`, error)
+				}
+			}
+
+			if (usageList.length === 0) {
+				if (hadUsages) {
+					triggerStyleUpdated()
+					triggerTsCodegenUpdated()
+				}
+				return
 			}
 
 			usages.set(id, usageList)
@@ -318,13 +364,19 @@ function useTransform({
 	}
 
 	return {
+		// Getters keep the filter in sync with the current cwd, which the
+		// integration consumer may update after context creation.
 		transformFilter: {
-			include: scan.include,
-			exclude: [
-				...scan.exclude,
-				relative(cwd(), cssCodegenFilepath()),
-				...(tsCodegenFilepath() ? [relative(cwd(), tsCodegenFilepath()!)] : []),
-			],
+			get include() {
+				return scan.include
+			},
+			get exclude() {
+				return [
+					...scan.exclude,
+					relative(cwd(), cssCodegenFilepath()),
+					...(tsCodegenFilepath() ? [relative(cwd(), tsCodegenFilepath()!)] : []),
+				]
+			},
 		},
 		transform,
 	}
@@ -520,14 +572,19 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		},
 		setupPromise: null,
 		setup: () => {
-			ctx.setupPromise = setup()
+			// Chain onto any in-flight setup so concurrent calls run serially,
+			// and only the latest call clears the shared promise.
+			const promise: Promise<void> = (ctx.setupPromise ?? Promise.resolve())
+				.then(() => setup())
 				.catch((error) => {
 					log.error(`Failed to setup integration context: ${error.message}`, error)
 				})
 				.then(() => {
-					ctx.setupPromise = null
+					if (ctx.setupPromise === promise)
+						ctx.setupPromise = null
 				})
-			return ctx.setupPromise
+			ctx.setupPromise = promise
+			return promise
 		},
 	}
 

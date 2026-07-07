@@ -146,9 +146,11 @@ async function generateOverloadContent(ctx: IntegrationContext) {
 				'  /**',
 				'   * ### PikaCSS Preview',
 				'   * ```css',
-				// CSS Lines
+				// CSS Lines. `*/` must be escaped or it would terminate the JSDoc
+				// block and corrupt the generated file.
 				...(await ctx.engine.renderAtomicStyles(true, { atomicStyleIds: usage.atomicStyleIds, isPreview: true }))
 					.trim()
+					.replaceAll('*/', '*‎/')
 					.split('\n')
 					.map(line => `   * ‎${line.replace(RE_LEADING_INDENT, '$1‎')}`),
 				'   * ```',

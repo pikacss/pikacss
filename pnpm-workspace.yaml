@@ -57,6 +57,7 @@ catalog:
   publint: ^0.3.21
   repomix: ^1.16.0
   simple-git-hooks: ^2.13.1
+  strip-literal: ^3.1.0
   tsdown: 0.21.7
   tsx: ^4.22.5
   typescript: ^5.9.3

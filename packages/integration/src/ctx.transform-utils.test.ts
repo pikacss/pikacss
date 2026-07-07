@@ -107,7 +107,7 @@ describe('findFunctionCalls', () => {
 			.toBe(true)
 	})
 
-	it('warns and skips malformed template, unclosed comments, and unterminated calls', () => {
+	it('warns and skips unterminated calls (malformed templates, unclosed comments, trailing line comments)', () => {
 		const fnUtils = createFnUtils('pika')
 		const warn = vi.fn()
 		log.setWarnFn(warn)
@@ -119,18 +119,45 @@ describe('findFunctionCalls', () => {
 		expect(findFunctionCalls('const c = pika({ color: \'red\' //', fnUtils))
 			.toEqual([])
 
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Malformed template literal expression in function call')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Unclosed comment in function call')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Unclosed function call')))
-			.toBe(true)
-		expect(warn.mock.calls.some(call => call.join(' ')
+		expect(warn.mock.calls.filter(call => call.join(' ')
 			.includes('Malformed function call')))
-			.toBe(true)
+			.toHaveLength(3)
+	})
+
+	it('ignores calls inside strings and comments, member accesses, and function declarations', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = [
+			'// pika({ color: \'red\' })',
+			'/* pika({ color: \'green\' }) */',
+			'const s = "call pika(x) here"',
+			'const t = `template pika(y)`',
+			'api.pika({ color: \'blue\' })',
+			'api?.pika({ color: \'cyan\' })',
+			'function pika(args) {}',
+			'const real = pika({ color: \'gold\' })',
+		].join('\n')
+
+		expect(findFunctionCalls(code, fnUtils)
+			.map(match => match.snippet))
+			.toEqual(['pika({ color: \'gold\' })'])
+	})
+
+	it('does not re-match content inside an already matched call', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = 'const a = pika({ content: \'pika(oops)\' })'
+
+		expect(findFunctionCalls(code, fnUtils)
+			.map(match => match.snippet))
+			.toEqual(['pika({ content: \'pika(oops)\' })'])
+	})
+
+	it('handles regex literals containing parens inside arguments', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = 'const a = pika({ content: String(/[)]/) }) '
+
+		expect(findFunctionCalls(code, fnUtils)
+			.map(match => match.snippet))
+			.toEqual(['pika({ content: String(/[)]/) })'])
 	})
 
 	it('keeps scanning through escaped quotes, closed block comments, and trailing line comments', () => {
