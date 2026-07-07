@@ -11,6 +11,7 @@ const mockDebounce = vi.fn((fn: (...args: any[]) => any) => {
 const mockLog = {
 	debug: vi.fn(),
 	info: vi.fn(),
+	error: vi.fn(),
 }
 
 vi.mock('node:fs', () => ({
@@ -260,6 +261,115 @@ describe('unpluginFactory', () => {
 		plugin.watchChange?.('/tmp/other.config.ts')
 		expect(ctx.setup)
 			.toHaveBeenCalledTimes(1)
+	})
+
+	it('never registers watch files in esbuild builds where addWatchFile throws', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'esbuild' } as any) as any
+
+		const buildContext = {
+			addWatchFile: vi.fn(() => {
+				throw new Error('unplugin/esbuild: addWatchFile outside supported hooks')
+			}),
+		}
+		await plugin.buildStart.call(buildContext as any)
+
+		expect(buildContext.addWatchFile)
+			.not.toHaveBeenCalled()
+	})
+
+	it('registers engine config dependencies as watch files and reloads when they change', async () => {
+		const ctx = createCtxStub() as any
+		ctx.engine.configDependencies = new Set(['/tmp/design.md'])
+		ctx.previewUsages = new Map()
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		const buildContext = { addWatchFile: vi.fn() }
+		await plugin.buildStart.call(buildContext as any)
+		expect(buildContext.addWatchFile)
+			.toHaveBeenCalledWith('/tmp/design.md')
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(1)
+
+		plugin.watchChange?.('/tmp/design.md')
+		await flushAsyncWork()
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(2)
+	})
+
+	it('drops usages of deleted source files and rewrites generated outputs', async () => {
+		const ctx = createCtxStub() as any
+		ctx.previewUsages = new Map([
+			['src/demo.ts', [{ atomicStyleIds: ['pk-a'] }]],
+			['src/preview-only.ts', [{ atomicStyleIds: ['pk-b'] }]],
+		])
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		plugin.watchChange?.('src/demo.ts', { event: 'delete' })
+		// A file present only in previewUsages must be dropped too.
+		plugin.watchChange?.('src/preview-only.ts', { event: 'delete' })
+		await flushAsyncWork()
+
+		expect(ctx.usages.has('src/demo.ts'))
+			.toBe(false)
+		expect(ctx.previewUsages.has('src/demo.ts'))
+			.toBe(false)
+		expect(ctx.previewUsages.has('src/preview-only.ts'))
+			.toBe(false)
+		expect(ctx.writeCssCodegenFile)
+			.toHaveBeenCalled()
+	})
+
+	it('recovers after a failed setup instead of poisoning later builds', async () => {
+		const ctx = createCtxStub() as any
+		ctx.setup = vi.fn()
+			// A non-Error rejection also exercises the `?? error` fallback.
+			.mockRejectedValueOnce('boom')
+			.mockResolvedValue(undefined)
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		expect(mockLog.error)
+			.toHaveBeenCalled()
+
+		mockReadFileSync.mockReturnValue('changed')
+		plugin.watchChange?.('/tmp/pika.config.ts')
+		await flushAsyncWork()
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(2)
+	})
+
+	it('applies a pending reload on the next build when a config change raced the debounce', async () => {
+		const ctx = createCtxStub() as any
+		ctx.previewUsages = new Map()
+		mockCreateCtx.mockReturnValue(ctx)
+		// The factory creates three debounced fns (css write, ts write, setup);
+		// make the third — debouncedSetup — a no-op so the pending flag survives.
+		mockDebounce.mockImplementationOnce((fn: (...args: any[]) => any) => fn)
+		mockDebounce.mockImplementationOnce((fn: (...args: any[]) => any) => fn)
+		mockDebounce.mockImplementationOnce(() => () => {})
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(1)
+
+		mockReadFileSync.mockReturnValue('changed')
+		plugin.watchChange?.('/tmp/pika.config.ts')
+
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+		expect(ctx.setup)
+			.toHaveBeenCalledTimes(2)
 	})
 
 	it('skips watch registration when no resolved config path is available', async () => {

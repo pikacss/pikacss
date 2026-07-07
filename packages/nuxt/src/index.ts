@@ -39,7 +39,7 @@ export default (defineNuxtModule<ModuleOptions>({
 		name: 'pikacss',
 		configKey: 'pikacss',
 	},
-	async setup(_, nuxt) {
+	async setup(options, nuxt) {
 		addPluginTemplate({
 			filename: 'pikacss.mjs',
 			getContents() {
@@ -47,16 +47,23 @@ export default (defineNuxtModule<ModuleOptions>({
 			},
 		})
 
+		// `options` is the kit-merged result of inline module options, layers,
+		// and `nuxt.options.pikacss`; reading only `nuxt.options.pikacss` would
+		// silently drop inline options.
+		const resolvedOptions: ModuleOptions = {
+			scan: {
+				include: ['**/*.{js,ts,jsx,tsx,vue}'],
+			},
+			// Nuxt sets the Vite root to `srcDir`; resolve config discovery and
+			// codegen outputs against the project root instead.
+			cwd: nuxt.options.rootDir,
+			...options,
+		}
+
 		addVitePlugin({
 			...PikaCSSVitePlugin({
 				currentPackageName: '@pikacss/nuxt-pikacss',
-				...(
-					nuxt.options.pikacss || {
-						scan: {
-							include: ['**/*.{js,ts,jsx,tsx,vue}'],
-						},
-					}
-				),
+				...resolvedOptions,
 			}),
 			enforce: 'pre',
 		})

@@ -166,8 +166,10 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	let setupPromise = Promise.resolve()
 	let lastSetupCwd: string | null = null
 	let pendingSetupCwd: string | null = null
+	let pendingReload = false
 	function setup(reload = false) {
 		pendingSetupCwd = ctx.cwd
+		pendingReload = false
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
 			const moduleIds = Array.from(ctx.usages.keys())
@@ -214,9 +216,18 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 				}
 			}
 		})
+			// A rejected setup (e.g. reloadModule failing on a transient syntax
+			// error) must not poison the promise chain for every later call.
+			.catch((error: any) => {
+				log.error(`Failed to setup integration context: ${error?.message ?? error}`, error)
+			})
 		return setupPromise
 	}
 	function ensureSetup(reload = false) {
+		// A config (or config dependency) change may have been observed between
+		// builds; make the next build pick it up instead of racing the debounce.
+		if (pendingReload)
+			return setup(true)
 		if (!reload && (lastSetupCwd === ctx.cwd || pendingSetupCwd === ctx.cwd))
 			return setupPromise
 		return setup(reload)
@@ -274,9 +285,19 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 				await ctx.fullyCssCodegen()
 			}
 
+			// esbuild's buildStart context does not support addWatchFile and
+			// would throw; esbuild has no watch-based reload path here anyway.
+			if (meta.framework === 'esbuild')
+				return
+
 			if (ctx.resolvedConfigPath != null) {
 				this.addWatchFile(ctx.resolvedConfigPath)
 				log.debug(`Added watch file: ${ctx.resolvedConfigPath}`)
+			}
+
+			for (const dep of ctx.engine.configDependencies ?? []) {
+				this.addWatchFile(dep)
+				log.debug(`Added config dependency watch file: ${dep}`)
 			}
 		},
 
@@ -319,9 +340,42 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			},
 		},
 
-		watchChange(id: string) {
-			if (id === ctx.resolvedConfigPath && readFileSync(id, 'utf-8') !== ctx.resolvedConfigContent) {
-				log.info('Configuration file changed, reloading...')
+		watchChange(id: string, change?: { event: 'create' | 'update' | 'delete' }) {
+			if (change?.event === 'delete' && (ctx.usages.has(id) || ctx.previewUsages.has(id))) {
+				// Drop styles contributed by deleted source files so they do not
+				// linger in the generated CSS until the next full rebuild.
+				log.debug(`Source file deleted, dropping its usages: ${id}`)
+				ctx.usages.delete(id)
+				ctx.previewUsages.delete(id)
+				queueCssWrite()
+				queueTsWrite()
+			}
+			if (id === ctx.resolvedConfigPath) {
+				let currentContent: string | null = null
+				try {
+					currentContent = readFileSync(id, 'utf-8')
+				}
+				catch {
+					// Deleted or unreadable: treat as changed so the context
+					// re-runs config discovery instead of crashing the watcher.
+				}
+				if (currentContent !== ctx.resolvedConfigContent) {
+					log.info('Configuration file changed, reloading...')
+					pendingReload = true
+					debouncedSetup(true)
+				}
+				return
+			}
+			let isConfigDependency = false
+			try {
+				isConfigDependency = ctx.engine.configDependencies.has(id)
+			}
+			catch {
+				// Engine not initialized yet; nothing to reload.
+			}
+			if (isConfigDependency) {
+				log.info(`Config dependency changed: ${id}, reloading...`)
+				pendingReload = true
 				debouncedSetup(true)
 			}
 		},
