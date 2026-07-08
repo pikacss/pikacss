@@ -18,5 +18,7 @@ export function loadProcessedCssData(dataPath = PROCESSED_CSS_DATA_PATH): Proces
 
 export function writeProcessedCssData(data: ProcessedCssData, dataPath = PROCESSED_CSS_DATA_PATH): void {
 	fs.mkdirSync(path.dirname(dataPath), { recursive: true })
-	fs.writeFileSync(dataPath, `${JSON.stringify(data, null, 2)}\n`)
+	// Tab indentation matches the repo ESLint style, so regeneration is
+	// byte-idempotent against the committed artifact.
+	fs.writeFileSync(dataPath, `${JSON.stringify(data, null, '\t')}\n`)
 }

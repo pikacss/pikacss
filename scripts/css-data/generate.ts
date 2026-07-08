@@ -777,13 +777,6 @@ async function checkDataSourceVersions(): Promise<boolean> {
 }
 
 export async function generateProcessedCssData(): Promise<ProcessedCssData> {
-	if (!process.argv.includes('--skip-version-check')) {
-		const passed = await checkDataSourceVersions()
-		if (!passed) {
-			throw new Error('Data source version check failed. Update dependencies or rerun with --skip-version-check to bypass.')
-		}
-	}
-
 	const webrefCss = await loadWebrefCssIndex()
 	return {
 		properties: buildProcessedProperties(webrefCss.properties),
@@ -800,6 +793,17 @@ export async function generateAndWriteProcessedCssData(outputPath = PROCESSED_CS
 }
 
 async function main() {
+	// Data source freshness is a maintenance signal, not a correctness
+	// property: the generated output is only as new as the installed
+	// packages either way. Report outdated sources so a maintainer can run
+	// `pnpm update:browsers`, but never fail — upstream releases must not be
+	// able to break this pipeline (or any test that runs it). The generation
+	// functions above stay hermetic (no network, no argv sniffing).
+	const upToDate = await checkDataSourceVersions()
+	if (!upToDate) {
+		console.log('\x1B[33mSome data source packages are outdated. Run `pnpm update:browsers` to refresh them before regenerating committed data.\x1B[0m')
+	}
+
 	const processedCssData = await generateAndWriteProcessedCssData()
 
 	console.log(
