@@ -14,4 +14,13 @@ export default defineConfig({
 		vitepressGroupIcon(),
 		llms(),
 	],
+	optimizeDeps: {
+		// vitepress-plugin-mermaid only lists mermaid's transitive deps
+		// (dayjs, debug, ...) in optimizeDeps.include, but under pnpm's strict
+		// isolation those are not resolvable from the docs workspace and get
+		// skipped. Pre-bundling mermaid itself lets esbuild resolve them from
+		// mermaid's own directory; without this, mermaid's raw CJS dayjs
+		// import crashes the whole dev page.
+		include: ['mermaid'],
+	},
 })
