@@ -3,7 +3,7 @@ import { log } from '@pikacss/core'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createFnUtils, findFunctionCalls, findTemplateExpressionEnd } from './ctx.transform-utils'
+import { createFnUtils, createMarkupIdRE, findFunctionCalls, findTemplateExpressionEnd } from './ctx.transform-utils'
 
 afterEach(() => {
 	vi.restoreAllMocks()
@@ -75,6 +75,41 @@ describe('findTemplateExpressionEnd', () => {
 			.toBe(commentedExpression.lastIndexOf('}'))
 		expect(findTemplateExpressionEnd(lineCommentExpression, lineCommentExpression.indexOf('{')))
 			.toBe(lineCommentExpression.lastIndexOf('}'))
+	})
+})
+
+describe('createMarkupIdRE', () => {
+	it('matches default markup extensions with optional query strings and hashes', () => {
+		const re = createMarkupIdRE()!
+
+		expect(re.test('/project/src/App.vue'))
+			.toBe(true)
+		expect(re.test('/project/src/App.vue?vue&type=template'))
+			.toBe(true)
+		expect(re.test('/project/src/Page.HTML'))
+			.toBe(true)
+		expect(re.test('/project/src/main.ts'))
+			.toBe(false)
+		expect(re.test('/project/src/not-a-vue'))
+			.toBe(false)
+	})
+
+	it('builds a matcher from custom extensions, normalizing leading dots', () => {
+		const re = createMarkupIdRE(['.riot', 'marko'])!
+
+		expect(re.test('/project/src/App.riot'))
+			.toBe(true)
+		expect(re.test('/project/src/App.marko#section'))
+			.toBe(true)
+		expect(re.test('/project/src/App.vue'))
+			.toBe(false)
+	})
+
+	it('returns null when no usable extensions remain', () => {
+		expect(createMarkupIdRE([]))
+			.toBeNull()
+		expect(createMarkupIdRE(['.']))
+			.toBeNull()
 	})
 })
 
@@ -158,6 +193,97 @@ describe('findFunctionCalls', () => {
 		expect(findFunctionCalls(code, fnUtils)
 			.map(match => match.snippet))
 			.toEqual(['pika({ content: String(/[)]/) })'])
+	})
+
+	it('finds calls inside Vue SFC template attributes when the id is html-like', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = [
+			'<script setup lang="ts">',
+			'const scriptCall = pika({ color: \'gold\' })',
+			'</script>',
+			'',
+			'<template>',
+			'\t<div :class="pika({ height: \'100vh\', width: \'100vw\' })">',
+			'\t\t<span :class="pika({ content: \'")("\' })">text</span>',
+			'\t</div>',
+			'</template>',
+		].join('\n')
+
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.vue')
+			.map(match => match.snippet))
+			.toEqual([
+				'pika({ color: \'gold\' })',
+				'pika({ height: \'100vh\', width: \'100vw\' })',
+				'pika({ content: \'")("\' })',
+			])
+	})
+
+	it('tracks strings, escapes, template expressions, nested parens, and comments in html-like sources', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = [
+			'<script setup lang="ts">',
+			'const a = pika({ content: \'quote \\\' ) still inside\' })',
+			'const b = pika({ content: `calc(${`1`})` /* block ) */ })',
+			'const c = pika((() => ({ color: \'blue\' // trailing )',
+			'}))())',
+			'</script>',
+		].join('\n')
+
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.vue')
+			.map(match => match.snippet))
+			.toEqual([
+				'pika({ content: \'quote \\\' ) still inside\' })',
+				'pika({ content: `calc(${`1`})` /* block ) */ })',
+				'pika((() => ({ color: \'blue\' // trailing )\n}))())',
+			])
+	})
+
+	it('warns and skips malformed calls in html-like sources', () => {
+		const fnUtils = createFnUtils('pika')
+		const warn = vi.fn()
+		log.setWarnFn(warn)
+
+		expect(findFunctionCalls('<script>const a = pika({ color: `red ${`</script>', fnUtils, 'a.vue'))
+			.toEqual([])
+		expect(findFunctionCalls('<script>const b = pika({ color: \'red\' /*</script>', fnUtils, 'b.vue'))
+			.toEqual([])
+		expect(findFunctionCalls('<script>const c = pika({ color: \'red\' //</script>', fnUtils, 'c.vue'))
+			.toEqual([])
+		expect(findFunctionCalls('<script>const d = pika({ color: \'red\' }</script>', fnUtils, 'd.vue'))
+			.toEqual([])
+
+		expect(warn.mock.calls.filter(call => call.join(' ')
+			.includes('Malformed function call')))
+			.toHaveLength(4)
+	})
+
+	it('honors a custom markup id matcher and allows disabling markup mode', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = '<div class="pika({ color: \'gold\' })"></div>'
+
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.riot', createMarkupIdRE(['riot']))
+			.map(match => match.snippet))
+			.toEqual(['pika({ color: \'gold\' })'])
+		// Without a matching markup matcher the attribute value is JS-stripped away.
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.riot'))
+			.toEqual([])
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.vue', null))
+			.toEqual([])
+	})
+
+	it('ignores calls inside HTML comments and member accesses in html-like sources', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = [
+			'<template>',
+			'\t<!-- <div :class="pika({ color: \'red\' })"> -->',
+			'\t<div :class="obj.pika({ color: \'blue\' })">',
+			'\t<div :class="pika({ color: \'gold\' })">',
+			'</template>',
+		].join('\n')
+
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.vue')
+			.map(match => match.snippet))
+			.toEqual(['pika({ color: \'gold\' })'])
 	})
 
 	it('keeps scanning through escaped quotes, closed block comments, and trailing line comments', () => {

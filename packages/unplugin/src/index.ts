@@ -47,6 +47,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		cssCodegen = true,
 		scan = {},
 		fnName = 'pika',
+		markupExtensions,
 		transformedFormat = 'string',
 		autoCreateConfig = true,
 	} = options ?? {}
@@ -63,6 +64,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**']),
 		},
 		fnName,
+		markupExtensions,
 		transformedFormat,
 		autoCreateConfig,
 	}

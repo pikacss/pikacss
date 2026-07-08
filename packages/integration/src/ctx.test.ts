@@ -347,6 +347,79 @@ describe('createCtx', () => {
 			.toHaveLength(1)
 	})
 
+	it('transforms pika() calls inside Vue SFC template attributes', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			scan: {
+				include: ['src/**/*.{ts,vue}'],
+				exclude: [],
+			},
+		}))
+
+		await ctx.setup()
+
+		const transformed = await ctx.transform([
+			'<script setup lang="ts">',
+			'const fromScript = pika({ color: \'gold\' })',
+			'</script>',
+			'',
+			'<template>',
+			'\t<!-- <div :class="pika({ color: \'red\' })"> -->',
+			'\t<div :class="pika({ height: \'100vh\', display: \'flex\' })">',
+			'\t\t<span :class="pika({ fontSize: \'0.875rem\' })">text</span>',
+			'\t</div>',
+			'</template>',
+		].join('\n'), 'src/App.vue')
+
+		expect(transformed?.code.includes('pika({ color: \'gold\' })'))
+			.toBe(false)
+		expect(transformed?.code.includes('pika({ height:'))
+			.toBe(false)
+		expect(transformed?.code.includes('pika({ fontSize:'))
+			.toBe(false)
+		// The commented-out call must survive untouched.
+		expect(transformed?.code)
+			.toContain('<!-- <div :class="pika({ color: \'red\' })"> -->')
+		// Replacements must stay single-quoted inside double-quoted attributes.
+		expect(transformed?.code)
+			.toMatch(/:class="'[^"]*'"/)
+		expect(ctx.usages.get('src/App.vue'))
+			.toHaveLength(3)
+	})
+
+	it('extends markup mode with user-supplied extensions while keeping the defaults', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			scan: {
+				include: ['src/**/*.{riot,vue}'],
+				exclude: [],
+			},
+			markupExtensions: ['riot'],
+		}))
+
+		await ctx.setup()
+
+		const riotTransformed = await ctx.transform(
+			'<div class="pika({ color: \'gold\' })"></div>',
+			'src/App.riot',
+		)
+		const vueTransformed = await ctx.transform(
+			'<template>\n\t<div :class="pika({ color: \'red\' })">\n</template>',
+			'src/App.vue',
+		)
+
+		expect(riotTransformed?.code.includes('pika('))
+			.toBe(false)
+		expect(vueTransformed?.code.includes('pika('))
+			.toBe(false)
+		expect(ctx.usages.get('src/App.riot'))
+			.toHaveLength(1)
+		expect(ctx.usages.get('src/App.vue'))
+			.toHaveLength(1)
+	})
+
 	it('buffers style and ts updates until all concurrent transforms finish', async () => {
 		const firstUse = createDeferred<string[]>()
 		const secondUse = createDeferred<string[]>()

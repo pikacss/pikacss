@@ -76,6 +76,18 @@ export interface PluginOptions {
 	fnName?: string
 
 	/**
+	 * Additional file extensions (leading dots optional) whose sources are scanned in markup
+	 * mode. Markup files' top-level syntax is not JavaScript — `pika()` calls live inside
+	 * quoted template attributes (e.g., `:class="pika({...})"` in Vue SFCs) — so string and
+	 * comment detection works differently there. Extensions listed here are merged with the
+	 * built-in defaults `['vue', 'svelte', 'astro', 'html', 'htm']`; pass `['riot']` to also
+	 * scan `.riot` files in markup mode.
+	 *
+	 * @default `undefined` (built-in defaults only)
+	 */
+	markupExtensions?: string[]
+
+	/**
 	 * Default output format for normal `pika()` calls. `'string'` produces a space-joined class string;
 	 * `'array'` produces a string array of class names.
 	 *
@@ -129,6 +141,8 @@ export interface ResolvedPluginOptions {
 	scan: IntegrationContextOptions['scan']
 	/** Base function name to recognize in source transforms (e.g., `'pika'`). */
 	fnName: string
+	/** Additional file extensions scanned in markup mode, merged with the integration defaults. */
+	markupExtensions?: string[]
 	/** Default output format for normal `pika()` calls: `'string'` or `'array'`. */
 	transformedFormat: 'string' | 'array'
 	/** Whether to scaffold a default config file when none is found. */

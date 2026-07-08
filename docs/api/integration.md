@@ -125,6 +125,7 @@ Configuration options for creating an integration context.
 | `scan` | `{ 		include: string[] 		exclude: string[] 	}` | Glob patterns controlling which source files are scanned for `pika()` calls. `include` specifies files to process; `exclude` specifies files to skip. | — |
 | `configOrPath` | `EngineConfig \| string \| Nullish` | The engine configuration object, a path to a config file, or `null`/`undefined` to trigger auto-discovery of `pika.config.*` files. | — |
 | `fnName` | `string` | The base function name to recognize in source code (e.g., `'pika'`). All variants (`.str`, `.arr`, preview) are derived from this name. | — |
+| `markupExtensions?` | `string[]` | Additional file extensions (leading dots optional) scanned in markup mode, where the source's top-level syntax is not JavaScript and `pika()` calls live inside quoted template attributes (e.g., Vue SFCs). Merged with the built-in defaults (`['vue', 'svelte', 'astro', 'html', 'htm']`). | — |
 | `transformedFormat` | `'string' \| 'array'` | Controls the default output format of normal `pika()` calls: `'string'` produces a space-joined class string, `'array'` produces a string array. | — |
 | `tsCodegen` | `false \| string` | Path to the generated TypeScript declaration file (`pika.gen.ts`), or `false` to disable TypeScript codegen entirely. | — |
 | `cssCodegen` | `string` | Path to the generated CSS output file (e.g., `'pika.gen.css'`). | — |

@@ -9,7 +9,7 @@ import { klona } from 'klona'
 import { isPackageExists } from 'local-pkg'
 import MagicString from 'magic-string'
 import { dirname, isAbsolute, join, relative, resolve } from 'pathe'
-import { createFnUtils, findFunctionCalls } from './ctx.transform-utils'
+import { createFnUtils, createMarkupIdRE, DEFAULT_MARKUP_EXTENSIONS, findFunctionCalls } from './ctx.transform-utils'
 import { createEventHook } from './eventHook'
 import { generateTsCodegenContent } from './tsCodegen'
 
@@ -221,6 +221,7 @@ function useTransform({
 	tsCodegenFilepath,
 	scan,
 	fnName,
+	markupExtensions,
 	usages,
 	previewUsages,
 	engine,
@@ -235,6 +236,7 @@ function useTransform({
 		exclude: string[]
 	}
 	fnName: string
+	markupExtensions?: string[]
 	transformedFormat: 'string' | 'array'
 	cwd: Signal<string>
 	cssCodegenFilepath: Signal<string>
@@ -248,6 +250,11 @@ function useTransform({
 	triggerTsCodegenUpdated: () => void
 }) {
 	const fnUtils = createFnUtils(fnName)
+	// User-supplied extensions extend the defaults rather than replace them:
+	// dropping built-ins like `vue` would only break scanning.
+	const markupIdRE = createMarkupIdRE(markupExtensions == null
+		? undefined
+		: [...DEFAULT_MARKUP_EXTENSIONS, ...markupExtensions])
 
 	// Single quotes are required: the transformed call may sit inside a
 	// double-quoted Vue template attribute (e.g. :class="pika(...)").
@@ -277,7 +284,7 @@ function useTransform({
 			previewUsages.delete(id)
 
 			// Find all target function calls
-			const functionCalls = findFunctionCalls(code, fnUtils)
+			const functionCalls = findFunctionCalls(code, fnUtils, id, markupIdRE)
 
 			if (functionCalls.length === 0) {
 				if (hadUsages) {

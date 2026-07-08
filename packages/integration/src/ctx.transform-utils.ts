@@ -137,21 +137,132 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
 const FUNCTION_KEYWORD_BEFORE_RE = /\bfunction\s*(?:\*\s*)?$/
 
 /**
+ * File extensions (without the leading dot) treated as markup sources by default.
+ *
+ * @remarks
+ * Markup files' top-level syntax is not JavaScript: template attribute values
+ * are double-quoted from the markup's perspective, so a whole-file
+ * `stripLiteral()` would blank the very `pika()` calls we need to find. Files
+ * matching these extensions are scanned in markup mode instead.
+ */
+export const DEFAULT_MARKUP_EXTENSIONS = ['vue', 'svelte', 'astro', 'html', 'htm']
+
+/**
+ * Builds a regex that matches module ids whose file extension marks a markup source.
+ *
+ * @param extensions - File extensions (leading dots optional) to treat as markup sources.
+ * Defaults to {@link DEFAULT_MARKUP_EXTENSIONS}.
+ * @returns A case-insensitive regex matching ids ending with one of the extensions
+ * (query strings and hashes tolerated), or `null` when the list is empty.
+ */
+export function createMarkupIdRE(extensions: string[] = DEFAULT_MARKUP_EXTENSIONS): RegExp | null {
+	const escaped = extensions
+		.map(ext => ext.replace(/^\.+/, '')
+			.replace(ESCAPE_REPLACE_RE, '\\$&'))
+		.filter(ext => ext.length > 0)
+	if (escaped.length === 0)
+		return null
+	return new RegExp(`\\.(?:${escaped.join('|')})(?:[?#]|$)`, 'i')
+}
+
+const DEFAULT_MARKUP_ID_RE = createMarkupIdRE()
+
+function blankHtmlComments(code: string): string {
+	return code.replace(/<!--[\s\S]*?-->/g, match => match.replace(/[^\n]/g, ' '))
+}
+
+/**
+ * Counts paren depth from a call's opening paren on the raw source, tracking
+ * string literals, escapes, template expressions, and JS comments locally.
+ * @internal
+ *
+ * @param code - The full raw source code.
+ * @param start - Zero-based offset where the function name begins.
+ * @param fnName - The matched function variant name (its length locates the opening paren).
+ * @returns The offset of the call's closing paren, or `-1` when the call is malformed or unterminated.
+ */
+function findCallEndWithLocalTracking(code: string, start: number, fnName: string): number {
+	let end = start + fnName.length
+	let depth = 1
+	let inString: '\'' | '"' | '`' | false = false
+	let isEscaped = false
+
+	while (depth > 0 && end < code.length - 1) {
+		end++
+		const char = code[end]
+
+		if (isEscaped) {
+			isEscaped = false
+			continue
+		}
+
+		if (char === '\\') {
+			isEscaped = true
+			continue
+		}
+
+		if (inString !== false) {
+			if (char === inString) {
+				inString = false
+			}
+			else if (inString === '`' && char === '$' && code[end + 1] === '{') {
+				if ((end = findTemplateExpressionEnd(code, end + 1)) < 0) {
+					return -1
+				}
+			}
+			continue
+		}
+
+		if (char === '(') {
+			depth++
+		}
+		else if (char === ')') {
+			depth--
+		}
+		else if (char === '\'' || char === '"' || char === '`') {
+			inString = char
+		}
+		else if (char === '/' && code[end + 1] === '/') {
+			const lineEnd = code.indexOf('\n', end)
+			if (lineEnd === -1) {
+				return -1
+			}
+			end = lineEnd
+		}
+		else if (char === '/' && code[end + 1] === '*') {
+			if ((end = code.indexOf('*/', end + 2) + 1) === 0) {
+				return -1
+			}
+		}
+	}
+
+	return depth === 0 ? end : -1
+}
+
+/**
  * Scans source code and returns all `pika()` function call matches found by the provided regex.
  * @internal
  *
  * @param code - The full source code string to scan for function calls.
  * @param fnUtils - An object providing the `RE` regex used to locate function call start positions.
+ * @param id - Optional module id (file path) of the source. Ids matching `markupIdRE`
+ * switch scanning to markup mode.
+ * @param markupIdRE - Regex deciding which ids are markup sources, typically built via
+ * {@link createMarkupIdRE}. Defaults to the {@link DEFAULT_MARKUP_EXTENSIONS} matcher;
+ * pass `null` to disable markup mode entirely.
  * @returns An array of `FunctionCallMatch` objects, one per matched call. Malformed calls (unbalanced parentheses) are logged and skipped.
  *
  * @remarks
- * Scanning runs against a literal-stripped copy of the source (comments and
- * string/template contents blanked out, offsets preserved), so `pika(` inside
- * strings or comments never matches and parentheses inside literals never
- * confuse the depth counter. Matches preceded by `.` (member access such as
- * `obj.pika(...)`) or a `function` keyword (declarations) are skipped. Each
- * match includes the full call snippet, sliced from the original code, for
- * later evaluation.
+ * For JavaScript-like sources, scanning runs against a literal-stripped copy of
+ * the source (comments and string/template contents blanked out, offsets
+ * preserved), so `pika(` inside strings or comments never matches and
+ * parentheses inside literals never confuse the depth counter. Markup sources
+ * (Vue SFCs etc.) cannot be JS-lexed as a whole — calls live inside quoted
+ * template attributes — so there only HTML comments are blanked and paren depth
+ * is tracked per call with local string/comment awareness. In both modes,
+ * matches preceded by `.` (member access such as `obj.pika(...)`) or a
+ * `function` keyword (declarations) are skipped, and each match includes the
+ * full call snippet, sliced from the original code, for later evaluation.
  *
  * @example
  * ```ts
@@ -162,11 +273,13 @@ const FUNCTION_KEYWORD_BEFORE_RE = /\bfunction\s*(?:\*\s*)?$/
  */
 const IDENTIFIER_PREFIX_RE = /^[$_a-z][\w$]*/i
 
-export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>): FunctionCallMatch[] {
+export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>, id?: string, markupIdRE: RegExp | null = DEFAULT_MARKUP_ID_RE): FunctionCallMatch[] {
 	const RE = fnUtils.RE
-	// Literal-stripped copy with identical offsets: string/template contents and
-	// comments are blanked out, so they can be told apart from real code.
-	const stripped = stripLiteral(code)
+	const isHtmlLike = id != null && markupIdRE != null && markupIdRE.test(id)
+	// Stripped copy with identical offsets, used to tell real call sites apart
+	// from lookalikes: JS literal/comment contents blanked for JS-like sources,
+	// HTML comment contents blanked for markup sources.
+	const stripped = isHtmlLike ? blankHtmlComments(code) : stripLiteral(code)
 	const result: FunctionCallMatch[] = []
 	RE.lastIndex = 0
 	let matched: RegExpExecArray | Nullish = RE.exec(code)
@@ -176,7 +289,7 @@ export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>): F
 		const start = matched.index
 		const identifier = IDENTIFIER_PREFIX_RE.exec(fnName)![0]
 
-		// Skip matches whose identifier sits inside a string or comment, member
+		// Skip matches whose identifier sits inside a stripped region, member
 		// accesses (`obj.pika(...)`), and function declarations — none of them
 		// are style call sites.
 		const before = stripped.slice(0, start)
@@ -189,21 +302,32 @@ export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>): F
 			continue
 		}
 
-		// Count paren depth on the stripped copy: parens inside literals are
-		// blanked, and parens inside `${...}` expressions are balanced code.
-		let end = start + fnName.length
-		let depth = 1
+		let end: number
+		if (isHtmlLike) {
+			// Markup mode: literals are not blanked, so track strings and
+			// comments locally while counting paren depth on the raw code.
+			end = findCallEndWithLocalTracking(code, start, fnName)
+		}
+		else {
+			// Count paren depth on the stripped copy: parens inside literals are
+			// blanked, and parens inside `${...}` expressions are balanced code.
+			end = start + fnName.length
+			let depth = 1
 
-		while (depth > 0 && end < stripped.length - 1) {
-			end++
-			const char = stripped[end]
-			if (char === '(')
-				depth++
-			else if (char === ')')
-				depth--
+			while (depth > 0 && end < stripped.length - 1) {
+				end++
+				const char = stripped[end]
+				if (char === '(')
+					depth++
+				else if (char === ')')
+					depth--
+			}
+
+			if (depth !== 0)
+				end = -1
 		}
 
-		if (depth !== 0) {
+		if (end < 0) {
 			log.warn(`Malformed function call at position ${start}, skipping`)
 			matched = RE.exec(code)
 			continue

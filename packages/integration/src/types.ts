@@ -58,6 +58,13 @@ export interface IntegrationContextOptions {
 	configOrPath: EngineConfig | string | Nullish
 	/** The base function name to recognize in source code (e.g., `'pika'`). All variants (`.str`, `.arr`, preview) are derived from this name. */
 	fnName: string
+	/**
+	 * Additional file extensions (leading dots optional) scanned in markup mode, where the
+	 * source's top-level syntax is not JavaScript and `pika()` calls live inside quoted
+	 * template attributes (e.g., Vue SFCs). Merged with the built-in defaults
+	 * (`['vue', 'svelte', 'astro', 'html', 'htm']`).
+	 */
+	markupExtensions?: string[]
 	/** Controls the default output format of normal `pika()` calls: `'string'` produces a space-joined class string, `'array'` produces a string array. */
 	transformedFormat: 'string' | 'array'
 	/** Path to the generated TypeScript declaration file (`pika.gen.ts`), or `false` to disable TypeScript codegen entirely. */

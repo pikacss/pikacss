@@ -110,6 +110,7 @@ User-facing configuration options for the PikaCSS bundler plugin.
 | `config?` | `EngineConfig \| string` | Engine configuration object or a path to a `pika.config.*` file. When omitted, the plugin auto-discovers a config file in the project root. | ``undefined` (auto-discover)` |
 | `autoCreateConfig?` | `boolean` | When `true`, automatically scaffolds a default `pika.config.js` file if no existing config is found. | ``true`` |
 | `fnName?` | `string` | Base function name to recognize in source code. All variants (`.str`, `.arr`, preview) are derived from this name. | ``'pika'`` |
+| `markupExtensions?` | `string[]` | Additional file extensions (leading dots optional) whose sources are scanned in markup mode. Markup files' top-level syntax is not JavaScript — `pika()` calls live inside quoted template attributes (e.g., `:class="pika({...})"` in Vue SFCs) — so string and comment detection works differently there. Extensions listed here are merged with the built-in defaults `['vue', 'svelte', 'astro', 'html', 'htm']`; pass `['riot']` to also scan `.riot` files in markup mode. | ``undefined` (built-in defaults only)` |
 | `transformedFormat?` | `'string' \| 'array'` | Default output format for normal `pika()` calls. `'string'` produces a space-joined class string; `'array'` produces a string array of class names. | ``'string'`` |
 | `tsCodegen?` | `boolean \| string` | Controls TypeScript declaration codegen. `true` writes to `'pika.gen.ts'`, a string sets a custom output path, and `false` disables codegen entirely. | ``true`` |
 | `cssCodegen?` | `true \| string` | Controls CSS output file generation. `true` writes to `'pika.gen.css'`; a string sets a custom output path. | ``true`` |
@@ -149,6 +150,7 @@ Normalized plugin configuration with all defaults applied and boolean shorthands
 | `cssCodegen` | `string` | Resolved CSS output file path (always a string after defaults are applied). | — |
 | `scan` | `IntegrationContextOptions['scan']` | Normalized include/exclude glob arrays controlling source file scanning. | — |
 | `fnName` | `string` | Base function name to recognize in source transforms (e.g., `'pika'`). | — |
+| `markupExtensions?` | `string[]` | Additional file extensions scanned in markup mode, merged with the integration defaults. | — |
 | `transformedFormat` | `'string' \| 'array'` | Default output format for normal `pika()` calls: `'string'` or `'array'`. | — |
 | `autoCreateConfig` | `boolean` | Whether to scaffold a default config file when none is found. | — |
 
