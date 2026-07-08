@@ -10,7 +10,7 @@ An in-browser playground for PikaCSS, built with Vue 3, [WebContainers](https://
 | `vue-ts` | Vue 3 SFC | `src/App.vue` |
 | `react-ts` | React 19 | `src/App.tsx` |
 
-Templates live in `src/templates/<name>/` and are bundled into virtual modules by `plugins/vite-plugin-vfs.ts`. Each template is a standalone Vite project wired with `@pikacss/unplugin-pikacss` (published version — WebContainer installs from the npm registry). Template edits are persisted into the URL hash (lz-string compressed) so playground states are shareable.
+Templates live in `src/templates/<name>/` and are bundled into virtual modules by `plugins/vite-plugin-vfs.ts`. Each template is a standalone Vite project wired with `@pikacss/unplugin-pikacss`. The WebContainer installs from the npm registry; the dependency version is rewritten to the latest published release at build time (see below). Template edits are persisted into the URL hash (lz-string compressed) so playground states are shareable.
 
 ## Development
 
@@ -28,5 +28,5 @@ Deployed to `https://pikacss.github.io/playground/` by `.github/workflows/deploy
 ## Notes for maintainers
 
 - `src/templates/**` is data, not app code: it is excluded from the app tsconfig, from the repo ESLint run, and from the playground's own PikaCSS scan (`vite.config.ts` → `scan.exclude`).
-- Template `package.json` files must reference **published** `@pikacss/*` versions; `workspace:` protocols cannot resolve inside the WebContainer.
+- Template `package.json` files reference **published** `@pikacss/*` versions (`workspace:` cannot resolve inside the WebContainer). At build/dev time, `vite.config.ts` resolves the **latest published version** from the npm registry and rewrites the template dependency via `vfsPlugin`'s `dependencyVersions` option; the pinned version in the repo is only the offline fallback.
 - The `type-check` script (hyphenated, like `demo/`) is intentionally not part of the repo-wide `pnpm typecheck`, because it needs generated files from a prior dev/build run.

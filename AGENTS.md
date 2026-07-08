@@ -144,7 +144,7 @@ Non-package workspaces: `docs/` (VitePress site), `demo/` (static Vue showcase),
 
 ## Workspace Apps
 
-- `playground/` boots real Vite projects inside a WebContainer. Its `src/templates/<name>/` directories (solid-ts is the default) are **data served into the container**, not app code: excluded from the app tsconfig, from repo ESLint, and from the playground's own PikaCSS scan. Template `package.json` files must reference **published** `@pikacss/*` versions — `workspace:` cannot resolve inside the container.
+- `playground/` boots real Vite projects inside a WebContainer. Its `src/templates/<name>/` directories (solid-ts is the default) are **data served into the container**, not app code: excluded from the app tsconfig, from repo ESLint, and from the playground's own PikaCSS scan. Template `package.json` files reference **published** `@pikacss/*` versions — `workspace:` cannot resolve inside the container. The playground `vite.config.ts` rewrites them to the latest npm release at build time (`vfsPlugin` `dependencyVersions`); the pins in the repo are only offline fallbacks.
 - `demo/` and `playground/` use a hyphenated `type-check` script on purpose: it needs generated files (`pika.gen.ts`, `vfs.d.ts`) from a prior dev/build run, so it is excluded from the repo-wide `pnpm typecheck`. Run `build` first, then `type-check`.
 - The playground deploys to `https://pikacss.github.io/playground/` via `deploy-docs.yml` (copied into the docs dist). GitHub Pages cannot send COOP/COEP headers, so `playground/public/coi-serviceworker.min.js` provides cross-origin isolation — keep the script tag first in `playground/index.html`.
 

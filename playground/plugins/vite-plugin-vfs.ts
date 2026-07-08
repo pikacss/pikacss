@@ -17,11 +17,45 @@ export interface VfsPluginOptions {
 	 * Defaults to 'src/vfs.d.ts'
 	 */
 	dts?: string
+	/**
+	 * Version specifiers to force onto matching dependencies of every
+	 * template `package.json` (all dependency sections). Used to rewrite
+	 * pinned versions to the latest published release at build time.
+	 */
+	dependencyVersions?: Record<string, string>
+}
+
+const DEPENDENCY_SECTIONS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'] as const
+
+function patchPackageJsonVersions(content: string, dependencyVersions: Record<string, string>): string {
+	let pkg: Record<string, any>
+	try {
+		pkg = JSON.parse(content)
+	}
+	catch {
+		return content
+	}
+
+	let changed = false
+	for (const section of DEPENDENCY_SECTIONS) {
+		const deps = pkg[section]
+		if (deps == null || typeof deps !== 'object')
+			continue
+		for (const [name, version] of Object.entries(dependencyVersions)) {
+			if (typeof deps[name] === 'string' && deps[name] !== version) {
+				deps[name] = version
+				changed = true
+			}
+		}
+	}
+
+	return changed ? `${JSON.stringify(pkg, null, 2)}\n` : content
 }
 
 export function vfsPlugin(options: VfsPluginOptions): Plugin {
 	const templateDir = path.resolve(options.dir)
 	const dtsPath = path.resolve(options.dts || 'src/vfs.d.ts')
+	const dependencyVersions = options.dependencyVersions ?? {}
 
 	return {
 		name: 'vite-plugin-vfs',
@@ -111,7 +145,10 @@ ${decls}
 								tree[entry.name] = fileNode
 							}
 							else {
-								const content = fs.readFileSync(fullPath, 'utf-8')
+								let content = fs.readFileSync(fullPath, 'utf-8')
+								if (entry.name === 'package.json' && Object.keys(dependencyVersions).length > 0) {
+									content = patchPackageJsonVersions(content, dependencyVersions)
+								}
 								const fileNode: FileNode = {
 									file: {
 										contents: content,
