@@ -50,6 +50,21 @@ function createConfigScaffoldContent({
 	].join('\n')
 }
 
+// Cheap stable comparison for usage record lists: both lists originate from
+// evaluating source literals, so identical source produces an identical
+// serialization. Any serialization failure is treated as "changed".
+function isSameUsageList(previous: UsageRecord[] | Nullish, next: UsageRecord[]) {
+	const previousList = previous ?? []
+	if (previousList.length !== next.length)
+		return false
+	try {
+		return JSON.stringify(previousList) === JSON.stringify(next)
+	}
+	catch {
+		return false
+	}
+}
+
 async function writeGeneratedFile(filepath: string, content: string) {
 	await mkdir(dirname(filepath), { recursive: true })
 		.catch(() => {})
@@ -286,7 +301,9 @@ function useTransform({
 		try {
 			log.debug(`Transforming file: ${id}`)
 
-			const hadUsages = usages.has(id)
+			const previousUsageList = usages.get(id)
+			const previousPreviewUsageList = previewUsages.get(id)
+			const hadUsages = previousUsageList != null
 			usages.delete(id)
 			previewUsages.delete(id)
 
@@ -370,8 +387,16 @@ function useTransform({
 			if (previewUsageList.length > 0) {
 				previewUsages.set(id, previewUsageList)
 			}
-			triggerStyleUpdated()
-			triggerTsCodegenUpdated()
+			// Re-saving a file whose pika() calls did not change must not force a
+			// full CSS/TS regeneration; only trigger when the resolved usage
+			// records (or their preview subset) actually differ.
+			const usagesUnchanged = hadUsages
+				&& isSameUsageList(previousUsageList, usageList)
+				&& isSameUsageList(previousPreviewUsageList, previewUsageList)
+			if (usagesUnchanged === false) {
+				triggerStyleUpdated()
+				triggerTsCodegenUpdated()
+			}
 			log.debug(`Transformed ${usageList.length} style usages in ${id}`)
 			return {
 				code: transformed.toString(),
@@ -495,6 +520,24 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 
 	const usages = new Map<string, UsageRecord[]>()
 	const previewUsages = new Map<string, UsageRecord[]>()
+
+	interface TransformCacheEntry {
+		code: string
+		result: Awaited<ReturnType<IntegrationContext['transform']>>
+		usageList: UsageRecord[]
+		previewUsageList: UsageRecord[]
+	}
+	// Last successful transform result per module id: build mode transforms the
+	// same (id, code) twice (the fullyCssCodegen scan pass and the bundler's own
+	// transform pass), so the second pass reuses the first pass's work. One
+	// entry per id, replaced whenever the code changes — bounded by the number
+	// of transformed modules. Cleared on setup() because cached atomic style
+	// ids were minted by the previous engine; the epoch counter additionally
+	// prevents an in-flight transform drained by setup() from re-inserting a
+	// stale entry after the clear.
+	const transformResultCache = new Map<string, TransformCacheEntry>()
+	let transformCacheEpoch = 0
+
 	const engine = signal(null as Engine | null)
 	const hooks = {
 		styleUpdated: createEventHook<void>(),
@@ -605,7 +648,44 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		isTransformTarget,
 		transform: async (code, id) => {
 			await ctx.setupPromise
-			return transform(code, id)
+			const cached = transformResultCache.get(id)
+			if (cached != null && cached.code === code) {
+				// Usages may have been dropped externally (e.g. the bundler
+				// reported the file as deleted) since this entry was cached;
+				// restore them so a re-added identical file still contributes
+				// its styles to the generated outputs.
+				if (usages.has(id) === false && cached.usageList.length > 0) {
+					usages.set(id, cached.usageList)
+					if (cached.previewUsageList.length > 0)
+						previewUsages.set(id, cached.previewUsageList)
+					queueStyleUpdated()
+					queueTsCodegenUpdated()
+				}
+				return cached.result
+			}
+			const epoch = transformCacheEpoch
+			const result = await transform(code, id)
+			if (result != null) {
+				// Skip caching when a setup() ran while this transform was in
+				// flight: the result was produced by the previous engine.
+				if (epoch === transformCacheEpoch) {
+					transformResultCache.set(id, {
+						code,
+						result,
+						// A non-null result implies the transform stored a
+						// non-empty usage list for this id.
+						usageList: usages.get(id)!,
+						previewUsageList: previewUsages.get(id) ?? [],
+					})
+				}
+			}
+			else {
+				// Nullish results are not memoized: they are ambiguous between
+				// "no calls found" and "transform failed", and both are cheap to
+				// recompute (a failed transform must stay retryable).
+				transformResultCache.delete(id)
+			}
+			return result
 		},
 		getCssCodegenContent: async () => {
 			await ctx.setupPromise
@@ -670,19 +750,28 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			log.debug('Starting full CSS code generation scan')
 			const _cwd = cwd()
 			const stream = globbyStream(options.scan.include, { cwd: _cwd, ignore: options.scan.exclude })
-			let fileCount = 0
+			const filePaths: string[] = []
 			for await (const entry of stream) {
 				const filePath = join(_cwd, entry)
 				// `scan.exclude` alone does not cover the codegen outputs; re-check
 				// through the same predicate the bundler transform path uses.
 				if (!ctx.isTransformTarget(filePath))
 					continue
-				const code = await readFile(filePath, 'utf-8')
-				// collect usages
-				await ctx.transform(code, filePath)
-				fileCount++
+				filePaths.push(filePath)
 			}
-			log.debug(`Scanned ${fileCount} files for style collection`)
+			// Read and transform with bounded concurrency instead of strictly
+			// serially; concurrent transforms are already supported (bundlers
+			// call ctx.transform concurrently in dev).
+			const concurrency = 16
+			for (let i = 0; i < filePaths.length; i += concurrency) {
+				await Promise.all(filePaths.slice(i, i + concurrency)
+					.map(async (filePath) => {
+						const code = await readFile(filePath, 'utf-8')
+						// collect usages
+						await ctx.transform(code, filePath)
+					}))
+			}
+			log.debug(`Scanned ${filePaths.length} files for style collection`)
 			await ctx.writeCssCodegenFile()
 		},
 		setupPromise: null,
@@ -714,6 +803,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		await waitForIdleTransforms()
 		usages.clear()
 		previewUsages.clear()
+		transformCacheEpoch++
+		transformResultCache.clear()
 		pendingStyleUpdated = false
 		pendingTsCodegenUpdated = false
 		hooks.styleUpdated.listeners.clear()

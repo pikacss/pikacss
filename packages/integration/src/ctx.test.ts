@@ -298,6 +298,125 @@ describe('createCtx', () => {
 			.toHaveBeenCalledTimes(2)
 	})
 
+	it('skips update triggers when a re-transform yields identical usages', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const onStyleUpdated = vi.fn()
+		const onTsUpdated = vi.fn()
+		ctx.hooks.styleUpdated.on(onStyleUpdated)
+		ctx.hooks.tsCodegenUpdated.on(onTsUpdated)
+
+		await ctx.transform('// rev 1\nconst a = pika({ color: \'red\' })', 'src/resave.ts')
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(onTsUpdated)
+			.toHaveBeenCalledTimes(1)
+
+		// Different code (comment edit) but identical pika() usages: no triggers.
+		await ctx.transform('// rev 2\nconst a = pika({ color: \'red\' })', 'src/resave.ts')
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(onTsUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(ctx.usages.get('src/resave.ts'))
+			.toHaveLength(1)
+
+		// Changed usages still fire.
+		await ctx.transform('// rev 3\nconst a = pika({ color: \'blue\' })', 'src/resave.ts')
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(2)
+		expect(onTsUpdated)
+			.toHaveBeenCalledTimes(2)
+
+		// Switching to a preview call with identical params fires: the preview
+		// subset changed even though the usage records are the same.
+		await ctx.transform('// rev 4\nconst a = pikap({ color: \'blue\' })', 'src/resave.ts')
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(3)
+		expect(ctx.previewUsages.get('src/resave.ts'))
+			.toHaveLength(1)
+
+		// A different number of calls fires (length short-circuit in the compare).
+		await ctx.transform('// rev 5\nconst a = pikap({ color: \'blue\' })\nconst b = pika({ margin: \'1px\' })', 'src/resave.ts')
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(4)
+
+		// Non-JSON-serializable params are treated as changed, never crashing
+		// the compare (BigInt makes JSON.stringify throw).
+		await ctx.transform('// rev 6\nconst a = pika({ opacity: 1n })', 'src/resave.ts')
+		const countAfterFirstBigint = onStyleUpdated.mock.calls.length
+		await ctx.transform('// rev 7\nconst a = pika({ opacity: 1n })', 'src/resave.ts')
+		expect(onStyleUpdated.mock.calls.length)
+			.toBe(countAfterFirstBigint + 1)
+	})
+
+	it('reuses the memoized transform result for identical inputs and recomputes when they change', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const useSpy = vi.spyOn(ctx.engine, 'use')
+
+		const code = 'const a = pika({ color: \'red\' })'
+		const first = await ctx.transform(code, 'src/memo.ts')
+		expect(useSpy)
+			.toHaveBeenCalledTimes(1)
+
+		// Same (id, code): the engine work happens once and the result is reused.
+		const second = await ctx.transform(code, 'src/memo.ts')
+		expect(useSpy)
+			.toHaveBeenCalledTimes(1)
+		expect(second)
+			.toBe(first)
+
+		// Different code recomputes.
+		await ctx.transform('const a = pika({ color: \'blue\' })', 'src/memo.ts')
+		expect(useSpy)
+			.toHaveBeenCalledTimes(2)
+
+		// setup() swaps the engine and clears the memo: identical code recomputes.
+		await ctx.setup()
+		const useSpyAfterSetup = vi.spyOn(ctx.engine, 'use')
+		await ctx.transform(code, 'src/memo.ts')
+		expect(useSpyAfterSetup)
+			.toHaveBeenCalledTimes(1)
+	})
+
+	it('restores externally dropped usages when a memoized identical file is re-transformed', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const code = [
+			'const a = pika({ color: \'red\' })',
+			'const b = pikap({ color: \'green\' })',
+		].join('\n')
+		await ctx.transform(code, 'src/deleted.ts')
+		expect(ctx.usages.get('src/deleted.ts'))
+			.toHaveLength(2)
+
+		const onStyleUpdated = vi.fn()
+		const onTsUpdated = vi.fn()
+		ctx.hooks.styleUpdated.on(onStyleUpdated)
+		ctx.hooks.tsCodegenUpdated.on(onTsUpdated)
+
+		// Simulate the bundler reporting the file as deleted (watchChange path).
+		ctx.usages.delete('src/deleted.ts')
+		ctx.previewUsages.delete('src/deleted.ts')
+
+		await ctx.transform(code, 'src/deleted.ts')
+		expect(ctx.usages.get('src/deleted.ts'))
+			.toHaveLength(2)
+		expect(ctx.previewUsages.get('src/deleted.ts'))
+			.toHaveLength(1)
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+		expect(onTsUpdated)
+			.toHaveBeenCalledTimes(1)
+	})
+
 	it('keeps valid calls when a sibling call in the same file fails to evaluate', async () => {
 		const cwd = await createTempDir()
 		const error = vi.fn()

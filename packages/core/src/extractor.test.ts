@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { createExtractFn, extract, normalizeSelectors, normalizeValue } from './extractor'
 
@@ -85,6 +85,37 @@ describe('extract', () => {
 				{ selector: ['%:hover'], property: 'background-color', value: ['blue'] },
 				{ selector: ['.scope', '.pk-a'], property: 'margin', value: ['2rem', '1rem'] },
 			])
+	})
+
+	it('invokes transformSelectors once per scope instead of once per property', async () => {
+		const transformSelectors = vi.fn(async (selectors: string[]) => selectors)
+
+		const result = await extract({
+			styleDefinition: {
+				'color': 'red',
+				'margin': '1px',
+				'padding': '2px',
+				'&:hover': {
+					color: 'blue',
+					background: 'green',
+				},
+			},
+			defaultSelector: '.pk-a',
+			transformSelectors,
+			transformStyleItems: async styleItems => styleItems,
+			transformStyleDefinitions: async styleDefinitions => styleDefinitions,
+		})
+
+		// One call for the root scope (3 sibling properties) and one for the
+		// nested scope (2 sibling properties) — not one per property.
+		expect(transformSelectors)
+			.toHaveBeenCalledTimes(2)
+		expect(result)
+			.toHaveLength(5)
+		expect(result.filter(content => content.selector.length === 1 && content.selector[0] === '.pk-a'))
+			.toHaveLength(3)
+		expect(result.filter(content => content.selector[0] === '&:hover'))
+			.toHaveLength(2)
 	})
 
 	it('creates reusable extract functions with shared transform options', async () => {

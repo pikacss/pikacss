@@ -158,19 +158,32 @@ export async function extract({
 	transformStyleItems: (styleItems: InternalStyleItem[]) => Promise<InternalStyleItem[]>
 	transformStyleDefinitions: (styleDefinitions: InternalStyleDefinition[]) => Promise<InternalStyleDefinition[]>
 }): Promise<ExtractedStyleContent[]> {
+	// The selector depends only on `levels`, which is constant for this call:
+	// compute the transformed+normalized selector once and share it across all
+	// property entries at this level. `transformSelectors` hooks receive the
+	// selector levels only, never per-property state, so the result cannot
+	// differ between sibling properties.
+	let scopeSelector: string[] | undefined
+	const resolveScopeSelector = async () => {
+		if (scopeSelector == null) {
+			const selector = normalizeSelectors({
+				selectors: await transformSelectors(levels),
+				defaultSelector,
+			})
+
+			if (selector.length === 0 || selector.every(s => hasAtomicStyleIdPlaceholder(s) === false))
+				selector.push(defaultSelector)
+
+			scopeSelector = selector
+		}
+		return scopeSelector
+	}
+
 	for (const definition of await transformStyleDefinitions([styleDefinition])) {
 		for (const [k, v] of Object.entries(definition)) {
 			if (isPropertyValue(v)) {
-				const selector = normalizeSelectors({
-					selectors: await transformSelectors(levels),
-					defaultSelector,
-				})
-
-				if (selector.length === 0 || selector.every(s => hasAtomicStyleIdPlaceholder(s) === false))
-					selector.push(defaultSelector)
-
 				result.push({
-					selector,
+					selector: await resolveScopeSelector(),
 					property: toKebab(k),
 					value: normalizeValue(v),
 				})

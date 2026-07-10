@@ -91,6 +91,10 @@ export interface DynamicRule<T> {
 export abstract class AbstractResolver<T> {
 	/** Cache of previously resolved input-string → result pairs. */
 	_resolvedResultsMap: Map<string, ResolvedResult<T>> = new Map()
+	/** Negative cache of input strings that matched no rule at all. Retryable-unresolved dynamic results (a matched dynamic rule whose value fn returned nullish) are never stored here. */
+	_unmatchedStrings: Set<string> = new Set()
+	/** Index of static rules keyed by their exact match string (first registered rule wins on string collisions), giving O(1) static lookups. */
+	_staticRulesByString: Map<string, StaticRule<T>> = new Map()
 	/** Registry of static rules keyed by their unique key. */
 	staticRulesMap: Map<string, StaticRule<T>> = new Map()
 	/** Registry of dynamic rules keyed by their unique key. */
@@ -121,8 +125,22 @@ export abstract class AbstractResolver<T> {
 	 */
 	addStaticRule(rule: StaticRule<T>) {
 		log.debug(`Adding static rule: ${rule.key}`)
+		const previous = this.staticRulesMap.get(rule.key)
 		this.staticRulesMap.set(rule.key, rule)
+		if (previous != null) {
+			// Replacing a rule may change which rule wins for both the old and
+			// the new match string; recompute both index entries.
+			if (previous.string !== rule.string)
+				this._reindexStaticRuleString(previous.string)
+			this._reindexStaticRuleString(rule.string)
+		}
+		else if (this._staticRulesByString.has(rule.string) === false) {
+			// Appended at the end of insertion order: an earlier rule with the
+			// same string keeps winning, so only fill a missing entry.
+			this._staticRulesByString.set(rule.string, rule)
+		}
 		this._resolvedResultsMap.clear()
+		this._unmatchedStrings.clear()
 		return this
 	}
 
@@ -148,8 +166,28 @@ export abstract class AbstractResolver<T> {
 
 		log.debug(`Removing static rule: ${key}`)
 		this.staticRulesMap.delete(key)
+		if (this._staticRulesByString.get(rule.string) === rule)
+			this._reindexStaticRuleString(rule.string)
 		this._resolvedResultsMap.clear()
+		this._unmatchedStrings.clear()
 		return this
+	}
+
+	/**
+	 * Recomputes the string-index entry for a given match string after a rule mutation.
+	 *
+	 * @param string - The match string whose index entry should be recomputed.
+	 *
+	 * @remarks Scans `staticRulesMap` in insertion order so the first registered rule matching the string wins, mirroring the pre-index linear-scan behavior. Removes the entry when no rule matches the string anymore.
+	 */
+	_reindexStaticRuleString(string: string) {
+		for (const rule of this.staticRulesMap.values()) {
+			if (rule.string === string) {
+				this._staticRulesByString.set(string, rule)
+				return
+			}
+		}
+		this._staticRulesByString.delete(string)
 	}
 
 	/**
@@ -169,6 +207,7 @@ export abstract class AbstractResolver<T> {
 		log.debug(`Adding dynamic rule: ${rule.key}`)
 		this.dynamicRulesMap.set(rule.key, rule)
 		this._resolvedResultsMap.clear()
+		this._unmatchedStrings.clear()
 		return this
 	}
 
@@ -195,6 +234,7 @@ export abstract class AbstractResolver<T> {
 		log.debug(`Removing dynamic rule: ${key}`)
 		this.dynamicRulesMap.delete(key)
 		this._resolvedResultsMap.clear()
+		this._unmatchedStrings.clear()
 		return this
 	}
 
@@ -218,8 +258,12 @@ export abstract class AbstractResolver<T> {
 			return existedResult
 		}
 
-		const staticRule = Array.from(this.staticRulesMap.values())
-			.find(rule => rule.string === string)
+		if (this._unmatchedStrings.has(string)) {
+			log.debug(`Resolution failed (cached): ${string}`)
+			return void 0
+		}
+
+		const staticRule = this._staticRulesByString.get(string)
 		if (staticRule != null) {
 			log.debug(`Resolved by static rule: ${staticRule.key}`)
 			const resolvedResult = { value: staticRule.resolved }
@@ -254,6 +298,10 @@ export abstract class AbstractResolver<T> {
 		}
 
 		log.debug(`Resolution failed for: ${string}`)
+		// No static hit and no dynamic pattern matched at all: cache the miss so
+		// repeat lookups (plain class names, raw selectors) are O(1). Never
+		// reached for retryable-unresolved results, which return above.
+		this._unmatchedStrings.add(string)
 		return void 0
 	}
 
@@ -271,6 +319,7 @@ export abstract class AbstractResolver<T> {
 	 * ```
 	 */
 	_setResolvedResult(string: string, resolved: T) {
+		this._unmatchedStrings.delete(string)
 		const resolvedResult = this._resolvedResultsMap.get(string)
 		if (resolvedResult) {
 			resolvedResult.value = resolved

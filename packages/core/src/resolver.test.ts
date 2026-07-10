@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { RecursiveResolver, resolveRuleConfig } from './resolver'
 
@@ -107,6 +107,90 @@ describe('recursiveResolver', () => {
 			.toEqual({ value: ['updated'] })
 	})
 
+	it('caches "no rule matched" misses and invalidates them on rule mutations', async () => {
+		const resolver = new StringResolver()
+		resolver.addDynamicRule({
+			key: 'space',
+			stringPattern: /^space-(\d+)$/,
+			createResolved: async matched => [`gap-${matched[1]}`],
+		})
+		const execSpy = vi.spyOn(resolver.dynamicRulesMap.get('space')!.stringPattern, 'exec')
+
+		expect(await resolver.resolve('btn'))
+			.toEqual(['btn'])
+		expect(resolver._unmatchedStrings.has('btn'))
+			.toBe(true)
+		expect(execSpy)
+			.toHaveBeenCalledTimes(1)
+
+		// A repeat miss is O(1): no dynamic regex is re-executed.
+		expect(await resolver.resolve('btn'))
+			.toEqual(['btn'])
+		expect(execSpy)
+			.toHaveBeenCalledTimes(1)
+
+		// A string unresolved before a rule is added resolves after.
+		resolver.addStaticRule({ key: 'btn', string: 'btn', resolved: ['button'] })
+		expect(resolver._unmatchedStrings.size)
+			.toBe(0)
+		expect(await resolver.resolve('btn'))
+			.toEqual(['button'])
+
+		// Rule removals also invalidate negative entries.
+		expect(await resolver.resolve('other'))
+			.toEqual(['other'])
+		expect(resolver._unmatchedStrings.has('other'))
+			.toBe(true)
+		resolver.removeStaticRule('btn')
+		expect(resolver._unmatchedStrings.has('other'))
+			.toBe(false)
+
+		expect(await resolver.resolve('another'))
+			.toEqual(['another'])
+		expect(resolver._unmatchedStrings.has('another'))
+			.toBe(true)
+		resolver.removeDynamicRule('space')
+		expect(resolver._unmatchedStrings.has('another'))
+			.toBe(false)
+	})
+
+	it('keeps the static string index consistent across add, remove, and key re-registration', async () => {
+		const resolver = new StringResolver()
+
+		// Two rules with different keys but the same match string: the first
+		// registered rule wins, mirroring the previous linear-scan behavior.
+		resolver.addStaticRule({ key: 'a', string: 'shared', resolved: ['A'] })
+		resolver.addStaticRule({ key: 'b', string: 'shared', resolved: ['B'] })
+		expect(await resolver.resolve('shared'))
+			.toEqual(['A'])
+
+		// Removing a non-winning rule keeps the winner.
+		resolver.removeStaticRule('b')
+		expect(await resolver.resolve('shared'))
+			.toEqual(['A'])
+
+		// Removing the winner falls back to the next rule with the same string.
+		resolver.addStaticRule({ key: 'b', string: 'shared', resolved: ['B'] })
+		resolver.removeStaticRule('a')
+		expect(await resolver.resolve('shared'))
+			.toEqual(['B'])
+
+		// Removing the last rule for a string leaves it unresolved.
+		resolver.removeStaticRule('b')
+		expect(await resolver.resolve('shared'))
+			.toEqual(['shared'])
+
+		// Re-registering a key with a different string re-points both strings.
+		resolver.addStaticRule({ key: 'x', string: 's1', resolved: ['S1'] })
+		expect(await resolver.resolve('s1'))
+			.toEqual(['S1'])
+		resolver.addStaticRule({ key: 'x', string: 's2', resolved: ['S2'] })
+		expect(await resolver.resolve('s1'))
+			.toEqual(['s1'])
+		expect(await resolver.resolve('s2'))
+			.toEqual(['S2'])
+	})
+
 	it('does not cache unresolved dynamic rule results so they can be retried', async () => {
 		const resolver = new StringResolver()
 		let calls = 0
@@ -116,10 +200,13 @@ describe('recursiveResolver', () => {
 		}], 'selector')
 		resolver.addDynamicRule((config as any).rule)
 
-		// First attempt fails (value fn returns undefined): unresolved and uncached.
+		// First attempt fails (value fn returns undefined): unresolved and uncached,
+		// including the negative cache — the rule matched, so the miss is retryable.
 		expect(await resolver.resolve('icon-a'))
 			.toEqual(['icon-a'])
 		expect(resolver._resolvedResultsMap.has('icon-a'))
+			.toBe(false)
+		expect(resolver._unmatchedStrings.has('icon-a'))
 			.toBe(false)
 
 		// Second attempt succeeds because the rule is re-invoked.
