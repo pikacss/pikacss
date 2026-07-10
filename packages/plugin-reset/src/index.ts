@@ -49,9 +49,10 @@ declare module '@pikacss/core' {
  *
  * @remarks
  * The plugin reads the `reset` option from the engine config to select a
- * stylesheet. If unset, it defaults to `'modern-normalize'`. A dedicated
- * `reset` layer with order `-1` is created so the reset styles always
- * appear before utility output.
+ * stylesheet. If unset, it defaults to `'modern-normalize'`. The `reset`
+ * layer's order defaults to `-1` (set only when `layers.reset` is not
+ * already configured), which places the reset styles before utility output
+ * unless the config overrides the layer order.
  *
  * @example
  * ```ts

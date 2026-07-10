@@ -198,7 +198,7 @@ type EnginePluginHooksOptions = {
  * ```ts
  * const myPlugin: EnginePlugin = {
  *   name: 'my-plugin',
- *   configureRawConfig: (config) => ({ ...config, important: true }),
+ *   configureRawConfig: (config) => ({ ...config, important: { default: true } }),
  * }
  * ```
  */
@@ -252,7 +252,7 @@ export function resolvePlugins(plugins: EnginePlugin[]): EnginePlugin[] {
  * ```ts
  * export default defineEnginePlugin({
  *   name: 'my-plugin',
- *   configureRawConfig: (config) => ({ ...config, important: true }),
+ *   configureRawConfig: (config) => ({ ...config, important: { default: true } }),
  * })
  * ```
  */

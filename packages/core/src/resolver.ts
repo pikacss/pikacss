@@ -35,7 +35,7 @@ export interface ResolvedResult<T> {
  *
  * @example
  * ```ts
- * const rule: StaticRule<string[]> = { key: 'hover', string: 'hover', resolved: ['&:hover'] }
+ * const rule: StaticRule<string[]> = { key: 'hover', string: 'hover', resolved: ['$:hover'] }
  * ```
  */
 export interface StaticRule<T> {
@@ -315,7 +315,7 @@ export abstract class AbstractResolver<T> {
 	 *
 	 * @example
 	 * ```ts
-	 * resolver._setResolvedResult('hover', ['&:hover'])
+	 * resolver._setResolvedResult('hover', ['$:hover'])
 	 * ```
 	 */
 	_setResolvedResult(string: string, resolved: T) {
@@ -342,7 +342,7 @@ export abstract class AbstractResolver<T> {
  * ```ts
  * class SelectorResolver extends RecursiveResolver<string> { }
  * const result = await resolver.resolve('hover-focus')
- * // ['&:hover', '&:focus'] after recursive expansion
+ * // ['$:hover', '$:focus'] after recursive expansion
  * ```
  */
 export abstract class RecursiveResolver<T> extends AbstractResolver<T[]> {
@@ -401,7 +401,7 @@ export abstract class RecursiveResolver<T> extends AbstractResolver<T[]> {
  * ```ts
  * const config: ResolvedRuleConfig<string> = {
  *   type: 'static',
- *   rule: { key: 'hover', string: 'hover', resolved: ['&:hover'] },
+ *   rule: { key: 'hover', string: 'hover', resolved: ['$:hover'] },
  *   autocomplete: ['hover'],
  * }
  * ```
@@ -439,7 +439,7 @@ function createDynamicResolvedFactory<T>(fn: (matched: RegExpMatchArray) => unkn
  *
  * @example
  * ```ts
- * resolveRuleConfig(['hover', '&:hover'], 'selector')
+ * resolveRuleConfig(['hover', '$:hover'], 'selector')
  * // { type: 'static', rule: { key: 'hover', ... }, autocomplete: ['hover'] }
  * ```
  */

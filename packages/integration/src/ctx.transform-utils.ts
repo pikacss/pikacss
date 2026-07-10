@@ -197,6 +197,9 @@ export const DEFAULT_MARKUP_EXTENSIONS = ['vue', 'svelte', 'astro', 'html', 'htm
  * and de-duplicates while preserving first-seen order.
  * @internal
  *
+ * @param extensions - Markup file extensions, with or without leading dots (e.g. `['.vue', 'html']`).
+ * @returns The normalized, de-duplicated extension list without leading dots.
+ *
  * @remarks Single source of truth for extension normalization, shared by
  * {@link createMarkupIdRE} (markup-mode matcher) and the unplugin default
  * `scan.include` glob builder, so the scanned file set and the markup-mode file

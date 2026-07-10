@@ -36,6 +36,7 @@ interface ExportInfo {
 	name: string
 	kind: 'function' | 'interface' | 'type' | 'const' | 'class' | 'unknown'
 	typeOnly: boolean
+	internal?: boolean
 	description: string
 	params?: ParamInfo[]
 	returnType?: string
@@ -101,6 +102,8 @@ interface Locale {
 	sourceIntro: string
 	sourceFilesLabel: string
 	generatedDescription: (pkg: PackageDef) => string
+	typeOnlyNote: (pkg: PackageDef) => string
+	internalNote: string
 }
 
 const EN: Locale = {
@@ -135,6 +138,8 @@ const EN: Locale = {
 	sourceIntro: 'Generated from the exported surface and JSDoc in',
 	sourceFilesLabel: 'Source files',
 	generatedDescription: pkg => `Generated API reference for ${pkg.name} from exported surface and JSDoc.`,
+	typeOnlyNote: pkg => `**Type-only export.** This symbol is exported with \`export type\` and is not a runtime export of \`${pkg.name}\` — importing it as a value will fail. It is documented here for its type signature only.`,
+	internalNote: '**Internal API.** Tagged `@internal` in the source: exported at runtime, but intended for PikaCSS\'s own packages and may change without notice.',
 }
 
 function createApiProgram(): ts.Program {
@@ -398,6 +403,90 @@ function resolveExportedSymbol(sym: ts.Symbol, checker: ts.TypeChecker): ts.Symb
 	return sym
 }
 
+/**
+ * Collects the export names of a module that are usable as runtime values.
+ *
+ * Walks the module's export statements so that `export type { ... }`,
+ * per-specifier `type` modifiers, and `export type * from '...'` are all
+ * excluded — the TypeScript checker alone cannot distinguish those from value
+ * re-exports once aliases are resolved. Star value re-exports recurse into the
+ * target module so type-only exports never pass through a value star export.
+ */
+function collectValueExportNames(sourceFile: ts.SourceFile, checker: ts.TypeChecker, cache: Map<string, Set<string>>): Set<string> {
+	const cached = cache.get(sourceFile.fileName)
+	if (cached)
+		return cached
+
+	const names = new Set<string>()
+	// Register before walking so circular re-export chains terminate.
+	cache.set(sourceFile.fileName, names)
+
+	for (const stmt of sourceFile.statements) {
+		if (ts.isExportAssignment(stmt)) {
+			names.add('default')
+			continue
+		}
+
+		if (ts.isExportDeclaration(stmt)) {
+			if (stmt.isTypeOnly)
+				continue
+
+			if (stmt.exportClause && ts.isNamedExports(stmt.exportClause)) {
+				for (const spec of stmt.exportClause.elements) {
+					if (!spec.isTypeOnly)
+						names.add(spec.name.text)
+				}
+				continue
+			}
+
+			if (stmt.exportClause && ts.isNamespaceExport(stmt.exportClause)) {
+				names.add(stmt.exportClause.name.text)
+				continue
+			}
+
+			// `export * from '...'`: only names the target module exports as values pass through.
+			const targetSymbol = stmt.moduleSpecifier ? checker.getSymbolAtLocation(stmt.moduleSpecifier) : undefined
+			if (!targetSymbol)
+				continue
+			const targetSourceFile = targetSymbol.getDeclarations()
+				?.find(ts.isSourceFile)
+			if (targetSourceFile) {
+				for (const name of collectValueExportNames(targetSourceFile, checker, cache))
+					names.add(name)
+			}
+			else {
+				for (const exported of checker.getExportsOfModule(targetSymbol)) {
+					if ((resolveExportedSymbol(exported, checker).flags & ts.SymbolFlags.Value) !== 0)
+						names.add(exported.getName())
+				}
+			}
+			continue
+		}
+
+		if (!ts.canHaveModifiers(stmt))
+			continue
+		const modifiers = ts.getModifiers(stmt) ?? []
+		if (!modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword))
+			continue
+		const isDefault = modifiers.some(modifier => modifier.kind === ts.SyntaxKind.DefaultKeyword)
+
+		if (ts.isVariableStatement(stmt)) {
+			for (const decl of stmt.declarationList.declarations) {
+				if (ts.isIdentifier(decl.name))
+					names.add(decl.name.text)
+			}
+		}
+		else if (ts.isFunctionDeclaration(stmt) || ts.isClassDeclaration(stmt) || ts.isEnumDeclaration(stmt)) {
+			if (isDefault)
+				names.add('default')
+			else if (stmt.name)
+				names.add(stmt.name.text)
+		}
+	}
+
+	return names
+}
+
 function resolveTypeAliasText(decl: ts.TypeAliasDeclaration, checker: ts.TypeChecker): string | undefined {
 	const type = checker.getTypeAtLocation(decl)
 	if (type.isUnion()) {
@@ -408,7 +497,7 @@ function resolveTypeAliasText(decl: ts.TypeAliasDeclaration, checker: ts.TypeChe
 	return undefined
 }
 
-function extractExportInfo(sym: ts.Symbol, checker: ts.TypeChecker, pkgDir: string): ExportInfo | null {
+function extractExportInfo(sym: ts.Symbol, checker: ts.TypeChecker, pkgDir: string, isRuntimeExport: boolean): ExportInfo | null {
 	const exportedSymbol = resolveExportedSymbol(sym, checker)
 	const declarations = exportedSymbol.getDeclarations()
 	if (!declarations?.length)
@@ -422,13 +511,18 @@ function extractExportInfo(sym: ts.Symbol, checker: ts.TypeChecker, pkgDir: stri
 
 	const description = getSymbolDescription(exportedSymbol, checker)
 	const tags = exportedSymbol.getJsDocTags(checker)
-	if (tags.some(tag => tag.name === 'internal'))
+	const isInternal = tags.some(tag => tag.name === 'internal')
+	// `@internal` type-only symbols stay out of the docs, but `@internal`
+	// runtime exports are part of the real export map and must be documented
+	// (flagged as internal) so the page can be trusted as an export list.
+	if (isInternal && !isRuntimeExport)
 		return null
 
 	const baseInfo = {
 		name: sym.getName(),
 		description,
-		typeOnly: false,
+		typeOnly: !isRuntimeExport,
+		internal: isInternal,
 		remarks: getTagByName(tags, 'remarks'),
 		examples: getExamples(tags),
 		defaultValue: getTagByName(tags, 'default'),
@@ -438,6 +532,9 @@ function extractExportInfo(sym: ts.Symbol, checker: ts.TypeChecker, pkgDir: stri
 		return {
 			...baseInfo,
 			kind: 'function',
+			// Call-style examples would be misleading for a function that is
+			// only re-exported as a type: the value cannot be imported.
+			examples: isRuntimeExport ? baseInfo.examples : [],
 			params: buildParamInfoList(decl.parameters, tags, checker),
 			returnType: decl.type?.getText(),
 			returnsDescription: getTagByName(tags, 'returns'),
@@ -575,7 +672,7 @@ function extractAugmentations(sourceFile: ts.SourceFile, checker: ts.TypeChecker
 	return augmentations
 }
 
-function extractPackageAPI(pkg: PackageDef, program: ts.Program, checker: ts.TypeChecker): PackageAPIInfo {
+function extractPackageAPI(pkg: PackageDef, program: ts.Program, checker: ts.TypeChecker, valueExportNamesCache: Map<string, Set<string>>): PackageAPIInfo {
 	const entryPath = join(ROOT, 'packages', pkg.dir, 'src/index.ts')
 	const sourceFile = program.getSourceFile(entryPath)
 	if (!sourceFile) {
@@ -591,9 +688,10 @@ function extractPackageAPI(pkg: PackageDef, program: ts.Program, checker: ts.Typ
 
 	const exports: ExportInfo[] = []
 	const relatedSourceSet = new Set<string>([`packages/${pkg.dir}/src/index.ts`])
+	const valueExportNames = collectValueExportNames(sourceFile, checker, valueExportNamesCache)
 
 	for (const sym of checker.getExportsOfModule(moduleSymbol)) {
-		const info = extractExportInfo(sym, checker, pkg.dir)
+		const info = extractExportInfo(sym, checker, pkg.dir, valueExportNames.has(sym.getName()))
 		if (info)
 			exports.push(info)
 
@@ -743,11 +841,23 @@ function pushExamples(lines: string[], examples?: string[]) {
 	}
 }
 
-function pushExportDetail(lines: string[], exp: ExportInfo, localeData: Locale) {
+function pushExportDetail(lines: string[], exp: ExportInfo, localeData: Locale, pkg: PackageDef) {
 	lines.push(`### ${exportHeadingText(exp)} {#${exportAnchor(exp)}}`)
 	lines.push('')
 	lines.push(exp.description || localeData.missingSummary)
 	lines.push('')
+
+	// Interfaces and type aliases are obviously type-only; only value-shaped
+	// declarations (functions, consts, classes) need the explicit warning.
+	if (exp.typeOnly && (exp.kind === 'function' || exp.kind === 'const' || exp.kind === 'class')) {
+		lines.push(localeData.typeOnlyNote(pkg))
+		lines.push('')
+	}
+
+	if (exp.internal) {
+		lines.push(localeData.internalNote)
+		lines.push('')
+	}
 
 	if (exp.resolvedType) {
 		lines.push(`**${localeData.typeCol}:** \`${exp.resolvedType}\``)
@@ -869,10 +979,12 @@ function renderPackagePage(info: PackageAPIInfo, packages: PackageAPIInfo[]): st
 	const lines: string[] = []
 	const guideLink = packageGuideLink(info.pkg)
 	const reExportTarget = info.pkg.reExports ? PACKAGES.find(pkg => pkg.name === info.pkg.reExports) ?? null : null
-	const functions = info.exports.filter(exp => exp.kind === 'function')
-	const constants = info.exports.filter(exp => exp.kind === 'const')
-	const classes = info.exports.filter(exp => exp.kind === 'class')
-	const types = info.exports.filter(exp => exp.kind === 'interface' || exp.kind === 'type' || exp.kind === 'unknown')
+	// Type-only exports (e.g. `export type * from ...` re-exports of plugin
+	// factory functions) belong under Types regardless of declaration kind.
+	const functions = info.exports.filter(exp => exp.kind === 'function' && !exp.typeOnly)
+	const constants = info.exports.filter(exp => exp.kind === 'const' && !exp.typeOnly)
+	const classes = info.exports.filter(exp => exp.kind === 'class' && !exp.typeOnly)
+	const types = info.exports.filter(exp => exp.typeOnly || exp.kind === 'interface' || exp.kind === 'type' || exp.kind === 'unknown')
 
 	lines.push('---')
 	lines.push(`title: ${info.pkg.pageTitle}`)
@@ -924,28 +1036,28 @@ function renderPackagePage(info: PackageAPIInfo, packages: PackageAPIInfo[]): st
 		lines.push(`## ${localeData.functions}`)
 		lines.push('')
 		for (const fn of functions.toSorted((a, b) => a.name.localeCompare(b.name)))
-			pushExportDetail(lines, fn, localeData)
+			pushExportDetail(lines, fn, localeData, info.pkg)
 	}
 
 	if (constants.length > 0) {
 		lines.push(`## ${localeData.constants}`)
 		lines.push('')
 		for (const constant of constants.toSorted((a, b) => a.name.localeCompare(b.name)))
-			pushExportDetail(lines, constant, localeData)
+			pushExportDetail(lines, constant, localeData, info.pkg)
 	}
 
 	if (classes.length > 0) {
 		lines.push(`## ${localeData.classes}`)
 		lines.push('')
 		for (const cls of classes.toSorted((a, b) => a.name.localeCompare(b.name)))
-			pushExportDetail(lines, cls, localeData)
+			pushExportDetail(lines, cls, localeData, info.pkg)
 	}
 
 	if (types.length > 0) {
 		lines.push(`## ${localeData.types}`)
 		lines.push('')
 		for (const typeExport of types.toSorted((a, b) => a.name.localeCompare(b.name)))
-			pushExportDetail(lines, typeExport, localeData)
+			pushExportDetail(lines, typeExport, localeData, info.pkg)
 	}
 
 	if (info.augmentations.length > 0) {
@@ -970,7 +1082,8 @@ const program = createApiProgram()
 const checker = program.getTypeChecker()
 
 console.log('Extracting API info from packages...')
-const packages = PACKAGES.map(pkg => extractPackageAPI(pkg, program, checker))
+const valueExportNamesCache = new Map<string, Set<string>>()
+const packages = PACKAGES.map(pkg => extractPackageAPI(pkg, program, checker, valueExportNamesCache))
 
 for (const info of packages)
 	console.log(`  ${info.pkg.name}: ${info.exports.length} exports, ${info.augmentations.length} augmentations`)

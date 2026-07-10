@@ -165,11 +165,18 @@ function useConfig({
 				ignore: scan.exclude,
 			},
 		)
-		// eslint-disable-next-line no-unreachable-loop
+		const matches: string[] = []
 		for await (const entry of stream) {
-			return join(_cwd, entry)
+			matches.push(join(_cwd, entry))
 		}
-		return null
+		const [first, ...ignored] = matches
+		if (first == null)
+			return null
+		if (ignored.length > 0) {
+			log.warn(`Multiple config files found. Using "${first}" and ignoring: ${ignored.map(path => `"${path}"`)
+				.join(', ')}`)
+		}
+		return first
 	}
 	async function ensureConfigPath(candidatePath: string | null) {
 		if (candidatePath != null)

@@ -97,6 +97,29 @@ Builds a regex that matches module ids whose file extension marks a markup sourc
 <br>
 <br>
 
+### normalizeMarkupExtensions(extensions) {#function-normalizemarkupextensions-extensions}
+
+Normalizes a markup-extension list: strips leading dots, drops empty entries,
+and de-duplicates while preserving first-seen order.
+
+**Internal API.** Tagged `@internal` in the source: exported at runtime, but intended for PikaCSS's own packages and may change without notice.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `extensions` | `string[]` | Markup file extensions, with or without leading dots (e.g. `['.vue', 'html']`). |
+
+**Returns:** `string[]` - The normalized, de-duplicated extension list without leading dots.
+
+**Remarks:**
+
+Single source of truth for extension normalization, shared by
+createMarkupIdRE (markup-mode matcher) and the unplugin default
+`scan.include` glob builder, so the scanned file set and the markup-mode file
+set can never drift apart over dot handling.
+
+<br>
+<br>
+
 ## Constants
 
 ### DEFAULT_MARKUP_EXTENSIONS {#const-default-markup-extensions}

@@ -150,102 +150,55 @@ This is a compile-time-only helper; it has no runtime effect. Using it ensures t
 ```ts
 export default defineEnginePlugin({
   name: 'my-plugin',
-  configureRawConfig: (config) => ({ ...config, important: true }),
+  configureRawConfig: (config) => ({ ...config, important: { default: true } }),
 })
 ```
 
 <br>
 <br>
 
-### extractUsedVarNames(input) {#function-extractusedvarnames-input}
+### escapeRegExp(value) {#function-escaperegexp-value}
 
-Extracts all CSS variable names referenced via `var(--*)` calls in a string.
+Escapes regular expression special characters in a string so it can be embedded in a `RegExp` source as a literal match.
 
-| Parameter | Type | Description |
-|---|---|---|
-| `input` | `string` | The CSS value string to scan. |
-
-**Returns:** `string[]` - An array of variable names (including the `--` prefix) found in `var()` expressions.
-
-**Remarks:**
-
-Uses a global regex to find all `var(--name)` occurrences. Nested `var()` calls are matched independently.
-
-```ts
-extractUsedVarNames('color: var(--primary)')  // ['--primary']
-extractUsedVarNames('var(--a) var(--b)')       // ['--a', '--b']
-```
-
-<br>
-<br>
-
-### extractUsedVarNamesFromPreflightResult(result) {#function-extractusedvarnamesfrompreflightresult-result}
-
-Recursively extracts all CSS variable names referenced in a preflight result.
+**Internal API.** Tagged `@internal` in the source: exported at runtime, but intended for PikaCSS's own packages and may change without notice.
 
 | Parameter | Type | Description |
 |---|---|---|
-| `result` | `string \| PreflightDefinition` | A preflight output: either a raw CSS string or a nested `PreflightDefinition` object. |
-
-**Returns:** `string[]` - A flat array of normalized variable names found in the result.
+| `value` | `string` | The literal text to escape. |
 
 **Remarks:**
 
-For string results, scans for `var(--*)` references. For object results, recursively traverses selector scopes and string/number values. All returned names are normalized with the `--` prefix.
+Runtime substitute for `RegExp.escape()` (available in Node.js >= 24 but not yet typed by TypeScript 5.9). Escapes all regex syntax characters plus `/` and `-`; the extra escapes are identity escapes in non-`u`-flag patterns, so the result is safe to embed in the non-unicode-mode regexes built by the engine and integrations.
 
 ```ts
-extractUsedVarNamesFromPreflightResult({ ':root': { color: 'var(--primary)' } })
-// ['--primary']
+escapeRegExp('i-icon?') // 'i\\-icon\\?'
+new RegExp(`^${escapeRegExp('a.b')}$`).test('a.b') // true
 ```
 
 <br>
 <br>
 
-### important() {#function-important}
+### isPlainObjectRecord(value) {#function-isplainobjectrecord-value}
 
-Built-in engine plugin that appends `!important` to generated CSS declarations.
+Type-narrowing guard that returns `true` when the value is a plain object record (non-null, non-array object).
 
-**Remarks:**
-
-When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default. An explicit `__important` flag is propagated into nested selector blocks (which may override it with their own explicit flag). The `__shortcut` reference is never modified.
-
-```ts
-createEngine({ plugins: [important()] })
-```
-
-<br>
-<br>
-
-### keyframes() {#function-keyframes}
-
-Built-in engine plugin that provides CSS `@keyframes` registration, autocomplete integration, and smart pruning.
-
-**Remarks:**
-
-Reads `EngineConfig.keyframes` during `rawConfigConfigured` and attaches the `engine.keyframes` management interface during `configureEngine`. Unused keyframes are pruned from the output unless `pruneUnused: false` is set on the individual definition or globally.
-
-```ts
-createEngine({ plugins: [keyframes()] })
-```
-
-<br>
-<br>
-
-### normalizeVariableName(name) {#function-normalizevariablename-name}
-
-Ensures a variable name has the `--` prefix.
+**Internal API.** Tagged `@internal` in the source: exported at runtime, but intended for PikaCSS's own packages and may change without notice.
 
 | Parameter | Type | Description |
 |---|---|---|
-| `name` | `string` | The variable name, with or without the `--` prefix. |
+| `value` | `unknown` | The value to test. |
+
+**Returns:** `value is Record<string, unknown>` - `true` if the value is an object that is neither `null` nor an array, narrowing the type to `Record<string, unknown>`.
 
 **Remarks:**
 
-A no-op when the name already starts with `--`.
+Used to distinguish nested definition objects (variables, design tokens) from scalar values and arrays while walking configuration trees.
 
 ```ts
-normalizeVariableName('color')     // '--color'
-normalizeVariableName('--color')   // '--color'
+isPlainObjectRecord({ a: 1 }) // true
+isPlainObjectRecord([1, 2])   // false
+isPlainObjectRecord(null)     // false
 ```
 
 <br>
@@ -275,55 +228,6 @@ renderCSSStyleBlocks(blocks, true)
 <br>
 <br>
 
-### resolveSelectorConfig(config) {#function-resolveselectorconfig-config}
-
-Normalizes a `Selector` configuration into a `ResolvedRuleConfig`, a redirect string, or `undefined`.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `config` | `Selector` | The selector rule configuration to resolve. |
-
-**Remarks:**
-
-Delegates to the generic `resolveRuleConfig` with `'selector'` as the key name.
-
-```ts
-const resolved = resolveSelectorConfig(['hover', '&:hover'])
-```
-
-<br>
-<br>
-
-### selectors() {#function-selectors}
-
-Built-in engine plugin that provides the selector resolution system.
-
-**Remarks:**
-
-Reads `EngineConfig.selectors` during `rawConfigConfigured`, attaches a `RecursiveResolver` to `engine.selectors` during `configureEngine`, and resolves all selector strings in the `transformSelectors` hook.
-
-```ts
-createEngine({ plugins: [selectors()] })
-```
-
-<br>
-<br>
-
-### shortcuts() {#function-shortcuts}
-
-Built-in engine plugin that provides the shortcut resolution system.
-
-**Remarks:**
-
-Reads `EngineConfig.shortcuts` during `rawConfigConfigured`, attaches a `RecursiveResolver` to `engine.shortcuts` during `configureEngine`, and expands shortcut references in both `transformStyleItems` (string style items) and `transformStyleDefinitions` (the `__shortcut` pseudo-property).
-
-```ts
-createEngine({ plugins: [shortcuts()] })
-```
-
-<br>
-<br>
-
 ### sortLayerNames(layers) {#function-sortlayernames-layers}
 
 Sorts layer names by their numeric weight, then alphabetically for ties.
@@ -346,21 +250,6 @@ sortLayerNames({ utilities: 10, preflights: 1 })
 <br>
 <br>
 
-### variables() {#function-variables}
-
-Built-in engine plugin that provides CSS custom properties (variables) with smart pruning and autocomplete integration.
-
-**Remarks:**
-
-Reads `EngineConfig.variables` during `rawConfigConfigured` and attaches the `engine.variables` management interface during `configureEngine`. A preflight is registered that collects variable references from atomic styles and other preflights, transitively expands dependencies, and emits only used (or safe-listed) variables.
-
-```ts
-createEngine({ plugins: [variables()] })
-```
-
-<br>
-<br>
-
 ## Constants
 
 ### log {#const-log}
@@ -374,129 +263,6 @@ Shared across all internal modules. Plugins and integration code can call `log.t
 ```ts
 log.info('Engine created')
 log.warn('Unknown layer detected')
-```
-
-<br>
-<br>
-
-## Classes
-
-### Engine {#class-engine}
-
-The PikaCSS engine: manages atomic style resolution, rendering, preflights, and plugin hooks.
-
-| Property | Type | Description | Default |
-|---|---|---|---|
-| `config` | `ResolvedEngineConfig` | The fully resolved engine configuration. | — |
-| `pluginHooks` | `` | Reference to the plugin hook dispatcher for invoking lifecycle hooks. | — |
-| `extract` | `ExtractFn` | The extraction function that decomposes style definitions into atomic style contents. | — |
-| `store` | `EngineStore` | The engine's runtime store holding registered atomic styles and their ID mappings. | — |
-| `configDependencies` | `Set<string>` | Absolute paths of external files this engine's config depends on (e.g. token files loaded by plugins). | — |
-
-**Methods:**
-
-#### invokePreflight(fn, isFormatted, ctx?)
-
-Invokes a preflight function, memoizing the result in the given render-pass context.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `fn` | `PreflightFn` | The preflight function to invoke. |
-| `isFormatted` | `boolean` | Whether the preflight should produce formatted output. |
-| `ctx?` | `PreflightContext` | The render-pass context created by `renderPreflights`. When provided, each function executes at most once per pass and the context is forwarded to the preflight function. |
-
-**Returns:** `Promise<string \| PreflightDefinition>` - A promise of the preflight result.
-
-#### addConfigDependency(path)
-
-Registers an external file path as a config dependency of this engine.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `path` | `string` | The file path (ideally absolute) the current config was derived from. |
-
-#### notifyPreflightUpdated()
-
-Fires the `preflightUpdated` hook to notify plugins that preflight content has changed.
-
-#### notifyAtomicStyleAdded(atomicStyle)
-
-Fires the `atomicStyleAdded` hook to notify plugins that a new atomic style was registered.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `atomicStyle` | `AtomicStyle` | The atomic style that was just added to the store. |
-
-#### notifyAutocompleteConfigUpdated()
-
-Fires the `autocompleteConfigUpdated` hook to notify plugins that autocomplete entries changed.
-
-#### appendAutocomplete(contribution)
-
-Merges an autocomplete contribution into the resolved autocomplete config.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `contribution` | `AutocompleteContribution` | The autocomplete entries to append (selectors, properties, CSS properties, etc.). |
-
-#### appendCssImport(cssImport)
-
-Appends a CSS `@import` statement to the preflight output.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `cssImport` | `string` | The raw `@import` string (a trailing semicolon is appended if missing). |
-
-#### addPreflight(preflight)
-
-Registers a new preflight that will be rendered before atomic styles.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `preflight` | `Preflight` | A preflight definition: a function, a static string/object, or a wrapper with `layer`/`id` metadata. |
-
-#### use(itemList)
-
-Processes style items through the plugin pipeline and registers the resulting atomic styles in the store.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `itemList` | `InternalStyleItem[]` | Style items to process: string references (shortcuts) and/or style definition objects. |
-
-**Returns:** `Promise<string[]>` - An array containing any unresolved string references first, followed by atomic style IDs in resolution order.
-
-#### renderPreflights(isFormatted, options?)
-
-Renders all registered preflight definitions into a CSS string.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `isFormatted` | `boolean` | Whether to produce human-readable CSS with newlines and indentation. |
-| `options?` | `{ usedAtomicStyleIds?: Iterable<string> }` | Optional render-pass options. |
-
-#### renderAtomicStyles(isFormatted, options?)
-
-Renders atomic styles into a CSS string, optionally filtered by ID and grouped by layer.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `isFormatted` | `boolean` | Whether to produce human-readable CSS with newlines and indentation. |
-| `options?` | `{ atomicStyleIds?: string[], isPreview?: boolean }` | Optional filtering: `atomicStyleIds` to render a subset, `isPreview` to use placeholder IDs. |
-
-#### renderLayerOrderDeclaration()
-
-Renders the CSS `@layer` order declaration for all configured layers.
-
-**Returns:** `string` - A `@layer` statement listing layer names in weight order, or an empty string if no layers are configured.
-
-**Remarks:**
-
-Constructed via `createEngine()`. Holds the resolved configuration, the atomic style store, and exposes methods for processing style items (`use`), rendering CSS output (`renderPreflights`, `renderAtomicStyles`, `renderLayerOrderDeclaration`), and managing runtime extensions (`addPreflight`, `appendAutocomplete`, `appendCssImport`).
-
-```ts
-const engine = await createEngine({ prefix: 'pk-' })
-const ids = await engine.use({ color: 'red' })
-const css = await engine.renderAtomicStyles(true)
 ```
 
 <br>
@@ -718,6 +484,129 @@ declare module '@pikacss/core' {
 <br>
 <br>
 
+### Engine {#class-engine}
+
+The PikaCSS engine: manages atomic style resolution, rendering, preflights, and plugin hooks.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `config` | `ResolvedEngineConfig` | The fully resolved engine configuration. | — |
+| `pluginHooks` | `` | Reference to the plugin hook dispatcher for invoking lifecycle hooks. | — |
+| `extract` | `ExtractFn` | The extraction function that decomposes style definitions into atomic style contents. | — |
+| `store` | `EngineStore` | The engine's runtime store holding registered atomic styles and their ID mappings. | — |
+| `configDependencies` | `Set<string>` | Absolute paths of external files this engine's config depends on (e.g. token files loaded by plugins). | — |
+
+**Methods:**
+
+#### invokePreflight(fn, isFormatted, ctx?)
+
+Invokes a preflight function, memoizing the result in the given render-pass context.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `fn` | `PreflightFn` | The preflight function to invoke. |
+| `isFormatted` | `boolean` | Whether the preflight should produce formatted output. |
+| `ctx?` | `PreflightContext` | The render-pass context created by `renderPreflights`. When provided, each function executes at most once per pass and the context is forwarded to the preflight function. |
+
+**Returns:** `Promise<string \| PreflightDefinition>` - A promise of the preflight result.
+
+#### addConfigDependency(path)
+
+Registers an external file path as a config dependency of this engine.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `path` | `string` | The file path (ideally absolute) the current config was derived from. |
+
+#### notifyPreflightUpdated()
+
+Fires the `preflightUpdated` hook to notify plugins that preflight content has changed.
+
+#### notifyAtomicStyleAdded(atomicStyle)
+
+Fires the `atomicStyleAdded` hook to notify plugins that a new atomic style was registered.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `atomicStyle` | `AtomicStyle` | The atomic style that was just added to the store. |
+
+#### notifyAutocompleteConfigUpdated()
+
+Fires the `autocompleteConfigUpdated` hook to notify plugins that autocomplete entries changed.
+
+#### appendAutocomplete(contribution)
+
+Merges an autocomplete contribution into the resolved autocomplete config.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `contribution` | `AutocompleteContribution` | The autocomplete entries to append (selectors, properties, CSS properties, etc.). |
+
+#### appendCssImport(cssImport)
+
+Appends a CSS `@import` statement to the preflight output.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `cssImport` | `string` | The raw `@import` string (a trailing semicolon is appended if missing). |
+
+#### addPreflight(preflight)
+
+Registers a new preflight that will be rendered before atomic styles.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `preflight` | `Preflight` | A preflight definition: a function, a static string/object, or a wrapper with `layer`/`id` metadata. |
+
+#### use(itemList)
+
+Processes style items through the plugin pipeline and registers the resulting atomic styles in the store.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `itemList` | `InternalStyleItem[]` | Style items to process: string references (shortcuts) and/or style definition objects. |
+
+**Returns:** `Promise<string[]>` - An array containing any unresolved string references first, followed by atomic style IDs in resolution order.
+
+#### renderPreflights(isFormatted, options?)
+
+Renders all registered preflight definitions into a CSS string.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `isFormatted` | `boolean` | Whether to produce human-readable CSS with newlines and indentation. |
+| `options?` | `{ usedAtomicStyleIds?: Iterable<string> }` | Optional render-pass options. |
+
+#### renderAtomicStyles(isFormatted, options?)
+
+Renders atomic styles into a CSS string, optionally filtered by ID and grouped by layer.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `isFormatted` | `boolean` | Whether to produce human-readable CSS with newlines and indentation. |
+| `options?` | `{ atomicStyleIds?: string[], isPreview?: boolean }` | Optional filtering: `atomicStyleIds` to render a subset, `isPreview` to use placeholder IDs. |
+
+#### renderLayerOrderDeclaration()
+
+Renders the CSS `@layer` order declaration for all configured layers.
+
+**Returns:** `string` - A `@layer` statement listing layer names in weight order, or an empty string if no layers are configured.
+
+**Remarks:**
+
+Constructed via `createEngine()`. Holds the resolved configuration, the atomic style store, and exposes methods for processing style items (`use`), rendering CSS output (`renderPreflights`, `renderAtomicStyles`, `renderLayerOrderDeclaration`), and managing runtime extensions (`addPreflight`, `appendAutocomplete`, `appendCssImport`).
+
+```ts
+const engine = await createEngine({ prefix: 'pk-' })
+const ids = await engine.use({ color: 'red' })
+const css = await engine.renderAtomicStyles(true)
+```
+
+<br>
+<br>
+
 ### EngineConfig {#interface-engineconfig}
 
 User-facing configuration object for creating a PikaCSS engine instance via `createEngine()`.
@@ -765,9 +654,47 @@ Plugins implement optional hook methods corresponding to engine lifecycle events
 ```ts
 const myPlugin: EnginePlugin = {
   name: 'my-plugin',
-  configureRawConfig: (config) => ({ ...config, important: true }),
+  configureRawConfig: (config) => ({ ...config, important: { default: true } }),
 }
 ```
+
+<br>
+<br>
+
+### extractUsedVarNames(input) {#function-extractusedvarnames-input}
+
+Extracts all CSS variable names referenced via `var(--*)` calls in a string.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `input` | `string` | The CSS value string to scan. |
+
+**Returns:** `string[]` - An array of variable names (including the `--` prefix) found in `var()` expressions.
+
+**Remarks:**
+
+Uses a global regex to find all `var(--name)` occurrences. Nested `var()` calls are matched independently.
+
+<br>
+<br>
+
+### extractUsedVarNamesFromPreflightResult(result) {#function-extractusedvarnamesfrompreflightresult-result}
+
+Recursively extracts all CSS variable names referenced in a preflight result.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `result` | `string \| PreflightDefinition` | A preflight output: either a raw CSS string or a nested `PreflightDefinition` object. |
+
+**Returns:** `string[]` - A flat array of normalized variable names found in the result.
+
+**Remarks:**
+
+For string results, scans for `var(--*)` references. For object results, recursively traverses selector scopes and string/number values. All returned names are normalized with the `--` prefix.
 
 <br>
 <br>
@@ -800,6 +727,19 @@ Wrapping `Obj` in a tuple prevents distributive collapse when `Obj` is `never`.
 type V = GetValue<{ a: number }, 'a'> // number
 type N = GetValue<{ a: number }, 'b'> // never
 ```
+
+<br>
+<br>
+
+### important() {#function-important}
+
+Built-in engine plugin that appends `!important` to generated CSS declarations.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+**Remarks:**
+
+When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default. An explicit `__important` flag is propagated into nested selector blocks (which may override it with their own explicit flag). The `__shortcut` reference is never modified.
 
 <br>
 <br>
@@ -847,6 +787,19 @@ Wrapping `T` in a tuple prevents distributive conditional behavior that would ot
 type A = IsNever<never>  // true
 type B = IsNever<string> // false
 ```
+
+<br>
+<br>
+
+### keyframes() {#function-keyframes}
+
+Built-in engine plugin that provides CSS `@keyframes` registration, autocomplete integration, and smart pruning.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+**Remarks:**
+
+Reads `EngineConfig.keyframes` during `rawConfigConfigured` and attaches the `engine.keyframes` management interface during `configureEngine`. Unused keyframes are pruned from the output unless `pruneUnused: false` is set on the individual definition or globally.
 
 <br>
 <br>
@@ -914,6 +867,23 @@ const progress: KeyframesProgress = {
   to: { opacity: '1' },
 }
 ```
+
+<br>
+<br>
+
+### normalizeVariableName(name) {#function-normalizevariablename-name}
+
+Ensures a variable name has the `--` prefix.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `name` | `string` | The variable name, with or without the `--` prefix. |
+
+**Remarks:**
+
+A no-op when the name already starts with `--`.
 
 <br>
 <br>
@@ -1101,6 +1071,23 @@ type D = ResolveFrom<{}, 'Foo', string, 'default'>              // 'default'
 <br>
 <br>
 
+### resolveSelectorConfig(config) {#function-resolveselectorconfig-config}
+
+Normalizes a `Selector` configuration into a `ResolvedRuleConfig`, a redirect string, or `undefined`.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `config` | `Selector` | The selector rule configuration to resolve. |
+
+**Remarks:**
+
+Delegates to the generic `resolveRuleConfig` with `'selector'` as the key name.
+
+<br>
+<br>
+
 ### Selector {#type-selector}
 
 User-facing selector rule configuration. Accepts string redirects, tuple shorthands, or object forms.
@@ -1116,10 +1103,23 @@ A dynamic rule's value function may return `undefined`/`null` to signal a retrya
 
 ```ts
 const rules: Selector[] = [
-  ['hover', '&:hover'],
+  ['hover', '$:hover'],
   [/^media-(\d+)$/, m => `@media (min-width: ${m[1]}px)`, 'media-${breakpoint}'],
 ]
 ```
+
+<br>
+<br>
+
+### selectors() {#function-selectors}
+
+Built-in engine plugin that provides the selector resolution system.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+**Remarks:**
+
+Reads `EngineConfig.selectors` during `rawConfigConfigured`, attaches a `RecursiveResolver` to `engine.selectors` during `configureEngine`, and resolves all selector strings in the `transformSelectors` hook.
 
 <br>
 <br>
@@ -1138,7 +1138,7 @@ Passed via `EngineConfig.selectors` to register selector rules at engine creatio
 
 ```ts
 const config: SelectorsConfig = {
-  definitions: [['hover', '&:hover'], ['focus', '&:focus']],
+  definitions: [['hover', '$:hover'], ['focus', '$:focus']],
 }
 ```
 
@@ -1159,6 +1159,19 @@ const rules: Shortcut[] = [
   [/^btn-(.+)$/, m => ({ backgroundColor: m[1] }), 'btn-${color}'],
 ]
 ```
+
+<br>
+<br>
+
+### shortcuts() {#function-shortcuts}
+
+Built-in engine plugin that provides the shortcut resolution system.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+**Remarks:**
+
+Reads `EngineConfig.shortcuts` during `rawConfigConfigured`, attaches a `RecursiveResolver` to `engine.shortcuts` during `configureEngine`, and expands shortcut references in both `transformStyleItems` (string style items) and `transformStyleDefinitions` (the `__shortcut` pseudo-property).
 
 <br>
 <br>
@@ -1357,6 +1370,19 @@ const v: VariableObject = {
   pruneUnused: false,
 }
 ```
+
+<br>
+<br>
+
+### variables() {#function-variables}
+
+Built-in engine plugin that provides CSS custom properties (variables) with smart pruning and autocomplete integration.
+
+**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
+
+**Remarks:**
+
+Reads `EngineConfig.variables` during `rawConfigConfigured` and attaches the `engine.variables` management interface during `configureEngine`. A preflight is registered that collects variable references from atomic styles and other preflights, transitively expands dependencies, and emits only used (or safe-listed) variables.
 
 <br>
 <br>

@@ -253,6 +253,40 @@ describe('createCtx', () => {
 			.toContain('color: orange;')
 	})
 
+	it('warns which config file is loaded and which are ignored when multiple files match', async () => {
+		const cwd = await createTempDir()
+		const candidatePaths = [join(cwd, 'pika.config.ts'), join(cwd, 'pikacss.config.ts')]
+		for (const candidatePath of candidatePaths) {
+			await writeFile(candidatePath, 'export default {}\n')
+		}
+
+		const warn = vi.fn()
+		log.setWarnFn(warn)
+
+		const ctx = createCtx(createOptions({
+			cwd,
+			configOrPath: null,
+			autoCreateConfig: false,
+		}))
+
+		await withProcessCwd(cwd, async () => {
+			await ctx.setup()
+		})
+
+		const loadedPath = ctx.resolvedConfigPath
+		expect(candidatePaths)
+			.toContain(loadedPath)
+		const ignoredPath = candidatePaths.find(candidatePath => candidatePath !== loadedPath)!
+		const warnings = warn.mock.calls.map(call => call.join(' '))
+			.join('\n')
+		expect(warnings)
+			.toContain('Multiple config files found')
+		expect(warnings)
+			.toContain(`Using "${loadedPath}"`)
+		expect(warnings)
+			.toContain(`"${ignoredPath}"`)
+	})
+
 	it('returns undefined when no function call matches and when argument evaluation fails', async () => {
 		const cwd = await createTempDir()
 		const ctx = createCtx(createOptions({ cwd }))

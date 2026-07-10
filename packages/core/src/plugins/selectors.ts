@@ -17,7 +17,7 @@ import { RecursiveResolver, resolveRuleConfig } from '../resolver'
  * @example
  * ```ts
  * const rules: Selector[] = [
- *   ['hover', '&:hover'],
+ *   ['hover', '$:hover'],
  *   [/^media-(\d+)$/, m => `@media (min-width: ${m[1]}px)`, 'media-${breakpoint}'],
  * ]
  * ```
@@ -44,7 +44,7 @@ export type Selector
  * @example
  * ```ts
  * const config: SelectorsConfig = {
- *   definitions: [['hover', '&:hover'], ['focus', '&:focus']],
+ *   definitions: [['hover', '$:hover'], ['focus', '$:focus']],
  * }
  * ```
  */
@@ -147,7 +147,7 @@ class SelectorResolver extends RecursiveResolver<string> {}
  *
  * @example
  * ```ts
- * const resolved = resolveSelectorConfig(['hover', '&:hover'])
+ * const resolved = resolveSelectorConfig(['hover', '$:hover'])
  * ```
  */
 export function resolveSelectorConfig(config: Selector) {
