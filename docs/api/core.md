@@ -395,14 +395,15 @@ The PikaCSS engine: manages atomic style resolution, rendering, preflights, and 
 
 **Methods:**
 
-#### invokePreflight(fn, isFormatted)
+#### invokePreflight(fn, isFormatted, ctx?)
 
-Invokes a preflight function, memoizing the result while a `renderPreflights` pass is active.
+Invokes a preflight function, memoizing the result in the given render-pass context.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `fn` | `PreflightFn` | The preflight function to invoke. |
 | `isFormatted` | `boolean` | Whether the preflight should produce formatted output. |
+| `ctx?` | `PreflightContext` | The render-pass context created by `renderPreflights`. When provided, each function executes at most once per pass and the context is forwarded to the preflight function. |
 
 **Returns:** `Promise<string \| PreflightDefinition>` - A promise of the preflight result.
 
@@ -464,13 +465,14 @@ Processes style items through the plugin pipeline and registers the resulting at
 
 **Returns:** `Promise<string[]>` - An array containing any unresolved string references first, followed by atomic style IDs in resolution order.
 
-#### renderPreflights(isFormatted)
+#### renderPreflights(isFormatted, options?)
 
 Renders all registered preflight definitions into a CSS string.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `isFormatted` | `boolean` | Whether to produce human-readable CSS with newlines and indentation. |
+| `options?` | `{ usedAtomicStyleIds?: Iterable<string> }` | Optional render-pass options. |
 
 #### renderAtomicStyles(isFormatted, options?)
 
@@ -992,11 +994,11 @@ const reset: PreflightDefinition = {
 
 ### PreflightFn {#type-preflightfn}
 
-A function that receives the engine instance and formatting flag, returning CSS text or a `PreflightDefinition` object.
+A function that receives the engine instance, formatting flag, and optional render-pass context, returning CSS text or a `PreflightDefinition` object.
 
 **Remarks:**
 
-Preflight functions are invoked at render time, after all atomic styles have been resolved. This allows them to inspect the engine store (e.g. which variables or keyframes are actually used) and prune unused declarations.
+Preflight functions are invoked at render time, after all atomic styles have been resolved. This allows them to inspect the engine store (e.g. which variables or keyframes are actually used) and prune unused declarations. The optional `ctx` parameter is provided when the invocation happens inside a `renderPreflights` pass; forward it to `engine.invokePreflight()` when invoking other preflights.
 
 ```ts
 const fn: PreflightFn = (engine, isFormatted) => {
@@ -1110,6 +1112,8 @@ User-facing selector rule configuration. Accepts string redirects, tuple shortha
 - **Tuple `[RegExp, fn, autocomplete?]`**: a dynamic rule matching a pattern and lazily computing resolved CSS selectors.
 - **Object `{ selector, value, autocomplete? }`**: an explicit form of either static or dynamic rule.
 
+A dynamic rule's value function may return `undefined`/`null` to signal a retryable-unresolved result: nothing is cached and the rule is re-invoked on a later resolve call (e.g. after a transient failure).
+
 ```ts
 const rules: Selector[] = [
   ['hover', '&:hover'],
@@ -1147,7 +1151,7 @@ User-facing shortcut rule configuration. Accepts string redirects, tuple shortha
 
 **Remarks:**
 
-Shortcuts expand a single name into one or more style items, allowing reusable composition of atomic styles. The configuration shapes mirror `Selector`: string redirect, `[string, value]` static, `[RegExp, fn, autocomplete?]` dynamic, or object equivalents.
+Shortcuts expand a single name into one or more style items, allowing reusable composition of atomic styles. The configuration shapes mirror `Selector`: string redirect, `[string, value]` static, `[RegExp, fn, autocomplete?]` dynamic, or object equivalents. A dynamic rule's value function may return `undefined`/`null` to signal a retryable-unresolved result: nothing is cached and the rule is re-invoked on a later resolve call (e.g. after a transient failure).
 
 ```ts
 const rules: Shortcut[] = [

@@ -57,7 +57,7 @@ The module generates a Nuxt plugin template that imports `pika.css`, so you do n
 
 ### Default Scan Patterns
 
-By default, the module scans `**/*.{js,ts,jsx,tsx,vue}` files. Configure the `scan` option to customize file patterns.
+The module inherits the unplugin default scan patterns: `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}`. Configure the `scan` option to customize file patterns.
 
 ## Config
 

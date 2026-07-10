@@ -5,6 +5,7 @@ outline: [2, 3]
 relatedPackages:
   - '@pikacss/integration'
 relatedSources:
+  - 'packages/integration/src/ctx.transform-utils.ts'
   - 'packages/integration/src/ctx.ts'
   - 'packages/integration/src/index.ts'
   - 'packages/integration/src/types.ts'
@@ -21,7 +22,7 @@ order: 30
 
 - Package: `@pikacss/integration`
 - Generated from the exported surface and JSDoc in `packages/integration/src/index.ts`.
-- Source files: `packages/integration/src/ctx.ts`, `packages/integration/src/index.ts`, `packages/integration/src/types.ts`
+- Source files: `packages/integration/src/ctx.transform-utils.ts`, `packages/integration/src/ctx.ts`, `packages/integration/src/index.ts`, `packages/integration/src/types.ts`
 
 </details>
 
@@ -47,6 +48,36 @@ The context uses reactive signals internally so that computed paths (CSS and TS 
 file paths) automatically update when `cwd` changes. The `setup()` method must be called
 before any transform or codegen operations - transform calls automatically await the
 pending setup promise.
+
+<br>
+<br>
+
+### createMarkupIdRE(extensions?) {#function-createmarkupidre-extensions}
+
+Builds a regex that matches module ids whose file extension marks a markup source.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `extensions?` | `string[]` | File extensions (leading dots optional) to treat as markup sources. Defaults to DEFAULT_MARKUP_EXTENSIONS. |
+
+**Returns:** `RegExp \| null` - A case-insensitive regex matching ids ending with one of the extensions
+(query strings and hashes tolerated), or `null` when the list is empty.
+
+<br>
+<br>
+
+## Constants
+
+### DEFAULT_MARKUP_EXTENSIONS {#const-default-markup-extensions}
+
+File extensions (without the leading dot) treated as markup sources by default.
+
+**Remarks:**
+
+Markup files' top-level syntax is not JavaScript: template attribute values
+are double-quoted from the markup's perspective, so a whole-file
+`stripLiteral()` would blank the very `pika()` calls we need to find. Files
+matching these extensions are scanned in markup mode instead.
 
 <br>
 <br>
@@ -96,6 +127,7 @@ The main build-tool integration context that bridges the PikaCSS engine with bun
 | `hooks` | `{ 		styleUpdated: ReturnType<typeof createEventHook<void>> 		tsCodegenUpdated: ReturnType<typeof createEventHook<void>> 	}` | Event hooks for notifying plugins when generated outputs need refreshing. `styleUpdated` fires on CSS changes; `tsCodegenUpdated` fires on TypeScript declaration changes. | — |
 | `engine` | `Engine` | The initialized PikaCSS engine instance. Throws if accessed before `setup()` completes. | — |
 | `transformFilter` | `{ 		include: string[] 		exclude: string[] 	}` | Glob patterns for the bundler's transform pipeline, derived from the scan config with codegen files excluded. | — |
+| `isTransformTarget` | `(id: string) => boolean` | Returns whether a module id should be transformed, evaluated against the CURRENT `cwd`. | — |
 | `transform` | `(code: string, id: string) => Promise<{ code: string, map: SourceMap } \| Nullish>` | Processes a source file by extracting `pika()` calls, resolving them through the engine, and replacing them with computed output. Returns the transformed code and source map, or `null` if no calls were found. | — |
 | `getCssCodegenContent` | `() => Promise<string \| Nullish>` | Generates the full CSS output string, including layer declarations, preflights, and all atomic styles collected from transforms. | — |
 | `getTsCodegenContent` | `() => Promise<string \| Nullish>` | Generates the full TypeScript declaration content for `pika.gen.ts`, or `null` if TypeScript codegen is disabled. | — |

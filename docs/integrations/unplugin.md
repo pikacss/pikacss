@@ -52,7 +52,8 @@ The Vite entry registers with `enforce: 'pre'`. PikaCSS still runs before framew
 | Property | Description |
 |---|---|
 | cwd | Explicit working directory for path resolution. Overrides the bundler-detected project root. |
-| scan | File glob patterns controlling which source files are scanned for `pika()` call sites. |
+| scan | File glob patterns controlling which source files are scanned for `pika()` call sites. When `scan.include` is not set, the default covers `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}`. |
+| markupExtensions | Additional file extensions scanned in markup mode, merged with the built-in defaults (`vue`, `svelte`, `astro`, `html`, `htm`). Also extends the default `scan.include` glob. |
 | config | PikaCSS engine configuration, either as an inline object or a path to a config module. |
 | autoCreateConfig | When `true`, auto-creates a PikaCSS config file if none is found. |
 | fnName | Function identifier the scanner looks for when extracting call sites. Default: `'pika'`. |

@@ -40,7 +40,8 @@ Integrates PikaCSS into a Nuxt application by registering a Vite plugin
 generated `pika.css` stylesheet.
 
 Configure options under the `pikacss` key in `nuxt.config`. When no
-options are provided, the module scans `**\/*.{js,ts,jsx,tsx,vue}` by default.
+options are provided, the unplugin defaults apply: sources matching
+`**\/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}` are scanned.
 
 <br>
 <br>

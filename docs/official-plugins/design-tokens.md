@@ -13,7 +13,7 @@ order: 50
 
 Convert design tokens into CSS variables through the engine's `variables` system.
 
-The design tokens plugin reads token sources — inline objects, W3C Design Tokens JSON files, or markdown design documents — flattens them into CSS variables, and merges them into the engine's `variables` config. Because tokens flow through the core `variables` system, they inherit unused-pruning, IDE autocomplete, and selector scoping. Loaded token files are registered as engine config dependencies, so build-tool integrations reload when a token file changes.
+The design tokens plugin reads token sources — inline objects, W3C Design Tokens JSON files, or markdown design documents — flattens them into CSS variables, and merges them into the engine's `variables` config. Because tokens flow through the core `variables` system, they inherit unused-pruning, IDE autocomplete, and selector scoping. Token source file paths are registered as engine config dependencies — even when the file is missing — so build-tool integrations reload when a token file changes or is created later.
 
 ::: code-group
 
