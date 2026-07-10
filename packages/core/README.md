@@ -23,7 +23,7 @@ const css = engine.renderAtomicStyles(true, { atomicStyleIds: ids })
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/api/core).
+See the [full documentation](https://pikacss.github.io/api/core).
 
 ## License
 

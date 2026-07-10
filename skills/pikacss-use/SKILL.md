@@ -7,8 +7,8 @@ description: 'Use when working with PikaCSS — the atomic CSS-in-JS engine. Cov
 
 PikaCSS is an instant on-demand atomic CSS-in-JS engine. It generates atomic CSS at **build time** by transforming `pika()` calls in source code into class-name literals. Build-tool plugins handle the transformation, CSS generation, and TypeScript declaration output.
 
-- **Docs**: <https://pikacss.com/getting-started/>
-- **API Reference**: <https://pikacss.com/api/>
+- **Docs**: <https://pikacss.github.io/getting-started/>
+- **API Reference**: <https://pikacss.github.io/api/>
 - **Source**: <https://github.com/pikacss/pikacss>
 
 ## Reference Files

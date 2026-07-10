@@ -7,6 +7,7 @@
 	"version": "0.0.52",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
+	"homepage": "https://pikacss.github.io",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pikacss/pikacss.git",
@@ -33,6 +34,9 @@
 	"files": [
 		"dist"
 	],
+	"engines": {
+		"node": ">=22"
+	},
 	"scripts": {
 		"build": "tsdown",
 		"build:pack": "pnpm build && pnpm pack",

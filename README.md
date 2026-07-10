@@ -32,10 +32,10 @@
   <a href="https://www.npmjs.com/package/@pikacss/core">
     <img src="https://img.shields.io/npm/dm/@pikacss/core?style=flat-square" alt="npm downloads" />
   </a>
-  <a href="https://img.shields.io/bundlephobia/minzip/@pikacss/core?style=flat-square">
+  <a href="https://bundlephobia.com/package/@pikacss/core">
     <img src="https://img.shields.io/bundlephobia/minzip/@pikacss/core?style=flat-square" alt="minzipped size" />
   </a>
-  <a href="https://img.shields.io/github/actions/workflow/status/pikacss/pikacss/ci.yml?style=flat-square">
+  <a href="https://github.com/pikacss/pikacss/actions/workflows/ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/pikacss/pikacss/ci.yml?style=flat-square" alt="ci status" />
   </a>
 </p>
@@ -51,24 +51,50 @@
 ## Introduction
 
 ### What is PikaCSS?
-> PikaCSS is an Atomic CSS-in-JS engine that allow you to write style in CSS-in-JS way and output in Atomic CSS way.
+> PikaCSS is an Atomic CSS-in-JS engine that lets you write styles in a CSS-in-JS way and outputs them as atomic CSS.
 >
 > Inspired by [UnoCSS](https://github.com/unocss/unocss), [WindiCSS](https://github.com/windicss/windicss), [TailwindCSS](https://github.com/tailwindlabs/tailwindcss), [StylifyCSS](https://github.com/stylify) and [Fela.js](https://github.com/robinweser/fela)!
 
-### Why PikaCSS is been created?
+### Why was PikaCSS created?
 <details>
   <summary>Click to 👀 the reason</summary>
 
-> I love the idea of Atomic CSS, there are many great Atomic CSS solutions out there, such as UnoCSS, WindiCSS, TailwindCSS, Stylify, etc.
+> I love the idea of Atomic CSS, and there are many great Atomic CSS solutions out there, such as UnoCSS, WindiCSS, TailwindCSS, Stylify, etc.
 >
-> Unfortunately, I am poor to memorize the utility class names, so UnoCSS, WindiCSS or TailwindCSS is not for me.
+> Unfortunately, I am terrible at memorizing utility class names, so UnoCSS, WindiCSS and TailwindCSS are not for me.
 >
-> I am surprised by the zero learning curve concept of Stylify, but I don't like the idea of using a custom syntax to workaround the limitations of html class attribute.
+> I was impressed by Stylify's zero-learning-curve concept, but I don't like the idea of using a custom syntax to work around the limitations of the HTML class attribute.
 >
-> To solve the problems above, the CSS-in-JS way is the best way to write styles, but it is not the best way to output styles.
+> Given the problems above, CSS-in-JS is the best way to *write* styles, but it is not the best way to *output* them.
 >
-> So I created PikaCSS, it is a Atomic CSS-in-JS engine that allow you to write style in CSS-in-JS way and output in Atomic CSS way!
+> So I created PikaCSS: an Atomic CSS-in-JS engine that lets you write styles in a CSS-in-JS way and outputs them as atomic CSS!
 </details>
+
+---
+
+## Quick Look
+
+Write plain CSS-in-JS:
+
+```ts
+const className = pika({
+  color: 'red',
+  fontSize: '16px',
+})
+```
+
+Get atomic CSS at build time:
+
+```css
+@layer utilities {
+  .pk-a {
+    color: red;
+  }
+  .pk-b {
+    font-size: 16px;
+  }
+}
+```
 
 ---
 
@@ -76,6 +102,7 @@
 
 - 📚 Documentation: <https://pikacss.github.io/>
 - 🛝 Playground (in-browser, no install): <https://pikacss.github.io/playground/>
+- ⚖️ Comparison with UnoCSS / Tailwind CSS / Panda CSS / vanilla-extract: <https://pikacss.github.io/getting-started/comparison>
 
 ---
 
@@ -90,6 +117,12 @@
   > In the simplest case, you just need to know the css property names!
 - 🤖 TypeScript Auto-Completion
   > It has built-in TypeScript support, so you can get auto-completion!
+
+---
+
+## Project Status
+
+PikaCSS is pre-1.0 (`0.0.x`) and under active development. The public API may still change between releases, so pin exact versions if you depend on it. Bug reports and feedback are welcome on the [issue tracker](https://github.com/pikacss/pikacss/issues). See the [documentation](https://pikacss.github.io/) for the current feature set.
 
 ---
 

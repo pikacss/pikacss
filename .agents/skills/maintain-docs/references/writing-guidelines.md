@@ -469,11 +469,11 @@ Each package README follows this structure:
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/<current-docs-route>).
+See the [full documentation](https://pikacss.github.io/<current-docs-route>).
 
 ## License
 
 MIT
 ```
 
-Point the documentation link at the package's current public docs page, following the live section routes such as `https://pikacss.com/integrations/unplugin`, `https://pikacss.com/official-plugins/reset`, `https://pikacss.com/getting-started/eslint-config`, or `https://pikacss.com/api/core` for low-level packages that are primarily documented through the API reference. Do not keep historical legacy guide URLs. Update the affected `packages/*/README.md` when a package's public API or behavior changes. Ensure the usage example still compiles.
+Point the documentation link at the package's current public docs page, following the live section routes such as `https://pikacss.github.io/integrations/unplugin`, `https://pikacss.github.io/official-plugins/reset`, `https://pikacss.github.io/getting-started/eslint-config`, or `https://pikacss.github.io/api/core` for low-level packages that are primarily documented through the API reference. Do not keep historical legacy guide URLs. Update the affected `packages/*/README.md` when a package's public API or behavior changes. Ensure the usage example still compiles.

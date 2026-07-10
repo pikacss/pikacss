@@ -22,7 +22,7 @@ export default defineEngineConfig({
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/official-plugins/reset).
+See the [full documentation](https://pikacss.github.io/official-plugins/reset).
 
 ## License
 

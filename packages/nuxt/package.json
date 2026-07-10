@@ -4,7 +4,7 @@
 	"version": "0.0.52",
 	"author": "DevilTea <ch19980814@gmail.com>",
 	"license": "MIT",
-	"homepage": "https://pikacss.com",
+	"homepage": "https://pikacss.github.io",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/pikacss/pikacss.git",
@@ -43,7 +43,7 @@
 		"dist"
 	],
 	"engines": {
-		"node": ">=24"
+		"node": ">=22"
 	},
 	"scripts": {
 		"build": "tsdown",

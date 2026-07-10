@@ -27,7 +27,7 @@ export default defineEngineConfig({
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/official-plugins/design-tokens).
+See the [full documentation](https://pikacss.github.io/official-plugins/design-tokens).
 
 ## License
 

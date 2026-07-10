@@ -36,7 +36,7 @@ import pikacss from '@pikacss/unplugin-pikacss/webpack'
 
 ## Documentation
 
-See the [full documentation](https://pikacss.com/integrations/unplugin).
+See the [full documentation](https://pikacss.github.io/integrations/unplugin).
 
 ## License
 
