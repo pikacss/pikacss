@@ -145,6 +145,31 @@ describe('variables plugin', () => {
 			.toContain('--sp:4px')
 	})
 
+	it('scopes variable pruning to usedAtomicStyleIds when provided', async () => {
+		const engine = await createEngine({
+			variables: {
+				definitions: {
+					'--used': 'red',
+					'--stale': 'blue',
+				},
+			},
+		})
+
+		const usedIds = await engine.use({ color: 'var(--used)' })
+		await engine.use({ background: 'var(--stale)' })
+
+		const scoped = await engine.renderPreflights(false, { usedAtomicStyleIds: usedIds })
+		expect(scoped)
+			.toContain('--used:red')
+		expect(scoped)
+			.not.toContain('--stale')
+
+		// Without the option the whole store is still considered.
+		const full = await engine.renderPreflights(false)
+		expect(full)
+			.toContain('--stale:blue')
+	})
+
 	it('executes each user preflight function only once per render pass', async () => {
 		const fn = vi.fn(() => ({ body: { color: 'var(--fg)' } }))
 		const engine = await createEngine({

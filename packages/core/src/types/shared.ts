@@ -18,17 +18,18 @@ import type { Nullish } from './utils'
 export interface PikaAugment {}
 
 /**
- * Internal alias for `PropertyValue<string>` used inside the engine where the generic parameter is always `string`.
+ * Internal alias for `PropertyValue<string | number>` used inside the engine.
  * @internal
  *
- * @remarks Avoids repeatedly writing `PropertyValue<string>` in internal utility signatures. Represents a single CSS value, a `[value, fallback[]]` tuple, `null`, or `undefined`.
+ * @remarks Avoids repeatedly writing `PropertyValue<string | number>` in internal utility signatures. Represents a single CSS value, a `[value, fallback[]]` tuple, `null`, or `undefined`. Numbers are accepted because the csstype-based input types allow numeric values such as `0`; they are converted to strings during normalization.
  *
  * @example
  * ```ts
  * const val: InternalPropertyValue = ['red', ['blue', 'green']]
+ * const zero: InternalPropertyValue = 0
  * ```
  */
-export type InternalPropertyValue = PropertyValue<string>
+export type InternalPropertyValue = PropertyValue<string | number>
 
 /**
  * Internal alias for the resolved `Properties` type used inside the engine.

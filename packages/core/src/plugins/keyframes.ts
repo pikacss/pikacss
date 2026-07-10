@@ -149,9 +149,14 @@ export function keyframes() {
 			engine.keyframes.add(...configList)
 
 			// Add preflight
-			engine.addPreflight((engine) => {
+			engine.addPreflight((engine, _isFormatted, ctx) => {
 				const maybeUsedName = new Set<string>()
-				engine.store.atomicStyles.forEach(({ content: { property, value } }) => {
+				// When the render pass scopes usage to specific atomic style ids,
+				// ignore the rest of the append-only store so stale styles do not
+				// keep keyframes alive.
+				engine.store.atomicStyles.forEach(({ content: { property, value } }, id) => {
+					if (ctx?.usedAtomicStyleIds != null && ctx.usedAtomicStyleIds.has(id) === false)
+						return
 					if (property === 'animation-name') {
 						value.forEach(name => addToSet(maybeUsedName, ...name.split(',')
 							.map(v => v.trim())))

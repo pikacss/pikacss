@@ -4,7 +4,7 @@ import {
 	ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL,
 	hasAtomicStyleIdPlaceholder,
 } from './constants'
-import { isPropertyValue, toKebab } from './utils'
+import { isPropertyValue, toKebab, transformOutsideQuotes } from './utils'
 
 function replaceBySplitAndJoin(
 	str: string,
@@ -24,32 +24,6 @@ const DEFAULT_SELECTOR_PLACEHOLDER_RE_GLOBAL = /\$/g
 const ATTRIBUTE_SUFFIX_MATCH = '$='
 const ATTRIBUTE_SUFFIX_MATCH_RE_GLOBAL = /\$=/g
 
-/**
- * Applies a transform to the parts of a selector outside quoted segments,
- * leaving single- and double-quoted content (e.g. attribute values) untouched.
- */
-function transformOutsideQuotes(str: string, transform: (segment: string) => string): string {
-	let result = ''
-	let segmentStart = 0
-	for (let i = 0; i < str.length; i++) {
-		const ch = str[i]!
-		if (ch === '"' || ch === '\'') {
-			result += transform(str.slice(segmentStart, i))
-			let j = i + 1
-			while (j < str.length && str[j] !== ch) {
-				if (str[j] === '\\')
-					j++
-				j++
-			}
-			const end = Math.min(j, str.length - 1)
-			result += str.slice(i, end + 1)
-			i = end
-			segmentStart = i + 1
-		}
-	}
-	result += transform(str.slice(segmentStart))
-	return result
-}
 /**
  * Normalizes selector strings by replacing placeholders (`$` → `defaultSelector`, `%` → atomic style ID placeholder) and splitting comma-separated selectors.
  * @internal
@@ -104,11 +78,12 @@ export function normalizeSelectors({
  * @param value - The raw property value to normalize.
  * @returns An array of CSS value strings (fallbacks first, primary last), or `null`/`undefined` for removal.
  *
- * @remarks For tuple values `[primary, fallbacks]`, duplicates among fallbacks are removed and the primary value is appended last so CSS cascade uses it as the effective value while older browsers fall back to earlier entries.
+ * @remarks For tuple values `[primary, fallbacks]`, duplicates among fallbacks are removed and the primary value is appended last so CSS cascade uses it as the effective value while older browsers fall back to earlier entries. Numeric values (e.g. `0`) are converted to strings.
  *
  * @example
  * ```ts
  * normalizeValue('red')                 // ['red']
+ * normalizeValue(0)                     // ['0']
  * normalizeValue(['red', ['blue']])     // ['blue', 'red']
  * normalizeValue(null)                  // null
  * ```
@@ -119,11 +94,13 @@ export function normalizeValue(value: InternalPropertyValue): ExtractedStyleCont
 
 	if (Array.isArray(value)) {
 		const [primary, fallbacks] = value
-		const p = primary.trim()
+		const p = String(primary)
+			.trim()
 		const seen = new Set<string>([p])
 		const result: string[] = []
 		for (const v of fallbacks) {
-			const s = v.trim()
+			const s = String(v)
+				.trim()
 			if (!seen.has(s)) {
 				seen.add(s)
 				result.push(s)
@@ -133,7 +110,8 @@ export function normalizeValue(value: InternalPropertyValue): ExtractedStyleCont
 		return result
 	}
 
-	return [value.trim()]
+	return [String(value)
+		.trim()]
 }
 
 /**

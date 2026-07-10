@@ -26,6 +26,14 @@ describe('normalizeSelectors', () => {
 		}))
 			.toEqual(['@supports (width: 50%)'])
 	})
+
+	it('treats escaped quotes outside quoted segments as literal characters', () => {
+		expect(normalizeSelectors({
+			selectors: ['.it\\\'s $', '.a\\"b $'],
+			defaultSelector: '.%',
+		}))
+			.toEqual(['.it\\\'s .%', '.a\\"b .%'])
+	})
 })
 
 describe('normalizeValue', () => {
@@ -36,6 +44,13 @@ describe('normalizeValue', () => {
 			.toEqual(['red'])
 		expect(normalizeValue([' 1rem ', [' 2rem ', '1rem', ' 2rem ']]))
 			.toEqual(['2rem', '1rem'])
+	})
+
+	it('converts numeric values and numeric fallback tuples to strings', () => {
+		expect(normalizeValue(0))
+			.toEqual(['0'])
+		expect(normalizeValue(['auto', [0]]))
+			.toEqual(['0', 'auto'])
 	})
 })
 

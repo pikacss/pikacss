@@ -30,8 +30,13 @@ declare module '@pikacss/core' {
 	}
 }
 
-function appendImportant(v: string): string {
-	return v.endsWith('!important') ? v : `${v} !important`
+// The CSS `!important` keyword is ASCII case-insensitive and may be followed
+// by whitespace; whitespace is also allowed between `!` and `important`.
+const TRAILING_IMPORTANT_RE = /!\s*important\s*$/i
+
+function appendImportant(v: string | number): string {
+	const value = String(v)
+	return TRAILING_IMPORTANT_RE.test(value) ? value : `${value} !important`
 }
 
 function modifyPropertyValue(value: InternalPropertyValue): InternalPropertyValue {

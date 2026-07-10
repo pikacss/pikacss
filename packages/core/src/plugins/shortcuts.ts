@@ -1,6 +1,6 @@
 import type { Engine } from '../engine'
 import type { DynamicRule, StaticRule } from '../resolver'
-import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, ResolvedStyleItem } from '../types'
+import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, Nullish, ResolvedStyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { RecursiveResolver, resolveRuleConfig } from '../resolver'
 import { isNotString } from '../utils'
@@ -8,7 +8,7 @@ import { isNotString } from '../utils'
 /**
  * User-facing shortcut rule configuration. Accepts string redirects, tuple shorthands, or object forms.
  *
- * @remarks Shortcuts expand a single name into one or more style items, allowing reusable composition of atomic styles. The configuration shapes mirror `Selector`: string redirect, `[string, value]` static, `[RegExp, fn, autocomplete?]` dynamic, or object equivalents.
+ * @remarks Shortcuts expand a single name into one or more style items, allowing reusable composition of atomic styles. The configuration shapes mirror `Selector`: string redirect, `[string, value]` static, `[RegExp, fn, autocomplete?]` dynamic, or object equivalents. A dynamic rule's value function may return `undefined`/`null` to signal a retryable-unresolved result: nothing is cached and the rule is re-invoked on a later resolve call (e.g. after a transient failure).
  *
  * @example
  * ```ts
@@ -20,10 +20,10 @@ import { isNotString } from '../utils'
  */
 export type Shortcut
 	= | string
-		| [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>, autocomplete?: Arrayable<string>]
+		| [shortcut: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem> | Nullish>, autocomplete?: Arrayable<string>]
 		| {
 			shortcut: RegExp
-			value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem>>
+			value: (matched: RegExpMatchArray) => Awaitable<Arrayable<ResolvedStyleItem> | Nullish>
 			autocomplete?: Arrayable<string>
 		}
 		| [shortcut: string, value: Arrayable<ResolvedStyleItem>]
@@ -147,11 +147,18 @@ export function shortcuts() {
 			const result: InternalStyleDefinition[] = []
 			for (const styleDefinition of styleDefinitions) {
 				if ('__shortcut' in styleDefinition) {
-					const { __shortcut, ...rest } = styleDefinition as InternalStyleDefinition & { __shortcut?: unknown }
+					const { __shortcut, ...rest } = styleDefinition as InternalStyleDefinition & { __shortcut?: unknown, __important?: boolean | null }
+					// Propagate an explicitly set `__important` flag onto the expanded
+					// definitions so the important plugin (which runs after shortcut
+					// expansion) treats them like the original call. An expanded
+					// definition's own explicit flag still wins.
+					const explicitImportant = rest.__important ?? null
 					const applied: InternalStyleDefinition[] = []
 					for (const shortcut of ((__shortcut == null ? [] : [__shortcut].flat(1)) as string[])) {
 						const resolved: InternalStyleDefinition[] = (await engine.shortcuts.resolver.resolve(shortcut)).filter(isNotString)
-						applied.push(...resolved)
+						applied.push(...(explicitImportant == null
+							? resolved
+							: resolved.map(definition => ({ __important: explicitImportant, ...definition } as unknown as InternalStyleDefinition))))
 					}
 					result.push(...applied, rest)
 				}

@@ -41,6 +41,31 @@ describe('keyframes plugin', () => {
 			.toContain('@keyframes spin')
 	})
 
+	it('scopes keyframes pruning to usedAtomicStyleIds when provided', async () => {
+		const engine = await createEngine({
+			keyframes: {
+				definitions: [
+					['spin', { from: { rotate: '0deg' }, to: { rotate: '360deg' } }],
+					['fade', { from: { opacity: '0' }, to: { opacity: '1' } }],
+				],
+			},
+		})
+
+		const usedIds = await engine.use({ animationName: 'spin' })
+		await engine.use({ animationName: 'fade' })
+
+		const scoped = await engine.renderPreflights(false, { usedAtomicStyleIds: usedIds })
+		expect(scoped)
+			.toContain('@keyframes spin')
+		expect(scoped)
+			.not.toContain('@keyframes fade')
+
+		// Without the option the whole store is still considered.
+		const full = await engine.renderPreflights(false)
+		expect(full)
+			.toContain('@keyframes fade')
+	})
+
 	it('accepts runtime string keyframes as autocomplete-only entries without registering frames', async () => {
 		const engine = await createEngine()
 

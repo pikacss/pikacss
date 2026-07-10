@@ -146,4 +146,28 @@ describe('important plugin', () => {
 				{ color: 'red !important', margin: ['1rem !important', ['2rem !important']] },
 			])
 	})
+
+	it('detects existing !important annotations case-insensitively and with whitespace', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: true } })
+
+		expect(plugin.transformStyleDefinitions?.([
+			{ color: 'red !IMPORTANT', background: 'red !important ', border: 'red ! important', outline: 'red' },
+		] as any))
+			.toEqual([
+				{ color: 'red !IMPORTANT', background: 'red !important ', border: 'red ! important', outline: 'red !important' },
+			])
+	})
+
+	it('appends !important to numeric property values', () => {
+		const plugin = important()
+		plugin.rawConfigConfigured?.({ important: { default: true } })
+
+		expect(plugin.transformStyleDefinitions?.([
+			{ margin: 0, padding: ['auto', [0]] },
+		] as any))
+			.toEqual([
+				{ margin: '0 !important', padding: ['auto !important', ['0 !important']] },
+			])
+	})
 })

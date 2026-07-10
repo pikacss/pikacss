@@ -53,7 +53,7 @@ export interface StaticRule<T> {
  *
  * @typeParam T - The type of the resolved value.
  *
- * @remarks Dynamic rules are tried in registration order after all static rules fail to match. The `stringPattern` must not have the global flag (it is stripped on creation). The `createResolved` callback receives the regex match array and may be async.
+ * @remarks Dynamic rules are tried in registration order after all static rules fail to match. The `stringPattern` must not have the global flag (it is stripped on creation). The `createResolved` callback receives the regex match array and may be async. Returning `undefined` or `null` signals a retryable-unresolved result: the input is treated as unresolved and no cache entry is stored, so a later resolve call re-invokes the rule (e.g. after a transient failure such as a network error).
  *
  * @example
  * ```ts
@@ -69,8 +69,8 @@ export interface DynamicRule<T> {
 	key: string
 	/** Regex pattern (without global flag) tested against input strings. */
 	stringPattern: RegExp
-	/** Factory function that computes the resolved value from the regex match. */
-	createResolved: (matched: RegExpMatchArray) => Awaitable<T>
+	/** Factory function that computes the resolved value from the regex match. Returning `undefined`/`null` means retryable-unresolved: nothing is cached and the rule is re-invoked on a later resolve call. */
+	createResolved: (matched: RegExpMatchArray) => Awaitable<T | Nullish>
 }
 
 /**
@@ -204,7 +204,7 @@ export abstract class AbstractResolver<T> {
 	 * @param string - The input string to resolve.
 	 * @returns The resolved result wrapper, or `null`/`undefined` if no rule matches.
 	 *
-	 * @remarks Results are cached for subsequent calls. Invokes `onResolved` after a successful match. Dynamic rule matching is async because `createResolved` may return a `Promise`.
+	 * @remarks Results are cached for subsequent calls. Invokes `onResolved` after a successful match. Dynamic rule matching is async because `createResolved` may return a `Promise`. When a dynamic rule's `createResolved` returns `undefined`/`null`, the input is treated as unresolved and no cache entry is stored, so a later resolve call re-invokes the rule.
 	 *
 	 * @example
 	 * ```ts
@@ -239,8 +239,15 @@ export abstract class AbstractResolver<T> {
 			}
 		}
 		if (dynamicRule != null && matched != null) {
+			const value = await dynamicRule.createResolved(matched)
+			if (value == null) {
+				// Retryable-unresolved: do not cache, so a later resolve call
+				// re-invokes the rule (e.g. after a transient failure).
+				log.debug(`Dynamic rule "${dynamicRule.key}" returned no value for "${string}", treating as unresolved (not cached)`)
+				return void 0
+			}
 			log.debug(`Resolved by dynamic rule: ${dynamicRule.key}`)
-			const resolvedResult = { value: await dynamicRule.createResolved(matched) }
+			const resolvedResult = { value }
 			this._resolvedResultsMap.set(string, resolvedResult)
 			this.onResolved(string, 'dynamic', resolvedResult)
 			return resolvedResult
@@ -354,6 +361,17 @@ export type ResolvedRuleConfig<T>
 	= | { type: 'static', rule: StaticRule<T[]>, autocomplete: string[] }
 		| { type: 'dynamic', rule: DynamicRule<T[]>, autocomplete: string[] }
 
+function createDynamicResolvedFactory<T>(fn: (matched: RegExpMatchArray) => unknown) {
+	return async (match: RegExpMatchArray): Promise<T[] | Nullish> => {
+		const value = await fn(match)
+		// Preserve the retryable-unresolved signal: a nullish value from the
+		// rule's value function means "unresolved, do not cache".
+		if (value == null)
+			return value as Nullish
+		return [value].flat(1) as T[]
+	}
+}
+
 /**
  * Normalizes a user-supplied rule shorthand into a `ResolvedRuleConfig`, a plain redirect string, or `undefined`.
  * @internal
@@ -367,6 +385,8 @@ export type ResolvedRuleConfig<T>
  * - **String**: returned as-is for the caller to treat as a redirect to another rule.
  * - **Tuple**: `[string, T | T[]]` for static rules, `[RegExp, fn, autocomplete?]` for dynamic rules.
  * - **Object**: `{ [keyName]: string | RegExp, value: T | fn, autocomplete?: string[] }`.
+ *
+ * A dynamic rule's value function may return `undefined`/`null` to signal a retryable-unresolved result: the resolver treats the input as unresolved and stores no cache entry, so the rule is re-invoked on a later resolve call.
  *
  * @example
  * ```ts
@@ -398,7 +418,7 @@ export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRule
 				rule: {
 					key: config[0].source,
 					stringPattern: stripGlobalFlag(config[0]),
-					createResolved: async match => [await fn(match)].flat(1) as T[],
+					createResolved: createDynamicResolvedFactory<T>(fn),
 				},
 				autocomplete: config[2] != null ? [config[2]].flat(1) : [],
 			}
@@ -429,7 +449,7 @@ export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRule
 			rule: {
 				key: configKey.source,
 				stringPattern: stripGlobalFlag(configKey),
-				createResolved: async match => [await fn(match)].flat(1) as T[],
+				createResolved: createDynamicResolvedFactory<T>(fn),
 			},
 			autocomplete: ('autocomplete' in config && config.autocomplete != null)
 				? [config.autocomplete].flat(1)

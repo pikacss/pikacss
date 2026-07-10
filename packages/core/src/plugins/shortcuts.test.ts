@@ -52,4 +52,21 @@ describe('shortcuts plugin', () => {
 		expect(await engine.renderAtomicStyles(false, { atomicStyleIds: secondIds }))
 			.toContain('color:blue;')
 	})
+
+	it('propagates an explicit __important flag onto shortcut-expanded definitions', async () => {
+		const engine = await createEngine({
+			important: { default: false },
+			shortcuts: {
+				definitions: [['btn', { display: 'flex' }]],
+			},
+		})
+
+		const ids = await engine.use({ __shortcut: 'btn', __important: true, color: 'red' } as any)
+		const css = await engine.renderAtomicStyles(false, { atomicStyleIds: ids })
+
+		expect(css)
+			.toContain('display:flex !important;')
+		expect(css)
+			.toContain('color:red !important;')
+	})
 })

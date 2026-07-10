@@ -1,3 +1,4 @@
+import type { PreflightFn } from './types'
 import { describe, expect, it } from 'vitest'
 
 import { calcAtomicStyleRenderingWeight, createEngine, Engine, renderAtomicStyles, renderPreflightDefinition, resolveEngineConfig, resolvePreflight, resolveStyleItemList, sortLayerNames } from './engine'
@@ -479,5 +480,76 @@ describe('engine helpers', () => {
 		const suggestions = engine.config.autocomplete.cssProperties.get('*') ?? []
 		expect(suggestions.filter(s => s === 'var(--x)'))
 			.toHaveLength(1)
+	})
+
+	it('accepts numeric property values and numeric fallback tuples', async () => {
+		const engine = await createEngine()
+
+		const marginIds = await engine.use({ margin: 0 })
+		const tupleIds = await engine.use({ padding: ['auto', [0]] })
+
+		expect(marginIds)
+			.toHaveLength(1)
+		expect(await engine.renderAtomicStyles(false, { atomicStyleIds: marginIds }))
+			.toContain(`.${marginIds[0]}{margin:0;}`)
+		expect(tupleIds)
+			.toHaveLength(1)
+		expect(await engine.renderAtomicStyles(false, { atomicStyleIds: tupleIds }))
+			.toContain(`.${tupleIds[0]}{padding:0;padding:auto;}`)
+	})
+
+	it('treats quoted percent signs as literal content and appends the default selector', async () => {
+		const engine = await createEngine()
+
+		const ids = await engine.use({ '[data-content="%"]': { color: 'red' } })
+		const css = await engine.renderAtomicStyles(false, { atomicStyleIds: ids })
+
+		expect(css)
+			.toContain(`[data-content="%"]{.${ids[0]}{color:red;}}`)
+	})
+
+	it('substitutes real placeholders while leaving quoted percent signs untouched', async () => {
+		const engine = await createEngine()
+
+		const ids = await engine.use({ '[data-content="%"] $': { color: 'red' } })
+		const css = await engine.renderAtomicStyles(false, { atomicStyleIds: ids })
+
+		expect(css)
+			.toContain(`[data-content="%"] .${ids[0]}{color:red;}`)
+	})
+
+	it('normalizes selectors containing CSS-escaped quotes outside quoted segments', async () => {
+		const engine = await createEngine()
+
+		const ids = await engine.use({ '.it\\\'s $': { color: 'red' } })
+		const css = await engine.renderAtomicStyles(false, { atomicStyleIds: ids })
+
+		expect(css)
+			.toContain(`.it\\'s .${ids[0]}{color:red;}`)
+	})
+
+	it('memoizes preflight invocations per render pass even when passes overlap', async () => {
+		const engine = await createEngine()
+		let executions = 0
+		const counted: PreflightFn = async () => {
+			executions++
+			return ''
+		}
+		engine.addPreflight(counted)
+		// Mimics the variables pruning preflight: it awaits, then invokes
+		// another preflight through the render-pass context.
+		engine.addPreflight(async (engine, isFormatted, ctx) => {
+			await new Promise(resolve => setTimeout(resolve, 30))
+			await engine.invokePreflight(counted, isFormatted, ctx)
+			return ''
+		})
+
+		const first = engine.renderPreflights(false)
+		await new Promise(resolve => setTimeout(resolve, 10))
+		const second = engine.renderPreflights(false)
+		await Promise.all([first, second])
+
+		expect(executions)
+			.toBe(2)
 	})
 })

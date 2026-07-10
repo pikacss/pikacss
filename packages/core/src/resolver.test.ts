@@ -106,6 +106,28 @@ describe('recursiveResolver', () => {
 		expect(resolver._resolvedResultsMap.get('broken'))
 			.toEqual({ value: ['updated'] })
 	})
+
+	it('does not cache unresolved dynamic rule results so they can be retried', async () => {
+		const resolver = new StringResolver()
+		let calls = 0
+		const config = resolveRuleConfig<string>([/^icon-(.+)$/, (matched: RegExpMatchArray) => {
+			calls++
+			return calls === 1 ? undefined : `resolved-${matched[1]}`
+		}], 'selector')
+		resolver.addDynamicRule((config as any).rule)
+
+		// First attempt fails (value fn returns undefined): unresolved and uncached.
+		expect(await resolver.resolve('icon-a'))
+			.toEqual(['icon-a'])
+		expect(resolver._resolvedResultsMap.has('icon-a'))
+			.toBe(false)
+
+		// Second attempt succeeds because the rule is re-invoked.
+		expect(await resolver.resolve('icon-a'))
+			.toEqual(['resolved-a'])
+		expect(calls)
+			.toBe(2)
+	})
 })
 
 describe('resolveRuleConfig', () => {

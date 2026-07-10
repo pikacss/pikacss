@@ -207,21 +207,25 @@ export function variables() {
 
 			engine.addPreflight({
 				id: 'core:variables',
-				preflight: async (engine, isFormatted) => {
+				preflight: async (engine, isFormatted, ctx) => {
 					const used = new Set<string>()
 
-					// 1. Collect vars referenced by atomic styles.
-					engine.store.atomicStyles.forEach(({ content: { value } }) => {
+					// 1. Collect vars referenced by atomic styles. When the render pass
+					// scopes usage to specific atomic style ids, ignore the rest of the
+					// append-only store so stale styles do not keep variables alive.
+					engine.store.atomicStyles.forEach(({ content: { value } }, id) => {
+						if (ctx?.usedAtomicStyleIds != null && ctx.usedAtomicStyleIds.has(id) === false)
+							return
 						value.flatMap(extractUsedVarNames)
 							.forEach(name => used.add(normalizeVariableName(name)))
 					})
 
 					// 2. Collect vars referenced by other preflights (skip self to avoid
-					// recursion). `invokePreflight` memoizes per render pass, so each
-					// preflight function still executes only once per render.
+					// recursion). `invokePreflight` memoizes per render-pass context, so
+					// each preflight function still executes only once per render.
 					const otherPreflights = engine.config.preflights.filter(p => p.id !== 'core:variables')
 					const preflightResults = await Promise.all(
-						otherPreflights.map(({ fn }) => engine.invokePreflight(fn, isFormatted)
+						otherPreflights.map(({ fn }) => engine.invokePreflight(fn, isFormatted, ctx)
 							.catch(() => null)),
 					)
 					preflightResults.forEach((result) => {

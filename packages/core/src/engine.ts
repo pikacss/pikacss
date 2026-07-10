@@ -1,8 +1,8 @@
 import type { EngineStore } from './atomic-style'
 import type { ExtractFn } from './extractor'
-import type { AtomicStyle, AutocompleteContribution, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
+import type { AtomicStyle, AutocompleteContribution, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightContext, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
 import { createEngineStore, getAtomicStyleBaseKey, optimizeAtomicStyleContents, resolveAtomicStyle } from './atomic-style'
-import { ATOMIC_STYLE_ID_PLACEHOLDER, ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, DEFAULT_ATOMIC_STYLE_ID_PREFIX, hasAtomicStyleIdPlaceholder, LAYER_SELECTOR_PREFIX } from './constants'
+import { ATOMIC_STYLE_ID_PLACEHOLDER, DEFAULT_ATOMIC_STYLE_ID_PREFIX, hasAtomicStyleIdPlaceholder, LAYER_SELECTOR_PREFIX, replaceAtomicStyleIdPlaceholder } from './constants'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
 import { hooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
@@ -154,13 +154,6 @@ export class Engine {
 	configDependencies: Set<string> = new Set()
 
 	/**
-	 * Per-render memoization of preflight function invocations.
-	 *
-	 * @remarks Non-null only while `renderPreflights` is running. Ensures each preflight function executes at most once per render, even when plugins (e.g. the variables pruning preflight) need to inspect other preflights' output.
-	 */
-	private _activePreflightInvocations: Map<PreflightFn, Promise<string | PreflightDefinition>> | null = null
-
-	/**
 	 * Creates an engine instance from a resolved configuration.
 	 *
 	 * @param config - The fully resolved engine configuration.
@@ -184,31 +177,31 @@ export class Engine {
 	}
 
 	/**
-	 * Invokes a preflight function, memoizing the result while a `renderPreflights` pass is active.
+	 * Invokes a preflight function, memoizing the result in the given render-pass context.
 	 *
 	 * @param fn - The preflight function to invoke.
 	 * @param isFormatted - Whether the preflight should produce formatted output.
+	 * @param ctx - The render-pass context created by `renderPreflights`. When provided, each function executes at most once per pass and the context is forwarded to the preflight function.
 	 * @returns A promise of the preflight result.
 	 *
-	 * @remarks During a render pass each function executes at most once; concurrent callers (e.g. the variables pruning preflight scanning other preflights for `var()` usage) share the same promise. Outside a render pass the function is invoked directly without caching.
+	 * @remarks Within one render pass each function executes at most once; concurrent callers (e.g. the variables pruning preflight scanning other preflights for `var()` usage) share the same promise. The memoization is scoped to `ctx`, so overlapping `renderPreflights` calls never interfere with each other. Without a context the function is invoked directly without caching.
 	 *
 	 * @example
 	 * ```ts
-	 * const result = await engine.invokePreflight(preflight.fn, false)
+	 * const result = await engine.invokePreflight(preflight.fn, false, ctx)
 	 * ```
 	 */
-	invokePreflight(fn: PreflightFn, isFormatted: boolean): Promise<string | PreflightDefinition> {
-		const cache = this._activePreflightInvocations
-		if (cache == null) {
+	invokePreflight(fn: PreflightFn, isFormatted: boolean, ctx?: PreflightContext): Promise<string | PreflightDefinition> {
+		if (ctx == null) {
 			return Promise.resolve()
 				.then(() => fn(this, isFormatted))
 		}
 
-		let invocation = cache.get(fn)
+		let invocation = ctx.invocations.get(fn)
 		if (invocation == null) {
 			invocation = Promise.resolve()
-				.then(() => fn(this, isFormatted))
-			cache.set(fn, invocation)
+				.then(() => fn(this, isFormatted, ctx))
+			ctx.invocations.set(fn, invocation)
 		}
 		return invocation
 	}
@@ -379,37 +372,39 @@ export class Engine {
 	 * Renders all registered preflight definitions into a CSS string.
 	 *
 	 * @param isFormatted - Whether to produce human-readable CSS with newlines and indentation.
+	 * @param options - Optional render-pass options.
+	 * @param options.usedAtomicStyleIds - Atomic style IDs considered "in use" for this pass. When provided, pruning preflights (variables, keyframes) only consider these atomic styles instead of the whole append-only store; when omitted, all stored atomic styles are considered.
 	 * @returns The rendered preflight CSS, including `@import` statements, optional `@layer` wrappers, and all preflight content.
 	 *
-	 * @remarks Evaluates each preflight function, groups output by layer, wraps unlayered preflights in the default preflights layer (when present), and respects configured layer ordering.
+	 * @remarks Evaluates each preflight function, groups output by layer, wraps unlayered preflights in the default preflights layer (when present), and respects configured layer ordering. Each call creates its own `PreflightContext`, so within one pass each preflight function executes exactly once even when passes overlap.
 	 *
 	 * @example
 	 * ```ts
 	 * const css = await engine.renderPreflights(true)
+	 * const scoped = await engine.renderPreflights(true, { usedAtomicStyleIds: ['pk-a'] })
 	 * ```
 	 */
-	async renderPreflights(isFormatted: boolean) {
+	async renderPreflights(isFormatted: boolean, options: { usedAtomicStyleIds?: Iterable<string> } = {}) {
 		log.debug('Rendering preflights...')
 		const lineEnd = isFormatted ? '\n' : ''
 
-		this._activePreflightInvocations = new Map()
-		let rendered: { layer?: string, css: string }[]
-		try {
-			rendered = (await Promise.all(
-				this.config.preflights.map(async ({ layer, fn }) => {
-					const result = await this.invokePreflight(fn, isFormatted)
-					const css = (
-						typeof result === 'string'
-							? result
-							: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
-					).trim()
-					return { layer, css }
-				}),
-			)).filter(r => r.css)
+		const ctx: PreflightContext = {
+			invocations: new Map(),
+			usedAtomicStyleIds: options.usedAtomicStyleIds == null
+				? undefined
+				: new Set(options.usedAtomicStyleIds),
 		}
-		finally {
-			this._activePreflightInvocations = null
-		}
+		const rendered = (await Promise.all(
+			this.config.preflights.map(async ({ layer, fn }) => {
+				const result = await this.invokePreflight(fn, isFormatted, ctx)
+				const css = (
+					typeof result === 'string'
+						? result
+						: await renderPreflightDefinition({ engine: this, preflightDefinition: result, isFormatted })
+				).trim()
+				return { layer, css }
+			}),
+		)).filter(r => r.css)
 		log.debug(`Rendered ${rendered.length} preflights`)
 
 		const { unlayeredParts, layerGroups } = groupRenderedPreflightsByLayer(rendered)
@@ -858,7 +853,7 @@ function renderAtomicStylesCss({ atomicStyles, isPreview, isFormatted }: {
 			const renderObject = {
 				selector: isPreview
 					? selector
-					: selector.map(s => s.replace(ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL, () => id)),
+					: selector.map(s => replaceAtomicStyleIdPlaceholder(s, id)),
 				properties: value.map(v => ({ property, value: v })),
 			}
 

@@ -20,9 +20,36 @@ export type PreflightDefinition = {
 }
 
 /**
- * A function that receives the engine instance and formatting flag, returning CSS text or a `PreflightDefinition` object.
+ * Per-render-pass context threaded through preflight invocations by `engine.renderPreflights()`.
  *
- * @remarks Preflight functions are invoked at render time, after all atomic styles have been resolved. This allows them to inspect the engine store (e.g. which variables or keyframes are actually used) and prune unused declarations.
+ * @remarks Each `renderPreflights` call creates its own context, so overlapping render passes never share memoization state. Preflight functions that invoke other preflights (e.g. the variables pruning preflight) must forward the context to `engine.invokePreflight()` to keep the "each preflight function runs exactly once per pass" invariant.
+ *
+ * @example
+ * ```ts
+ * const fn: PreflightFn = async (engine, isFormatted, ctx) => {
+ *   const other = await engine.invokePreflight(otherFn, isFormatted, ctx)
+ *   return ''
+ * }
+ * ```
+ */
+export interface PreflightContext {
+	/**
+	 * Per-pass memoization of preflight function invocations.
+	 * @internal
+	 */
+	invocations: Map<PreflightFn, Promise<string | PreflightDefinition>>
+	/**
+	 * Atomic style IDs considered "in use" for this render pass. When set, pruning preflights (variables, keyframes) only consider these atomic styles; when omitted, the whole store is considered.
+	 *
+	 * @default undefined
+	 */
+	usedAtomicStyleIds?: ReadonlySet<string>
+}
+
+/**
+ * A function that receives the engine instance, formatting flag, and optional render-pass context, returning CSS text or a `PreflightDefinition` object.
+ *
+ * @remarks Preflight functions are invoked at render time, after all atomic styles have been resolved. This allows them to inspect the engine store (e.g. which variables or keyframes are actually used) and prune unused declarations. The optional `ctx` parameter is provided when the invocation happens inside a `renderPreflights` pass; forward it to `engine.invokePreflight()` when invoking other preflights.
  *
  * @example
  * ```ts
@@ -31,7 +58,7 @@ export type PreflightDefinition = {
  * }
  * ```
  */
-export type PreflightFn = (engine: Engine, isFormatted: boolean) => Awaitable<string | PreflightDefinition>
+export type PreflightFn = (engine: Engine, isFormatted: boolean, ctx?: PreflightContext) => Awaitable<string | PreflightDefinition>
 
 /**
  * Normalized preflight entry after resolution, with an optional layer scope and a stable identifier for deduplication.

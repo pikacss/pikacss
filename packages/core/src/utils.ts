@@ -199,19 +199,25 @@ export function isNotString<V>(value: V): value is Exclude<V, string> {
 	return typeof value !== 'string'
 }
 
+function isPropertyValueScalar(v: unknown): v is string | number {
+	return typeof v === 'string' || typeof v === 'number'
+}
+
 /**
- * Tests whether a value conforms to the `InternalPropertyValue` shape: a string, a `[value, fallback[]]` tuple, or nullish.
+ * Tests whether a value conforms to the `InternalPropertyValue` shape: a string, a number, a `[value, fallback[]]` tuple, or nullish.
  * @internal
  *
  * @param v - The value to inspect.
  * @returns `true` if the value is a valid property value.
  *
- * @remarks During extraction, the engine uses this guard to distinguish CSS property values from nested selector objects or style item arrays.
+ * @remarks During extraction, the engine uses this guard to distinguish CSS property values from nested selector objects or style item arrays. Numbers are accepted because the csstype-based input types allow numeric values such as `0`; they are converted to strings during value normalization.
  *
  * @example
  * ```ts
  * isPropertyValue('red')                  // true
+ * isPropertyValue(0)                       // true
  * isPropertyValue(['red', ['blue']])       // true
+ * isPropertyValue(['auto', [0]])           // true
  * isPropertyValue(null)                    // true
  * isPropertyValue({ color: 'red' })        // false
  * ```
@@ -219,18 +225,60 @@ export function isNotString<V>(value: V): value is Exclude<V, string> {
 export function isPropertyValue(v: unknown): v is InternalPropertyValue {
 	if (Array.isArray(v)) {
 		return v.length === 2
-			&& typeof v[0] === 'string'
+			&& isPropertyValueScalar(v[0])
 			&& Array.isArray(v[1])
-			&& v[1].every(i => typeof i === 'string')
+			&& v[1].every(isPropertyValueScalar)
 	}
 
 	if (v == null)
 		return true
 
-	if (typeof v === 'string')
-		return true
+	return isPropertyValueScalar(v)
+}
 
-	return false
+/**
+ * Applies a transform to the parts of a string outside quoted segments,
+ * leaving single- and double-quoted content (e.g. attribute values) untouched.
+ * @internal
+ *
+ * @param str - The string to scan.
+ * @param transform - Transform applied to each unquoted segment.
+ * @returns The reassembled string with transformed unquoted segments and untouched quoted segments.
+ *
+ * @remarks A backslash-escaped character is treated as a literal both inside and outside quoted segments, so a CSS-escaped quote in an identifier (e.g. `.it\'s`) never starts quoted-segment scanning.
+ *
+ * @example
+ * ```ts
+ * transformOutsideQuotes('[data-x="%"] %', s => s.replace(/%/g, 'pk-a'))
+ * // '[data-x="%"] pk-a'
+ * ```
+ */
+export function transformOutsideQuotes(str: string, transform: (segment: string) => string): string {
+	let result = ''
+	let segmentStart = 0
+	for (let i = 0; i < str.length; i++) {
+		const ch = str[i]!
+		if (ch === '\\') {
+			// Escaped character: literal, stays part of the current unquoted segment.
+			i++
+			continue
+		}
+		if (ch === '"' || ch === '\'') {
+			result += transform(str.slice(segmentStart, i))
+			let j = i + 1
+			while (j < str.length && str[j] !== ch) {
+				if (str[j] === '\\')
+					j++
+				j++
+			}
+			const end = Math.min(j, str.length - 1)
+			result += str.slice(i, end + 1)
+			i = end
+			segmentStart = i + 1
+		}
+	}
+	result += transform(str.slice(segmentStart))
+	return result
 }
 
 /**

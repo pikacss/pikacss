@@ -1,6 +1,6 @@
 import type { Engine } from '../engine'
 import type { DynamicRule, StaticRule } from '../resolver'
-import type { Arrayable, Awaitable, ResolvedSelector, UnionString } from '../types'
+import type { Arrayable, Awaitable, Nullish, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { RecursiveResolver, resolveRuleConfig } from '../resolver'
 
@@ -13,6 +13,8 @@ import { RecursiveResolver, resolveRuleConfig } from '../resolver'
  * - **Tuple `[RegExp, fn, autocomplete?]`**: a dynamic rule matching a pattern and lazily computing resolved CSS selectors.
  * - **Object `{ selector, value, autocomplete? }`**: an explicit form of either static or dynamic rule.
  *
+ * A dynamic rule's value function may return `undefined`/`null` to signal a retryable-unresolved result: nothing is cached and the rule is re-invoked on a later resolve call (e.g. after a transient failure).
+ *
  * @example
  * ```ts
  * const rules: Selector[] = [
@@ -23,11 +25,11 @@ import { RecursiveResolver, resolveRuleConfig } from '../resolver'
  */
 export type Selector
 	= | string
-		| [selector: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>, autocomplete?: Arrayable<string>]
+		| [selector: RegExp, value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector> | Nullish>, autocomplete?: Arrayable<string>]
 		| [selector: string, value: Arrayable<UnionString | ResolvedSelector>]
 		| {
 			selector: RegExp
-			value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector>>
+			value: (matched: RegExpMatchArray) => Awaitable<Arrayable<UnionString | ResolvedSelector> | Nullish>
 			autocomplete?: Arrayable<string>
 		}
 		| {
