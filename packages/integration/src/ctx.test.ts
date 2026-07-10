@@ -598,6 +598,36 @@ describe('createCtx', () => {
 			.toHaveLength(2)
 	})
 
+	it('keeps single-quoted output for a double-quoted attribute containing a string comparison', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			scan: {
+				include: ['src/**/*.vue'],
+				exclude: [],
+			},
+		}))
+
+		await ctx.setup()
+
+		// Regression: the `== 'dark'` comparison used to make the quote detector
+		// pick `"`, emitting a double-quoted literal into the double-quoted
+		// attribute and breaking it. The literal must stay single-quoted.
+		const transformed = await ctx.transform([
+			'<template>',
+			'\t<div :class="mode == \'dark\' ? pika({ color: \'white\' }) : \'\'">x</div>',
+			'</template>',
+		].join('\n'), 'src/App.vue')
+
+		expect(transformed?.code)
+			.toMatch(/\?\s*'[^"]*'\s*:/)
+		// The double-quoted :class attribute is not closed early by the literal.
+		expect(transformed?.code)
+			.not.toMatch(/:class="[^"]*"[^"]*"/)
+		expect(ctx.usages.get('src/App.vue'))
+			.toHaveLength(1)
+	})
+
 	it('extends markup mode with user-supplied extensions while keeping the defaults', async () => {
 		const cwd = await createTempDir()
 		const ctx = createCtx(createOptions({

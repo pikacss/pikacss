@@ -3,7 +3,7 @@ import { log } from '@pikacss/core'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createFnUtils, createMarkupIdRE, detectEnclosingAttributeQuote, findFunctionCalls, findTemplateExpressionEnd } from './ctx.transform-utils'
+import { createFnUtils, createMarkupIdRE, detectEnclosingAttributeQuote, findFunctionCalls, findTemplateExpressionEnd, normalizeMarkupExtensions } from './ctx.transform-utils'
 
 afterEach(() => {
 	vi.restoreAllMocks()
@@ -113,6 +113,25 @@ describe('createMarkupIdRE', () => {
 	})
 })
 
+describe('normalizeMarkupExtensions', () => {
+	it('strips leading dots, drops empties, and dedupes preserving order', () => {
+		expect(normalizeMarkupExtensions(['.vue', 'vue', '..riot', 'svelte', '.', '', 'svelte']))
+			.toEqual(['vue', 'riot', 'svelte'])
+	})
+
+	it('matches the extension set createMarkupIdRE recognizes (single source of truth)', () => {
+		// Regression: the unplugin default-glob builder and createMarkupIdRE both
+		// normalize through this helper, so a multi-dot input can no longer end up
+		// scanned-but-not-markup-processed (or vice versa).
+		const input = ['..riot', 'marko']
+		const re = createMarkupIdRE(input)!
+		for (const ext of normalizeMarkupExtensions(input)) {
+			expect(re.test(`/p/App.${ext}`))
+				.toBe(true)
+		}
+	})
+})
+
 describe('detectEnclosingAttributeQuote', () => {
 	it('detects the enclosing attribute quote for markup call sites', () => {
 		const doubleQuoted = '<div :class="pika({ color: \'red\' })">'
@@ -131,6 +150,32 @@ describe('detectEnclosingAttributeQuote', () => {
 	it('skips paired quotes inside the enclosing attribute expression', () => {
 		const nested = '<div :class=\'cond("x") ? pika({}) : fallback\'>'
 		expect(detectEnclosingAttributeQuote(nested, nested.indexOf('pika')))
+			.toBe('\'')
+	})
+
+	it('ignores comparison operators so a string comparison does not shadow the attribute quote', () => {
+		// Regression: `==` before a string literal made the scan latch onto the
+		// comparison's quote, so a double-quoted attribute got a double-quoted
+		// literal emitted into it and broke the markup.
+		const eq = '<div :class="mode == \'dark\' ? pika({ color: \'white\' }) : x">'
+		expect(detectEnclosingAttributeQuote(eq, eq.indexOf('pika')))
+			.toBe('"')
+
+		const strictEq = '<div :class="mode === \'dark\' ? pika({}) : x">'
+		expect(detectEnclosingAttributeQuote(strictEq, strictEq.indexOf('pika')))
+			.toBe('"')
+
+		const notEq = '<div :class="mode != \'dark\' ? pika({}) : x">'
+		expect(detectEnclosingAttributeQuote(notEq, notEq.indexOf('pika')))
+			.toBe('"')
+
+		const gte = '<div :class="count >= \'0\' ? pika({}) : x">'
+		expect(detectEnclosingAttributeQuote(gte, gte.indexOf('pika')))
+			.toBe('"')
+
+		// Single-quoted attribute with a double-quoted comparison stays single.
+		const singleAttr = '<div :class=\'mode == "dark" ? pika({}) : x\'>'
+		expect(detectEnclosingAttributeQuote(singleAttr, singleAttr.indexOf('pika')))
 			.toBe('\'')
 	})
 

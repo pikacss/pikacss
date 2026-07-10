@@ -3,7 +3,7 @@ import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
 import { readFileSync } from 'node:fs'
 import process from 'node:process'
-import { createCtx, DEFAULT_MARKUP_EXTENSIONS, log } from '@pikacss/integration'
+import { createCtx, DEFAULT_MARKUP_EXTENSIONS, log, normalizeMarkupExtensions } from '@pikacss/integration'
 import { resolve } from 'pathe'
 import { debounce } from 'perfect-debounce'
 import { createUnplugin } from 'unplugin'
@@ -64,11 +64,10 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		'ts',
 		'jsx',
 		'tsx',
-		...new Set(
-			[...DEFAULT_MARKUP_EXTENSIONS, ...(markupExtensions ?? [])]
-				.map(ext => ext.replace(/^\./, ''))
-				.filter(ext => ext.length > 0),
-		),
+		// Same normalization (strip leading dots, dedupe) that `createMarkupIdRE`
+		// uses, so the default scan glob and the markup-mode matcher never select
+		// different file sets.
+		...normalizeMarkupExtensions([...DEFAULT_MARKUP_EXTENSIONS, ...(markupExtensions ?? [])]),
 	]
 	const defaultInclude = [`**/*.{${defaultIncludeExtensions.join(',')}}`]
 

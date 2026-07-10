@@ -184,7 +184,7 @@ export class Engine {
 	 * @param ctx - The render-pass context created by `renderPreflights`. When provided, each function executes at most once per pass and the context is forwarded to the preflight function.
 	 * @returns A promise of the preflight result.
 	 *
-	 * @remarks Within one render pass each function executes at most once; concurrent callers (e.g. the variables pruning preflight scanning other preflights for `var()` usage) share the same promise. The memoization is scoped to `ctx`, so overlapping `renderPreflights` calls never interfere with each other. Without a context the function is invoked directly without caching.
+	 * @remarks Within one render pass each function executes at most once; concurrent callers (e.g. the variables pruning preflight scanning other preflights for `var()` usage) share the same promise. The memoization is scoped to `ctx`, so overlapping `renderPreflights` calls never interfere with each other. Without a context the function is invoked directly without caching — this is a deliberate change from the previous instance-scoped memoization, which could not tell overlapping passes apart. A preflight that inspects other preflights must therefore forward the `ctx` it receives (its third argument); calling with only `(fn, isFormatted)` from inside a pass runs `fn` again instead of reusing the pass result.
 	 *
 	 * @example
 	 * ```ts

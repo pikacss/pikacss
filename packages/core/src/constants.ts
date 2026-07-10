@@ -46,6 +46,15 @@ const ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL = /(?<!\d)%/g
  * @internal
  */
 function hasAtomicStyleIdPlaceholder(selector: string): boolean {
+	// Fast path (the common case): no quotes means nothing to protect, so test
+	// the whole selector directly instead of allocating a rebuilt copy via
+	// transformOutsideQuotes. With no quote the transform runs on the whole
+	// string once anyway, so this is behavior-identical.
+	if (!selector.includes('"') && !selector.includes('\'')) {
+		ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL.lastIndex = 0
+		return ATOMIC_STYLE_ID_PLACEHOLDER_RE_GLOBAL.test(selector)
+	}
+
 	let found = false
 	transformOutsideQuotes(selector, (segment) => {
 		if (found === false) {

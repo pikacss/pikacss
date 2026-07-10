@@ -193,6 +193,29 @@ function isPrecededByFunctionKeyword(code: string, position: number): boolean {
 export const DEFAULT_MARKUP_EXTENSIONS = ['vue', 'svelte', 'astro', 'html', 'htm']
 
 /**
+ * Normalizes a markup-extension list: strips leading dots, drops empty entries,
+ * and de-duplicates while preserving first-seen order.
+ * @internal
+ *
+ * @remarks Single source of truth for extension normalization, shared by
+ * {@link createMarkupIdRE} (markup-mode matcher) and the unplugin default
+ * `scan.include` glob builder, so the scanned file set and the markup-mode file
+ * set can never drift apart over dot handling.
+ */
+export function normalizeMarkupExtensions(extensions: string[]): string[] {
+	const seen = new Set<string>()
+	const result: string[] = []
+	for (const ext of extensions) {
+		const normalized = ext.replace(/^\.+/, '')
+		if (normalized.length === 0 || seen.has(normalized))
+			continue
+		seen.add(normalized)
+		result.push(normalized)
+	}
+	return result
+}
+
+/**
  * Builds a regex that matches module ids whose file extension marks a markup source.
  *
  * @param extensions - File extensions (leading dots optional) to treat as markup sources.
@@ -201,9 +224,8 @@ export const DEFAULT_MARKUP_EXTENSIONS = ['vue', 'svelte', 'astro', 'html', 'htm
  * (query strings and hashes tolerated), or `null` when the list is empty.
  */
 export function createMarkupIdRE(extensions: string[] = DEFAULT_MARKUP_EXTENSIONS): RegExp | null {
-	const escaped = extensions
-		.map(ext => escapeRegExp(ext.replace(/^\.+/, '')))
-		.filter(ext => ext.length > 0)
+	const escaped = normalizeMarkupExtensions(extensions)
+		.map(escapeRegExp)
 	if (escaped.length === 0)
 		return null
 	return new RegExp(`\\.(?:${escaped.join('|')})(?:[?#]|$)`, 'i')
@@ -246,13 +268,17 @@ function blankMarkupNonCode(code: string): string {
  * @returns The enclosing attribute's quote character, or `null` when none is found.
  *
  * @remarks
- * Scans backwards from `position` for the nearest quote directly preceded by `=`
- * (whitespace allowed), which marks the opening of an attribute value; the scan
- * stops at a tag-open `<`. Quotes inside the enclosing attribute expression come
- * in pairs, so the backward scan lands on the attribute quote itself.
- * limit: an unpaired quote inside the attribute expression (e.g. a string
- * literal containing a lone quote char) can yield the wrong quote; a full
- * markup parse is the upgrade path.
+ * Scans backwards from `position` for the nearest quote that opens an attribute
+ * value — a quote directly preceded by a lone `=` (whitespace allowed) whose own
+ * preceding char is not another operator char. Rejecting `==`/`===`/`>=`/`<=`/`!=`
+ * means an in-expression comparison against a string literal (e.g.
+ * `:class="mode == 'dark' ? pika(...) : ..."`) no longer latches onto the
+ * comparison's quote; the scan continues to the real attribute quote. The scan
+ * stops at a tag-open `<`.
+ * limit: a bare JS assignment inside the attribute expression (`foo = 'x'`) is
+ * indistinguishable from an attribute `foo='x'` by this heuristic, and an
+ * unpaired quote inside the expression can still mislead it; a full markup parse
+ * is the upgrade path.
  */
 export function detectEnclosingAttributeQuote(code: string, position: number): '"' | '\'' | null {
 	for (let i = position - 1; i >= 0; i--) {
@@ -264,8 +290,17 @@ export function detectEnclosingAttributeQuote(code: string, position: number): '
 		let j = i - 1
 		while (j >= 0 && /\s/.test(code[j]!))
 			j--
-		if (j >= 0 && code[j] === '=')
-			return char
+		if (j < 0 || code[j] !== '=')
+			continue
+		// The `=` must open an attribute (`name=`), not be part of a comparison
+		// operator (`==`, `===`, `>=`, `<=`, `!=`): its own preceding non-space
+		// char must not be another operator char.
+		let k = j - 1
+		while (k >= 0 && /\s/.test(code[k]!))
+			k--
+		if (k >= 0 && (code[k] === '=' || code[k] === '<' || code[k] === '>' || code[k] === '!'))
+			continue
+		return char
 	}
 	return null
 }

@@ -22,6 +22,19 @@ vi.mock('@pikacss/integration', () => ({
 	createCtx: mockCreateCtx,
 	log: mockLog,
 	DEFAULT_MARKUP_EXTENSIONS: ['vue', 'svelte', 'astro', 'html', 'htm'],
+	// Mirrors the real helper: strip leading dots, drop empties, dedupe in order.
+	normalizeMarkupExtensions: (extensions: string[]) => {
+		const seen = new Set<string>()
+		const result: string[] = []
+		for (const ext of extensions) {
+			const normalized = ext.replace(/^\.+/, '')
+			if (normalized.length === 0 || seen.has(normalized))
+				continue
+			seen.add(normalized)
+			result.push(normalized)
+		}
+		return result
+	},
 }))
 
 vi.mock('perfect-debounce', () => ({
