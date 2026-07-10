@@ -2,11 +2,11 @@
 
 PikaCSS is an instant on-demand atomic CSS-in-JS engine. This file is the canonical always-on instruction source for agents working in the repository.
 
-Keep repository-wide rules here. The workspace-level [.github/copilot-instructions.md](.github/copilot-instructions.md) file exists only as a thin compatibility forwarder for tools that expect that fixed path.
+Keep repository-wide rules here.
 
 ## Control Plane
 
-Use this file as the repository-level control plane for Copilot customization.
+Use this file as the repository-level control plane for agent customization.
 
 - Keep always-on repository rules, routing guidance, and cross-skill boundaries here.
 - Keep workflow-specific detail inside the relevant skill.
