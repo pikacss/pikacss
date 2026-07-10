@@ -6,6 +6,8 @@ relatedPackages:
 relatedSources:
   - 'packages/core/src/engine.ts'
   - 'packages/core/src/types/public.ts'
+  - 'packages/integration/src/ctx.ts'
+  - 'packages/integration/src/tsCodegen.ts'
 category: getting-started
 order: 30
 ---
@@ -13,6 +15,66 @@ order: 30
 # Usage
 
 Write styles using CSS property names in JavaScript objects, and PikaCSS transforms them into atomic CSS at build time.
+
+## Your First Styled Component
+
+No configuration is needed beyond the [Setup](/getting-started/setup) steps — call the `pika` global directly in your component. Do not import it: the build plugin replaces every call at build time.
+
+::: code-group
+
+```vue [Vue]
+<!-- App.vue -->
+<script setup lang="ts">
+const buttonClass = pika({
+  padding: '0.5rem 1rem',
+  border: 'none',
+  borderRadius: '8px',
+  backgroundColor: '#3b82f6',
+  color: 'white',
+  cursor: 'pointer',
+  '$:hover': {
+    backgroundColor: '#2563eb',
+  },
+})
+</script>
+
+<template>
+  <button :class="buttonClass">Click me</button>
+</template>
+```
+
+```tsx [React]
+// Button.tsx
+const buttonClass = pika({
+  padding: '0.5rem 1rem',
+  border: 'none',
+  borderRadius: '8px',
+  backgroundColor: '#3b82f6',
+  color: 'white',
+  cursor: 'pointer',
+  '$:hover': {
+    backgroundColor: '#2563eb',
+  },
+})
+
+export function Button() {
+  return <button className={buttonClass}>Click me</button>
+}
+```
+
+:::
+
+At build time the plugin replaces the `pika()` call with a plain string literal of the generated class names:
+
+```ts
+const buttonClass = 'pk-a pk-b pk-c pk-d pk-e pk-f pk-g'
+```
+
+Transformed calls always use single-quoted string literals, so the replacement stays valid even inside a double-quoted Vue template attribute such as `:class="pika({ ... })"`.
+
+Each declaration becomes its own atomic class in the generated CSS (imported through `import 'pika.css'`):
+
+<<< @/.examples/getting-started/first-component.example.pikaout.css [pika.gen.css]
 
 ## pika() Variants
 
@@ -29,7 +91,7 @@ const className = pika({ color: 'red', fontSize: '16px' })
 
 ### pika.str()
 
-Explicit string variant. Identical to `pika()` — returns a space-separated string of class names. Useful when you want to be explicit about the return type.
+Explicit string variant. Always returns a space-separated string of class names, even when the integration is configured with `transformedFormat: 'array'` — under the default `transformedFormat: 'string'` it behaves identically to `pika()`.
 
 ```ts
 const className = pika.str({ color: 'red' })
@@ -53,6 +115,8 @@ Preview variant for development. Works the same as `pika()`, but triggers a live
 // Save the file to see the generated CSS preview
 const className = pikap({ color: 'red' })
 ```
+
+The preview appears in your editor: for every saved `pikap()` call, the integration writes a JSDoc overload containing the rendered CSS into the generated `pika.gen.ts`, so hovering the call shows the CSS in the type tooltip. This requires `tsCodegen` to be enabled (the default) and the generated file to be part of your TypeScript program — see [Generated Files](/getting-started/setup#generated-files).
 
 ::: tip
 All variants accept the same arguments — they only differ in return type. The ESLint plugin validates all variants equally.
@@ -98,7 +162,20 @@ Use `@media` queries as keys for responsive breakpoints:
 
 ### Custom Selectors
 
-Use custom selector names defined in your engine config:
+Use custom selector names defined in your engine config. This example requires the `@dark` selector to be registered first:
+
+```ts
+// pika.config.ts
+import { defineEngineConfig } from '@pikacss/core'
+
+export default defineEngineConfig({
+  selectors: {
+    definitions: [
+      ['@dark', 'html.dark $'],
+    ],
+  },
+})
+```
 
 ::: code-group
 

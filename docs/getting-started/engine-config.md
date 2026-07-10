@@ -12,7 +12,7 @@ order: 40
 
 # Engine Config
 
-The engine configuration controls every aspect of PikaCSS. Create a `pika.config.ts` file in your project root:
+The engine configuration controls every aspect of PikaCSS. Note that the first dev run auto-creates a `pika.config.js` for you (see [Setup](/getting-started/setup#pika-config-js)) — edit that file, or replace it with a `pika.config.ts`. Never keep both: only the first matching config file is loaded.
 
 ```ts
 import { defineEngineConfig } from '@pikacss/core'
@@ -29,14 +29,18 @@ export default defineEngineConfig({
 | Property | Description |
 |---|---|
 | prefix | Class name prefix prepended to every generated atomic class name. Default: `'pk-'`. |
-| defaultSelector | CSS selector template for atomic styles. `$` is replaced with the generated class ID. Default: `'.$'`. |
+| defaultSelector | CSS selector template for atomic styles. `%` is replaced with the generated atomic class ID, so the template must contain `%`. Default: `'.%'`. |
 | plugins | Array of engine plugins to load in resolution order. See [Plugin Development](/plugin-development/create-a-plugin). |
 | layers | Map of CSS `@layer` names to numeric priorities. Lower numbers render earlier. See [Layers](/customizations/layers). |
 | defaultPreflightsLayer | Layer name for preflight styles. Default: `'preflights'`. |
 | defaultUtilitiesLayer | Layer name for atomic utility styles. Default: `'utilities'`. |
 | preflights | Base styles injected before utilities. See [Preflights](/customizations/preflights). |
 | cssImports | Array of CSS `@import` rules included at the top of generated output. |
-| important | When `true`, all generated declarations include `!important`. See [Important](/customizations/important). |
+| important | When set to `{ default: true }`, all generated declarations include `!important`. See [Important](/customizations/important). |
+
+::: tip Two placeholders
+`%` is the atomic class ID slot used inside `defaultSelector` (e.g. `'.%'` becomes `.pk-abc`), while `$` is the nested-selector slot used inside style definitions and custom selectors — it expands to the whole `defaultSelector`.
+:::
 
 ### Customizations
 
@@ -60,6 +64,7 @@ These fields are added by official plugins via [type augmentation](/plugin-devel
 | typography | See [Typography plugin](/official-plugins/typography). |
 | icons | See [Icons plugin](/official-plugins/icons). |
 | fonts | See [Fonts plugin](/official-plugins/fonts). |
+| designTokens | See [Design Tokens plugin](/official-plugins/design-tokens). |
 
 > See [API Reference — Core](/api/core) for full type signatures and defaults.
 

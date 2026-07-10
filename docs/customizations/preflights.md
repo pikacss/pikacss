@@ -20,7 +20,7 @@ A preflight entry can be:
 
 - A raw CSS string
 - A structured definition object (key-value CSS properties)
-- An async factory function that receives the engine instance
+- A function `(engine, isFormatted, ctx) => ...` (sync or async) that returns CSS text or a definition object
 
 ## Config
 
@@ -28,6 +28,9 @@ A preflight entry can be:
 import { defineEngineConfig } from '@pikacss/core'
 
 export default defineEngineConfig({
+  // Required for the `layer: 'base'` preflight below
+  layers: { base: 0 },
+
   preflights: [
     // Raw CSS string
     '*, *::before, *::after { box-sizing: border-box; }',
@@ -47,12 +50,18 @@ export default defineEngineConfig({
     },
 
     // Async factory function
-    async (engine, isFormatted) => {
+    async (engine, isFormatted, ctx) => {
       return '/* dynamic preflight */'
     },
   ],
 })
 ```
+
+::: warning Layered preflights need a registered layer
+A preflight wrapped with `layer` must have that layer registered in `config.layers` (the example above registers `base` at order `0`, before the default `preflights: 1` and `utilities: 10`). An unregistered layer is left out of the generated `@layer` order declaration, and per CSS `@layer` semantics it would then be ordered *after* all declared layers — base styles would override your utilities.
+:::
+
+Preflight functions receive a third `ctx` argument during a `renderPreflights` pass. A preflight that invokes other preflights must forward it to `engine.invokePreflight(fn, isFormatted, ctx)` so each preflight function still runs exactly once per render pass.
 
 ## Examples
 

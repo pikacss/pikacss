@@ -26,10 +26,13 @@ export const sidebar: DefaultTheme.SidebarItem[] = [
 		text: 'Getting Started',
 		items: [
 			{ text: 'What is PikaCSS', link: '/getting-started/what-is-pikacss' },
+			{ text: 'Comparison', link: '/getting-started/comparison' },
 			{ text: 'Setup', link: '/getting-started/setup' },
 			{ text: 'Usage', link: '/getting-started/usage' },
+			{ text: 'Dynamic Styles', link: '/getting-started/dynamic-styles' },
 			{ text: 'Engine Config', link: '/getting-started/engine-config' },
 			{ text: 'ESLint Config', link: '/getting-started/eslint-config' },
+			{ text: 'How PikaCSS Generates CSS', link: '/getting-started/how-pikacss-generates-css' },
 		],
 	},
 	{
@@ -38,6 +41,8 @@ export const sidebar: DefaultTheme.SidebarItem[] = [
 		items: [
 			{ text: 'Unplugin', link: '/integrations/unplugin' },
 			{ text: 'Nuxt', link: '/integrations/nuxt' },
+			{ text: 'Frameworks', link: '/integrations/frameworks' },
+			{ text: 'SSR & Production', link: '/integrations/ssr-and-production' },
 			{ text: 'Agent Skills', link: '/integrations/agent-skills' },
 		],
 	},

@@ -1,0 +1,11 @@
+@layer utilities {
+  .pk-a {
+    display: flex;
+  }
+  .pk-b {
+    padding: 1rem;
+  }
+  .pk-c {
+    color: white;
+  }
+}

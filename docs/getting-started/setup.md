@@ -40,6 +40,8 @@ yarn add -D @pikacss/core @pikacss/unplugin-pikacss
 
 :::
 
+The Vite entry supports Vite 7 and 8 only (peer dependency `vite: ^7.0.0 || ^8.0.0`).
+
 ## Apply Vite Plugin
 
 Add the PikaCSS Vite plugin to your `vite.config.ts`:
@@ -47,6 +49,10 @@ Add the PikaCSS Vite plugin to your `vite.config.ts`:
 <<< @/.examples/getting-started/setup.vite.example.ts
 
 For other build tools, see [Integrations](/integrations/unplugin).
+
+::: info `pika` is a compile-time global — never import it
+You do not import `pika` anywhere, and `@pikacss/core` has no runtime `pika` export. The build plugin replaces every `pika()` call with the generated class names at build time, and TypeScript learns the global from the generated `pika.gen.ts` declaration file (see [Generated Files](#generated-files)).
+:::
 
 ## Import `pika.css`
 
@@ -58,13 +64,56 @@ This import resolves to the generated CSS output that contains all your atomic s
 
 ## Generated Files
 
-By default, the build plugin writes `pika.gen.ts` and `pika.gen.css`. Setting `tsCodegen` or `cssCodegen` to a string writes the same outputs to custom paths. Setting `tsCodegen` to `false` disables TypeScript declaration codegen entirely.
+On the first dev or build run, the plugin creates up to three files in the project root (the plugin working directory — your Vite root unless the `cwd` option is set):
+
+| File | Purpose |
+|---|---|
+| `pika.config.js` | Scaffolded engine config — only created when no config file exists |
+| `pika.gen.ts` | TypeScript declarations for the `pika` global |
+| `pika.gen.css` | The generated CSS output |
+
+Setting `tsCodegen` or `cssCodegen` to a string writes the codegen outputs to custom paths. Setting `tsCodegen` to `false` disables TypeScript declaration codegen entirely.
+
+### pika.config.js
+
+When no config file is found, the first run scaffolds a `pika.config.js` (`autoCreateConfig` defaults to `true`; set it to `false` to opt out):
+
+```js
+/// <reference path="./pika.gen.ts" />
+import { defineEngineConfig } from '@pikacss/unplugin-pikacss'
+
+export default defineEngineConfig({
+  // Add your PikaCSS engine config here
+})
+```
+
+The triple-slash reference pulls the generated `pika.gen.ts` declarations into the TypeScript program whenever the config file itself is type-checked — it only helps when your tsconfig covers the config file, so do not rely on it in place of the recipes in [pika.gen.ts](#pika-gen-ts) below.
+
+Edit this scaffolded file, or replace it with a `pika.config.ts` — but never keep both. Config discovery matches `**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` and loads only the first file it finds, so when two config files exist, the one you are editing may be silently ignored.
 
 ### pika.gen.ts
 
-When `tsCodegen` is enabled, the build plugin generates a TypeScript declaration file. By default this file is named `pika.gen.ts`, but a string value can write it to a custom path. It provides type definitions and autocomplete support for the `pika()` function, including all custom selectors, shortcuts, variables, and plugin-contributed properties.
+When `tsCodegen` is enabled (the default), the build plugin generates a TypeScript declaration file — `pika.gen.ts` in the project root, or a custom path when `tsCodegen` is a string. It declares the `pika` global and provides autocomplete for all custom selectors, shortcuts, variables, and plugin-contributed properties.
 
-You do not usually import this file directly. The integration generates it for you, but TypeScript only sees its declarations when the generated path is part of your project through your `tsconfig`/`include`. In scaffolded configs, PikaCSS may also add a triple-slash reference to the generated declaration file, but that is a convenience of the scaffolded file rather than the guarantee.
+TypeScript only sees these declarations when the generated file is part of your TypeScript program. A stock Vite template with `"include": ["src"]` does not cover a root-level `pika.gen.ts`, which results in `Cannot find name 'pika'` everywhere. Pick one of these recipes:
+
+**Option A — generate the file inside `src/`:**
+
+```ts
+// vite.config.ts
+PikaCSS({
+  tsCodegen: './src/pika.gen.ts',
+})
+```
+
+**Option B — add the file to your tsconfig `include`:**
+
+```json
+// tsconfig.json (or tsconfig.app.json)
+{
+  "include": ["src", "pika.gen.ts"]
+}
+```
 
 ### pika.gen.css
 
@@ -75,6 +124,18 @@ The generated CSS file containing:
 - Atomic utility classes
 
 By default this file is named `pika.gen.css`. It is imported via `import 'pika.css'` and is updated automatically when your source code or configuration changes, even if you customize `cssCodegen` to write a different filename.
+
+### Commit or Ignore?
+
+Both codegen outputs are fully regenerated on every dev or build run, so treating them as ignorable build artifacts works:
+
+```txt
+# .gitignore
+pika.gen.ts
+pika.gen.css
+```
+
+One caveat: a standalone typecheck (for example `tsc --noEmit` in CI) fails with `Cannot find name 'pika'` when `pika.gen.ts` has never been generated in that environment. Either run a dev/build step before typechecking, or commit `pika.gen.ts`. The scaffolded `pika.config.js` is your own config file — commit it.
 
 ## Next
 

@@ -61,14 +61,15 @@ The module inherits the unplugin default scan patterns: `**/*.{js,ts,jsx,tsx,vue
 
 ## Config
 
-The Nuxt module accepts all [Unplugin options](/integrations/unplugin#config) with Nuxt-specific defaults applied automatically.
+The Nuxt module accepts all [Unplugin options](/integrations/unplugin#config) except `currentPackageName` (the module supplies it), with Nuxt-specific defaults applied automatically.
 
 | Property | Description |
 |---|---|
 | cwd | Explicit working directory for path resolution. Overrides the bundler-detected project root. |
 | scan | File glob patterns controlling which source files are scanned for `pika()` call sites. |
+| markupExtensions | Additional file extensions scanned in markup mode, merged with the built-in defaults (`vue`, `svelte`, `astro`, `html`, `htm`). Also extends the default `scan.include` glob. |
 | config | PikaCSS engine configuration, either as an inline object or a path to a config module. |
-| autoCreateConfig | When `true`, auto-creates a PikaCSS config file if none is found. |
+| autoCreateConfig | When `true`, auto-creates a `pika.config.js` file if none is found. Default: `true`. |
 | fnName | Function identifier the scanner looks for when extracting call sites. Default: `'pika'`. |
 | transformedFormat | Output shape of transformed `pika()` calls: `'string'` or `'array'`. |
 | tsCodegen | Controls TypeScript type-definition code generation. |

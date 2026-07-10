@@ -96,11 +96,23 @@ configureEngine?: (engine: Engine) => void | Engine | Promise<void | Engine>
 
 Called after the engine instance is constructed. Plugins can add preflights, register autocomplete entries, or extend the engine with custom behavior.
 
+::: warning Core services and `order: 'pre'`
+The `engine.selectors`, `engine.shortcuts`, `engine.keyframes`, and `engine.variables` services are attached by the core plugins' own `configureEngine` hooks. Core plugins run in the default order group, so a plugin with `order: 'pre'` reaches `configureEngine` **before** those services exist — accessing them there throws, and because hook errors are caught and logged, the failure is easy to miss. Use the default order when you need these services, or restrict a `'pre'` plugin to config hooks and engine methods that exist at construction (such as `addPreflight` and `addConfigDependency`). See [Lifecycle & Gotchas](/plugin-development/create-a-plugin#lifecycle-and-gotchas).
+:::
+
 ### Example
 
 ```ts
 defineEnginePlugin({
   name: 'add-preflight',
+  configureRawConfig: (config) => {
+    // Register the layer this plugin renders into. A preflight assigned to an
+    // undeclared layer is rendered as a trailing `@layer` block that is missing
+    // from the layer order declaration, giving it the HIGHEST cascade priority —
+    // the opposite of what a base layer should do.
+    config.layers ??= {}
+    config.layers.base ??= 0
+  },
   configureEngine: async (engine) => {
     engine.addPreflight({
       layer: 'base',
@@ -113,6 +125,8 @@ defineEnginePlugin({
   },
 })
 ```
+
+The default layers are `preflights` (weight `1`) and `utilities` (weight `10`); registering `base` at weight `0` places it before both in the `@layer` order declaration.
 
 ## transformSelectors
 

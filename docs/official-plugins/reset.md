@@ -13,7 +13,7 @@ order: 10
 
 Inject a community CSS reset stylesheet as preflight CSS.
 
-The reset plugin injects a CSS reset as preflight, ensuring a consistent baseline across browsers. It supports several well-known community resets and creates a dedicated `reset` layer at order `-1`, which places reset styles ahead of the default `preflights` and `utilities` layers unless you define an even lower layer order.
+The reset plugin injects a CSS reset as preflight, ensuring a consistent baseline across browsers. It supports several well-known community resets and registers a dedicated `reset` layer with a default order of `-1`, which places reset styles ahead of the default `preflights` and `utilities` layers. The order is a default: if your config already assigns `layers.reset`, your value wins.
 
 ::: code-group
 
@@ -33,12 +33,12 @@ yarn add -D @pikacss/plugin-reset
 
 <<< @/.examples/official-plugins/reset.setup.example.ts
 
-`reset()` takes no arguments. Choose the preset with the top-level `reset` engine config option rather than by passing options to the plugin call. The plugin always creates the `reset` layer at order `-1`, so the injected preflight stays ahead of the default `preflights` and `utilities` layers unless your config assigns an even lower layer weight elsewhere.
+`reset()` takes no arguments. Choose the preset with the top-level `reset` engine config option rather than by passing options to the plugin call. The plugin sets `layers.reset` to `-1` only when your config has not already defined it, so the injected preflight stays ahead of the default `preflights` and `utilities` layers by default — override the position with your own `layers: { reset: ... }` entry.
 
 :::tip Quick rules
 - Call `reset()` with no arguments.
 - Choose the preset with the top-level `reset` engine config key.
-- The plugin creates a dedicated `reset` layer at order `-1`, so it runs before the default `preflights` and `utilities` layers unless you define an even lower custom layer.
+- The plugin registers a `reset` layer with default order `-1` (before the default `preflights` and `utilities` layers); a `layers.reset` value in your config takes precedence.
 :::
 
 ## Config

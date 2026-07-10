@@ -68,7 +68,7 @@ Each unique CSS declaration (`color: red`, `font-size: 16px`) gets its own atomi
 All arguments to `pika()` must be statically analyzable at build time. This means you cannot use dynamic values, computed expressions, or runtime variables as arguments. PikaCSS needs to extract the styles during the build step without executing your code.
 
 ::: warning
-Dynamic values, computed expressions, and runtime variables cannot be used as `pika()` arguments. Use the [ESLint plugin](/getting-started/eslint-config) to catch violations early.
+Dynamic values, computed expressions, and runtime variables cannot be used as `pika()` arguments. Use the [ESLint plugin](/getting-started/eslint-config) to catch violations early. For the patterns that cover runtime-driven styling — variant maps, CSS variables, shortcuts — see [Dynamic Styles](/getting-started/dynamic-styles).
 :::
 
 ```ts
@@ -113,7 +113,20 @@ PikaCSS supports nested selectors in style definitions. The `$` character repres
 
 :::
 
-**Custom selectors** — use user-defined selector names:
+**Custom selectors** — use user-defined selector names. This example requires the `@dark` selector to be registered first:
+
+```ts
+// pika.config.ts
+import { defineEngineConfig } from '@pikacss/core'
+
+export default defineEngineConfig({
+  selectors: {
+    definitions: [
+      ['@dark', 'html.dark $'],
+    ],
+  },
+})
+```
 
 ::: code-group
 
@@ -141,3 +154,4 @@ PikaCSS solves this by ensuring that longhand properties are always rendered aft
 
 - [Setup](/getting-started/setup) — install PikaCSS and configure your build tool.
 - [Usage](/getting-started/usage) — see more usage examples.
+- [Comparison](/getting-started/comparison) — how PikaCSS relates to UnoCSS, Tailwind CSS, Panda CSS, and vanilla-extract.

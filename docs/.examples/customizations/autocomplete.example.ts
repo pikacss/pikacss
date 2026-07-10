@@ -2,7 +2,7 @@ import { defineEngineConfig } from '@pikacss/core'
 
 export const autocompleteConfig = defineEngineConfig({
 	autocomplete: {
-		properties: {
+		cssProperties: {
 			display: ['flex', 'grid', 'block', 'inline-block', 'none'],
 		},
 	},

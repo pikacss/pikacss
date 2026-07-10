@@ -1,0 +1,11 @@
+@layer utilities {
+  .pk-a {
+    background-color: #3b82f6;
+  }
+  .pk-b {
+    color: white;
+  }
+  .pk-c {
+    background-color: #ef4444;
+  }
+}

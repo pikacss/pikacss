@@ -6,7 +6,7 @@ import { nav, sidebar } from './sidebarAndNav'
 export default withMermaid({
 	base: '/',
 	title: 'PikaCSS',
-	description: '',
+	description: 'The instant on-demand Atomic CSS-in-JS engine: write styles in JS objects, ship zero-runtime atomic CSS.',
 	head: [
 		['link', { rel: 'icon', href: '/favicon.svg' }],
 	],

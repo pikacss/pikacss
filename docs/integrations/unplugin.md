@@ -55,13 +55,22 @@ The Vite entry registers with `enforce: 'pre'`. PikaCSS still runs before framew
 | scan | File glob patterns controlling which source files are scanned for `pika()` call sites. When `scan.include` is not set, the default covers `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}`. |
 | markupExtensions | Additional file extensions scanned in markup mode, merged with the built-in defaults (`vue`, `svelte`, `astro`, `html`, `htm`). Also extends the default `scan.include` glob. |
 | config | PikaCSS engine configuration, either as an inline object or a path to a config module. |
-| autoCreateConfig | When `true`, auto-creates a PikaCSS config file if none is found. |
+| autoCreateConfig | When `true`, auto-creates a `pika.config.js` file if none is found. Default: `true`. |
 | fnName | Function identifier the scanner looks for when extracting call sites. Default: `'pika'`. |
 | transformedFormat | Output shape of transformed `pika()` calls: `'string'` or `'array'`. |
 | tsCodegen | Controls TypeScript type-definition code generation. |
 | cssCodegen | Controls CSS code-generation output. CSS codegen cannot be fully disabled. |
 
 > See [API Reference — Unplugin](/api/unplugin) for full type signatures and defaults.
+
+## TypeScript and `import 'pika.css'`
+
+In Vite projects, the ambient `*.css` module declaration from `vite/client` covers the `pika.css` specifier. PikaCSS itself ships no ambient declaration for it, so TypeScript projects on other bundlers (webpack, Rspack, esbuild) may report `TS2307: Cannot find module 'pika.css'`. Add a two-line shim to any `.d.ts` file in your program:
+
+```ts
+// pika-css.d.ts
+declare module 'pika.css'
+```
 
 ## Next
 

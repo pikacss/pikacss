@@ -40,6 +40,21 @@ import 'pika.css'
 
 If you are using the Nuxt module, the import is injected automatically. With the generic unplugin integration, make sure you add the import yourself and that the plugin is registered in your build config.
 
+## `ReferenceError: pika is not defined`
+
+This runtime error means a `pika()` call reached the browser untransformed — `pika` only exists at compile time and has no runtime export. The most common cause is that the file is not matched by the scan globs, so the plugin never processed it. The default `scan.include` is `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}` with `node_modules/**` and `dist/**` excluded.
+
+Fixes:
+
+1. If the file uses another extension, extend `scan.include` (or `markupExtensions` for markup-style files) in the plugin options.
+2. Confirm the PikaCSS plugin is actually registered in your build config.
+
+## `Cannot find name 'pika'`
+
+This TypeScript error means the generated `pika.gen.ts` declaration file is not part of your TypeScript program — either it was never generated (run the dev server or a build once), or your tsconfig `include` does not cover it. By default the file is written to the project root, which a stock `"include": ["src"]` does not pick up.
+
+Either point the output into `src/` with `tsCodegen: './src/pika.gen.ts'`, or add `pika.gen.ts` to your tsconfig `include`. See [Generated Files](/getting-started/setup#generated-files) for the full recipes.
+
 ## Why do I get "no-dynamic-args" ESLint errors?
 
 The `pikacss/no-dynamic-args` rule requires each argument passed to `pika()` to stay within a recursively statically analyzable literal structure. Plain literals, static template literals, and nested object/array literals are fine; runtime variables, conditionals, function calls, and template expressions are not. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
@@ -133,6 +148,14 @@ const className = `${base} ${isActive ? active : inactive}`
 ```
 
 If your integration uses `transformedFormat: 'array'`, normal `pika()` calls return arrays instead. `pika.arr()` also forces array output, so compose those results with your framework's usual array-based class handling.
+
+## Does PikaCSS work with SSR / SSG?
+
+Yes. All styles are extracted at build time into a static CSS file (`pika.gen.css`) and every `pika()` call is replaced with plain class-name strings — there is no runtime style injection. Server-side rendering, static generation, and streaming need no special handling: the server just ships the same static stylesheet. The Nuxt module wires this up automatically by registering the Vite plugin and importing `pika.css` through a generated Nuxt plugin.
+
+## Should I commit the generated files?
+
+`pika.gen.ts` and `pika.gen.css` are build artifacts regenerated on every dev or build run, so ignoring them is fine — as long as CI runs a build before any standalone typecheck, since `tsc --noEmit` needs `pika.gen.ts` to exist. If it does not, commit `pika.gen.ts`. See [Generated Files](/getting-started/setup#generated-files).
 
 ## Next
 

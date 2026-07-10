@@ -19,7 +19,12 @@ The `$` placeholder in a selector value is replaced with the generated atomic cl
 
 ## Config
 
-Selectors can be defined as static pairs or dynamic patterns:
+A selector definition accepts several shapes:
+
+- **Static tuple** `[name, cssSelector]` — maps an exact name to one or more resolved CSS selectors.
+- **Dynamic tuple** `[RegExp, resolver, autocomplete?]` — matches a pattern and computes the selector lazily. The optional third element lists autocomplete suggestions for the pattern (e.g. `'@container-${name}'`). The resolver may return `undefined`/`null` to signal "unresolved for now": nothing is cached and the rule is retried on a later resolve call.
+- **Object form** — `{ selector, value }` (static) or `{ selector, value, autocomplete? }` (dynamic), equivalent to the tuples.
+- **Plain string** — registers the name as an autocomplete suggestion only, useful for redirecting to a selector resolved elsewhere.
 
 ```ts
 import { defineEngineConfig } from '@pikacss/core'
@@ -38,7 +43,13 @@ export default defineEngineConfig({
       ['@xl', '@media (min-width: 1280px)'],
 
       // Dynamic pattern: [RegExp, resolver, autocomplete?]
-      [/^@container-(.+)$/, ([, name]) => `@container ${name}`],
+      [/^@container-(.+)$/, ([, name]) => `@container ${name}`, '@container-${name}'],
+
+      // Object form
+      {
+        selector: '@print',
+        value: '@media print',
+      },
     ],
   },
 })

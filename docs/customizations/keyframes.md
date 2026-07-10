@@ -13,7 +13,7 @@ order: 50
 
 Register CSS `@keyframes` animations with the engine.
 
-PikaCSS lets you define keyframe animations in your engine configuration. They are rendered as preflight CSS and registered for autocomplete so the animation names are available in your style definitions.
+PikaCSS lets you define keyframe animations in your engine configuration. Animation names are registered for autocomplete, and each `@keyframes` rule is rendered as preflight CSS only when its name is referenced by an `animation` or `animation-name` atomic style — unused keyframes are pruned from the output. Set `pruneUnused: false` (config-level default, or per definition via the tuple's fourth element / the object form's `pruneUnused` field) to always emit a keyframes rule, e.g. when it is consumed by external CSS.
 
 ## Config
 

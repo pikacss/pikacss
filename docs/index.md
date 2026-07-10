@@ -6,7 +6,7 @@ hero:
   text: Atomic CSS-in-JS Engine
   tagline: Write styles in JS objects. Ship zero-runtime atomic CSS.
   image:
-    light: /logo-white.svg
+    light: /logo-black.svg
     dark: /logo-white.svg
     alt: PikaCSS Logo
   actions:
@@ -37,3 +37,19 @@ features:
     details: Full autocomplete and type checking for every CSS property and custom config.
     icon: 🤖
 ---
+
+## Show Me the Code
+
+Write styles with plain CSS property names, get atomic CSS at build time:
+
+::: code-group
+
+<<< @/.examples/getting-started/basic.example.pikain.ts [Input]
+
+<<< @/.examples/getting-started/basic.example.pikaout.css [Output]
+
+:::
+
+Ready to try it? [Get started](/getting-started/what-is-pikacss) or open the [playground](https://pikacss.github.io/playground/) — no install needed.
+
+Coming from another tool? See [how PikaCSS compares](/getting-started/comparison) to UnoCSS, Tailwind CSS, Panda CSS, and vanilla-extract.

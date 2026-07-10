@@ -14,7 +14,7 @@ order: 40
 
 Define CSS custom properties that are injected as preflight styles.
 
-CSS custom properties (variables) enable theming and dynamic value reuse across your styles. PikaCSS registers variables as preflight CSS under `:root` by default, making them available globally.
+CSS custom properties (variables) enable theming and dynamic value reuse across your styles. PikaCSS registers variables as preflight CSS under `:root` by default. Only variables that are actually referenced end up in the output — see [Unused variables are pruned](#unused-variables-are-pruned).
 
 Register variables under `variables.definitions`. Plain values default to `var(--token)` suggestions for all CSS properties. Use the object form when you want to narrow autocomplete targets, disable value suggestions, or opt out of pruning.
 
@@ -83,6 +83,37 @@ pika({
   padding: 'var(--spacing-md)',
 })
 ```
+
+## Unused variables are pruned
+
+By default, a defined variable is only emitted when it is referenced via `var(...)` by an atomic style or another preflight (references are expanded transitively, so a used variable keeps the variables its value depends on). This keeps the output minimal, but it means variables consumed only by *external* CSS — stylesheets outside PikaCSS's output — are silently dropped.
+
+To keep such variables in the output:
+
+```ts
+defineEngineConfig({
+  variables: {
+    definitions: {
+      '--color-primary': '#3b82f6',
+      // Per-variable opt-out of pruning
+      '--external-theme': {
+        value: '#64748b',
+        pruneUnused: false,
+      },
+    },
+
+    // Or list names that must always be emitted
+    safeList: ['--color-primary'],
+
+    // Or disable pruning for all variables (default: true)
+    pruneUnused: false,
+  },
+})
+```
+
+- `pruneUnused` (config level) sets the default policy for all variables. Default: `true`.
+- `pruneUnused` (per variable, object form) overrides the config-level default for that variable.
+- `safeList` lists variable names that are always emitted regardless of usage.
 
 ## Examples
 
