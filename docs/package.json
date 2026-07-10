@@ -14,9 +14,10 @@
 		"build": "vitepress build .",
 		"preview": "vitepress preview .",
 		"test": "vitest run",
-		"typecheck": "pnpm typecheck:docs && pnpm typecheck:configs",
+		"typecheck": "pnpm typecheck:docs && pnpm typecheck:configs && pnpm typecheck:examples",
 		"typecheck:docs": "tsc --project ./tsconfig.docs.json --noEmit",
-		"typecheck:configs": "tsc --project ./tsconfig.configs.json --noEmit"
+		"typecheck:configs": "tsc --project ./tsconfig.configs.json --noEmit",
+		"typecheck:examples": "tsc --project ./tsconfig.examples.json --noEmit"
 	},
 	"devDependencies": {
 		"@pikacss/core": "workspace:*",

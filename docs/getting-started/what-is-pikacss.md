@@ -50,7 +50,7 @@ The `pika()` function is the core API. You pass it one or more style definition 
 const className = pika({ color: 'red', fontSize: '16px' })
 
 // What it becomes after build:
-const className = 'pk-abc pk-def'
+const className = 'pk-a pk-b'
 ```
 
 Each unique CSS declaration (`color: red`, `font-size: 16px`) gets its own atomic class. If the same declaration appears elsewhere, the same class is reused.

@@ -86,7 +86,7 @@ The default function. Returns a space-separated string of atomic class names.
 
 ```ts
 const className = pika({ color: 'red', fontSize: '16px' })
-// → 'pk-abc pk-def'
+// → 'pk-a pk-b'
 ```
 
 ### pika.str()
@@ -95,7 +95,7 @@ Explicit string variant. Always returns a space-separated string of class names,
 
 ```ts
 const className = pika.str({ color: 'red' })
-// → 'pk-abc'
+// → 'pk-a'
 ```
 
 ### pika.arr()
@@ -104,7 +104,7 @@ Array variant. Returns an array of individual class name strings instead of a si
 
 ```ts
 const classNames = pika.arr({ color: 'red', fontSize: '16px' })
-// → ['pk-abc', 'pk-def']
+// → ['pk-a', 'pk-b']
 ```
 
 ### pikap() — Preview Mode

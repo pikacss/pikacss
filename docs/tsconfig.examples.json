@@ -1,0 +1,15 @@
+{
+	"extends": "@deviltea/tsconfig/node",
+	"compilerOptions": {
+		"composite": true,
+		// `_utils/pika-example.ts` predates this project and indexes `codes[i]`
+		// inside a bounded loop; relax only this flag instead of editing the util.
+		"noUncheckedIndexedAccess": false
+	},
+	"include": [
+		".examples/**/*"
+	],
+	"exclude": [
+		".examples/**/*.pikain.ts"
+	]
+}

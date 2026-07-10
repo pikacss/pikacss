@@ -451,8 +451,11 @@ function collectValueExportNames(sourceFile: ts.SourceFile, checker: ts.TypeChec
 			const targetSourceFile = targetSymbol.getDeclarations()
 				?.find(ts.isSourceFile)
 			if (targetSourceFile) {
-				for (const name of collectValueExportNames(targetSourceFile, checker, cache))
-					names.add(name)
+				// `export *` never re-exports the target's default export.
+				for (const name of collectValueExportNames(targetSourceFile, checker, cache)) {
+					if (name !== 'default')
+						names.add(name)
+				}
 			}
 			else {
 				for (const exported of checker.getExportsOfModule(targetSymbol)) {

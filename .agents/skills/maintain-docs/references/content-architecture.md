@@ -26,6 +26,14 @@ Getting Started
 === Statically Analyzable
 === Nested Selector (must cover: $:pseudo, @media, custom selector — three scenarios)
 === Cascade Ordering Conflict (shorthand/longhand conflict scenarios only; unrelated to @layer)
+= Comparison (PikaCSS vs UnoCSS, Tailwind CSS, Panda CSS, vanilla-extract; honest pre-1.0 framing)
+== At a Glance
+== What Actually Differs
+=== CSS-in-JS authoring, atomic CSS output
+=== Shorthand/longhand cascade conflicts are resolved by the engine
+=== Truly zero runtime, including the function itself
+=== The trade-off: static-only arguments
+== When Not to Use PikaCSS
 = Setup
 == Install
 == Apply Vite Plugin (link to Integrations for other build tools)
@@ -36,11 +44,17 @@ Getting Started
 = Usage
 == pika() Variants (pika, pika.str, pika.arr, pikap, pikap.str, pikap.arr)
 == Examples {Template: 3–5 examples, agent decides grouping and coverage}
+= Dynamic Styles (patterns for runtime-driven styling under the static-analyzability constraint)
+== Why the Constraint Exists
+== Pattern 1: Variant Maps
+== Pattern 2: CSS Variables for Truly Runtime Values
+== Pattern 3: Shortcuts as Recipes
+== Choosing a Pattern
 = Engine Config
 == Config
-=== Core {table: prefix, defaultSelector, plugins, layers, defaultPreflightsLayer, defaultUtilitiesLayer, preflights, cssImports, autocomplete}
-=== Customizations {table: important, selectors, shortcuts, variables, keyframes}
-=== Plugin Config {table: reset, typography, icons, fonts}
+=== Core {table: prefix, defaultSelector, plugins, layers, defaultPreflightsLayer, defaultUtilitiesLayer, preflights, cssImports, important}
+=== Customizations {table: autocomplete, selectors, shortcuts, variables, keyframes}
+=== Plugin Config {table: reset, typography, icons, fonts, designTokens}
 == Examples
 = ESLint Config
 == Setup
@@ -49,6 +63,14 @@ Getting Started
 ==== Description
 ==== What Counts as Static
 ==== Examples
+= How PikaCSS Generates CSS
+== The Pipeline
+== Deduplication
+== Last Wins Per Property
+== `null` Removes a Property
+== Value Fallbacks
+== Output Ordering
+== Layer Grouping
 
 Integrations
 = Agent Skills
@@ -66,6 +88,17 @@ Integrations
 === CSS Auto-Import
 === Default Scan Patterns
 == Config {table: scan, config, autoCreateConfig, fnName, transformedFormat, tsCodegen, cssCodegen}
+= Frameworks (Vue, React, Solid wiring; snippets mirror the Playground templates)
+== Vue
+== React
+== Solid
+== Nuxt
+== Other Markup Files
+= SSR & Production
+== SSR, SSG, and Streaming Just Work
+== Production Builds
+== What Triggers a Reload in Dev
+== Type-Level Performance
 
 Customizations
 = Layers

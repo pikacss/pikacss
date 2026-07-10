@@ -35,6 +35,9 @@ jobs:
       - name: typecheck
         run: pnpm typecheck
 
+      - name: build docs (dead-link check)
+        run: pnpm docs:build
+
   test:
     runs-on: ${{ matrix.os }}
 

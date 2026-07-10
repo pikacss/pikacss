@@ -39,7 +39,7 @@ export default defineEngineConfig({
 | important | When set to `{ default: true }`, all generated declarations include `!important`. See [Important](/customizations/important). |
 
 ::: tip Two placeholders
-`%` is the atomic class ID slot used inside `defaultSelector` (e.g. `'.%'` becomes `.pk-abc`), while `$` is the nested-selector slot used inside style definitions and custom selectors — it expands to the whole `defaultSelector`.
+`%` is the atomic class ID slot used inside `defaultSelector` (e.g. `'.%'` becomes `.pk-a`), while `$` is the nested-selector slot used inside style definitions and custom selectors — it expands to the whole `defaultSelector`.
 :::
 
 ### Customizations

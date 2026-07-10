@@ -32,7 +32,7 @@ Use this file as the repository-level control plane for agent customization.
 
 ## Setup And Commands
 
-Requires Node.js >= 20 and pnpm 10.x.
+Requires Node.js >= 22 and pnpm 10.x.
 
 ```bash
 pnpm install
