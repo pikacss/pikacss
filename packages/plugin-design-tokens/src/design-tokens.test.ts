@@ -428,19 +428,22 @@ describe('designTokens plugin', () => {
 			.toContain('--shadow-halo:0 0 8px #00f5')
 	})
 
-	it('skips missing source files without failing engine creation', async () => {
+	it('skips missing source files without failing engine creation but still registers them as config dependencies', async () => {
+		const dir = await mkdtemp(join(tmpdir(), 'pika-design-tokens-'))
 		const engine = await createEngine({
 			plugins: [designTokens()],
 			designTokens: {
 				pruneUnused: false,
-				root: await mkdtemp(join(tmpdir(), 'pika-design-tokens-')),
+				root: dir,
 				sources: ['missing.tokens.json', { color: { ok: { $value: '#0f0' } } }],
 			},
 		})
 		const css = await engine.renderPreflights(false)
 		expect(css)
 			.toContain('--color-ok:#0f0')
-		expect(engine.configDependencies.size)
-			.toBe(0)
+		// Regression: the missing file must still be watched so creating it
+		// after dev-server start triggers a config reload.
+		expect(engine.configDependencies)
+			.toEqual(new Set([join(dir, 'missing.tokens.json')]))
 	})
 })

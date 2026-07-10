@@ -360,7 +360,7 @@ describe('icons plugin', () => {
 		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
 
 		expect(await shortcutEntry.value(['i-mdi:alert', 'mdi:alert', 'auto']))
-			.toEqual({})
+			.toBeUndefined()
 		expect(mockLoadNodeIcon)
 			.not.toHaveBeenCalled()
 		expect(mockFetch)
@@ -392,7 +392,7 @@ describe('icons plugin', () => {
 		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
 
 		expect(await shortcutEntry.value(['i-mdi:alert', 'mdi:alert', 'auto']))
-			.toEqual({})
+			.toBeUndefined()
 		expect(mockFetch)
 			.toHaveBeenCalledWith('https://cdn.example.com/icons/mdi.json')
 		expect(warn)
@@ -420,7 +420,7 @@ describe('icons plugin', () => {
 		mockLoadIcon.mockResolvedValueOnce(null)
 		mockLoadNodeIcon.mockResolvedValueOnce(null)
 		expect(await shortcutEntry.value(['i-mdi:ghost', 'mdi:ghost', 'auto']))
-			.toEqual({})
+			.toBeUndefined()
 
 		expect(warn.mock.calls)
 			.toEqual(expect.arrayContaining([
@@ -466,7 +466,7 @@ describe('icons plugin', () => {
 		// Second call: cache hit — reuses CDN collection, but icon not found
 		const style2 = await shortcutEntry.value(['i-mdi:missing', 'mdi:missing', 'auto'])
 		expect(style2)
-			.toEqual({})
+			.toBeUndefined()
 
 		// CDN was fetched only once (cache hit on second call)
 		expect(mockFetch)
@@ -548,7 +548,7 @@ describe('icons plugin', () => {
 
 		// First call fails to fetch the collection
 		expect(await shortcutEntry.value(['i-mdi:bell', 'mdi:bell', 'auto']))
-			.toEqual({})
+			.toBeUndefined()
 		expect(warn)
 			.toHaveBeenCalledWith('failed to load icon "i-mdi:bell"')
 
@@ -560,6 +560,45 @@ describe('icons plugin', () => {
 			})
 		expect(mockFetch)
 			.toHaveBeenCalledTimes(2)
+	})
+
+	it('does not cache failed icon loads and produces the icon on a later resolve', async () => {
+		// Regression: the failure path used to return {}, which the core shortcuts
+		// resolver cached forever, so a transient load failure permanently blocked
+		// the icon. Uses the real core resolver to prove no cache entry is stored.
+		const { createEngine } = await import('@pikacss/core')
+		const { icons } = await import('./index')
+		const warn = vi.fn()
+		log.setWarnFn((_prefix, ...args) => warn(...args))
+
+		mockStringToIcon.mockReturnValue({ prefix: 'custom', name: 'badge' })
+		mockLoadIcon
+			.mockResolvedValueOnce(null)
+			.mockResolvedValue('<svg currentColor />')
+		mockLoadNodeIcon.mockResolvedValue(null)
+
+		const engine = await createEngine({
+			plugins: [icons()],
+			icons: {},
+		})
+
+		// First resolve: loader fails — unresolved, input returned unchanged, not cached
+		expect(await engine.shortcuts.resolver.resolve('i-custom:badge'))
+			.toEqual(['i-custom:badge'])
+		expect(engine.shortcuts.resolver._resolvedResultsMap.has('i-custom:badge'))
+			.toBe(false)
+		expect(warn)
+			.toHaveBeenCalledWith('failed to load icon "i-custom:badge"')
+
+		// Second resolve: loader now succeeds — the rule is re-invoked and produces CSS
+		const resolved = await engine.shortcuts.resolver.resolve('i-custom:badge')
+		expect(resolved)
+			.toEqual([
+				expect.objectContaining({
+					'-webkit-mask': 'var(--svg-icon) no-repeat',
+					'background-color': 'currentColor',
+				}),
+			])
 	})
 
 	it('falls back to empty config when icons is not specified in configureRawConfig', async () => {

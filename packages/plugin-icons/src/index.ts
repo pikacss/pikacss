@@ -280,6 +280,11 @@ function createLoaderOptions(config: IconsConfig, usedProps?: Record<string, str
 	return {
 		addXmlNs: true,
 		scale,
+		// limit: custom collections are opaque loader functions / inline SVG maps
+		// (CustomCollections from @iconify/utils), so file paths are unknowable and
+		// cannot be registered via engine.addConfigDependency — edits to local SVG
+		// files do not trigger a config reload. Upgrade path: accept a `{ dir }`-style
+		// collection config so paths become knowable and watchable.
 		customCollections: collections,
 		autoInstall,
 		cwd,
@@ -431,7 +436,10 @@ function createIconsPlugin(): EnginePlugin {
 
 					if (resolved.svg == null) {
 						log.warn(`failed to load icon "${full}"`)
-						return {}
+						// Retryable-unresolved: returning undefined tells the shortcuts
+						// resolver not to cache this result, so a later resolve retries
+						// the load (e.g. after a transient CDN failure).
+						return undefined
 					}
 
 					const url = `url("data:image/svg+xml;utf8,${encodeSvgForCss(resolved.svg)}")`

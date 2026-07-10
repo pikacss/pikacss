@@ -358,6 +358,9 @@ async function loadSource({
 		return [source]
 
 	const filepath = isAbsolute(source) ? resolve(source) : resolve(root, source)
+	// Record the path before attempting to read it: a missing file must still be
+	// registered as a config dependency so creating it later triggers a reload.
+	loaded.files.push(filepath)
 	let content: string
 	try {
 		content = await readFile(filepath, 'utf-8')
@@ -366,7 +369,6 @@ async function loadSource({
 		log.error(`[design-tokens] Failed to read token source "${filepath}": ${error.message}. Skipping.`)
 		return []
 	}
-	loaded.files.push(filepath)
 
 	if (filepath.endsWith('.md')) {
 		const { base, themeBlocks } = parseDesignMarkdown(content)
