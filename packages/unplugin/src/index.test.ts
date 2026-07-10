@@ -21,6 +21,7 @@ vi.mock('node:fs', () => ({
 vi.mock('@pikacss/integration', () => ({
 	createCtx: mockCreateCtx,
 	log: mockLog,
+	DEFAULT_MARKUP_EXTENSIONS: ['vue', 'svelte', 'astro', 'html', 'htm'],
 }))
 
 vi.mock('perfect-debounce', () => ({
@@ -64,6 +65,7 @@ function createCtxStub() {
 		writeCssCodegenFile: vi.fn(async () => {}),
 		writeTsCodegenFile: vi.fn(async () => {}),
 		transform: vi.fn(async () => ({ code: 'transformed' })),
+		isTransformTarget: vi.fn(() => true),
 		transformFilter: {
 			include: ['src/**/*.ts'],
 			exclude: [],
@@ -117,7 +119,7 @@ describe('unpluginFactory', () => {
 				transformedFormat: 'string',
 				autoCreateConfig: true,
 				scan: {
-					include: ['**/*.{js,ts,jsx,tsx,vue}'],
+					include: ['**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}'],
 					exclude: ['node_modules/**', 'dist/**'],
 				},
 			}))
@@ -148,6 +150,7 @@ describe('unpluginFactory', () => {
 
 		await ctx.hooks.styleUpdated.emit()
 		await ctx.hooks.tsCodegenUpdated.emit()
+		await flushAsyncWork()
 
 		expect(ctx.writeCssCodegenFile)
 			.toHaveBeenCalled()
@@ -172,6 +175,7 @@ describe('unpluginFactory', () => {
 
 		await ctx.hooks.styleUpdated.emit()
 		await ctx.hooks.tsCodegenUpdated.emit()
+		await flushAsyncWork()
 
 		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
 			.toBe(1)
@@ -593,7 +597,7 @@ describe('unpluginFactory', () => {
 			.toBe(1)
 	})
 
-	it('keeps later generated writes working after a previous write fails', async () => {
+	it('logs a failed fire-and-forget write instead of raising an unhandled rejection, then keeps later writes working', async () => {
 		const ctx = createCtxStub()
 		mockCreateCtx.mockReturnValue(ctx)
 
@@ -610,10 +614,24 @@ describe('unpluginFactory', () => {
 		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
 		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
 
-		await expect(ctx.hooks.styleUpdated.emit())
-			.rejects.toThrow('css write failed')
-		await ctx.hooks.tsCodegenUpdated.emit()
+		// The event hook discards listener return values in production, so the
+		// listener itself must attach the rejection handler: the emit resolves,
+		// the failure is logged, and the test process survives (vitest fails on
+		// unhandled rejections).
 		await ctx.hooks.styleUpdated.emit()
+		await flushAsyncWork()
+
+		expect(mockLog.error)
+			.toHaveBeenCalledWith(expect.stringContaining('css write failed'), expect.any(Error))
+		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
+			.toBe(1)
+
+		// The pending flag survives the failure, so the next queued write
+		// retries the css output alongside the ts output.
+		await ctx.hooks.tsCodegenUpdated.emit()
+		await flushAsyncWork()
+		await ctx.hooks.styleUpdated.emit()
+		await flushAsyncWork()
 
 		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
 			.toBe(3)
@@ -638,12 +656,15 @@ describe('unpluginFactory', () => {
 		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
 		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
 
-		const styleUpdate = ctx.hooks.styleUpdated.emit()
-		const tsUpdate = ctx.hooks.tsCodegenUpdated.emit()
-		const results = await Promise.allSettled([styleUpdate, tsUpdate])
+		// Emit concurrently so both pending flags are queued into one shared flush.
+		await Promise.all([
+			ctx.hooks.styleUpdated.emit(),
+			ctx.hooks.tsCodegenUpdated.emit(),
+		])
+		await flushAsyncWork()
 
-		expect(results.some(result => result.status === 'rejected'))
-			.toBe(true)
+		expect(mockLog.error)
+			.toHaveBeenCalledWith(expect.stringContaining('css write failed'), expect.any(Error))
 		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
 			.toBe(2)
 		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
@@ -667,15 +688,114 @@ describe('unpluginFactory', () => {
 		const cssWritesBefore = ctx.writeCssCodegenFile.mock.calls.length
 		const tsWritesBefore = ctx.writeTsCodegenFile.mock.calls.length
 
-		const styleUpdate = ctx.hooks.styleUpdated.emit()
-		const tsUpdate = ctx.hooks.tsCodegenUpdated.emit()
-		const results = await Promise.allSettled([styleUpdate, tsUpdate])
+		// Emit concurrently so both pending flags are queued into one shared flush.
+		await Promise.all([
+			ctx.hooks.styleUpdated.emit(),
+			ctx.hooks.tsCodegenUpdated.emit(),
+		])
+		await flushAsyncWork()
 
-		expect(results.some(result => result.status === 'rejected'))
-			.toBe(true)
+		expect(mockLog.error)
+			.toHaveBeenCalledWith(expect.stringContaining('ts write failed'), expect.any(Error))
 		expect(ctx.writeCssCodegenFile.mock.calls.length - cssWritesBefore)
 			.toBe(1)
 		expect(ctx.writeTsCodegenFile.mock.calls.length - tsWritesBefore)
 			.toBe(2)
+	})
+
+	it('logs failed writes queued from watchChange deletions instead of crashing the watcher', async () => {
+		const ctx = createCtxStub() as any
+		ctx.previewUsages = new Map()
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		ctx.writeCssCodegenFile.mockRejectedValueOnce(new Error('css write failed'))
+		ctx.writeCssCodegenFile.mockResolvedValue(undefined)
+
+		plugin.watchChange?.('src/demo.ts', { event: 'delete' })
+		await flushAsyncWork()
+
+		expect(mockLog.error)
+			.toHaveBeenCalledWith(expect.stringContaining('css write failed'), expect.any(Error))
+	})
+
+	it('still propagates generated write failures on the awaited transform flush path', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		ctx.writeCssCodegenFile.mockRejectedValueOnce(new Error('css write failed'))
+		ctx.transform = vi.fn(async () => {
+			await ctx.hooks.styleUpdated.emit()
+			return { code: 'transformed' }
+		})
+
+		// The transform handler awaits the flush, so a failed write must fail
+		// the build loudly instead of being swallowed.
+		await expect(plugin.transform.handler.call({}, 'code', 'src/demo.ts'))
+			.rejects.toThrow('css write failed')
+	})
+
+	it('re-checks ids with ctx.isTransformTarget before invoking the transform', async () => {
+		const ctx = createCtxStub() as any
+		// The declarative filter's cwd-relative excludes are baked once against
+		// process.cwd(), so an id equal to the codegen output can reach the
+		// handler; the call-time re-check must reject it.
+		ctx.isTransformTarget = vi.fn((id: string) => id !== '/tmp/pika.gen.css')
+		mockCreateCtx.mockReturnValue(ctx)
+
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		expect(await plugin.transform.handler.call({}, 'code', '/tmp/pika.gen.css'))
+			.toBeNull()
+		expect(ctx.transform)
+			.not.toHaveBeenCalled()
+
+		expect(await plugin.transform.handler.call({}, 'code', 'src/demo.ts'))
+			.toEqual({ code: 'transformed' })
+		expect(ctx.transform)
+			.toHaveBeenCalledWith('code', 'src/demo.ts')
+	})
+
+	it('derives the default scan include from the effective markup extensions', async () => {
+		const ctx = createCtxStub()
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+
+		// User extensions extend the built-in markup defaults; leading dots are
+		// stripped and duplicates collapse.
+		mod.unpluginFactory({ markupExtensions: ['riot', '.marko', 'vue'] }, { framework: 'vite' } as any)
+		expect(mockCreateCtx)
+			.toHaveBeenLastCalledWith(expect.objectContaining({
+				scan: expect.objectContaining({
+					include: ['**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm,riot,marko}'],
+				}),
+			}))
+
+		// An explicit scan.include wins verbatim over the derived default.
+		mod.unpluginFactory({
+			markupExtensions: ['riot'],
+			scan: { include: ['src/**/*.ts'] },
+		}, { framework: 'vite' } as any)
+		expect(mockCreateCtx)
+			.toHaveBeenLastCalledWith(expect.objectContaining({
+				scan: expect.objectContaining({
+					include: ['src/**/*.ts'],
+				}),
+			}))
 	})
 })

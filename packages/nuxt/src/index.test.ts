@@ -45,10 +45,12 @@ describe('nuxt module', () => {
 				// The Nuxt Vite root is `srcDir`; the module must anchor config
 				// discovery and codegen at the project root instead.
 				cwd: '/project-root',
-				scan: {
-					include: ['**/*.{js,ts,jsx,tsx,vue}'],
-				},
 			})
+		// Regression: the module must not re-hardcode a `scan.include` default —
+		// the unplugin layer's own default resolution is the single source of
+		// truth, otherwise the two defaults drift silently.
+		expect(vitePluginFactory.mock.calls[0]![0])
+			.not.toHaveProperty('scan')
 		expect(addVitePlugin)
 			.toHaveBeenCalledWith(expect.objectContaining({
 				enforce: 'pre',

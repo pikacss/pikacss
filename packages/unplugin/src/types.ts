@@ -37,12 +37,15 @@ export interface PluginOptions {
 	/**
 	 * Glob patterns controlling which source files are scanned for `pika()` calls.
 	 *
-	 * @default `{ include: ['**\/*.{js,ts,jsx,tsx,vue}'], exclude: ['node_modules/**', 'dist/**'] }`
+	 * @default `{ include: ['**\/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}'], exclude: ['node_modules/**', 'dist/**'] }`
 	 */
 	scan?: {
 		/**
 		 * File glob patterns to scan. Supports a single string or array of strings.
-		 * @default ['**\/*.{js,ts,jsx,tsx,vue}']
+		 * When omitted, the default covers the JS family plus every supported markup
+		 * extension (the built-in markup defaults merged with `markupExtensions`).
+		 * An explicit value wins verbatim and is not extended by `markupExtensions`.
+		 * @default ['**\/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}']
 		 */
 		include?: string | string[]
 		/**
@@ -81,7 +84,9 @@ export interface PluginOptions {
 	 * quoted template attributes (e.g., `:class="pika({...})"` in Vue SFCs) — so string and
 	 * comment detection works differently there. Extensions listed here are merged with the
 	 * built-in defaults `['vue', 'svelte', 'astro', 'html', 'htm']`; pass `['riot']` to also
-	 * scan `.riot` files in markup mode.
+	 * scan `.riot` files in markup mode. When `scan.include` is not set, the default include
+	 * glob is extended with these extensions too, so the files are actually selected for
+	 * scanning without further configuration.
 	 *
 	 * @default `undefined` (built-in defaults only)
 	 */

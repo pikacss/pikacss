@@ -3,7 +3,7 @@ import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
 import { readFileSync } from 'node:fs'
 import process from 'node:process'
-import { createCtx, log } from '@pikacss/integration'
+import { createCtx, DEFAULT_MARKUP_EXTENSIONS, log } from '@pikacss/integration'
 import { resolve } from 'pathe'
 import { debounce } from 'perfect-debounce'
 import { createUnplugin } from 'unplugin'
@@ -54,13 +54,31 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 
 	log.debug('Creating unplugin factory with options:', options)
 
+	// The default include glob must cover every extension the scanner
+	// supports: the JS family plus the effective markup extensions — the
+	// integration merges user `markupExtensions` with the built-in defaults,
+	// so the default glob mirrors that merge. An explicit `scan.include`
+	// always wins verbatim.
+	const defaultIncludeExtensions = [
+		'js',
+		'ts',
+		'jsx',
+		'tsx',
+		...new Set(
+			[...DEFAULT_MARKUP_EXTENSIONS, ...(markupExtensions ?? [])]
+				.map(ext => ext.replace(/^\./, ''))
+				.filter(ext => ext.length > 0),
+		),
+	]
+	const defaultInclude = [`**/*.{${defaultIncludeExtensions.join(',')}}`]
+
 	const resolvedOptions: ResolvedPluginOptions = {
 		currentPackageName,
 		configOrPath,
 		tsCodegen: tsCodegen === true ? 'pika.gen.ts' : tsCodegen,
 		cssCodegen: cssCodegen === true ? 'pika.gen.css' : cssCodegen,
 		scan: {
-			include: typeof scan?.include === 'string' ? [scan.include] : (scan?.include || ['**/*.{js,ts,jsx,tsx,vue}']),
+			include: typeof scan?.include === 'string' ? [scan.include] : (scan?.include || defaultInclude),
 			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**']),
 		},
 		fnName,
@@ -139,14 +157,31 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		return generatedWritePromise
 	}
 
-	function queueCssWrite() {
+	// Queued generated-file writes are fire-and-forget: they run from event
+	// hook listeners (`createEventHook.trigger` discards listener return
+	// values) and `watchChange`, so a rejected flush promise would surface as
+	// an unhandled rejection and kill the dev server process (ENOSPC, EBUSY
+	// on Windows, read-only dir, ...). `queueCssWrite`/`queueTsWrite` therefore
+	// attach a logging rejection handler in the same turn and return `void`,
+	// so future call sites cannot silently drop the rejection. The pending
+	// flags survive a failed flush, so the next queued write retries. Awaited
+	// call sites (the transform handler) use `flushPendingGeneratedWrites()`
+	// directly and still propagate failures so builds fail loudly.
+	function queueCssWrite(): void {
 		pendingCssWrite = true
-		return flushPendingGeneratedWrites()
+		scheduleGeneratedWritesFlush()
 	}
 
-	function queueTsWrite() {
+	function queueTsWrite(): void {
 		pendingTsWrite = true
-		return flushPendingGeneratedWrites()
+		scheduleGeneratedWritesFlush()
+	}
+
+	function scheduleGeneratedWritesFlush(): void {
+		flushPendingGeneratedWrites()
+			.catch((error: any) => {
+				log.error(`Failed to write generated files: ${error?.message ?? error}`, error)
+			})
 	}
 
 	let hooksBound = false
@@ -157,11 +192,11 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 
 		ctx.hooks.styleUpdated.on(() => {
 			log.debug(`Style updated, ${ctx.engine.store.atomicStyleIds.size} atomic styles generated`)
-			return queueCssWrite()
+			queueCssWrite()
 		})
 		ctx.hooks.tsCodegenUpdated.on(() => {
 			log.debug('TypeScript code generation updated')
-			return queueTsWrite()
+			queueTsWrite()
 		})
 	}
 
@@ -322,6 +357,13 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			},
 			async handler(code: string, id: string) {
 				await ensureSetup()
+				// The declarative filter above is baked once by the bundler
+				// adapter (relative patterns resolve against process.cwd()),
+				// so cwd-dependent excludes — the codegen outputs and ids like
+				// node_modules under a Vite root differing from the shell cwd —
+				// must be re-checked against the current ctx.cwd at call time.
+				if (!ctx.isTransformTarget(id))
+					return null
 				activeTransforms++
 				if (meta.framework === 'webpack' && ctx.resolvedConfigPath != null) {
 					this.addWatchFile(ctx.resolvedConfigPath)
