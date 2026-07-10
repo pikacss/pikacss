@@ -171,6 +171,61 @@ function blankHtmlComments(code: string): string {
 	return code.replace(/<!--[\s\S]*?-->/g, match => match.replace(/[^\n]/g, ' '))
 }
 
+const SCRIPT_BLOCK_RE = /(<script\b[^>]*>)([\s\S]*?)(<\/script\s*>)/gi
+
+/**
+ * Produces a length-preserving copy of a markup source with non-code regions blanked:
+ * HTML comment contents and JS literal/comment contents inside `<script>` blocks.
+ * @internal
+ *
+ * @remarks
+ * Script block contents are JS, so `pika(` inside a script-block string literal
+ * or JS comment must not be treated as a call site. `stripLiteral()` is
+ * length-preserving, so all offsets stay aligned with the original source.
+ * limit: Astro frontmatter (`---` fences) is not JS-stripped, so lookalikes
+ * inside frontmatter literals/comments can still match; treating the fences
+ * like script blocks here is the upgrade path.
+ */
+function blankMarkupNonCode(code: string): string {
+	return blankHtmlComments(code)
+		.replace(
+			SCRIPT_BLOCK_RE,
+			(_, open: string, content: string, close: string) => `${open}${stripLiteral(content)}${close}`,
+		)
+}
+
+/**
+ * Heuristically detects the quote character of the markup attribute enclosing the given position.
+ *
+ * @param code - The full markup source code.
+ * @param position - Zero-based offset of the expression to locate (e.g., a `pika()` call start).
+ * @returns The enclosing attribute's quote character, or `null` when none is found.
+ *
+ * @remarks
+ * Scans backwards from `position` for the nearest quote directly preceded by `=`
+ * (whitespace allowed), which marks the opening of an attribute value; the scan
+ * stops at a tag-open `<`. Quotes inside the enclosing attribute expression come
+ * in pairs, so the backward scan lands on the attribute quote itself.
+ * limit: an unpaired quote inside the attribute expression (e.g. a string
+ * literal containing a lone quote char) can yield the wrong quote; a full
+ * markup parse is the upgrade path.
+ */
+export function detectEnclosingAttributeQuote(code: string, position: number): '"' | '\'' | null {
+	for (let i = position - 1; i >= 0; i--) {
+		const char = code[i]
+		if (char === '<')
+			return null
+		if (char !== '"' && char !== '\'')
+			continue
+		let j = i - 1
+		while (j >= 0 && /\s/.test(code[j]!))
+			j--
+		if (j >= 0 && code[j] === '=')
+			return char
+	}
+	return null
+}
+
 /**
  * Counts paren depth from a call's opening paren on the raw source, tracking
  * string literals, escapes, template expressions, and JS comments locally.
@@ -258,8 +313,9 @@ function findCallEndWithLocalTracking(code: string, start: number, fnName: strin
  * preserved), so `pika(` inside strings or comments never matches and
  * parentheses inside literals never confuse the depth counter. Markup sources
  * (Vue SFCs etc.) cannot be JS-lexed as a whole — calls live inside quoted
- * template attributes — so there only HTML comments are blanked and paren depth
- * is tracked per call with local string/comment awareness. In both modes,
+ * template attributes — so there HTML comments are blanked, `<script>` block
+ * contents are additionally JS literal/comment stripped, and paren depth is
+ * tracked per call with local string/comment awareness. In both modes,
  * matches preceded by `.` (member access such as `obj.pika(...)`) or a
  * `function` keyword (declarations) are skipped, and each match includes the
  * full call snippet, sliced from the original code, for later evaluation.
@@ -277,9 +333,10 @@ export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>, id
 	const RE = fnUtils.RE
 	const isHtmlLike = id != null && markupIdRE != null && markupIdRE.test(id)
 	// Stripped copy with identical offsets, used to tell real call sites apart
-	// from lookalikes: JS literal/comment contents blanked for JS-like sources,
-	// HTML comment contents blanked for markup sources.
-	const stripped = isHtmlLike ? blankHtmlComments(code) : stripLiteral(code)
+	// from lookalikes: JS literal/comment contents blanked for JS-like sources;
+	// HTML comment contents plus script-block JS literal/comment contents
+	// blanked for markup sources.
+	const stripped = isHtmlLike ? blankMarkupNonCode(code) : stripLiteral(code)
 	const result: FunctionCallMatch[] = []
 	RE.lastIndex = 0
 	let matched: RegExpExecArray | Nullish = RE.exec(code)

@@ -3,7 +3,7 @@ import { log } from '@pikacss/core'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createFnUtils, createMarkupIdRE, findFunctionCalls, findTemplateExpressionEnd } from './ctx.transform-utils'
+import { createFnUtils, createMarkupIdRE, detectEnclosingAttributeQuote, findFunctionCalls, findTemplateExpressionEnd } from './ctx.transform-utils'
 
 afterEach(() => {
 	vi.restoreAllMocks()
@@ -109,6 +109,39 @@ describe('createMarkupIdRE', () => {
 		expect(createMarkupIdRE([]))
 			.toBeNull()
 		expect(createMarkupIdRE(['.']))
+			.toBeNull()
+	})
+})
+
+describe('detectEnclosingAttributeQuote', () => {
+	it('detects the enclosing attribute quote for markup call sites', () => {
+		const doubleQuoted = '<div :class="pika({ color: \'red\' })">'
+		expect(detectEnclosingAttributeQuote(doubleQuoted, doubleQuoted.indexOf('pika')))
+			.toBe('"')
+
+		const singleQuoted = '<div :class=\'pika({ color: "red" })\'>'
+		expect(detectEnclosingAttributeQuote(singleQuoted, singleQuoted.indexOf('pika')))
+			.toBe('\'')
+
+		const spaced = '<div :class = "pika({ color: \'red\' })">'
+		expect(detectEnclosingAttributeQuote(spaced, spaced.indexOf('pika')))
+			.toBe('"')
+	})
+
+	it('skips paired quotes inside the enclosing attribute expression', () => {
+		const nested = '<div :class=\'cond("x") ? pika({}) : fallback\'>'
+		expect(detectEnclosingAttributeQuote(nested, nested.indexOf('pika')))
+			.toBe('\'')
+	})
+
+	it('returns null when no enclosing attribute quote exists', () => {
+		const scriptStatement = '<script>\nconst a = pika({ color: \'red\' })\n</script>'
+		expect(detectEnclosingAttributeQuote(scriptStatement, scriptStatement.indexOf('pika')))
+			.toBeNull()
+		expect(detectEnclosingAttributeQuote('pika({})', 0))
+			.toBeNull()
+		// A quote at the start of the source has nothing before it.
+		expect(detectEnclosingAttributeQuote('"x pika({})', '"x pika({})'.indexOf('pika')))
 			.toBeNull()
 	})
 })
@@ -269,6 +302,30 @@ describe('findFunctionCalls', () => {
 			.toEqual([])
 		expect(findFunctionCalls(code, fnUtils, '/project/src/App.vue', null))
 			.toEqual([])
+	})
+
+	it('ignores script-block string literals and JS comments in html-like sources', () => {
+		const fnUtils = createFnUtils('pika')
+		const code = [
+			'<script setup lang="ts">',
+			'const tip = "use pika(\'bg:red\') here"',
+			'const tpl = `template pika(1)`',
+			'// pika({ color: \'red\' })',
+			'/* pika({ color: \'green\' }) */',
+			'const real = pika({ color: \'gold\' })',
+			'</script>',
+			'',
+			'<template>',
+			'\t<div :class="pika({ color: \'blue\' })">',
+			'</template>',
+		].join('\n')
+
+		expect(findFunctionCalls(code, fnUtils, '/project/src/App.vue')
+			.map(match => match.snippet))
+			.toEqual([
+				'pika({ color: \'gold\' })',
+				'pika({ color: \'blue\' })',
+			])
 	})
 
 	it('ignores calls inside HTML comments and member accesses in html-like sources', () => {

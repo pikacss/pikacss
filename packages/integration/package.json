@@ -57,6 +57,10 @@
 		"local-pkg": "catalog:",
 		"magic-string": "catalog:",
 		"pathe": "catalog:",
+		"picomatch": "catalog:",
 		"strip-literal": "catalog:"
+	},
+	"devDependencies": {
+		"@types/picomatch": "catalog:"
 	}
 }

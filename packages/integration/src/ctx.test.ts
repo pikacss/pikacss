@@ -388,6 +388,97 @@ describe('createCtx', () => {
 			.toHaveLength(3)
 	})
 
+	it('escapes line terminators when serializing unresolved string style items', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+
+		// `new Function` evaluation turns the source `\n` escape into a real LF,
+		// which the engine echoes back verbatim for unresolved string items.
+		const transformed = await ctx.transform('const value = pika(\'a\\nb\')', 'src/newline.ts')
+
+		expect(transformed?.code)
+			.toContain('\'a\\nb\'')
+		// The emitted literal must not contain a raw line terminator.
+		expect(transformed?.code)
+			.not.toContain('\n')
+		// eslint-disable-next-line no-new-func
+		expect(() => new Function(transformed!.code))
+			.not.toThrow()
+	})
+
+	it('does not rewrite pika lookalikes inside script-block literals and comments of markup sources', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			scan: {
+				include: ['src/**/*.vue'],
+				exclude: [],
+			},
+		}))
+
+		await ctx.setup()
+
+		const transformed = await ctx.transform([
+			'<script setup lang="ts">',
+			'const tip = "use pika(\'bg:red\') here"',
+			'// pika({ color: \'red\' })',
+			'/* pika({ color: \'green\' }) */',
+			'const real = pika({ color: \'gold\' })',
+			'</script>',
+			'',
+			'<template>',
+			'\t<div :class="pika({ color: \'blue\' })">real</div>',
+			'</template>',
+		].join('\n'), 'src/App.vue')
+
+		// Lookalikes inside script-block literals and JS comments survive untouched.
+		expect(transformed?.code)
+			.toContain('const tip = "use pika(\'bg:red\') here"')
+		expect(transformed?.code)
+			.toContain('// pika({ color: \'red\' })')
+		expect(transformed?.code)
+			.toContain('/* pika({ color: \'green\' }) */')
+		// Real calls in the script block and the template attribute are rewritten.
+		expect(transformed?.code.includes('pika({ color: \'gold\' })'))
+			.toBe(false)
+		expect(transformed?.code.includes('pika({ color: \'blue\' })'))
+			.toBe(false)
+		expect(ctx.usages.get('src/App.vue'))
+			.toHaveLength(2)
+	})
+
+	it('emits double-quoted literals inside single-quoted markup attributes', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			scan: {
+				include: ['src/**/*.vue'],
+				exclude: [],
+			},
+		}))
+
+		await ctx.setup()
+
+		const transformed = await ctx.transform([
+			'<template>',
+			'\t<div :class=\'pika({ color: "red" })\'>',
+			'\t\t<span :class="pika({ color: \'blue\' })">text</span>',
+			'\t</div>',
+			'</template>',
+		].join('\n'), 'src/App.vue')
+
+		// Single-quoted attribute stays intact: the literal uses double quotes.
+		expect(transformed?.code)
+			.toMatch(/:class='"[^']*"'/)
+		// Double-quoted attribute keeps the existing single-quoted output.
+		expect(transformed?.code)
+			.toMatch(/:class="'[^"]*'"/)
+		expect(ctx.usages.get('src/App.vue'))
+			.toHaveLength(2)
+	})
+
 	it('extends markup mode with user-supplied extensions while keeping the defaults', async () => {
 		const cwd = await createTempDir()
 		const ctx = createCtx(createOptions({
@@ -556,6 +647,68 @@ describe('createCtx', () => {
 			.toBe(false)
 	})
 
+	it('drains in-flight transforms before setup clears state and swaps the engine', async () => {
+		const firstUse = createDeferred<string[]>()
+		let engineCount = 0
+
+		vi.resetModules()
+		vi.doMock('@pikacss/core', async (importOriginal) => {
+			const actual = await importOriginal<typeof import('@pikacss/core')>()
+			const createEngine = vi.fn(async (config: Record<string, any>) => {
+				engineCount++
+				const engineIndex = engineCount
+				return {
+					config,
+					store: {
+						atomicStyleIds: new Map(),
+					},
+					use: vi.fn(async () => engineIndex === 1 ? firstUse.promise : ['pk-new']),
+					renderLayerOrderDeclaration: vi.fn(() => ''),
+					renderPreflights: vi.fn(async () => ''),
+					renderAtomicStyles: vi.fn(async () => ''),
+				}
+			})
+
+			return {
+				...actual,
+				createEngine,
+			}
+		})
+
+		const { createCtx: createMockedCtx } = await import('./ctx')
+		const ctx = createMockedCtx(createOptions())
+
+		await ctx.setup()
+
+		// Suspended at the first engine's `use()` call.
+		const inFlight = ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
+
+		let setupDone = false
+		const setupPromise = ctx.setup()
+			.then(() => {
+				setupDone = true
+			})
+
+		// Setup must stay parked on the drain while the transform is in flight.
+		await new Promise(resolve => setTimeout(resolve, 10))
+		expect(setupDone)
+			.toBe(false)
+
+		firstUse.resolve(['pk-old'])
+		await inFlight
+		await setupPromise
+
+		// The late transform completed before setup cleared state, so its
+		// old-engine usages were not written into the new engine's session.
+		expect(ctx.usages.size)
+			.toBe(0)
+
+		// A re-transform after setup records usages resolved by the new engine.
+		await ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
+		expect(ctx.usages.get('src/a.ts')?.[0]?.atomicStyleIds)
+			.toEqual(['pk-new'])
+	})
+
 	it('warns and skips malformed template, comment, and unterminated call patterns', async () => {
 		const cwd = await createTempDir()
 		const warn = vi.fn()
@@ -594,6 +747,112 @@ describe('createCtx', () => {
 			.toBeNull()
 		expect(await readFile(join(cwd, 'generated/pika.gen.css'), 'utf8'))
 			.toContain('/* Auto-generated by @pikacss/core */')
+	})
+
+	it('evaluates transform targets against the current cwd and always rejects codegen outputs', async () => {
+		const cwd = await createTempDir()
+		const nextCwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			scan: {
+				include: ['**/*.{ts,css}'],
+				exclude: ['node_modules/**', 'dist/**', join(nextCwd, 'abs-excluded/**')],
+			},
+		}))
+
+		// Relative excludes and ids must follow the updated cwd, not the one the
+		// context was created with.
+		ctx.cwd = nextCwd
+
+		expect(ctx.isTransformTarget(join(nextCwd, 'src/demo.ts')))
+			.toBe(true)
+		// Relative ids resolve against the current cwd.
+		expect(ctx.isTransformTarget('src/demo.ts'))
+			.toBe(true)
+		// Query/hash suffixes are ignored.
+		expect(ctx.isTransformTarget(`${join(nextCwd, 'src/demo.ts')}?raw`))
+			.toBe(true)
+		// cwd-relative excludes are resolved against the current cwd.
+		expect(ctx.isTransformTarget(join(nextCwd, 'node_modules/pkg/index.ts')))
+			.toBe(false)
+		expect(ctx.isTransformTarget(join(nextCwd, 'dist/out.ts')))
+			.toBe(false)
+		// Codegen outputs are always rejected, even when they match the include globs.
+		expect(ctx.isTransformTarget(join(nextCwd, 'generated/pika.gen.ts')))
+			.toBe(false)
+		expect(ctx.isTransformTarget(join(nextCwd, 'generated/pika.gen.css')))
+			.toBe(false)
+		// Absolute exclude patterns match against the absolute id.
+		expect(ctx.isTransformTarget(join(nextCwd, 'abs-excluded/skip.ts')))
+			.toBe(false)
+		// Non-included files are rejected.
+		expect(ctx.isTransformTarget(join(nextCwd, 'README.md')))
+			.toBe(false)
+	})
+
+	it('skips the codegen output files during full CSS scanning even when they match scan.include', async () => {
+		const cwd = await createTempDir()
+		await mkdir(join(cwd, 'src'), { recursive: true })
+		await writeFile(join(cwd, 'src/demo.ts'), 'export const value = pika({ color: \'red\' })')
+		// A stale codegen output that matches the include glob must not be scanned.
+		const tsCodegenFilepath = join(cwd, 'src/pika.gen.ts')
+		await writeFile(tsCodegenFilepath, 'export const leaked = pika({ color: \'blue\' })')
+
+		const ctx = createCtx(createOptions({
+			cwd,
+			tsCodegen: 'src/pika.gen.ts',
+		}))
+
+		await withProcessCwd(cwd, async () => {
+			await ctx.setup()
+			await ctx.fullyCssCodegen()
+		})
+
+		expect(ctx.usages.has(tsCodegenFilepath))
+			.toBe(false)
+		const css = await readFile(join(cwd, 'generated/pika.gen.css'), 'utf8')
+		expect(css)
+			.toContain('color: red')
+		expect(css)
+			.not.toContain('color: blue')
+	})
+
+	it('prunes variables and keyframes of styles whose usages were removed', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({
+			cwd,
+			configOrPath: {
+				variables: {
+					definitions: {
+						'--main-color': 'red',
+					},
+				},
+				keyframes: {
+					definitions: [
+						['spin', { from: { opacity: '0' }, to: { opacity: '1' } }],
+					],
+				},
+			},
+		}))
+
+		await ctx.setup()
+
+		await ctx.transform('const a = pika({ color: \'var(--main-color)\', animationName: \'spin\' })', 'src/anim.ts')
+		const withUsage = await ctx.getCssCodegenContent()
+		expect(withUsage)
+			.toContain('--main-color')
+		expect(withUsage)
+			.toContain('@keyframes spin')
+
+		// Deleting the usage (as watchChange/transform would) must drop the
+		// variable and keyframes from the regenerated CSS despite the
+		// append-only engine store.
+		await ctx.transform('const a = 1', 'src/anim.ts')
+		const withoutUsage = await ctx.getCssCodegenContent()
+		expect(withoutUsage)
+			.not.toContain('--main-color')
+		expect(withoutUsage)
+			.not.toContain('@keyframes spin')
 	})
 
 	it('honors explicit config paths and leaves tsCodegen excludes empty when disabled', async () => {

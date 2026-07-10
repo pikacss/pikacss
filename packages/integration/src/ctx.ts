@@ -9,7 +9,8 @@ import { klona } from 'klona'
 import { isPackageExists } from 'local-pkg'
 import MagicString from 'magic-string'
 import { dirname, isAbsolute, join, relative, resolve } from 'pathe'
-import { createFnUtils, createMarkupIdRE, DEFAULT_MARKUP_EXTENSIONS, findFunctionCalls } from './ctx.transform-utils'
+import picomatch from 'picomatch'
+import { createFnUtils, createMarkupIdRE, DEFAULT_MARKUP_EXTENSIONS, detectEnclosingAttributeQuote, findFunctionCalls } from './ctx.transform-utils'
 import { createEventHook } from './eventHook'
 import { generateTsCodegenContent } from './tsCodegen'
 
@@ -256,18 +257,24 @@ function useTransform({
 		? undefined
 		: [...DEFAULT_MARKUP_EXTENSIONS, ...markupExtensions])
 
-	// Single quotes are required: the transformed call may sit inside a
-	// double-quoted Vue template attribute (e.g. :class="pika(...)").
-	function quoteSingle(value: string) {
-		return `'${value.replace(/\\/g, '\\\\')
-			.replace(/'/g, '\\\'')}'`
+	// Line terminators must be escaped too: an unresolved string style item is
+	// echoed back verbatim by the engine and may contain a raw newline, which
+	// would otherwise split the emitted literal across lines (SyntaxError).
+	function quoteWith(value: string, quote: '"' | '\'') {
+		const escaped = value.replace(/\\/g, '\\\\')
+			.replaceAll(quote, `\\${quote}`)
+			.replace(/\n/g, '\\n')
+			.replace(/\r/g, '\\r')
+			.replace(/\u2028/g, '\\u2028')
+			.replace(/\u2029/g, '\\u2029')
+		return `${quote}${escaped}${quote}`
 	}
 
-	function serializeNames(names: string[], format: 'string' | 'array') {
+	function serializeNames(names: string[], format: 'string' | 'array', quote: '"' | '\'') {
 		return format === 'array'
-			? `[${names.map(quoteSingle)
+			? `[${names.map(name => quoteWith(name, quote))
 				.join(', ')}]`
-			: quoteSingle(names.join(' '))
+			: quoteWith(names.join(' '), quote)
 	}
 
 	async function transform(code: string, id: string) {
@@ -300,6 +307,7 @@ function useTransform({
 			const usageList: UsageRecord[] = []
 			const previewUsageList: UsageRecord[] = []
 
+			const isMarkupId = markupIdRE != null && markupIdRE.test(id)
 			const transformed = new MagicString(code)
 			for (const fnCall of functionCalls) {
 				try {
@@ -309,15 +317,24 @@ function useTransform({
 					const args = new Function(`return ${argsStr}`)() as Parameters<Engine['use']>
 					const names = await _engine.use(...args)
 
+					// Emitted literals default to single quotes because the call may sit
+					// inside a double-quoted Vue template attribute (:class="pika(...)").
+					// In markup sources the enclosing attribute may itself be
+					// single-quoted, so use the opposite quote there (heuristic
+					// detection; see detectEnclosingAttributeQuote).
+					const quote = isMarkupId && detectEnclosingAttributeQuote(code, fnCall.start) === '\''
+						? '"'
+						: '\''
+
 					let transformedContent: string
 					if (fnUtils.isNormal(fnCall.fnName)) {
-						transformedContent = serializeNames(names, transformedFormat)
+						transformedContent = serializeNames(names, transformedFormat, quote)
 					}
 					else if (fnUtils.isForceString(fnCall.fnName)) {
-						transformedContent = serializeNames(names, 'string')
+						transformedContent = serializeNames(names, 'string', quote)
 					}
 					else if (fnUtils.isForceArray(fnCall.fnName)) {
-						transformedContent = serializeNames(names, 'array')
+						transformedContent = serializeNames(names, 'array', quote)
 					}
 					else {
 						throw new Error(`Unexpected function name: ${fnCall.fnName}`)
@@ -371,8 +388,11 @@ function useTransform({
 	}
 
 	return {
-		// Getters keep the filter in sync with the current cwd, which the
-		// integration consumer may update after context creation.
+		// Declarative filter for bundlers. Bundler plugin adapters may read these
+		// getters once at plugin conversion (before `cwd` is finalized) and
+		// resolve relative patterns against `process.cwd()`, so the cwd-relative
+		// excludes below are only a best effort — consumers must re-check ids at
+		// transform time via `ctx.isTransformTarget()`.
 		transformFilter: {
 			get include() {
 				return scan.include
@@ -387,6 +407,61 @@ function useTransform({
 		},
 		transform,
 	}
+}
+
+interface PatternMatcher {
+	matches: (path: string) => boolean
+	isAbsolutePattern: boolean
+}
+
+function useTransformTarget({
+	cwd,
+	cssCodegenFilepath,
+	tsCodegenFilepath,
+	scan,
+}: {
+	cwd: Signal<string>
+	cssCodegenFilepath: Computed<string>
+	tsCodegenFilepath: Computed<string | null>
+	scan: {
+		include: string[]
+		exclude: string[]
+	}
+}) {
+	// Patterns are fixed at context creation; only the base directory used to
+	// resolve relative ids and patterns follows `cwd`, so the matchers can be
+	// built once.
+	const toMatchers = (patterns: string[]): PatternMatcher[] => patterns.map(pattern => ({
+		matches: picomatch(pattern, { dot: true }),
+		isAbsolutePattern: isAbsolute(pattern),
+	}))
+	const includeMatchers = toMatchers(scan.include)
+	const excludeMatchers = toMatchers(scan.exclude)
+
+	function isTransformTarget(id: string): boolean {
+		// Bundler ids may carry query/hash suffixes (e.g. `App.vue?vue&type=script`).
+		const filePath = id.split(/[?#]/, 1)[0]!
+		const _cwd = cwd()
+		const absoluteId = isAbsolute(filePath) ? resolve(filePath) : resolve(_cwd, filePath)
+
+		// The codegen outputs must never be transformed or scanned: doing so
+		// would feed generated content back into style collection.
+		if (absoluteId === cssCodegenFilepath())
+			return false
+		const _tsCodegenFilepath = tsCodegenFilepath()
+		if (_tsCodegenFilepath != null && absoluteId === _tsCodegenFilepath)
+			return false
+
+		// Relative patterns match against the id relative to the CURRENT cwd;
+		// absolute patterns match against the absolute id.
+		const relativeId = relative(_cwd, absoluteId)
+		const matchesSome = (matchers: PatternMatcher[]) => matchers.some(
+			({ matches, isAbsolutePattern }) => matches(isAbsolutePattern ? absoluteId : relativeId),
+		)
+		return matchesSome(includeMatchers) && !matchesSome(excludeMatchers)
+	}
+
+	return { isTransformTarget }
 }
 
 /**
@@ -428,6 +503,23 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	let activeTransforms = 0
 	let pendingStyleUpdated = false
 	let pendingTsCodegenUpdated = false
+	let transformIdleWaiters: (() => void)[] = []
+
+	function waitForIdleTransforms(): Promise<void> {
+		if (activeTransforms === 0)
+			return Promise.resolve()
+		return new Promise((resolveWaiter) => {
+			transformIdleWaiters.push(resolveWaiter)
+		})
+	}
+
+	function notifyTransformsIdle() {
+		if (activeTransforms > 0 || transformIdleWaiters.length === 0)
+			return
+		const waiters = transformIdleWaiters
+		transformIdleWaiters = []
+		waiters.forEach(resolveWaiter => resolveWaiter())
+	}
 
 	function flushPendingUpdates() {
 		if (activeTransforms > 0)
@@ -473,9 +565,17 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			if (activeTransforms > 0)
 				activeTransforms--
 			flushPendingUpdates()
+			notifyTransformsIdle()
 		},
 		triggerStyleUpdated: queueStyleUpdated,
 		triggerTsCodegenUpdated: queueTsCodegenUpdated,
+	})
+
+	const { isTransformTarget } = useTransformTarget({
+		cwd,
+		cssCodegenFilepath,
+		tsCodegenFilepath,
+		scan: options.scan,
 	})
 
 	const ctx: IntegrationContext = {
@@ -502,6 +602,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			return _engine
 		},
 		transformFilter,
+		isTransformTarget,
 		transform: async (code, id) => {
 			await ctx.setupPromise
 			return transform(code, id)
@@ -515,7 +616,10 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			log.debug(`Collecting ${atomicStyleIds.length} atomic style IDs`)
 
 			const layerDecl = ctx.engine.renderLayerOrderDeclaration()
-			const preflightsCss = await ctx.engine.renderPreflights(true)
+			// Scope preflight pruning (variables, keyframes) to the atomic styles
+			// still referenced by live usages: the engine store is append-only, so
+			// an unfiltered pass would keep emitting declarations for deleted styles.
+			const preflightsCss = await ctx.engine.renderPreflights(true, { usedAtomicStyleIds: atomicStyleIds })
 			const atomicCss = await ctx.engine.renderAtomicStyles(true, { atomicStyleIds })
 
 			const css = [
@@ -569,6 +673,10 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			let fileCount = 0
 			for await (const entry of stream) {
 				const filePath = join(_cwd, entry)
+				// `scan.exclude` alone does not cover the codegen outputs; re-check
+				// through the same predicate the bundler transform path uses.
+				if (!ctx.isTransformTarget(filePath))
+					continue
 				const code = await readFile(filePath, 'utf-8')
 				// collect usages
 				await ctx.transform(code, filePath)
@@ -597,9 +705,15 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 
 	async function setup() {
 		log.debug('Setting up integration context')
+		// Drain in-flight transforms before clearing state and swapping the
+		// engine: a transform suspended at `engine.use()` would otherwise resume
+		// against the old engine and write usages the new engine's store does not
+		// know about. Only transforms that already began are drained here — new
+		// `ctx.transform()` calls await `ctx.setupPromise` at entry (which is
+		// already set to this setup run), so this cannot deadlock.
+		await waitForIdleTransforms()
 		usages.clear()
 		previewUsages.clear()
-		activeTransforms = 0
 		pendingStyleUpdated = false
 		pendingTsCodegenUpdated = false
 		hooks.styleUpdated.listeners.clear()

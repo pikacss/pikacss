@@ -133,11 +133,32 @@ export interface IntegrationContext {
 	}
 	/** The initialized PikaCSS engine instance. Throws if accessed before `setup()` completes. */
 	engine: Engine
-	/** Glob patterns for the bundler's transform pipeline, derived from the scan config with codegen files excluded. */
+	/**
+	 * Glob patterns for the bundler's transform pipeline, derived from the scan config with codegen files excluded.
+	 *
+	 * @remarks
+	 * Bundler plugin adapters may read these patterns once at plugin conversion and resolve
+	 * relative patterns against `process.cwd()` before `cwd` is finalized, so the
+	 * cwd-relative excludes are only a best effort. Re-check candidate ids at transform
+	 * time via {@link IntegrationContext.isTransformTarget}.
+	 */
 	transformFilter: {
 		include: string[]
 		exclude: string[]
 	}
+	/**
+	 * Returns whether a module id should be transformed, evaluated against the CURRENT `cwd`.
+	 *
+	 * @param id - A module id (absolute or `cwd`-relative file path; query/hash suffixes such as `?vue&type=script` are ignored).
+	 * @returns `true` when the id matches `scan.include`, does not match `scan.exclude`, and is not one of the codegen output files.
+	 *
+	 * @remarks
+	 * Unlike `transformFilter`, this predicate resolves relative ids and relative scan
+	 * patterns against the current `cwd` at call time and always rejects the CSS/TS
+	 * codegen output filepaths, so bundler adapters should call it per id at transform
+	 * time instead of relying solely on the declarative filter.
+	 */
+	isTransformTarget: (id: string) => boolean
 	/** Processes a source file by extracting `pika()` calls, resolving them through the engine, and replacing them with computed output. Returns the transformed code and source map, or `null` if no calls were found. */
 	transform: (code: string, id: string) => Promise<{ code: string, map: SourceMap } | Nullish>
 	/** Generates the full CSS output string, including layer declarations, preflights, and all atomic styles collected from transforms. */
