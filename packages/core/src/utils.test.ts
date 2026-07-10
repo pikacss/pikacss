@@ -6,8 +6,10 @@ import {
 	appendAutocompleteEntries,
 	appendAutocompleteRecordEntries,
 	createLogger,
+	escapeRegExp,
 	isNotNullish,
 	isNotString,
+	isPlainObjectRecord,
 	isPropertyValue,
 	isString,
 	numberToChars,
@@ -91,6 +93,19 @@ describe('basic utilities', () => {
 
 		expect(serialize({ color: 'red' }))
 			.toBe('{"color":"red"}')
+
+		expect(isPlainObjectRecord({ a: 1 }))
+			.toBe(true)
+		expect(isPlainObjectRecord([1]))
+			.toBe(false)
+		expect(isPlainObjectRecord(null))
+			.toBe(false)
+
+		expect(escapeRegExp('a.b*c'))
+			.toBe('a\\.b\\*c')
+		expect(new RegExp(`^${escapeRegExp('i-(x)?[y]/z-')}$`)
+			.test('i-(x)?[y]/z-'))
+			.toBe(true)
 	})
 
 	it('appends autocomplete literals and record entries while skipping empty or missing values', () => {

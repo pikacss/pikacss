@@ -9,6 +9,7 @@ import type {
 import { defineEnginePlugin, log } from '@pikacss/core'
 import {
 	builtInFontsProviders,
+	dedupeStrings,
 	defineFontsProvider,
 } from './providers'
 
@@ -517,10 +518,6 @@ function dedupeProviderFonts(providerFonts: Map<FontsProvider, NormalizedFontEnt
 		deduped.set(provider, [...map.values()])
 	}
 	return deduped
-}
-
-function dedupeStrings(values: string[]) {
-	return [...new Set(values.filter(Boolean))]
 }
 
 function serializeProviderOptions(options: FontsProviderOptions) {

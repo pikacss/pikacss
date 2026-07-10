@@ -301,6 +301,6 @@ function toProviderSlug(name: string) {
 		.replace(RE_TRIM_DASHES, '')
 }
 
-function dedupeStrings(values: string[]) {
+export function dedupeStrings(values: string[]) {
 	return [...new Set(values.filter(Boolean))]
 }

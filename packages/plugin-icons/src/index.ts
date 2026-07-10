@@ -3,7 +3,7 @@ import type { Engine, EnginePlugin, StyleItem } from '@pikacss/core'
 import process from 'node:process'
 import { encodeSvgForCss, loadIcon, quicklyValidateIconSet, searchForIcon, stringToIcon } from '@iconify/utils'
 import { loadNodeIcon } from '@iconify/utils/lib/loader/node-loader'
-import { defineEnginePlugin, log } from '@pikacss/core'
+import { defineEnginePlugin, escapeRegExp, log } from '@pikacss/core'
 import { $fetch } from 'ofetch'
 
 /**
@@ -27,7 +27,6 @@ interface IconMeta {
 type IconSource = 'custom' | 'local' | 'cdn'
 type ValidatedIconSet = NonNullable<ReturnType<typeof quicklyValidateIconSet>>
 
-const RE_ESCAPE_REGEXP = /[|\\{}()[\]^$+*?.-]/g
 const RE_CAMEL_CASE_ICON_BOUNDARY = /([a-z])([A-Z])/g
 const RE_DIGIT_ICON_BOUNDARY = /([a-z])(\d+)/g
 const RE_TRAILING_SLASH = /\/$/
@@ -218,10 +217,6 @@ function normalizePrefixes(prefix: Exclude<IconsConfig['prefix'], undefined>) {
 	const prefixes = [prefix].flat()
 		.filter(Boolean)
 	return [...new Set(prefixes)]
-}
-
-function escapeRegExp(value: string) {
-	return value.replace(RE_ESCAPE_REGEXP, '\\$&')
 }
 
 function createShortcutRegExp(prefixes: string[]) {

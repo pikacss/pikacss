@@ -202,6 +202,8 @@ describe('findFunctionCalls', () => {
 			'api.pika({ color: \'blue\' })',
 			'api?.pika({ color: \'cyan\' })',
 			'function pika(args) {}',
+			'function* pika(args) {}',
+			'function * pika(args) {}',
 			'const real = pika({ color: \'gold\' })',
 		].join('\n')
 

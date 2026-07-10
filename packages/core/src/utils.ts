@@ -199,6 +199,47 @@ export function isNotString<V>(value: V): value is Exclude<V, string> {
 	return typeof value !== 'string'
 }
 
+/**
+ * Type-narrowing guard that returns `true` when the value is a plain object record (non-null, non-array object).
+ * @internal
+ *
+ * @param value - The value to test.
+ * @returns `true` if the value is an object that is neither `null` nor an array, narrowing the type to `Record<string, unknown>`.
+ *
+ * @remarks Used to distinguish nested definition objects (variables, design tokens) from scalar values and arrays while walking configuration trees.
+ *
+ * @example
+ * ```ts
+ * isPlainObjectRecord({ a: 1 }) // true
+ * isPlainObjectRecord([1, 2])   // false
+ * isPlainObjectRecord(null)     // false
+ * ```
+ */
+export function isPlainObjectRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+const REGEXP_SPECIAL_CHARS_RE = /[.*+?^${}()|[\]\\/-]/g
+
+/**
+ * Escapes regular expression special characters in a string so it can be embedded in a `RegExp` source as a literal match.
+ * @internal
+ *
+ * @param value - The literal text to escape.
+ * @returns The input with every regex special character prefixed by a backslash.
+ *
+ * @remarks Runtime substitute for `RegExp.escape()` (available in Node.js >= 24 but not yet typed by TypeScript 5.9). Escapes all regex syntax characters plus `/` and `-`; the extra escapes are identity escapes in non-`u`-flag patterns, so the result is safe to embed in the non-unicode-mode regexes built by the engine and integrations.
+ *
+ * @example
+ * ```ts
+ * escapeRegExp('i-icon?') // 'i\\-icon\\?'
+ * new RegExp(`^${escapeRegExp('a.b')}$`).test('a.b') // true
+ * ```
+ */
+export function escapeRegExp(value: string) {
+	return value.replace(REGEXP_SPECIAL_CHARS_RE, '\\$&')
+}
+
 function isPropertyValueScalar(v: unknown): v is string | number {
 	return typeof v === 'string' || typeof v === 'number'
 }

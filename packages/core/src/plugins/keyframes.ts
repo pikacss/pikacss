@@ -177,13 +177,9 @@ export function keyframes() {
 					.filter(({ name, frames, pruneUnused }) => ((pruneUnused === false) || maybeUsedName.has(name)) && frames != null)
 				const preflightDefinition: Record<string, unknown> = {}
 				maybeUsedKeyframes.forEach(({ name, frames }) => {
-					preflightDefinition[`@keyframes ${name}`] = Object.fromEntries(
-						Object.entries(frames! as Record<string, unknown>)
-							.map(([frame, properties]) => [
-								frame,
-								properties,
-							]),
-					)
+					// The renderer only reads the definition tree, so the stored
+					// frames object can be referenced directly without cloning.
+					preflightDefinition[`@keyframes ${name}`] = frames!
 				})
 
 				return preflightDefinition as PreflightDefinition

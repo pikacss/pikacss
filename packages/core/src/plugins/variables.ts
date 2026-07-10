@@ -1,6 +1,6 @@
 import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
-import { log } from '../utils'
+import { isPlainObjectRecord, log } from '../utils'
 
 type ResolvedCSSProperty = keyof ResolvedCSSProperties
 
@@ -330,10 +330,6 @@ function mergeVariablesDefinition(target: VariablesDefinition, source: Variables
 	}
 
 	return target
-}
-
-function isPlainObjectRecord(value: unknown): value is Record<string, unknown> {
-	return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function createResolveVariablesFn({

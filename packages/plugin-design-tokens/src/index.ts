@@ -1,7 +1,7 @@
 import type { Arrayable, EnginePlugin, VariablesDefinition } from '@pikacss/core'
 import { readFile } from 'node:fs/promises'
 import process from 'node:process'
-import { defineEnginePlugin, log } from '@pikacss/core'
+import { defineEnginePlugin, isPlainObjectRecord, log } from '@pikacss/core'
 import { isAbsolute, resolve } from 'pathe'
 
 /**
@@ -187,12 +187,8 @@ function resolveAliases(value: string, prefix: string): string {
 	})
 }
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-	return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
 function isTokenNode(value: unknown): value is DesignToken {
-	return isPlainObject(value) && '$value' in value
+	return isPlainObjectRecord(value) && '$value' in value
 }
 
 function serializeCompositeValue(value: Record<string, unknown>, type: string | undefined, prefix: string): string | null {
@@ -235,7 +231,7 @@ function serializeTokenValue(value: DesignTokenValue, type: string | undefined, 
 			.filter((p): p is string => p != null)
 		return parts.length > 0 ? parts.join(', ') : null
 	}
-	if (isPlainObject(value))
+	if (isPlainObjectRecord(value))
 		return serializeCompositeValue(value, type, prefix)
 	return serializeScalar(value, prefix)
 }
@@ -262,7 +258,7 @@ function flattenTokenGroup({
 			if (serialized == null) {
 				// Composite value without a dedicated serializer: expand each field
 				// into a sub-variable (e.g. typography.$value.fontSize -> --*-font-size).
-				if (isPlainObject(node.$value)) {
+				if (isPlainObjectRecord(node.$value)) {
 					flattenTokenGroup({
 						group: Object.fromEntries(
 							Object.entries(node.$value)
@@ -284,7 +280,7 @@ function flattenTokenGroup({
 			})
 			continue
 		}
-		if (isPlainObject(node)) {
+		if (isPlainObjectRecord(node)) {
 			flattenTokenGroup({ group: node as DesignTokenGroup, path: currentPath, prefix, entries })
 			continue
 		}
@@ -331,7 +327,7 @@ export function parseDesignMarkdown(content: string): { base: DesignTokenGroup[]
 			log.warn(`[design-tokens] Failed to parse tokens block: ${error.message}. Skipping.`)
 			continue
 		}
-		if (!isPlainObject(parsed)) {
+		if (!isPlainObjectRecord(parsed)) {
 			log.warn('[design-tokens] Tokens block must contain a JSON object. Skipping.')
 			continue
 		}
@@ -378,7 +374,7 @@ async function loadSource({
 
 	try {
 		const parsed = JSON.parse(content)
-		if (!isPlainObject(parsed)) {
+		if (!isPlainObjectRecord(parsed)) {
 			log.warn(`[design-tokens] Token source "${filepath}" must contain a JSON object. Skipping.`)
 			return []
 		}

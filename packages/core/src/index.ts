@@ -49,6 +49,8 @@ export type * from './types/utils'
 export {
 	appendAutocomplete,
 	createLogger,
+	escapeRegExp,
+	isPlainObjectRecord,
 	log,
 	renderCSSStyleBlocks,
 } from './utils'

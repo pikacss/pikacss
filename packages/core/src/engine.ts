@@ -655,18 +655,11 @@ function groupAtomicStylesByLayer({
 	return { unlayeredStyles, layerGroups }
 }
 
-function isWithLayer(p: unknown): p is { layer: string, preflight: unknown } {
+function hasPreflightWrapper<K extends 'layer' | 'id'>(p: unknown, key: K): p is Record<K, string> & { preflight: unknown } {
 	if (typeof p !== 'object' || p === null)
 		return false
-	const record = p as { layer?: unknown, preflight?: unknown }
-	return typeof record.layer === 'string' && record.preflight !== undefined
-}
-
-function isWithId(p: unknown): p is { id: string, preflight: unknown } {
-	if (typeof p !== 'object' || p === null)
-		return false
-	const record = p as { id?: unknown, preflight?: unknown }
-	return typeof record.id === 'string' && record.preflight !== undefined
+	const record = p as Record<string, unknown>
+	return typeof record[key] === 'string' && record.preflight !== undefined
 }
 
 /**
@@ -688,13 +681,13 @@ export function resolvePreflight(preflight: Preflight): ResolvedPreflight {
 	let id: string | undefined
 
 	// Peel off WithLayer wrapper
-	if (isWithLayer(preflight)) {
+	if (hasPreflightWrapper(preflight, 'layer')) {
 		layer = preflight.layer
 		preflight = preflight.preflight as Preflight
 	}
 
 	// Peel off WithId wrapper
-	if (isWithId(preflight)) {
+	if (hasPreflightWrapper(preflight, 'id')) {
 		id = preflight.id
 		preflight = preflight.preflight as Preflight
 	}

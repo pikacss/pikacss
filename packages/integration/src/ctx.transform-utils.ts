@@ -1,7 +1,7 @@
 /* eslint-disable no-cond-assign */
 import type { Nullish } from '@pikacss/core'
 import type { FnUtils } from './types'
-import { log } from '@pikacss/core'
+import { escapeRegExp, log } from '@pikacss/core'
 import { stripLiteral } from 'strip-literal'
 
 /**
@@ -18,8 +18,6 @@ export interface FunctionCallMatch {
 	/** The raw source text of the full function call, from the function name through the closing parenthesis. */
 	snippet: string
 }
-
-const ESCAPE_REPLACE_RE = /[.*+?^${}()|[\]\\/]/g
 
 /**
  * Builds classifier functions and a compiled regex for all `pika()` function call variants derived from the given base name.
@@ -51,7 +49,7 @@ export function createFnUtils(fnName: string): FnUtils {
 		forceArrayPreview: new Set([`${fnName}p.arr`, `${fnName}p['arr']`, `${fnName}p["arr"]`, `${fnName}p[\`arr\`]`]),
 	}
 	const RE = new RegExp(`\\b(${Object.values(available)
-		.flatMap(set => Array.from(set, name => `(${name.replace(ESCAPE_REPLACE_RE, '\\$&')})`))
+		.flatMap(set => Array.from(set, name => `(${escapeRegExp(name)})`))
 		.join('|')})\\(`, 'g')
 
 	return {
@@ -134,7 +132,33 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
 	return depth === 0 ? end : -1
 }
 
-const FUNCTION_KEYWORD_BEFORE_RE = /\bfunction\s*(?:\*\s*)?$/
+const FUNCTION_KEYWORD = 'function'
+
+/**
+ * Tests whether the text ending at `position` (exclusive) is a `function`
+ * keyword (optionally a generator `function *`), i.e. the equivalent of
+ * matching `/\bfunction\s*(?:\*\s*)?$/` against `code.slice(0, position)`.
+ * @internal
+ *
+ * @remarks Implemented as a backwards character scan instead of an anchored
+ * regex over the whole prefix, so each check costs only the keyword lookback
+ * rather than O(source length) per match.
+ */
+function isPrecededByFunctionKeyword(code: string, position: number): boolean {
+	let i = position - 1
+	while (i >= 0 && /\s/.test(code[i]!))
+		i--
+	if (code[i] === '*') {
+		i--
+		while (i >= 0 && /\s/.test(code[i]!))
+			i--
+	}
+	const keywordStart = i - FUNCTION_KEYWORD.length + 1
+	if (keywordStart < 0 || code.slice(keywordStart, i + 1) !== FUNCTION_KEYWORD)
+		return false
+	// Word boundary: the keyword must not be the tail of a longer identifier.
+	return keywordStart === 0 || !/\w/.test(code[keywordStart - 1]!)
+}
 
 /**
  * File extensions (without the leading dot) treated as markup sources by default.
@@ -157,8 +181,7 @@ export const DEFAULT_MARKUP_EXTENSIONS = ['vue', 'svelte', 'astro', 'html', 'htm
  */
 export function createMarkupIdRE(extensions: string[] = DEFAULT_MARKUP_EXTENSIONS): RegExp | null {
 	const escaped = extensions
-		.map(ext => ext.replace(/^\.+/, '')
-			.replace(ESCAPE_REPLACE_RE, '\\$&'))
+		.map(ext => escapeRegExp(ext.replace(/^\.+/, '')))
 		.filter(ext => ext.length > 0)
 	if (escaped.length === 0)
 		return null
@@ -349,11 +372,10 @@ export function findFunctionCalls(code: string, fnUtils: Pick<FnUtils, 'RE'>, id
 		// Skip matches whose identifier sits inside a stripped region, member
 		// accesses (`obj.pika(...)`), and function declarations — none of them
 		// are style call sites.
-		const before = stripped.slice(0, start)
 		if (
 			stripped.slice(start, start + identifier.length) !== identifier
 			|| stripped[start - 1] === '.'
-			|| FUNCTION_KEYWORD_BEFORE_RE.test(before)
+			|| isPrecededByFunctionKeyword(stripped, start)
 		) {
 			matched = RE.exec(code)
 			continue
