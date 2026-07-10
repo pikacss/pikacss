@@ -52,6 +52,37 @@ pending setup promise.
 <br>
 <br>
 
+### createFnUtils(fnName) {#function-createfnutils-fnname}
+
+Builds classifier functions and a compiled regex for all `pika()` function call variants derived from the given base name.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `fnName` | `string` | The base function name (e.g., `'pika'`). All variants (`.str`, `.arr`, `p` suffix, bracket notation) are derived from this. |
+
+**Returns:** `FnUtils` - An `FnUtils` object with classifier methods and a global regex for matching all call variants.
+
+**Remarks:**
+
+The generated regex handles bracket-notation property access (e.g., `pika['str']`)
+in addition to dot notation, and includes word-boundary anchors to avoid false
+matches within longer identifiers.
+
+Keep variant derivation in sync with `buildFnNamePatterns` in
+`@pikacss/eslint-config` (`packages/eslint-config/src/utils/fn-names.ts`),
+which re-derives the same dot-form variants without a runtime dependency on
+this package. A consistency test there guards the agreement.
+
+```ts
+const fnUtils = createFnUtils('pika')
+fnUtils.isNormal('pika')         // true
+fnUtils.isForceString('pika.str') // true
+fnUtils.RE.test('pika(')         // true
+```
+
+<br>
+<br>
+
 ### createMarkupIdRE(extensions?) {#function-createmarkupidre-extensions}
 
 Builds a regex that matches module ids whose file extension marks a markup source.
@@ -128,6 +159,8 @@ The main build-tool integration context that bridges the PikaCSS engine with bun
 | `engine` | `Engine` | The initialized PikaCSS engine instance. Throws if accessed before `setup()` completes. | — |
 | `transformFilter` | `{ 		include: string[] 		exclude: string[] 	}` | Glob patterns for the bundler's transform pipeline, derived from the scan config with codegen files excluded. | — |
 | `isTransformTarget` | `(id: string) => boolean` | Returns whether a module id should be transformed, evaluated against the CURRENT `cwd`. | — |
+| `isIdle` | `boolean` | Whether no `transform()` calls are currently in flight. | — |
+| `waitForIdle` | `() => Promise<void>` | Resolves once all in-flight `transform()` calls have settled. | — |
 | `transform` | `(code: string, id: string) => Promise<{ code: string, map: SourceMap } \| Nullish>` | Processes a source file by extracting `pika()` calls, resolving them through the engine, and replacing them with computed output. Returns the transformed code and source map, or `null` if no calls were found. | — |
 | `getCssCodegenContent` | `() => Promise<string \| Nullish>` | Generates the full CSS output string, including layer declarations, preflights, and all atomic styles collected from transforms. | — |
 | `getTsCodegenContent` | `() => Promise<string \| Nullish>` | Generates the full TypeScript declaration content for `pika.gen.ts`, or `null` if TypeScript codegen is disabled. | — |
