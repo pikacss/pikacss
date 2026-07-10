@@ -32,6 +32,12 @@ export interface FnNameOptions {
  * and `pika.arr`. Preview variants use the `p` suffix (`pikap`, `pikap.str`,
  * `pikap.arr`). `allNames` is the union of both sets.
  *
+ * Keep variant derivation in sync with `createFnUtils` in
+ * `@pikacss/integration` (`packages/integration/src/ctx.transform-utils.ts`).
+ * This copy exists so the ESLint config stays runtime-dependency-free; bracket
+ * forms are normalized to these dot forms by `getCalleeName`. The consistency
+ * test in `fn-names.test.ts` guards the agreement.
+ *
  * @example
  * ```ts
  * const patterns = buildFnNamePatterns('pika')

@@ -159,6 +159,27 @@ export interface IntegrationContext {
 	 * time instead of relying solely on the declarative filter.
 	 */
 	isTransformTarget: (id: string) => boolean
+	/**
+	 * Whether no `transform()` calls are currently in flight.
+	 *
+	 * @remarks
+	 * Only actual transform work is counted: a `transform()` call that is still awaiting
+	 * `setupPromise` or resolves from the internal result cache never marks the context busy.
+	 * Use this for synchronous decisions (e.g. defer generated-file writes while busy) and
+	 * {@link IntegrationContext.waitForIdle} to asynchronously await idleness.
+	 */
+	readonly isIdle: boolean
+	/**
+	 * Resolves once all in-flight `transform()` calls have settled.
+	 *
+	 * @returns A promise that resolves when no transforms are in flight; resolves immediately when the context is already idle.
+	 *
+	 * @remarks
+	 * Resolution only guarantees the transforms that were active at call time have finished;
+	 * new transforms may start afterwards. `setup()` uses the same mechanism internally to
+	 * drain in-flight transforms before swapping the engine.
+	 */
+	waitForIdle: () => Promise<void>
 	/** Processes a source file by extracting `pika()` calls, resolving them through the engine, and replacing them with computed output. Returns the transformed code and source map, or `null` if no calls were found. */
 	transform: (code: string, id: string) => Promise<{ code: string, map: SourceMap } | Nullish>
 	/** Generates the full CSS output string, including layer declarations, preflights, and all atomic styles collected from transforms. */

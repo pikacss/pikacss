@@ -828,6 +828,68 @@ describe('createCtx', () => {
 			.toEqual(['pk-new'])
 	})
 
+	it('exposes idle state via isIdle and resolves waitForIdle once in-flight transforms settle', async () => {
+		const firstUse = createDeferred<string[]>()
+		let useCount = 0
+
+		vi.resetModules()
+		vi.doMock('@pikacss/core', async (importOriginal) => {
+			const actual = await importOriginal<typeof import('@pikacss/core')>()
+			const createEngine = vi.fn(async (config: Record<string, any>) => ({
+				config,
+				store: {
+					atomicStyleIds: new Map(),
+				},
+				use: vi.fn(async () => {
+					useCount++
+					return useCount === 1 ? firstUse.promise : ['pk-a']
+				}),
+				renderLayerOrderDeclaration: vi.fn(() => ''),
+				renderPreflights: vi.fn(async () => ''),
+				renderAtomicStyles: vi.fn(async () => ''),
+			}))
+
+			return {
+				...actual,
+				createEngine,
+			}
+		})
+
+		const { createCtx: createMockedCtx } = await import('./ctx')
+		const ctx = createMockedCtx(createOptions())
+
+		await ctx.setup()
+
+		// Idle context: the sync flag is set and waitForIdle resolves immediately.
+		expect(ctx.isIdle)
+			.toBe(true)
+		await ctx.waitForIdle()
+
+		// Suspended at the engine's `use()` call: the context reports busy and
+		// waitForIdle stays pending until the transform settles.
+		const inFlight = ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
+		await new Promise(resolve => setTimeout(resolve, 0))
+		expect(ctx.isIdle)
+			.toBe(false)
+
+		let idleResolved = false
+		const idlePromise = ctx.waitForIdle()
+			.then(() => {
+				idleResolved = true
+			})
+		await new Promise(resolve => setTimeout(resolve, 10))
+		expect(idleResolved)
+			.toBe(false)
+
+		firstUse.resolve(['pk-a'])
+		await inFlight
+		await idlePromise
+		expect(idleResolved)
+			.toBe(true)
+		expect(ctx.isIdle)
+			.toBe(true)
+	})
+
 	it('warns and skips malformed template, comment, and unterminated call patterns', async () => {
 		const cwd = await createTempDir()
 		const warn = vi.fn()

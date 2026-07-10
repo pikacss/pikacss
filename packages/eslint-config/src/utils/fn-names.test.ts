@@ -1,3 +1,4 @@
+import { createFnUtils } from '@pikacss/integration'
 import { describe, expect, it } from 'vitest'
 
 import { buildFnNamePatterns, getCalleeName } from './fn-names'
@@ -204,5 +205,37 @@ describe('getCalleeName', () => {
 			},
 		}))
 			.toBeNull()
+	})
+})
+
+describe('consistency with @pikacss/integration createFnUtils', () => {
+	// Both packages derive the pika() call-name variants independently (see the
+	// cross-reference comments in fn-names.ts and the integration's
+	// ctx.transform-utils.ts). This test fails when the derivations drift.
+	it.each(['pika', 'css'])('agrees on the variant set derived from "%s"', (fnName) => {
+		const fnUtils = createFnUtils(fnName)
+		const patterns = buildFnNamePatterns(fnName)
+
+		// Reconstruct the integration's variant list from its compiled regex
+		// (one capture group per variant), normalizing bracket-notation forms
+		// (`pika['str']`) to the dot forms this package derives.
+		const integrationNames = new Set(
+			Array.from(fnUtils.RE.source.matchAll(/\((?!\?)([^()|]+)\)/g), match => match[1]!
+				.replace(/\\(.)/g, '$1')
+				.replace(/\[(['"`])(\w+)\1\]/, '.$2')),
+		)
+
+		expect(integrationNames)
+			.toEqual(patterns.allNames)
+
+		for (const name of patterns.allNames) {
+			// Exactly one output-format classifier accepts each variant.
+			const classifiers = [fnUtils.isNormal, fnUtils.isForceString, fnUtils.isForceArray]
+			expect(classifiers.filter(classify => classify(name)))
+				.toHaveLength(1)
+			// Preview classification agrees with this package's preview set.
+			expect(fnUtils.isPreview(name))
+				.toBe(patterns.previewNames.has(name))
+		}
 	})
 })

@@ -1,5 +1,4 @@
 import type { Engine } from '../engine'
-import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, InternalStyleDefinition, InternalStyleItem, Nullish, ResolvedStyleItem } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { RecursiveResolver, resolveRuleConfig } from '../resolver'
@@ -104,11 +103,10 @@ export function shortcuts() {
 							return
 						}
 
-						const addRule = {
-							static: () => engine.shortcuts.resolver.addStaticRule(resolved.rule as StaticRule<InternalStyleItem[]>),
-							dynamic: () => engine.shortcuts.resolver.addDynamicRule(resolved.rule as DynamicRule<InternalStyleItem[]>),
-						}[resolved.type]
-						addRule?.()
+						if (resolved.type === 'static')
+							engine.shortcuts.resolver.addStaticRule(resolved.rule)
+						else
+							engine.shortcuts.resolver.addDynamicRule(resolved.rule)
 
 						engine.appendAutocomplete({ shortcuts: resolved.autocomplete })
 					})

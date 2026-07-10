@@ -235,11 +235,9 @@ export function variables() {
 							.forEach(name => used.add(name))
 					})
 
-					// 3. Build a lookup map: variable name -> list of resolved variables.
-					const varMap = new Map<string, ResolvedVariable[]>()
-					for (const [name, list] of engine.variables.store.entries()) {
-						varMap.set(name, list)
-					}
+					// 3. Look up resolved variables directly from the store; no snapshot
+					// is needed (nothing here mutates it, and step 6 reads it directly).
+					const varMap = engine.variables.store
 
 					// 4. Seed transitive expansion with variables that are emitted
 					// unconditionally (safe-listed or pruneUnused: false), so their

@@ -52,6 +52,7 @@
 		"eslint": ">=9.0.0"
 	},
 	"devDependencies": {
+		"@pikacss/integration": "workspace:*",
 		"eslint": "catalog:"
 	}
 }

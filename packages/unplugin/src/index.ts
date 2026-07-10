@@ -113,7 +113,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	const debouncedWriteTsCodegenFile = debounce(async () => {
 		await ctx.writeTsCodegenFile()
 	}, 300)
-	let activeTransforms = 0
 	let pendingCssWrite = false
 	let pendingTsWrite = false
 	let generatedWritePromise = Promise.resolve()
@@ -122,7 +121,9 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		generatedWritePromise = generatedWritePromise
 			.catch(() => {})
 			.then(async () => {
-				if (activeTransforms > 0)
+				// Defer while transforms are in flight; the transform handler
+				// flushes again once the context reports idle.
+				if (!ctx.isIdle)
 					return
 
 				const shouldWriteCss = pendingCssWrite
@@ -210,7 +211,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		setupPromise = setupPromise.then(async () => {
 			log.debug('Setting up integration context...')
 			const moduleIds = Array.from(ctx.usages.keys())
-			activeTransforms = 0
 			pendingCssWrite = false
 			pendingTsWrite = false
 			// generatedWritePromise is intentionally not reset: the promise chain's
@@ -364,7 +364,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 				// must be re-checked against the current ctx.cwd at call time.
 				if (!ctx.isTransformTarget(id))
 					return null
-				activeTransforms++
 				if (meta.framework === 'webpack' && ctx.resolvedConfigPath != null) {
 					this.addWatchFile(ctx.resolvedConfigPath)
 					log.debug(`Added watch file: ${ctx.resolvedConfigPath}`)
@@ -373,11 +372,12 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 					return await ctx.transform(code, id)
 				}
 				finally {
-					if (activeTransforms > 0)
-						activeTransforms--
-					if (activeTransforms === 0) {
-						// This may be a second flush call if hooks already queued a flush,
-						// but pendingCssWrite/pendingTsWrite will already be false — safe no-op.
+					// The context already counted this transform as settled here, so
+					// isIdle answers whether any OTHER transform is still in flight.
+					// Only the last finisher flushes; this may be a second flush call
+					// if hooks already queued one, but the pending flags will already
+					// be false — safe no-op.
+					if (ctx.isIdle) {
 						await flushPendingGeneratedWrites()
 					}
 				}

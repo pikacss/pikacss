@@ -52,7 +52,18 @@ function createCtxStub() {
 		styleUpdated: createHook(),
 		tsCodegenUpdated: createHook(),
 	}
-	return {
+	// Mirror the real IntegrationContext idle tracking: transforms mark the
+	// context busy while in flight, `isIdle`/`waitForIdle` reflect that state.
+	let activeTransforms = 0
+	let idleWaiters: Array<() => void> = []
+	function notifyIdle() {
+		if (activeTransforms > 0 || idleWaiters.length === 0)
+			return
+		const waiters = idleWaiters
+		idleWaiters = []
+		waiters.forEach(resolveWaiter => resolveWaiter())
+	}
+	const stub = {
 		cwd: '/initial',
 		usages: new Map([
 			['src/demo.ts', [{ atomicStyleIds: ['pk-a'] }]],
@@ -64,7 +75,29 @@ function createCtxStub() {
 		fullyCssCodegen: vi.fn(async () => {}),
 		writeCssCodegenFile: vi.fn(async () => {}),
 		writeTsCodegenFile: vi.fn(async () => {}),
-		transform: vi.fn(async () => ({ code: 'transformed' })),
+		// Tests customize transform behavior via `transformImpl`; the `transform`
+		// wrapper keeps the idle bookkeeping intact.
+		transformImpl: vi.fn(async (..._args: any[]) => ({ code: 'transformed' })),
+		transform: vi.fn(async (...args: any[]) => {
+			activeTransforms++
+			try {
+				return await stub.transformImpl(...args)
+			}
+			finally {
+				activeTransforms--
+				notifyIdle()
+			}
+		}),
+		get isIdle() {
+			return activeTransforms === 0
+		},
+		waitForIdle: vi.fn(() => {
+			if (activeTransforms === 0)
+				return Promise.resolve()
+			return new Promise<void>((resolveWaiter) => {
+				idleWaiters.push(resolveWaiter)
+			})
+		}),
 		isTransformTarget: vi.fn(() => true),
 		transformFilter: {
 			include: ['src/**/*.ts'],
@@ -83,6 +116,7 @@ function createCtxStub() {
 			},
 		},
 	}
+	return stub
 }
 
 async function flushAsyncWork() {
@@ -484,7 +518,7 @@ describe('unpluginFactory', () => {
 		const secondGate = createDeferred()
 		const ctx = createCtxStub()
 
-		ctx.transform = vi.fn(async (...args: any[]) => {
+		ctx.transformImpl = vi.fn(async (...args: any[]) => {
 			const [, id] = args as [string, string]
 
 			await ctx.hooks.styleUpdated.emit()
@@ -543,7 +577,7 @@ describe('unpluginFactory', () => {
 		const secondGate = createDeferred()
 		const ctx = createCtxStub()
 
-		ctx.transform = vi.fn(async (...args: any[]) => {
+		ctx.transformImpl = vi.fn(async (...args: any[]) => {
 			const [, id] = args as [string, string]
 
 			await ctx.hooks.styleUpdated.emit()
@@ -735,7 +769,7 @@ describe('unpluginFactory', () => {
 		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
 
 		ctx.writeCssCodegenFile.mockRejectedValueOnce(new Error('css write failed'))
-		ctx.transform = vi.fn(async () => {
+		ctx.transformImpl = vi.fn(async () => {
 			await ctx.hooks.styleUpdated.emit()
 			return { code: 'transformed' }
 		})

@@ -646,6 +646,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		},
 		transformFilter,
 		isTransformTarget,
+		get isIdle() { return activeTransforms === 0 },
+		waitForIdle: waitForIdleTransforms,
 		transform: async (code, id) => {
 			await ctx.setupPromise
 			const cached = transformResultCache.get(id)

@@ -21,7 +21,6 @@ export interface FunctionCallMatch {
 
 /**
  * Builds classifier functions and a compiled regex for all `pika()` function call variants derived from the given base name.
- * @internal
  *
  * @param fnName - The base function name (e.g., `'pika'`). All variants (`.str`, `.arr`, `p` suffix, bracket notation) are derived from this.
  * @returns An `FnUtils` object with classifier methods and a global regex for matching all call variants.
@@ -30,6 +29,11 @@ export interface FunctionCallMatch {
  * The generated regex handles bracket-notation property access (e.g., `pika['str']`)
  * in addition to dot notation, and includes word-boundary anchors to avoid false
  * matches within longer identifiers.
+ *
+ * Keep variant derivation in sync with `buildFnNamePatterns` in
+ * `@pikacss/eslint-config` (`packages/eslint-config/src/utils/fn-names.ts`),
+ * which re-derives the same dot-form variants without a runtime dependency on
+ * this package. A consistency test there guards the agreement.
  *
  * @example
  * ```ts
@@ -62,20 +66,22 @@ export function createFnUtils(fnName: string): FnUtils {
 }
 
 /**
- * Finds the index of the closing `}` that terminates a template literal `${...}` expression.
+ * Finds the index of the closing delimiter that balances the opening delimiter at `openIndex`.
  * @internal
  *
  * @param code - The full source code string to search within.
- * @param start - The index of the opening `{` of the template expression.
- * @returns The index of the matching closing `}`, or `-1` if the expression is malformed or unterminated.
+ * @param openIndex - The index of the opening delimiter (already counted at depth 1).
+ * @param open - The opening delimiter character to track.
+ * @param close - The closing delimiter character to track.
+ * @returns The index of the balancing closing delimiter, or `-1` if the region is malformed or unterminated.
  *
  * @remarks
- * Tracks nested braces, string literals (single, double, and backtick), escape sequences,
- * line comments, and block comments. Recursively handles nested template expressions
- * within backtick strings.
+ * Tracks string literals (single, double, and backtick), escape sequences,
+ * line comments, and block comments locally while counting delimiter depth.
+ * Recursively handles nested template `${...}` expressions within backtick strings.
  */
-export function findTemplateExpressionEnd(code: string, start: number): number {
-	let end = start
+function findBalancedEnd(code: string, openIndex: number, open: '(' | '{', close: ')' | '}'): number {
+	let end = openIndex
 	let depth = 1
 	let inString: '\'' | '"' | '`' | false = false
 	let isEscaped = false
@@ -106,10 +112,10 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
 			continue
 		}
 
-		if (char === '{') {
+		if (char === open) {
 			depth++
 		}
-		else if (char === '}') {
+		else if (char === close) {
 			depth--
 		}
 		else if (char === '\'' || char === '"' || char === '`') {
@@ -130,6 +136,21 @@ export function findTemplateExpressionEnd(code: string, start: number): number {
 	}
 
 	return depth === 0 ? end : -1
+}
+
+/**
+ * Finds the index of the closing `}` that terminates a template literal `${...}` expression.
+ * @internal
+ *
+ * @param code - The full source code string to search within.
+ * @param start - The index of the opening `{` of the template expression.
+ * @returns The index of the matching closing `}`, or `-1` if the expression is malformed or unterminated.
+ *
+ * @remarks
+ * Delegates to the shared balanced-delimiter lexer with `{`/`}` tracking; see `findBalancedEnd`.
+ */
+export function findTemplateExpressionEnd(code: string, start: number): number {
+	return findBalancedEnd(code, start, '{', '}')
 }
 
 const FUNCTION_KEYWORD = 'function'
@@ -258,63 +279,12 @@ export function detectEnclosingAttributeQuote(code: string, position: number): '
  * @param start - Zero-based offset where the function name begins.
  * @param fnName - The matched function variant name (its length locates the opening paren).
  * @returns The offset of the call's closing paren, or `-1` when the call is malformed or unterminated.
+ *
+ * @remarks
+ * Delegates to the shared balanced-delimiter lexer with `(`/`)` tracking; see `findBalancedEnd`.
  */
 function findCallEndWithLocalTracking(code: string, start: number, fnName: string): number {
-	let end = start + fnName.length
-	let depth = 1
-	let inString: '\'' | '"' | '`' | false = false
-	let isEscaped = false
-
-	while (depth > 0 && end < code.length - 1) {
-		end++
-		const char = code[end]
-
-		if (isEscaped) {
-			isEscaped = false
-			continue
-		}
-
-		if (char === '\\') {
-			isEscaped = true
-			continue
-		}
-
-		if (inString !== false) {
-			if (char === inString) {
-				inString = false
-			}
-			else if (inString === '`' && char === '$' && code[end + 1] === '{') {
-				if ((end = findTemplateExpressionEnd(code, end + 1)) < 0) {
-					return -1
-				}
-			}
-			continue
-		}
-
-		if (char === '(') {
-			depth++
-		}
-		else if (char === ')') {
-			depth--
-		}
-		else if (char === '\'' || char === '"' || char === '`') {
-			inString = char
-		}
-		else if (char === '/' && code[end + 1] === '/') {
-			const lineEnd = code.indexOf('\n', end)
-			if (lineEnd === -1) {
-				return -1
-			}
-			end = lineEnd
-		}
-		else if (char === '/' && code[end + 1] === '*') {
-			if ((end = code.indexOf('*/', end + 2) + 1) === 0) {
-				return -1
-			}
-		}
-	}
-
-	return depth === 0 ? end : -1
+	return findBalancedEnd(code, start + fnName.length, '(', ')')
 }
 
 /**

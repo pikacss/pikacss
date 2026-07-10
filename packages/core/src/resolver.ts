@@ -447,62 +447,37 @@ export function resolveRuleConfig<T>(config: any, keyName: string): ResolvedRule
 	if (typeof config === 'string') {
 		return config
 	}
-	if (Array.isArray(config)) {
-		if (typeof config[0] === 'string' && typeof config[1] !== 'function') {
-			return {
-				type: 'static',
-				rule: {
-					key: config[0],
-					string: config[0],
-					resolved: [config[1]].flat(1) as T[],
-				},
-				autocomplete: [config[0]],
-			}
-		}
-
-		if (config[0] instanceof RegExp && typeof config[1] === 'function') {
-			const fn = config[1]
-			return {
-				type: 'dynamic',
-				rule: {
-					key: config[0].source,
-					stringPattern: stripGlobalFlag(config[0]),
-					createResolved: createDynamicResolvedFactory<T>(fn),
-				},
-				autocomplete: config[2] != null ? [config[2]].flat(1) : [],
-			}
-		}
-		return void 0
-	}
 
 	if (typeof config !== 'object' || config === null) {
 		return void 0
 	}
 
-	const configKey = config[keyName]
-	if (typeof configKey === 'string' && typeof config.value !== 'function') {
+	// Normalize the tuple form ([key, value, autocomplete?]) into the object
+	// shape so a single static branch and a single dynamic branch handle both.
+	const { key, value, autocomplete } = Array.isArray(config)
+		? { key: config[0], value: config[1], autocomplete: config[2] }
+		: { key: config[keyName], value: config.value, autocomplete: config.autocomplete }
+
+	if (typeof key === 'string' && typeof value !== 'function') {
 		return {
 			type: 'static',
 			rule: {
-				key: configKey,
-				string: configKey,
-				resolved: [config.value].flat(1) as T[],
+				key,
+				string: key,
+				resolved: [value].flat(1) as T[],
 			},
-			autocomplete: [configKey],
+			autocomplete: [key],
 		}
 	}
-	if (configKey instanceof RegExp && typeof config.value === 'function') {
-		const fn = config.value
+	if (key instanceof RegExp && typeof value === 'function') {
 		return {
 			type: 'dynamic',
 			rule: {
-				key: configKey.source,
-				stringPattern: stripGlobalFlag(configKey),
-				createResolved: createDynamicResolvedFactory<T>(fn),
+				key: key.source,
+				stringPattern: stripGlobalFlag(key),
+				createResolved: createDynamicResolvedFactory<T>(value),
 			},
-			autocomplete: ('autocomplete' in config && config.autocomplete != null)
-				? [config.autocomplete].flat(1)
-				: [],
+			autocomplete: autocomplete != null ? [autocomplete].flat(1) : [],
 		}
 	}
 

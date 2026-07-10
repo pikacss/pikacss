@@ -383,6 +383,9 @@ importers:
 
   packages/eslint-config:
     devDependencies:
+      '@pikacss/integration':
+        specifier: workspace:*
+        version: link:../integration
       eslint:
         specifier: 'catalog:'
         version: 10.6.0(jiti@2.7.0)

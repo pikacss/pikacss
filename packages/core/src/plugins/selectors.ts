@@ -1,5 +1,4 @@
 import type { Engine } from '../engine'
-import type { DynamicRule, StaticRule } from '../resolver'
 import type { Arrayable, Awaitable, Nullish, ResolvedSelector, UnionString } from '../types'
 import { defineEnginePlugin } from '../plugin'
 import { RecursiveResolver, resolveRuleConfig } from '../resolver'
@@ -108,11 +107,10 @@ export function selectors() {
 							return
 						}
 
-						const addRule = {
-							static: () => engine.selectors.resolver.addStaticRule(resolved.rule as StaticRule<string[]>),
-							dynamic: () => engine.selectors.resolver.addDynamicRule(resolved.rule as DynamicRule<string[]>),
-						}[resolved.type]
-						addRule?.()
+						if (resolved.type === 'static')
+							engine.selectors.resolver.addStaticRule(resolved.rule)
+						else
+							engine.selectors.resolver.addDynamicRule(resolved.rule)
 
 						engine.appendAutocomplete({ selectors: resolved.autocomplete })
 					})
