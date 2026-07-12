@@ -3,6 +3,13 @@ import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import { vfsPlugin } from './plugins/vite-plugin-vfs'
 
+// WebContainer needs cross-origin isolation; serve COOP/COEP locally (dev +
+// preview). GitHub Pages can't send these, so coi-serviceworker injects them.
+const CROSS_ORIGIN_ISOLATION_HEADERS = {
+	'Cross-Origin-Embedder-Policy': 'require-corp',
+	'Cross-Origin-Opener-Policy': 'same-origin',
+}
+
 /**
  * Resolves the latest published version of a package from the npm registry.
  * Returns null on any failure so callers can fall back to the versions
@@ -58,10 +65,10 @@ export default defineConfig(async () => {
 			dedupe: ['vue'],
 		},
 		server: {
-			headers: {
-				'Cross-Origin-Embedder-Policy': 'require-corp',
-				'Cross-Origin-Opener-Policy': 'same-origin',
-			},
+			headers: CROSS_ORIGIN_ISOLATION_HEADERS,
+		},
+		preview: {
+			headers: CROSS_ORIGIN_ISOLATION_HEADERS,
 		},
 	}
 })

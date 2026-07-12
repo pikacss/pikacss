@@ -39,6 +39,35 @@ async function signature(files: FileSystemTree): Promise<string> {
 		.join('')
 }
 
+/**
+ * Fetches the CI-generated static baseline snapshot for a template (emitted to
+ * `snapshots/<template>.bin` by `scripts/gen-snapshots.mjs`), or null if absent.
+ * Lets the *first* visit skip install too, not just repeat visits.
+ */
+export async function fetchStaticSnapshot(baseUrl: string, template: string): Promise<Uint8Array | null> {
+	try {
+		const response = await fetch(`${baseUrl}snapshots/${template}.bin`)
+		if (!response.ok)
+			return null
+		const bytes = new Uint8Array(await response.arrayBuffer())
+		// The SPA dev/preview server answers unknown paths with index.html; only
+		// accept a real gzip payload.
+		return bytes[0] === 0x1F && bytes[1] === 0x8B ? bytes : null
+	}
+	catch {
+		return null
+	}
+}
+
+/** Chunked base64 for large buffers (avoids a call-stack overflow on spread). */
+export function bytesToBase64(bytes: Uint8Array): string {
+	let binary = ''
+	const chunk = 0x8000
+	for (let i = 0; i < bytes.length; i += chunk)
+		binary += String.fromCharCode(...bytes.subarray(i, i + chunk))
+	return btoa(binary)
+}
+
 /** Returns the cached gzip snapshot for this template's current deps, or null. */
 export async function getCachedSnapshot(template: string, files: FileSystemTree): Promise<Uint8Array | null> {
 	try {

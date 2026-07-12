@@ -8,7 +8,7 @@ import PreviewPanel from './components/panels/PreviewPanel.vue'
 import TerminalPanel from './components/panels/TerminalPanel.vue'
 import TemplateSelector from './components/TemplateSelector.vue'
 import { useMonacoConfig } from './composables/useMonacoConfig'
-import { getCachedSnapshot, putCachedSnapshot } from './composables/useSnapshotCache'
+import { bytesToBase64, fetchStaticSnapshot, getCachedSnapshot, putCachedSnapshot } from './composables/useSnapshotCache'
 import { useWebContainer } from './composables/useWebContainer'
 import {
 	activeFilePath,
@@ -36,6 +36,13 @@ const { boot, install, mountCachedSnapshot, exportSnapshot, startDevServer, isBo
 const { loadMonacoConfig, loadPikaGlobals } = useMonacoConfig()
 
 const initialTemplateKey = getInitialTemplateKey()
+// `?__generate` runs a fresh install (ignoring any cache) and exposes the
+// resulting snapshot on `window.__pikaSnapshot` — used by the CI generator
+// (scripts/gen-snapshots.mjs) to produce the static baseline snapshots. It
+// reuses the full app boot flow because WebContainer's `spawn` does not work in
+// a stripped-down page.
+const generateMode = new URLSearchParams(window.location.search)
+	.has('__generate')
 // Whether this session mounted a cached snapshot instead of installing. When it
 // did not, we export + cache the freshly installed deps once the dev server is
 // ready, so the next visit is fast.
@@ -44,7 +51,9 @@ watch(isRunning, async (running) => {
 	if (!running || usedCachedSnapshot.value)
 		return
 	const gz = await exportSnapshot()
-	if (gz)
+	if (generateMode)
+		(window as any).__pikaSnapshot = gz ? { template: initialTemplateKey, base64: bytesToBase64(gz), done: true } : { done: true, error: 'export failed' }
+	else if (gz)
 		await putCachedSnapshot(initialTemplateKey, templates[initialTemplateKey]!.files, gz)
 }, { once: true })
 
@@ -141,10 +150,15 @@ onMounted(async () => {
 		}
 
 		if (instance.value) {
-			// Try a cached dependency snapshot from a previous visit (IndexedDB),
-			// which lets us skip the slow in-browser npm install.
-			const cached = await getCachedSnapshot(initialTemplateKey, config.files)
-			usedCachedSnapshot.value = cached != null && await mountCachedSnapshot(cached)
+			// Skip the slow in-browser npm install by mounting a dependency
+			// snapshot: a per-visitor IndexedDB cache first, then the CI-generated
+			// static baseline (fast first visit for everyone). `?__generate` forces
+			// a fresh install so the exported snapshot is clean.
+			const snapshot = generateMode
+				? null
+				: await getCachedSnapshot(initialTemplateKey, config.files)
+					?? await fetchStaticSnapshot(import.meta.env.BASE_URL, initialTemplateKey)
+			usedCachedSnapshot.value = snapshot != null && await mountCachedSnapshot(snapshot)
 			if (usedCachedSnapshot.value)
 				writeToTerminal('\r\n\x1b[32mMounted cached dependencies; skipping install.\x1b[0m\r\n')
 

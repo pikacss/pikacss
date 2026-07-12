@@ -10,6 +10,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
+		"gen-snapshots": "node scripts/gen-snapshots.mjs",
 		"type-check": "vue-tsc --build"
 	},
 	"dependencies": {
@@ -36,6 +37,7 @@
 		"@vue/tsconfig": "catalog:",
 		"ignore": "catalog:",
 		"is-binary-path": "catalog:",
+		"playwright": "catalog:",
 		"typescript": "catalog:",
 		"vite": "catalog:",
 		"vue-tsc": "catalog:"

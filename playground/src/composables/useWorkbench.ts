@@ -8,14 +8,17 @@ import { useWebContainer } from './useWebContainer'
 
 // Singleton state
 // The app may be served under a sub-path (e.g. /playground/), so the template
-// segment is whatever follows the Vite base URL.
+// segment is whatever follows the Vite base URL. A `?template=` query param
+// overrides it (used by the snapshot generator so it doesn't depend on routing).
 const BASE_URL = import.meta.env.BASE_URL
 const pathTemplateKey = window.location.pathname.startsWith(BASE_URL)
 	? window.location.pathname.slice(BASE_URL.length)
 		.split('/')[0]
 	: window.location.pathname.split('/')[1]
-const initialTemplateKey = (pathTemplateKey && Object.hasOwn(templates, pathTemplateKey))
-	? pathTemplateKey as keyof typeof templates
+const requestedTemplateKey = new URLSearchParams(window.location.search)
+	.get('template') || pathTemplateKey
+const initialTemplateKey = (requestedTemplateKey && Object.hasOwn(templates, requestedTemplateKey))
+	? requestedTemplateKey as keyof typeof templates
 	: 'solid-ts'
 
 export const selectedTemplate = ref<string>(initialTemplateKey)

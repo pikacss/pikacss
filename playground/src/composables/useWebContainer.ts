@@ -131,7 +131,10 @@ export function useWebContainer() {
 		if (!webcontainerInstance)
 			return false
 		try {
-			const binary = await gunzip(gzBytes)
+			// Static `.bin` files are gzip; decompress unless a static server
+			// already did (no gzip magic bytes), then mount.
+			const isGzip = gzBytes[0] === 0x1F && gzBytes[1] === 0x8B
+			const binary = isGzip ? await gunzip(gzBytes) : gzBytes
 			await webcontainerInstance.mount(binary)
 			// mount() drops the executable bit, so restore it or `npm run dev`
 			// fails with `spawn vite EACCES`.

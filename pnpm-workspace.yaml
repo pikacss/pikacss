@@ -71,6 +71,7 @@ catalog:
   perfect-debounce: ^2.1.0
   picomatch: ^4.0.5
   pkg-pr-new: ^0.0.75
+  playwright: ^1.61.1
   publint: ^0.3.21
   repomix: ^1.16.0
   simple-git-hooks: ^2.13.1

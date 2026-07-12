@@ -34,8 +34,16 @@ jobs:
       - name: install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: install playwright chromium
+        run: pnpm --filter @pikacss/playground exec playwright install --with-deps chromium
+
       - name: build
         run: pnpm build && pnpm docs:build && pnpm playground:build
+
+      # Pre-generate the playground dependency snapshots (fast first visit).
+      # Non-fatal: if generation flakes, the playground installs on demand.
+      - name: generate playground snapshots
+        run: pnpm --filter @pikacss/playground gen-snapshots || echo '::warning::snapshot generation failed; playground will npm install on demand'
 
       - name: push dist to pikacss.github.io
         env:
