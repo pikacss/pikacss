@@ -93,7 +93,8 @@ export async function onFileSelect(path: string) {
 export function handleTemplateSwitch(key: string) {
 	if (key === selectedTemplate.value)
 		return
-	window.location.href = `${BASE_URL}${key}`
+	// Trailing slash hits the per-template index.html directly on static hosts.
+	window.location.href = `${BASE_URL}${key}/`
 }
 
 export const updateHash = useDebounceFn(() => {

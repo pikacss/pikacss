@@ -46,7 +46,8 @@ async function main() {
 			page.on('console', msg => process.stdout.write(`  [page:${template}] ${msg.text()
 				.slice(0, 120)}\n`))
 			try {
-				await page.goto(`${base}/?__generate&template=${template}`, { waitUntil: 'load' })
+				// Go straight to the template's own page (the bare base redirects).
+				await page.goto(`${base}/${template}/?__generate`, { waitUntil: 'load' })
 				await page.waitForFunction(() => (window.__pikaSnapshot)?.done === true, null, { timeout: PER_TEMPLATE_TIMEOUT, polling: 1000 })
 				const result = await page.evaluate(() => window.__pikaSnapshot)
 				if (result.error || !result.base64)

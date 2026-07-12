@@ -1,7 +1,11 @@
 import pikacss from '@pikacss/unplugin-pikacss/vite'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
+import { templatePagesPlugin } from './plugins/vite-plugin-template-pages'
 import { vfsPlugin } from './plugins/vite-plugin-vfs'
+
+const BASE = '/playground/'
+const DEFAULT_TEMPLATE = 'solid-ts'
 
 // WebContainer needs cross-origin isolation; serve COOP/COEP locally (dev +
 // preview). GitHub Pages can't send these, so coi-serviceworker injects them.
@@ -42,7 +46,7 @@ export default defineConfig(async () => {
 
 	return {
 		// Deployed under https://pikacss.github.io/playground/ next to the docs.
-		base: '/playground/',
+		base: BASE,
 		plugins: [
 			pikacss({
 				tsCodegen: './src/pika.gen.ts',
@@ -60,6 +64,9 @@ export default defineConfig(async () => {
 					? undefined
 					: { '@pikacss/unplugin-pikacss': `^${latestPikaVersion}` },
 			}),
+			// GitHub Pages has no SPA fallback, so emit a real index.html per
+			// template and redirect the bare base to the default one.
+			templatePagesPlugin({ templatesDir: './src/templates', base: BASE, defaultTemplate: DEFAULT_TEMPLATE }),
 		],
 		resolve: {
 			dedupe: ['vue'],
