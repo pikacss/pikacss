@@ -82,14 +82,15 @@ const panelComponents = {
 function createDefaultLayout(api: DockviewApi) {
 	api.clear()
 
-	// Create Layout
-	// 3 Columns: [Explorer] | [Editor] | [Right Group: Preview / Terminal]
+	// Layout: [Explorer] | [Editor / Terminal] | [Preview]
+	// Terminal sits under the editor so the preview spans the full height.
 
 	const explorer = api.addPanel({
 		id: 'explorer',
 		component: 'ExplorerPanel',
 		title: 'EXPLORER',
 		params: { tabHeight: 0 },
+		initialWidth: 240,
 	})
 
 	// Editor to the right of Explorer
@@ -100,20 +101,28 @@ function createDefaultLayout(api: DockviewApi) {
 		position: { referencePanel: explorer, direction: 'right' },
 	})
 
-	// Preview to the right of Editor
-	const preview = api.addPanel({
+	// Preview to the right of Editor (full height)
+	api.addPanel({
 		id: 'preview',
 		component: 'PreviewPanel',
 		title: 'PREVIEW',
 		position: { referencePanel: editor, direction: 'right' },
 	})
 
-	// Terminal below Preview
-	api.addPanel({
+	// Terminal below the Editor
+	const terminal = api.addPanel({
 		id: 'terminal',
 		component: 'TerminalPanel',
 		title: 'TERMINAL',
-		position: { referencePanel: preview, direction: 'below' },
+		position: { referencePanel: editor, direction: 'below' },
+		initialHeight: 220,
+	})
+
+	// `initialWidth`/`initialHeight` are relative to the container size, which is
+	// still 0 during the initial `onReady`; re-apply once it has been laid out.
+	requestAnimationFrame(() => {
+		explorer.api.setSize({ width: 240 })
+		terminal.api.setSize({ height: 220 })
 	})
 }
 
