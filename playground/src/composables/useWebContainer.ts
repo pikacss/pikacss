@@ -3,6 +3,25 @@ import { WebContainer } from '@webcontainer/api'
 import { ref, shallowRef } from 'vue'
 // import { files } from '../templates/files';
 
+// In a cross-origin-isolated context a Uint8Array may be backed by a
+// SharedArrayBuffer, which the Blob/stream DOM types reject; the runtime is
+// fine, so gzip/gunzip through a small typed cast.
+async function gzip(bytes: Uint8Array): Promise<Uint8Array> {
+	const stream = new Blob([bytes as BlobPart])
+		.stream()
+		.pipeThrough(new CompressionStream('gzip'))
+	return new Uint8Array(await new Response(stream)
+		.arrayBuffer())
+}
+
+async function gunzip(bytes: Uint8Array): Promise<Uint8Array> {
+	const stream = new Blob([bytes as BlobPart])
+		.stream()
+		.pipeThrough(new DecompressionStream('gzip'))
+	return new Uint8Array(await new Response(stream)
+		.arrayBuffer())
+}
+
 // Singleton instance
 let webcontainerInstance: WebContainer | null = null
 
@@ -103,6 +122,48 @@ export function useWebContainer() {
 	}
 
 	/**
+	 * Mount a cached dependency snapshot (gzip of `export('.', binary)`) so the
+	 * slow in-browser `npm install` can be skipped. Returns `false` (without
+	 * throwing) on any failure so callers can fall back to installing. The
+	 * caller should mount the current template source on top afterwards.
+	 */
+	async function mountCachedSnapshot(gzBytes: Uint8Array): Promise<boolean> {
+		if (!webcontainerInstance)
+			return false
+		try {
+			const binary = await gunzip(gzBytes)
+			await webcontainerInstance.mount(binary)
+			// mount() drops the executable bit, so restore it or `npm run dev`
+			// fails with `spawn vite EACCES`.
+			const chmod = await webcontainerInstance.spawn('chmod', ['-R', '+x', 'node_modules'])
+			await chmod.exit
+			return true
+		}
+		catch (error) {
+			console.warn('[snapshot] Failed to mount cached snapshot; falling back to npm install.', error)
+			return false
+		}
+	}
+
+	/**
+	 * Export the current container filesystem as a gzip-compressed WebContainer
+	 * binary snapshot, suitable for caching and later {@link mountCachedSnapshot}.
+	 * Returns `null` on failure.
+	 */
+	async function exportSnapshot(): Promise<Uint8Array | null> {
+		if (!webcontainerInstance)
+			return null
+		try {
+			const binary = await webcontainerInstance.export('.', { format: 'binary', excludes: ['.git'] })
+			return await gzip(binary)
+		}
+		catch (error) {
+			console.warn('[snapshot] Failed to export snapshot for caching.', error)
+			return null
+		}
+	}
+
+	/**
 	 * Write a file to the container.
 	 */
 	async function writeFile(path: string, content: string) {
@@ -129,6 +190,8 @@ export function useWebContainer() {
 	return {
 		boot,
 		install,
+		mountCachedSnapshot,
+		exportSnapshot,
 		startDevServer,
 		writeFile,
 		readFile,

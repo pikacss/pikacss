@@ -15,19 +15,19 @@ export const templates: Record<string, TemplateConfig> = {
     'solid-ts': {
         files: solidTsTemplate,
         entryFile: 'src/App.tsx',
-        installCommand: 'npm install',
+        installCommand: 'npm install --no-audit --no-fund',
         devCommand: 'npm run dev'
     },
     'vue-ts': {
         files: vueTsTemplate,
         entryFile: 'src/App.vue',
-        installCommand: 'npm install',
+        installCommand: 'npm install --no-audit --no-fund',
         devCommand: 'npm run dev'
     },
     'react-ts': {
         files: reactTsTemplate,
         entryFile: 'src/App.tsx',
-        installCommand: 'npm install',
+        installCommand: 'npm install --no-audit --no-fund',
         devCommand: 'npm run dev'
     }
 };

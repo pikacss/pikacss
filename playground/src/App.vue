@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { DockviewApi, DockviewReadyEvent } from 'dockview-vue'
 import { DockviewVue } from 'dockview-vue'
-import { markRaw, onMounted, shallowRef, watch } from 'vue'
+import { markRaw, onMounted, ref, shallowRef, watch } from 'vue'
 import EditorPanel from './components/panels/EditorPanel.vue'
 import ExplorerPanel from './components/panels/ExplorerPanel.vue'
 import PreviewPanel from './components/panels/PreviewPanel.vue'
 import TerminalPanel from './components/panels/TerminalPanel.vue'
 import TemplateSelector from './components/TemplateSelector.vue'
 import { useMonacoConfig } from './composables/useMonacoConfig'
+import { getCachedSnapshot, putCachedSnapshot } from './composables/useSnapshotCache'
 import { useWebContainer } from './composables/useWebContainer'
 import {
 	activeFilePath,
@@ -31,8 +32,21 @@ defineOptions({
 })
 
 // -- Dependencies --
-const { boot, install, startDevServer, isBooting, isInstalling, isRunning, instance } = useWebContainer()
+const { boot, install, mountCachedSnapshot, exportSnapshot, startDevServer, isBooting, isInstalling, isRunning, instance } = useWebContainer()
 const { loadMonacoConfig, loadPikaGlobals } = useMonacoConfig()
+
+const initialTemplateKey = getInitialTemplateKey()
+// Whether this session mounted a cached snapshot instead of installing. When it
+// did not, we export + cache the freshly installed deps once the dev server is
+// ready, so the next visit is fast.
+const usedCachedSnapshot = ref(false)
+watch(isRunning, async (running) => {
+	if (!running || usedCachedSnapshot.value)
+		return
+	const gz = await exportSnapshot()
+	if (gz)
+		await putCachedSnapshot(initialTemplateKey, templates[initialTemplateKey]!.files, gz)
+}, { once: true })
 
 // -- Dockview Config --
 const dockviewApi = shallowRef<DockviewApi | null>(null)
@@ -120,7 +134,6 @@ onMounted(async () => {
 
 	// Boot
 	try {
-		const initialTemplateKey = getInitialTemplateKey()
 		const config = templates[initialTemplateKey]!
 
 		if (!isBooting.value) {
@@ -128,8 +141,19 @@ onMounted(async () => {
 		}
 
 		if (instance.value) {
+			// Try a cached dependency snapshot from a previous visit (IndexedDB),
+			// which lets us skip the slow in-browser npm install.
+			const cached = await getCachedSnapshot(initialTemplateKey, config.files)
+			usedCachedSnapshot.value = cached != null && await mountCachedSnapshot(cached)
+			if (usedCachedSnapshot.value)
+				writeToTerminal('\r\n\x1b[32mMounted cached dependencies; skipping install.\x1b[0m\r\n')
+
+			// Mount the current template source (incl. URL-hash edits) on top,
+			// leaving any snapshot node_modules in place.
 			await instance.value.mount(projectTree)
-			await install(config.installCommand, data => writeToTerminal(data))
+
+			if (!usedCachedSnapshot.value)
+				await install(config.installCommand, data => writeToTerminal(data))
 
 			// Load types and config from VFS in background. Declare the `pika`
 			// global afterwards (loadTypes calls setExtraLibs, which would otherwise
