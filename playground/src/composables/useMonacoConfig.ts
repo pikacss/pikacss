@@ -15,6 +15,36 @@ export function useMonacoConfig() {
 		await loadTsConfig(webcontainerInstance)
 	}
 
+	/**
+	 * Declares the `pika`/`pikap` globals in Monaco so the editor stops reporting
+	 * "Cannot find name 'pika'".
+	 *
+	 * The dev server generates `src/pika.gen.ts` with the real (richly typed)
+	 * declarations, but that file `import`s from `@pikacss/unplugin-pikacss`, which
+	 * Monaco cannot resolve in the WebContainer FS — the failed import invalidates
+	 * its `declare global` block. Instead we register a small, self-contained
+	 * ambient declaration (`addExtraLib`), so the globals always apply regardless
+	 * of node module resolution. Must run after `loadTypes` (which calls
+	 * `setExtraLibs` and would otherwise drop this lib).
+	 *
+	 * limit: this provides loose typing (no shortcut-name autocomplete). Wiring the
+	 * generated types into Monaco's module resolution is the upgrade path.
+	 */
+	function loadPikaGlobals() {
+		const source = `
+type PikaStyleItem = string | Record<string, any>
+interface PikaFn {
+  (...items: PikaStyleItem[]): string
+  str: (...items: PikaStyleItem[]) => string
+  arr: (...items: PikaStyleItem[]) => string[]
+}
+declare const pika: PikaFn
+declare const pikap: PikaFn
+`
+		const ts = (monaco.languages.typescript as any).typescriptDefaults
+		ts.addExtraLib(source, 'file:///pika-globals.d.ts')
+	}
+
 	async function loadTypes(webcontainerInstance: WebContainer) {
 		const libMap = new Map<string, string>()
 		const compilerPaths: Record<string, string[]> = {}
@@ -233,5 +263,6 @@ export function useMonacoConfig() {
 
 	return {
 		loadMonacoConfig,
+		loadPikaGlobals,
 	}
 }

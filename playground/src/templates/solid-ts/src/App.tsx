@@ -34,7 +34,7 @@ function App() {
         <p class={pika({ margin: '0 0 1rem', lineHeight: '1.6', color: '#94a3b8' })}>
           Styles in this file are written with
           {' '}
-          <code class={pika({ color: 'var(--color-accent)' })}>pika()</code>
+          <code class={pika({ color: 'var(--color-accent)' })}>{'pika()'}</code>
           {' '}
           calls and compiled to atomic CSS at build time — zero runtime.
         </p>

@@ -1,10 +1,24 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useWebContainer } from '../../composables/useWebContainer'
 import { isResizing } from '../../composables/useWorkbench'
 
 defineOptions({ name: 'PreviewPanel' })
 
 const { iframeUrl, isRunning, isBooting, isInstalling } = useWebContainer()
+
+// The dev server signals `server-ready` before PikaCSS has generated
+// `pika.gen.css`, so the first paint of the preview is unstyled (Vite's CSS HMR
+// update does not retroactively style the already-rendered page). Reload the
+// iframe once, shortly after it first appears, so it picks up the generated CSS.
+const reloadKey = ref(0)
+let reloadedOnce = false
+watch(iframeUrl, (url) => {
+	if (url && !reloadedOnce) {
+		reloadedOnce = true
+		setTimeout(() => reloadKey.value++, 1500)
+	}
+})
 </script>
 
 <template>
@@ -19,6 +33,7 @@ const { iframeUrl, isRunning, isBooting, isInstalling } = useWebContainer()
 		</div>
 		<iframe
 			v-if="iframeUrl"
+			:key="reloadKey"
 			:src="iframeUrl"
 			class="preview-iframe"
 			:style="{ pointerEvents: isResizing ? 'none' : 'auto' }"

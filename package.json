@@ -39,6 +39,7 @@
 		"docs:preview": "pnpm -r --filter=@pikacss/docs run preview",
 		"playground:dev": "pnpm -r --filter=@pikacss/playground run dev",
 		"playground:build": "pnpm -r --filter=@pikacss/playground run build",
+		"playground:preview": "pnpm -r --filter=@pikacss/playground run preview",
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm test:css-data && pnpm -r --filter='./packages/*' run test",
 		"lint": "eslint --fix .",
@@ -78,6 +79,6 @@
 		"pre-commit": "pnpm lint-staged"
 	},
 	"lint-staged": {
-		"*": "eslint --fix"
+		"*": "eslint --fix --config eslint.config.mjs --no-warn-ignored"
 	}
 }

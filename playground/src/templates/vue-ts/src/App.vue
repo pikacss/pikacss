@@ -22,7 +22,7 @@ const count = ref(0)
       PikaCSS × Vue
     </h1>
     <p :class="pika({ color: '#94a3b8' })">
-      Styles are written with <code>pika()</code> calls and compiled to atomic CSS at build time.
+      Styles are written with <code>{{ 'pika()' }}</code> calls and compiled to atomic CSS at build time.
     </p>
     <button
       type="button"

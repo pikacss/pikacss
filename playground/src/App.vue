@@ -32,7 +32,7 @@ defineOptions({
 
 // -- Dependencies --
 const { boot, install, startDevServer, isBooting, isInstalling, isRunning, instance } = useWebContainer()
-const { loadMonacoConfig } = useMonacoConfig()
+const { loadMonacoConfig, loadPikaGlobals } = useMonacoConfig()
 
 // -- Dockview Config --
 const dockviewApi = shallowRef<DockviewApi | null>(null)
@@ -121,6 +121,7 @@ onMounted(async () => {
 	// Boot
 	try {
 		const initialTemplateKey = getInitialTemplateKey()
+		const config = templates[initialTemplateKey]!
 
 		if (!isBooting.value) {
 			await boot()
@@ -128,15 +129,14 @@ onMounted(async () => {
 
 		if (instance.value) {
 			await instance.value.mount(projectTree)
-		}
+			await install(config.installCommand, data => writeToTerminal(data))
 
-		const config = templates[initialTemplateKey]!
-		await install(config.installCommand, data => writeToTerminal(data))
-
-		// Load types and config from VFS in background
-		if (instance.value) {
+			// Load types and config from VFS in background. Declare the `pika`
+			// global afterwards (loadTypes calls setExtraLibs, which would otherwise
+			// wipe it) so the editor stops reporting "Cannot find name 'pika'".
 			loadMonacoConfig(instance.value)
 				.catch(e => console.error('[MonacoConfig] Failed:', e))
+				.finally(() => loadPikaGlobals())
 		}
 
 		await startDevServer(config.devCommand, data => writeToTerminal(data))
