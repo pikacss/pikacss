@@ -6,6 +6,7 @@ import { join } from 'pathe'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createDeferred } from '../../_shared/vitest'
+import { PikaTransformError } from './compiler/errors'
 import { createCtx } from './ctx'
 
 const WORKSPACE_CWD = process.cwd()
@@ -52,7 +53,6 @@ async function withProcessCwd<T>(cwd: string, run: () => Promise<T>) {
 afterEach(async () => {
 	vi.restoreAllMocks()
 	vi.doUnmock('@pikacss/core')
-	vi.doUnmock('./ctx.transform-utils')
 	vi.resetModules()
 	log.setWarnFn(console.warn.bind(console))
 	log.setErrorFn(console.error.bind(console))
@@ -109,11 +109,11 @@ describe('createCtx', () => {
 			.toBe(false)
 		expect(transformed?.code.includes('['))
 			.toBe(true)
-		expect(ctx.usages.get('src/demo.ts'))
+		expect(ctx.usages.get(join(cwd, 'src/demo.ts')))
 			.toHaveLength(3)
-		expect(ctx.previewUsages.get('src/demo.ts'))
+		expect(ctx.previewUsages.get(join(cwd, 'src/demo.ts')))
 			.toHaveLength(1)
-		expect(ctx.previewUsages.get('src/demo.ts')![0]!.params)
+		expect(ctx.previewUsages.get(join(cwd, 'src/demo.ts'))![0]!.params)
 			.toEqual([{ color: 'green' }])
 		expect(onStyleUpdated)
 			.toHaveBeenCalled()
@@ -287,29 +287,29 @@ describe('createCtx', () => {
 			.toContain(`"${ignoredPath}"`)
 	})
 
-	it('returns undefined when no function call matches and when argument evaluation fails', async () => {
+	it('resolves null when no function call matches and rejects when argument evaluation fails', async () => {
 		const cwd = await createTempDir()
 		const ctx = createCtx(createOptions({ cwd }))
 
 		await ctx.setup()
 
 		expect(await ctx.transform('const plain = 1', 'src/plain.ts'))
-			.toBeUndefined()
+			.toBeNull()
 
 		const valid = await ctx.transform('const value = pika({ color: \'red\' })', 'src/broken.ts')
 		expect(valid)
 			.toBeDefined()
-		expect(ctx.usages.has('src/broken.ts'))
+		expect(ctx.usages.has(join(cwd, 'src/broken.ts')))
 			.toBe(true)
-		expect(ctx.previewUsages.has('src/broken.ts'))
+		expect(ctx.previewUsages.has(join(cwd, 'src/broken.ts')))
 			.toBe(false)
 
-		const invalid = await ctx.transform('const broken = pika(foo())', 'src/broken.ts')
-		expect(invalid)
-			.toBeUndefined()
-		expect(ctx.usages.has('src/broken.ts'))
-			.toBe(false)
-		expect(ctx.previewUsages.has('src/broken.ts'))
+		await expect(ctx.transform('const broken = pika(foo())', 'src/broken.ts'))
+			.rejects.toThrow(PikaTransformError)
+		// The previously committed usages stay intact (last-good retention).
+		expect(ctx.usages.get(join(cwd, 'src/broken.ts')))
+			.toHaveLength(1)
+		expect(ctx.previewUsages.has(join(cwd, 'src/broken.ts')))
 			.toBe(false)
 	})
 
@@ -326,7 +326,7 @@ describe('createCtx', () => {
 			.toHaveBeenCalledTimes(1)
 
 		await ctx.transform('const value = 1', 'src/removed.ts')
-		expect(ctx.usages.has('src/removed.ts'))
+		expect(ctx.usages.has(join(cwd, 'src/removed.ts')))
 			.toBe(false)
 		expect(onStyleUpdated)
 			.toHaveBeenCalledTimes(2)
@@ -354,7 +354,7 @@ describe('createCtx', () => {
 			.toHaveBeenCalledTimes(1)
 		expect(onTsUpdated)
 			.toHaveBeenCalledTimes(1)
-		expect(ctx.usages.get('src/resave.ts'))
+		expect(ctx.usages.get(join(cwd, 'src/resave.ts')))
 			.toHaveLength(1)
 
 		// Changed usages still fire.
@@ -369,21 +369,13 @@ describe('createCtx', () => {
 		await ctx.transform('// rev 4\nconst a = pikap({ color: \'blue\' })', 'src/resave.ts')
 		expect(onStyleUpdated)
 			.toHaveBeenCalledTimes(3)
-		expect(ctx.previewUsages.get('src/resave.ts'))
+		expect(ctx.previewUsages.get(join(cwd, 'src/resave.ts')))
 			.toHaveLength(1)
 
 		// A different number of calls fires (length short-circuit in the compare).
 		await ctx.transform('// rev 5\nconst a = pikap({ color: \'blue\' })\nconst b = pika({ margin: \'1px\' })', 'src/resave.ts')
 		expect(onStyleUpdated)
 			.toHaveBeenCalledTimes(4)
-
-		// Non-JSON-serializable params are treated as changed, never crashing
-		// the compare (BigInt makes JSON.stringify throw).
-		await ctx.transform('// rev 6\nconst a = pika({ opacity: 1n })', 'src/resave.ts')
-		const countAfterFirstBigint = onStyleUpdated.mock.calls.length
-		await ctx.transform('// rev 7\nconst a = pika({ opacity: 1n })', 'src/resave.ts')
-		expect(onStyleUpdated.mock.calls.length)
-			.toBe(countAfterFirstBigint + 1)
 	})
 
 	it('reuses the memoized transform result for identical inputs and recomputes when they change', async () => {
@@ -398,12 +390,13 @@ describe('createCtx', () => {
 		expect(useSpy)
 			.toHaveBeenCalledTimes(1)
 
-		// Same (id, code): the engine work happens once and the result is reused.
+		// Same (id, code): the engine work happens once and the cached
+		// replacements are reused (the result object itself is rebuilt).
 		const second = await ctx.transform(code, 'src/memo.ts')
 		expect(useSpy)
 			.toHaveBeenCalledTimes(1)
-		expect(second)
-			.toBe(first)
+		expect(second?.code)
+			.toBe(first?.code)
 
 		// Different code recomputes.
 		await ctx.transform('const a = pika({ color: \'blue\' })', 'src/memo.ts')
@@ -428,7 +421,7 @@ describe('createCtx', () => {
 			'const b = pikap({ color: \'green\' })',
 		].join('\n')
 		await ctx.transform(code, 'src/deleted.ts')
-		expect(ctx.usages.get('src/deleted.ts'))
+		expect(ctx.usages.get(join(cwd, 'src/deleted.ts')))
 			.toHaveLength(2)
 
 		const onStyleUpdated = vi.fn()
@@ -437,13 +430,13 @@ describe('createCtx', () => {
 		ctx.hooks.tsCodegenUpdated.on(onTsUpdated)
 
 		// Simulate the bundler reporting the file as deleted (watchChange path).
-		ctx.usages.delete('src/deleted.ts')
-		ctx.previewUsages.delete('src/deleted.ts')
+		ctx.usages.delete(join(cwd, 'src/deleted.ts'))
+		ctx.previewUsages.delete(join(cwd, 'src/deleted.ts'))
 
 		await ctx.transform(code, 'src/deleted.ts')
-		expect(ctx.usages.get('src/deleted.ts'))
+		expect(ctx.usages.get(join(cwd, 'src/deleted.ts')))
 			.toHaveLength(2)
-		expect(ctx.previewUsages.get('src/deleted.ts'))
+		expect(ctx.previewUsages.get(join(cwd, 'src/deleted.ts')))
 			.toHaveLength(1)
 		expect(onStyleUpdated)
 			.toHaveBeenCalledTimes(1)
@@ -451,28 +444,23 @@ describe('createCtx', () => {
 			.toHaveBeenCalledTimes(1)
 	})
 
-	it('keeps valid calls when a sibling call in the same file fails to evaluate', async () => {
+	it('rejects the whole module and commits nothing when a sibling call fails to evaluate', async () => {
 		const cwd = await createTempDir()
-		const error = vi.fn()
-		log.setErrorFn(error)
 		const ctx = createCtx(createOptions({ cwd }))
 
 		await ctx.setup()
 
-		const result = await ctx.transform([
+		// Module transforms are atomic: one failing call rejects the module and
+		// the valid sibling call is not committed either.
+		await expect(ctx.transform([
 			'const ok = pika({ color: \'red\' })',
 			'const broken = pika({ color: localVariable })',
-		].join('\n'), 'src/partial.ts')
-
-		expect(result?.code)
-			.toContain('\'pk-')
-		expect(result?.code)
-			.toContain('pika({ color: localVariable })')
-		expect(ctx.usages.get('src/partial.ts'))
-			.toHaveLength(1)
-		expect(error.mock.calls.some(call => call.join(' ')
-			.includes('Failed to transform')))
-			.toBe(true)
+		].join('\n'), 'src/partial.ts'))
+			.rejects.toThrow(PikaTransformError)
+		expect(ctx.usages.has(join(cwd, 'src/partial.ts')))
+			.toBe(false)
+		expect(ctx.previewUsages.has(join(cwd, 'src/partial.ts')))
+			.toBe(false)
 	})
 
 	it('handles bracket-call variants, nested template expressions, and comments while transforming', async () => {
@@ -494,9 +482,9 @@ describe('createCtx', () => {
 			.toContain('[')
 		expect(transformed?.code.includes('pika['))
 			.toBe(false)
-		expect(ctx.usages.get('src/complex.ts'))
+		expect(ctx.usages.get(join(cwd, 'src/complex.ts')))
 			.toHaveLength(3)
-		expect(ctx.previewUsages.get('src/complex.ts'))
+		expect(ctx.previewUsages.get(join(cwd, 'src/complex.ts')))
 			.toHaveLength(1)
 	})
 
@@ -537,7 +525,7 @@ describe('createCtx', () => {
 		// Replacements must stay single-quoted inside double-quoted attributes.
 		expect(transformed?.code)
 			.toMatch(/:class="'[^"]*'"/)
-		expect(ctx.usages.get('src/App.vue'))
+		expect(ctx.usages.get(join(cwd, 'src/App.vue')))
 			.toHaveLength(3)
 	})
 
@@ -598,7 +586,7 @@ describe('createCtx', () => {
 			.toBe(false)
 		expect(transformed?.code.includes('pika({ color: \'blue\' })'))
 			.toBe(false)
-		expect(ctx.usages.get('src/App.vue'))
+		expect(ctx.usages.get(join(cwd, 'src/App.vue')))
 			.toHaveLength(2)
 	})
 
@@ -628,7 +616,7 @@ describe('createCtx', () => {
 		// Double-quoted attribute keeps the existing single-quoted output.
 		expect(transformed?.code)
 			.toMatch(/:class="'[^"]*'"/)
-		expect(ctx.usages.get('src/App.vue'))
+		expect(ctx.usages.get(join(cwd, 'src/App.vue')))
 			.toHaveLength(2)
 	})
 
@@ -658,39 +646,7 @@ describe('createCtx', () => {
 		// The double-quoted :class attribute is not closed early by the literal.
 		expect(transformed?.code)
 			.not.toMatch(/:class="[^"]*"[^"]*"/)
-		expect(ctx.usages.get('src/App.vue'))
-			.toHaveLength(1)
-	})
-
-	it('extends markup mode with user-supplied extensions while keeping the defaults', async () => {
-		const cwd = await createTempDir()
-		const ctx = createCtx(createOptions({
-			cwd,
-			scan: {
-				include: ['src/**/*.{riot,vue}'],
-				exclude: [],
-			},
-			markupExtensions: ['riot'],
-		}))
-
-		await ctx.setup()
-
-		const riotTransformed = await ctx.transform(
-			'<div class="pika({ color: \'gold\' })"></div>',
-			'src/App.riot',
-		)
-		const vueTransformed = await ctx.transform(
-			'<template>\n\t<div :class="pika({ color: \'red\' })">\n</template>',
-			'src/App.vue',
-		)
-
-		expect(riotTransformed?.code.includes('pika('))
-			.toBe(false)
-		expect(vueTransformed?.code.includes('pika('))
-			.toBe(false)
-		expect(ctx.usages.get('src/App.riot'))
-			.toHaveLength(1)
-		expect(ctx.usages.get('src/App.vue'))
+		expect(ctx.usages.get(join(cwd, 'src/App.vue')))
 			.toHaveLength(1)
 	})
 
@@ -729,7 +685,8 @@ describe('createCtx', () => {
 		})
 
 		const { createCtx: createMockedCtx } = await import('./ctx')
-		const ctx = createMockedCtx(createOptions())
+		const options = createOptions()
+		const ctx = createMockedCtx(options)
 
 		await ctx.setup()
 		const onStyleUpdated = vi.fn()
@@ -761,9 +718,9 @@ describe('createCtx', () => {
 			.toHaveBeenCalledTimes(1)
 		expect(onTsUpdated)
 			.toHaveBeenCalledTimes(1)
-		expect(ctx.usages.get('src/a.ts')?.[0]?.atomicStyleIds)
+		expect(ctx.usages.get(join(options.cwd, 'src/a.ts'))?.[0]?.atomicStyleIds)
 			.toEqual(['pk-a'])
-		expect(ctx.usages.get('src/b.ts')?.[0]?.atomicStyleIds)
+		expect(ctx.usages.get(join(options.cwd, 'src/b.ts'))?.[0]?.atomicStyleIds)
 			.toEqual(['pk-b'])
 	})
 
@@ -798,7 +755,8 @@ describe('createCtx', () => {
 		})
 
 		const { createCtx: createMockedCtx } = await import('./ctx')
-		const ctx = createMockedCtx(createOptions())
+		const options = createOptions()
+		const ctx = createMockedCtx(options)
 
 		await ctx.setup()
 		const onStyleUpdated = vi.fn()
@@ -810,7 +768,10 @@ describe('createCtx', () => {
 		const firstTransform = ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
 		const failedTransform = ctx.transform('const broken = pika(foo())', 'src/b.ts')
 
-		await failedTransform
+		// `vi.resetModules()` gives the re-imported ctx its own error class
+		// identity, so match on the message instead of the constructor.
+		await expect(failedTransform)
+			.rejects.toThrow('Failed to statically evaluate pika() argument')
 
 		expect(onStyleUpdated)
 			.not.toHaveBeenCalled()
@@ -824,9 +785,9 @@ describe('createCtx', () => {
 			.toHaveBeenCalledTimes(1)
 		expect(onTsUpdated)
 			.toHaveBeenCalledTimes(1)
-		expect(ctx.usages.get('src/a.ts')?.[0]?.atomicStyleIds)
+		expect(ctx.usages.get(join(options.cwd, 'src/a.ts'))?.[0]?.atomicStyleIds)
 			.toEqual(['pk-a'])
-		expect(ctx.usages.has('src/b.ts'))
+		expect(ctx.usages.has(join(options.cwd, 'src/b.ts')))
 			.toBe(false)
 	})
 
@@ -859,7 +820,8 @@ describe('createCtx', () => {
 		})
 
 		const { createCtx: createMockedCtx } = await import('./ctx')
-		const ctx = createMockedCtx(createOptions())
+		const options = createOptions()
+		const ctx = createMockedCtx(options)
 
 		await ctx.setup()
 
@@ -888,7 +850,7 @@ describe('createCtx', () => {
 
 		// A re-transform after setup records usages resolved by the new engine.
 		await ctx.transform('const a = pika({ color: \'red\' })', 'src/a.ts')
-		expect(ctx.usages.get('src/a.ts')?.[0]?.atomicStyleIds)
+		expect(ctx.usages.get(join(options.cwd, 'src/a.ts'))?.[0]?.atomicStyleIds)
 			.toEqual(['pk-new'])
 	})
 
@@ -954,24 +916,30 @@ describe('createCtx', () => {
 			.toBe(true)
 	})
 
-	it('warns and skips malformed template, comment, and unterminated call patterns', async () => {
+	it('rejects unparsable sources and ignores pika lookalikes inside comments and strings', async () => {
 		const cwd = await createTempDir()
-		const warn = vi.fn()
-		log.setWarnFn(warn)
 		const ctx = createCtx(createOptions({ cwd }))
 
 		await ctx.setup()
 
-		expect(await ctx.transform('const a = pika({ color: `red ${`', 'src/malformed-template.ts'))
-			.toBeUndefined()
-		expect(await ctx.transform('const b = pika({ color: \'red\' /*', 'src/unclosed-comment.ts'))
-			.toBeUndefined()
-		expect(await ctx.transform('const c = pika({ color: \'red\' //', 'src/unclosed-line-comment.ts'))
-			.toBeUndefined()
+		// Lookalikes inside comments and string literals never match under AST
+		// semantics: no macro call is collected and the module resolves null.
+		expect(await ctx.transform([
+			'// pika({ color: \'red\' })',
+			'/* pika({ color: \'green\' }) */',
+			'const tip = "use pika(\'bg:red\') here"',
+		].join('\n'), 'src/lookalikes.ts'))
+			.toBeNull()
+		expect(ctx.usages.has(join(cwd, 'src/lookalikes.ts')))
+			.toBe(false)
 
-		expect(warn.mock.calls.filter(call => call.join(' ')
-			.includes('Malformed function call')))
-			.toHaveLength(3)
+		// Genuinely malformed sources are parse hard-errors.
+		await expect(ctx.transform('const a = pika({ color: `red ${`', 'src/malformed-template.ts'))
+			.rejects.toThrow(PikaTransformError)
+		await expect(ctx.transform('const b = pika({ color: \'red\' /*', 'src/unclosed-comment.ts'))
+			.rejects.toThrow(PikaTransformError)
+		await expect(ctx.transform('const c = pika({', 'src/unterminated-call.ts'))
+			.rejects.toThrow(PikaTransformError)
 	})
 
 	it('skips TypeScript generation when it is disabled and performs full CSS scanning', async () => {
@@ -1336,48 +1304,6 @@ describe('createCtx', () => {
 			.toBeNull()
 	})
 
-	it('returns undefined when the parser yields an unsupported function variant', async () => {
-		vi.doMock('./ctx.transform-utils', async (importOriginal) => {
-			const actual = await importOriginal<typeof import('./ctx.transform-utils')>()
-			return {
-				...actual,
-				createFnUtils: () => ({
-					isNormal: () => false,
-					isForceString: () => false,
-					isForceArray: () => false,
-					isPreview: () => false,
-					RE: /pika\(/g,
-				}),
-				findFunctionCalls: () => ([
-					{
-						fnName: 'pika.invalid',
-						start: 14,
-						end: 45,
-						snippet: 'pika.invalid({ color: \'red\' })',
-					},
-				]),
-			}
-		})
-
-		const { createCtx: createMockedCtx } = await import('./ctx')
-		const ctx = createMockedCtx({
-			cwd: '/tmp/pikacss-integration',
-			currentPackageName: '@pikacss/core',
-			scan: { include: ['src/**/*.ts'], exclude: [] },
-			configOrPath: {},
-			fnName: 'pika',
-			transformedFormat: 'string',
-			tsCodegen: false,
-			cssCodegen: 'generated/pika.gen.css',
-			autoCreateConfig: false,
-		})
-
-		await ctx.setup()
-
-		expect(await ctx.transform('const value = pika({ color: \'red\' })', 'src/unexpected.ts'))
-			.toBeUndefined()
-	})
-
 	it('swallows mkdir errors and still writes the generated file when the directory already exists', async () => {
 		const cwd = await createTempDir()
 		await mkdir(join(cwd, 'generated'), { recursive: true })
@@ -1403,5 +1329,133 @@ describe('createCtx', () => {
 		const content = await readFile(join(cwd, 'generated/pika.gen.css'), 'utf-8')
 		expect(content)
 			.toContain('Auto-generated')
+	})
+
+	it('generates byte-identical CSS across full scans regardless of file creation order', async () => {
+		// The two files mint different atomic ids depending on which one the
+		// engine resolves first; path-sorted commit order makes it deterministic.
+		const files: [string, string][] = [
+			['src/a.ts', 'export const a = pika({ color: \'red\' })'],
+			['src/z.ts', 'export const z = pika({ color: \'blue\' })'],
+		]
+
+		async function generate(order: 'forward' | 'reverse') {
+			const cwd = await createTempDir()
+			await mkdir(join(cwd, 'src'), { recursive: true })
+			const ordered = order === 'forward' ? files : [...files].reverse()
+			for (const [file, code] of ordered) {
+				await writeFile(join(cwd, file), code)
+			}
+
+			const ctx = createCtx(createOptions({ cwd }))
+			await withProcessCwd(cwd, async () => {
+				await ctx.setup()
+				await ctx.fullyCssCodegen()
+			})
+			return readFile(join(cwd, 'generated/pika.gen.css'), 'utf8')
+		}
+
+		const first = await generate('forward')
+		const second = await generate('forward')
+		const reversed = await generate('reverse')
+
+		expect(second)
+			.toBe(first)
+		expect(reversed)
+			.toBe(first)
+	})
+
+	it('skips Vue SFC sub-requests carrying a vue&type= query', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const result = await ctx.transform(
+			'export default { computed: { cls: () => pika({ color: \'red\' }) } }',
+			join(cwd, 'src/App.vue?vue&type=script&lang.ts'),
+		)
+		expect(result)
+			.toBeNull()
+		expect(ctx.usages.size)
+			.toBe(0)
+	})
+
+	it('reports scanned-but-not-transformed files until the bundler pass reaches them', async () => {
+		const cwd = await createTempDir()
+		await mkdir(join(cwd, 'src'), { recursive: true })
+		const file = join(cwd, 'src/dead.ts')
+		const code = 'export const a = pika({ color: \'red\' })'
+		await writeFile(file, code)
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		await ctx.fullyCssCodegen()
+		expect(ctx.getScannedButNotTransformedFiles())
+			.toEqual([file])
+
+		// The bundler pass reaching the file clears it from the report.
+		await ctx.transform(code, file)
+		expect(ctx.getScannedButNotTransformedFiles())
+			.toEqual([])
+	})
+
+	it('drops usages keyed by the normalized path when dropModule receives a raw relative id', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const onStyleUpdated = vi.fn()
+		ctx.hooks.styleUpdated.on(onStyleUpdated)
+
+		await ctx.transform('const a = pika({ color: \'red\' })', 'src/dropped.ts')
+		const file = join(cwd, 'src/dropped.ts')
+		expect(ctx.usages.has(file))
+			.toBe(true)
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(1)
+
+		ctx.dropModule('src/dropped.ts')
+		expect(ctx.usages.has(file))
+			.toBe(false)
+		expect(onStyleUpdated)
+			.toHaveBeenCalledTimes(2)
+	})
+
+	it('keeps the last-good usages when a re-transform of a previously good file rejects', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const file = join(cwd, 'src/last-good.ts')
+
+		await ctx.transform('const a = pika({ color: \'red\' })', 'src/last-good.ts')
+		const committed = ctx.usages.get(file)
+		expect(committed)
+			.toHaveLength(1)
+
+		await expect(ctx.transform('const a = pika({ color: broken })', 'src/last-good.ts'))
+			.rejects.toThrow(PikaTransformError)
+		expect(ctx.usages.get(file))
+			.toBe(committed)
+	})
+
+	it('serves a cache hit for identical (id, code) without extra engine work', async () => {
+		const cwd = await createTempDir()
+		const ctx = createCtx(createOptions({ cwd }))
+
+		await ctx.setup()
+		const useSpy = vi.spyOn(ctx.engine, 'use')
+
+		const code = 'const a = pika({ color: \'red\' })'
+		const first = await ctx.transform(code, 'src/cache-hit.ts')
+		const callsAfterFirst = useSpy.mock.calls.length
+
+		const second = await ctx.transform(code, 'src/cache-hit.ts')
+		expect(useSpy.mock.calls.length)
+			.toBe(callsAfterFirst)
+		expect(second?.code)
+			.toContain('\'pk-')
+		expect(second?.code)
+			.toBe(first?.code)
 	})
 })

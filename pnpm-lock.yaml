@@ -6,6 +6,15 @@ settings:
 
 catalogs:
   default:
+    '@babel/parser':
+      specifier: ^7.29.7
+      version: 7.29.7
+    '@babel/traverse':
+      specifier: ^7.29.7
+      version: 7.29.7
+    '@babel/types':
+      specifier: ^7.29.7
+      version: 7.29.7
     '@clack/prompts':
       specifier: ^1.6.0
       version: 1.6.0
@@ -36,6 +45,9 @@ catalogs:
     '@shikijs/vitepress-twoslash':
       specifier: ^3.23.0
       version: 3.23.0
+    '@types/babel__traverse':
+      specifier: ^7.28.0
+      version: 7.28.0
     '@types/node':
       specifier: ^24.13.2
       version: 24.13.2
@@ -48,6 +60,12 @@ catalogs:
     '@vitest/coverage-v8':
       specifier: ^4.1.9
       version: 4.1.9
+    '@vue/compiler-core':
+      specifier: ^3.5.39
+      version: 3.5.39
+    '@vue/compiler-sfc':
+      specifier: ^3.5.39
+      version: 3.5.39
     '@vue/tsconfig':
       specifier: ^0.8.1
       version: 0.8.1
@@ -159,9 +177,6 @@ catalogs:
     simple-git-hooks:
       specifier: ^2.13.1
       version: 2.13.1
-    strip-literal:
-      specifier: ^3.1.0
-      version: 3.1.0
     tsdown:
       specifier: 0.21.7
       version: 0.21.7
@@ -395,9 +410,21 @@ importers:
 
   packages/integration:
     dependencies:
+      '@babel/parser':
+        specifier: 'catalog:'
+        version: 7.29.7
+      '@babel/traverse':
+        specifier: 'catalog:'
+        version: 7.29.7
+      '@babel/types':
+        specifier: 'catalog:'
+        version: 7.29.7
       '@pikacss/core':
         specifier: workspace:*
         version: link:../core
+      '@vue/compiler-sfc':
+        specifier: 'catalog:'
+        version: 3.5.39
       alien-signals:
         specifier: 'catalog:'
         version: 3.2.1
@@ -422,13 +449,16 @@ importers:
       picomatch:
         specifier: 'catalog:'
         version: 4.0.5
-      strip-literal:
-        specifier: 'catalog:'
-        version: 3.1.0
     devDependencies:
+      '@types/babel__traverse':
+        specifier: 'catalog:'
+        version: 7.28.0
       '@types/picomatch':
         specifier: 'catalog:'
         version: 4.0.3
+      '@vue/compiler-core':
+        specifier: 'catalog:'
+        version: 3.5.39
 
   packages/nuxt:
     dependencies:
@@ -1779,6 +1809,9 @@ packages:
 
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
+
+  '@types/babel__traverse@7.28.0':
+    resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
 
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
@@ -3512,9 +3545,6 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
-  js-tokens@9.0.1:
-    resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
-
   js-yaml@3.15.0:
     resolution: {integrity: sha512-ttBQIIQPDeLjpPOohtUdXuXUVoA2uIB6fEH9HyJ7234s5mBJ5wTx20njxplLZQgLaOfpmPQA7X2t5AX6tIPbog==}
     hasBin: true
@@ -4514,9 +4544,6 @@ packages:
   strip-indent@4.1.1:
     resolution: {integrity: sha512-SlyRoSkdh1dYP0PzclLE7r0M9sgbFKKMFXpFRUMNuKhQSbC6VQIGzq3E0qsfvGJaUFJPGv6Ws1NZ/haTAjfbMA==}
     engines: {node: '>=12'}
-
-  strip-literal@3.1.0:
-    resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
 
   structured-source@4.0.0:
     resolution: {integrity: sha512-qGzRFNJDjFieQkl/sVOI2dUjHKRyL9dAJi2gCPGJLbJHBIkyOHxjuocpIEfbLioX+qSJpvbYdT49/YCdMznKxA==}
@@ -6249,6 +6276,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
     optional: true
+
+  '@types/babel__traverse@7.28.0':
+    dependencies:
+      '@babel/types': 7.29.7
 
   '@types/chai@5.2.3':
     dependencies:
@@ -8112,8 +8143,6 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
-  js-tokens@9.0.1: {}
-
   js-yaml@3.15.0:
     dependencies:
       argparse: 1.0.10
@@ -9405,10 +9434,6 @@ snapshots:
   strip-bom-string@1.0.0: {}
 
   strip-indent@4.1.1: {}
-
-  strip-literal@3.1.0:
-    dependencies:
-      js-tokens: 9.0.1
 
   structured-source@4.0.0:
     dependencies:

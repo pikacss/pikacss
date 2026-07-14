@@ -1,4 +1,6 @@
 import type { Engine, EngineConfig, Nullish } from '@pikacss/core'
+import type { ModuleState } from './ctx.pipeline'
+import type { AnalyzedModule } from './processors/types'
 import type { IntegrationContext, IntegrationContextOptions, LoadedConfigResult, UsageRecord } from './types'
 import { statSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
@@ -7,11 +9,13 @@ import { computed, signal } from 'alien-signals'
 import { globbyStream } from 'globby'
 import { klona } from 'klona'
 import { isPackageExists } from 'local-pkg'
-import MagicString from 'magic-string'
 import { dirname, isAbsolute, join, relative, resolve } from 'pathe'
 import picomatch from 'picomatch'
-import { createFnUtils, createMarkupIdRE, DEFAULT_MARKUP_EXTENSIONS, detectEnclosingAttributeQuote, findFunctionCalls } from './ctx.transform-utils'
+import { analyzeModule, commitModule, hashSource, prepareModule, rewriteModule } from './ctx.pipeline'
 import { createEventHook } from './eventHook'
+import { createFnConfig } from './fnConfig'
+import { parseModuleId } from './moduleId'
+import { createDefaultProcessorRegistry } from './processors/registry'
 import { generateTsCodegenContent } from './tsCodegen'
 
 interface Signal<T> {
@@ -48,21 +52,6 @@ function createConfigScaffoldContent({
 		'  // Add your PikaCSS engine config here',
 		'})',
 	].join('\n')
-}
-
-// Cheap stable comparison for usage record lists: both lists originate from
-// evaluating source literals, so identical source produces an identical
-// serialization. Any serialization failure is treated as "changed".
-function isSameUsageList(previous: UsageRecord[] | Nullish, next: UsageRecord[]) {
-	const previousList = previous ?? []
-	if (previousList.length !== next.length)
-		return false
-	try {
-		return JSON.stringify(previousList) === JSON.stringify(next)
-	}
-	catch {
-		return false
-	}
 }
 
 async function writeGeneratedFile(filepath: string, content: string) {
@@ -244,7 +233,6 @@ function useTransform({
 	tsCodegenFilepath,
 	scan,
 	fnName,
-	markupExtensions,
 	usages,
 	previewUsages,
 	engine,
@@ -253,13 +241,16 @@ function useTransform({
 	endTransform,
 	triggerStyleUpdated,
 	triggerTsCodegenUpdated,
+	moduleStates,
+	getEpoch,
+	scannedFilesWithUsages,
+	transformedFiles,
 }: {
 	scan: {
 		include: string[]
 		exclude: string[]
 	}
 	fnName: string
-	markupExtensions?: string[]
 	transformedFormat: 'string' | 'array'
 	cwd: Signal<string>
 	cssCodegenFilepath: Signal<string>
@@ -271,32 +262,24 @@ function useTransform({
 	endTransform: () => void
 	triggerStyleUpdated: () => void
 	triggerTsCodegenUpdated: () => void
+	moduleStates: Map<string, ModuleState>
+	getEpoch: () => number
+	scannedFilesWithUsages: Set<string>
+	transformedFiles: Set<string>
 }) {
-	const fnUtils = createFnUtils(fnName)
-	// User-supplied extensions extend the defaults rather than replace them:
-	// dropping built-ins like `vue` would only break scanning.
-	const markupIdRE = createMarkupIdRE(markupExtensions == null
-		? undefined
-		: [...DEFAULT_MARKUP_EXTENSIONS, ...markupExtensions])
+	const fnConfig = createFnConfig(fnName)
+	const registry = createDefaultProcessorRegistry()
+	const commitDeps = { usages, previewUsages, triggerStyleUpdated, triggerTsCodegenUpdated }
 
-	// Line terminators must be escaped too: an unresolved string style item is
-	// echoed back verbatim by the engine and may contain a raw newline, which
-	// would otherwise split the emitted literal across lines (SyntaxError).
-	function quoteWith(value: string, quote: '"' | '\'') {
-		const escaped = value.replace(/\\/g, '\\\\')
-			.replaceAll(quote, `\\${quote}`)
-			.replace(/\n/g, '\\n')
-			.replace(/\r/g, '\\r')
-			.replace(/\u2028/g, '\\u2028')
-			.replace(/\u2029/g, '\\u2029')
-		return `${quote}${escaped}${quote}`
-	}
-
-	function serializeNames(names: string[], format: 'string' | 'array', quote: '"' | '\'') {
-		return format === 'array'
-			? `[${names.map(name => quoteWith(name, quote))
-				.join(', ')}]`
-			: quoteWith(names.join(' '), quote)
+	function dropModule(id: string) {
+		const file = parseModuleId(id, cwd()).file
+		moduleStates.delete(file)
+		const hadUsages = usages.delete(file)
+		previewUsages.delete(file)
+		if (hadUsages) {
+			triggerStyleUpdated()
+			triggerTsCodegenUpdated()
+		}
 	}
 
 	async function transform(code: string, id: string) {
@@ -304,115 +287,119 @@ function useTransform({
 		if (_engine == null)
 			return null
 
+		const moduleId = parseModuleId(id, cwd())
+		// Vue SFC sub-requests (`App.vue?vue&type=script`) carry content the
+		// whole-SFC transform already rewrote; analyzing them again under
+		// hard-error semantics would be a footgun.
+		if (moduleId.query != null && moduleId.query.includes('vue&type='))
+			return null
+
+		// Source fast filter (extension + fn-name substring): decides only
+		// whether to parse, never correctness. `fnName` is a prefix of every
+		// variant root, so the substring check has no false negatives.
+		if (!registry.has(moduleId.ext) || !code.includes(fnName)) {
+			if (usages.has(moduleId.file)) {
+				// The file previously contributed styles; regenerate outputs so
+				// removed styles disappear from the codegen files.
+				dropModule(moduleId.file)
+			}
+			return null
+		}
+
+		const sourceHash = hashSource(code)
+		const cached = moduleStates.get(moduleId.file)
+		if (cached?.prepared != null && cached.prepared.sourceHash === sourceHash) {
+			// Prepared-cache hit (build double-pass, dev re-save): re-commit so
+			// externally dropped usages are restored; regeneration triggers fire
+			// only when the committed records actually differ.
+			// Prepared results are only stored for modules with calls, so the
+			// cached usage list is never empty here.
+			commitModule(cached.prepared, commitDeps)
+			transformedFiles.add(moduleId.file)
+			return rewriteModule(code, cached.prepared)
+		}
+
 		beginTransform()
 		try {
 			log.debug(`Transforming file: ${id}`)
 
-			const previousUsageList = usages.get(id)
-			const previousPreviewUsageList = previewUsages.get(id)
-			const hadUsages = previousUsageList != null
-			usages.delete(id)
-			previewUsages.delete(id)
+			let state = moduleStates.get(moduleId.file)
+			if (state == null) {
+				state = { revision: 0, prepared: null }
+				moduleStates.set(moduleId.file, state)
+			}
+			// Guard against stale async completions: only the newest revision
+			// (within the current engine epoch) may commit its results.
+			const revision = ++state.revision
+			const epoch = getEpoch()
 
-			// Find all target function calls
-			const functionCalls = findFunctionCalls(code, fnUtils, id, markupIdRE)
-
-			if (functionCalls.length === 0) {
-				if (hadUsages) {
-					// The file previously contributed styles; regenerate outputs
-					// so removed styles disappear from the codegen files.
-					triggerStyleUpdated()
-					triggerTsCodegenUpdated()
+			// Any analyze/prepare failure below propagates: module transforms
+			// are atomic and a failing module hard-fails the build. The
+			// module's previous usages stay intact (last-good).
+			const analyzed = await analyzeModule(code, moduleId, { registry, fnConfig })
+			if (analyzed == null || analyzed.calls.length === 0) {
+				if (revision === state.revision && epoch === getEpoch()) {
+					state.prepared = null
+					if (usages.has(moduleId.file))
+						dropModule(moduleId.file)
 				}
-				return
-			}
-			log.debug(`Found ${functionCalls.length} style function calls in ${id}`)
-
-			const usageList: UsageRecord[] = []
-			const previewUsageList: UsageRecord[] = []
-
-			const isMarkupId = markupIdRE != null && markupIdRE.test(id)
-			const transformed = new MagicString(code)
-			for (const fnCall of functionCalls) {
-				try {
-					const functionCallStr = fnCall.snippet
-					const argsStr = `[${functionCallStr.slice(fnCall.fnName.length + 1, -1)}]`
-					// eslint-disable-next-line no-new-func
-					const args = new Function(`return ${argsStr}`)() as Parameters<Engine['use']>
-					const names = await _engine.use(...args)
-
-					// Emitted literals default to single quotes because the call may sit
-					// inside a double-quoted Vue template attribute (:class="pika(...)").
-					// In markup sources the enclosing attribute may itself be
-					// single-quoted, so use the opposite quote there (heuristic
-					// detection; see detectEnclosingAttributeQuote).
-					const quote = isMarkupId && detectEnclosingAttributeQuote(code, fnCall.start) === '\''
-						? '"'
-						: '\''
-
-					let transformedContent: string
-					if (fnUtils.isNormal(fnCall.fnName)) {
-						transformedContent = serializeNames(names, transformedFormat, quote)
-					}
-					else if (fnUtils.isForceString(fnCall.fnName)) {
-						transformedContent = serializeNames(names, 'string', quote)
-					}
-					else if (fnUtils.isForceArray(fnCall.fnName)) {
-						transformedContent = serializeNames(names, 'array', quote)
-					}
-					else {
-						throw new Error(`Unexpected function name: ${fnCall.fnName}`)
-					}
-
-					transformed.update(fnCall.start, fnCall.end + 1, transformedContent)
-
-					const usage: UsageRecord = {
-						atomicStyleIds: names,
-						params: args,
-					}
-					usageList.push(usage)
-					if (fnUtils.isPreview(fnCall.fnName)) {
-						previewUsageList.push(usage)
-					}
-				}
-				catch (error: any) {
-					// One un-evaluable call (e.g. referencing local variables) must not
-					// discard the other valid calls in the same file.
-					log.error(`Failed to transform "${fnCall.fnName}(...)" call at ${isAbsolute(id) ? id : join(cwd(), id)}:${fnCall.start}: ${error.message}`, error)
-				}
+				return null
 			}
 
-			if (usageList.length === 0) {
-				if (hadUsages) {
-					triggerStyleUpdated()
-					triggerTsCodegenUpdated()
-				}
-				return
+			const prepared = await prepareModule(analyzed, { engine: _engine, transformedFormat })
+			if (revision === state.revision && epoch === getEpoch()) {
+				state.prepared = prepared
+				commitModule(prepared, commitDeps)
+				transformedFiles.add(moduleId.file)
 			}
-
-			usages.set(id, usageList)
-			if (previewUsageList.length > 0) {
-				previewUsages.set(id, previewUsageList)
-			}
-			// Re-saving a file whose pika() calls did not change must not force a
-			// full CSS/TS regeneration; only trigger when the resolved usage
-			// records (or their preview subset) actually differ.
-			const usagesUnchanged = hadUsages
-				&& isSameUsageList(previousUsageList, usageList)
-				&& isSameUsageList(previousPreviewUsageList, previewUsageList)
-			if (usagesUnchanged === false) {
-				triggerStyleUpdated()
-				triggerTsCodegenUpdated()
-			}
-			log.debug(`Transformed ${usageList.length} style usages in ${id}`)
-			return {
-				code: transformed.toString(),
-				map: transformed.generateMap({ hires: true }),
-			}
+			log.debug(`Transformed ${prepared.usageList.length} style usages in ${id}`)
+			return rewriteModule(code, prepared)
 		}
-		catch (error: any) {
-			log.error(`Failed to transform code (${isAbsolute(id) ? id : join(cwd(), id)}): ${error.message}`, error)
-			return void 0
+		finally {
+			endTransform()
+		}
+	}
+
+	async function fullScan(filePaths: string[]) {
+		// Deterministic build order: canonical path order regardless of glob
+		// stream order (task: byte-identical CSS across runs).
+		const sorted = [...filePaths].sort()
+		scannedFilesWithUsages.clear()
+		transformedFiles.clear()
+
+		// Mark the context busy so queued generated-file writes defer until the
+		// whole scan committed (mirrors the per-transform bookkeeping).
+		beginTransform()
+		try {
+			// Stage 1: read + analyze in bounded parallel batches (pure, engine-free).
+			const analyzedList = Array.from<AnalyzedModule | null>({ length: sorted.length })
+				.fill(null)
+			const concurrency = 16
+			for (let i = 0; i < sorted.length; i += concurrency) {
+				await Promise.all(sorted.slice(i, i + concurrency)
+					.map(async (filePath, offset) => {
+						const code = await readFile(filePath, 'utf-8')
+						analyzedList[i + offset] = await analyzeModule(code, parseModuleId(filePath, cwd()), { registry, fnConfig })
+					}))
+			}
+
+			const _engine = engine()
+			if (_engine == null)
+				return
+
+			// Stage 2: prepare + commit sequentially in sorted order so atomic
+			// style ids are minted deterministically across files.
+			for (const analyzed of analyzedList) {
+				if (analyzed == null || analyzed.calls.length === 0)
+					continue
+				const prepared = await prepareModule(analyzed, { engine: _engine, transformedFormat })
+				const state = moduleStates.get(analyzed.id) ?? { revision: 0, prepared: null }
+				state.revision++
+				state.prepared = prepared
+				moduleStates.set(analyzed.id, state)
+				commitModule(prepared, commitDeps)
+				scannedFilesWithUsages.add(analyzed.id)
+			}
 		}
 		finally {
 			endTransform()
@@ -438,6 +425,8 @@ function useTransform({
 			},
 		},
 		transform,
+		fullScan,
+		dropModule,
 	}
 }
 
@@ -528,22 +517,19 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	const usages = new Map<string, UsageRecord[]>()
 	const previewUsages = new Map<string, UsageRecord[]>()
 
-	interface TransformCacheEntry {
-		code: string
-		result: Awaited<ReturnType<IntegrationContext['transform']>>
-		usageList: UsageRecord[]
-		previewUsageList: UsageRecord[]
-	}
-	// Last successful transform result per module id: build mode transforms the
-	// same (id, code) twice (the fullyCssCodegen scan pass and the bundler's own
-	// transform pass), so the second pass reuses the first pass's work. One
-	// entry per id, replaced whenever the code changes — bounded by the number
-	// of transformed modules. Cleared on setup() because cached atomic style
-	// ids were minted by the previous engine; the epoch counter additionally
-	// prevents an in-flight transform drained by setup() from re-inserting a
-	// stale entry after the clear.
-	const transformResultCache = new Map<string, TransformCacheEntry>()
-	let transformCacheEpoch = 0
+	// Per-module prepared state keyed by normalized absolute file path: build
+	// mode prepares each module once in the fullScan pass and the bundler's own
+	// transform pass reuses it via a source-hash hit. Cleared on setup() because
+	// cached atomic style ids were minted by the previous engine; the epoch
+	// counter additionally prevents an in-flight transform drained by setup()
+	// from committing a stale result after the clear.
+	const moduleStates = new Map<string, ModuleState>()
+	let moduleEpoch = 0
+	// Build-mode bookkeeping for the scanned-but-not-transformed warning:
+	// physical files whose styles entered the generated CSS during the full
+	// scan vs files the bundler's transform pass actually reached.
+	const scannedFilesWithUsages = new Set<string>()
+	const transformedFiles = new Set<string>()
 
 	const engine = signal(null as Engine | null)
 	const hooks = {
@@ -600,6 +586,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 	const {
 		transformFilter,
 		transform,
+		fullScan,
+		dropModule,
 	} = useTransform({
 		...options,
 		cwd,
@@ -619,6 +607,10 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		},
 		triggerStyleUpdated: queueStyleUpdated,
 		triggerTsCodegenUpdated: queueTsCodegenUpdated,
+		moduleStates,
+		getEpoch: () => moduleEpoch,
+		scannedFilesWithUsages,
+		transformedFiles,
 	})
 
 	const { isTransformTarget } = useTransformTarget({
@@ -657,44 +649,15 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		waitForIdle: waitForIdleTransforms,
 		transform: async (code, id) => {
 			await ctx.setupPromise
-			const cached = transformResultCache.get(id)
-			if (cached != null && cached.code === code) {
-				// Usages may have been dropped externally (e.g. the bundler
-				// reported the file as deleted) since this entry was cached;
-				// restore them so a re-added identical file still contributes
-				// its styles to the generated outputs.
-				if (usages.has(id) === false && cached.usageList.length > 0) {
-					usages.set(id, cached.usageList)
-					if (cached.previewUsageList.length > 0)
-						previewUsages.set(id, cached.previewUsageList)
-					queueStyleUpdated()
-					queueTsCodegenUpdated()
-				}
-				return cached.result
-			}
-			const epoch = transformCacheEpoch
-			const result = await transform(code, id)
-			if (result != null) {
-				// Skip caching when a setup() ran while this transform was in
-				// flight: the result was produced by the previous engine.
-				if (epoch === transformCacheEpoch) {
-					transformResultCache.set(id, {
-						code,
-						result,
-						// A non-null result implies the transform stored a
-						// non-empty usage list for this id.
-						usageList: usages.get(id)!,
-						previewUsageList: previewUsages.get(id) ?? [],
-					})
-				}
-			}
-			else {
-				// Nullish results are not memoized: they are ambiguous between
-				// "no calls found" and "transform failed", and both are cheap to
-				// recompute (a failed transform must stay retryable).
-				transformResultCache.delete(id)
-			}
-			return result
+			// Caching, the source-hash fast path, and the stale-revision/epoch
+			// guards all live in the pipeline-backed transform (ModuleState).
+			return transform(code, id)
+		},
+		dropModule,
+		getScannedButNotTransformedFiles: () => {
+			return [...scannedFilesWithUsages]
+				.filter(file => !transformedFiles.has(file))
+				.sort()
 		},
 		getCssCodegenContent: async () => {
 			await ctx.setupPromise
@@ -771,18 +734,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 					continue
 				filePaths.push(filePath)
 			}
-			// Read and transform with bounded concurrency instead of strictly
-			// serially; concurrent transforms are already supported (bundlers
-			// call ctx.transform concurrently in dev).
-			const concurrency = 16
-			for (let i = 0; i < filePaths.length; i += concurrency) {
-				await Promise.all(filePaths.slice(i, i + concurrency)
-					.map(async (filePath) => {
-						const code = await readFile(filePath, 'utf-8')
-						// collect usages
-						await ctx.transform(code, filePath)
-					}))
-			}
+			await fullScan(filePaths)
 			log.debug(`Scanned ${filePaths.length} files for style collection`)
 			await ctx.writeCssCodegenFile()
 		},
@@ -815,8 +767,10 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		await waitForIdleTransforms()
 		usages.clear()
 		previewUsages.clear()
-		transformCacheEpoch++
-		transformResultCache.clear()
+		moduleEpoch++
+		moduleStates.clear()
+		scannedFilesWithUsages.clear()
+		transformedFiles.clear()
 		pendingStyleUpdated = false
 		pendingTsCodegenUpdated = false
 		hooks.styleUpdated.listeners.clear()

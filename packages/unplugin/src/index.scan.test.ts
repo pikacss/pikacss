@@ -74,54 +74,39 @@ afterEach(async () => {
 })
 
 describe('unpluginFactory scan defaults', () => {
-	it('scans and transforms .svelte and .astro sources with default options', async () => {
+	it('scans and transforms .vue sources with default options', async () => {
 		const { plugin, cwd, ctx } = await createPlugin()
 
-		const svelteId = join(cwd, 'src/App.svelte')
-		const astroId = join(cwd, 'src/Page.astro')
+		const vueId = join(cwd, 'src/App.vue')
 
-		expect(ctx.isTransformTarget(svelteId))
-			.toBe(true)
-		expect(ctx.isTransformTarget(astroId))
+		expect(ctx.isTransformTarget(vueId))
 			.toBe(true)
 
-		const svelte = await plugin.transform.handler.call(
+		const vue = await plugin.transform.handler.call(
 			{},
-			'<div class="pika({ color: \'red\' })"></div>',
-			svelteId,
-		)
-		const astro = await plugin.transform.handler.call(
-			{},
-			'<div class="pika({ color: \'blue\' })"></div>',
-			astroId,
+			'<template>\n  <div :class="pika({ color: \'red\' })" />\n</template>\n',
+			vueId,
 		)
 
-		expect(svelte?.code.includes('pika('))
+		expect(vue?.code.includes('pika('))
 			.toBe(false)
-		expect(astro?.code.includes('pika('))
-			.toBe(false)
-		expect(ctx.usages.get(svelteId))
-			.toHaveLength(1)
-		expect(ctx.usages.get(astroId))
+		expect(ctx.usages.get(vueId))
 			.toHaveLength(1)
 	})
 
-	it('extends the default include with user markupExtensions', async () => {
-		const { plugin, cwd, ctx } = await createPlugin({ markupExtensions: ['riot'] })
+	it('does not scan unsupported markup extensions', async () => {
+		const { plugin, cwd, ctx } = await createPlugin()
 
-		const riotId = join(cwd, 'src/App.riot')
-		expect(ctx.isTransformTarget(riotId))
-			.toBe(true)
-
-		const riot = await plugin.transform.handler.call(
-			{},
-			'<div class="pika({ color: \'gold\' })"></div>',
-			riotId,
-		)
-		expect(riot?.code.includes('pika('))
-			.toBe(false)
-		expect(ctx.usages.get(riotId))
-			.toHaveLength(1)
+		const transformSpy = vi.spyOn(ctx, 'transform')
+		for (const file of ['src/App.svelte', 'src/Page.astro', 'src/index.html']) {
+			const id = join(cwd, file)
+			expect(ctx.isTransformTarget(id))
+				.toBe(false)
+			expect(await plugin.transform.handler.call({}, '<div class="pika({ color: \'red\' })"></div>', id))
+				.toBeNull()
+		}
+		expect(transformSpy)
+			.not.toHaveBeenCalled()
 	})
 
 	it('lets an explicit scan.include win over the derived default', async () => {
@@ -130,11 +115,11 @@ describe('unpluginFactory scan defaults', () => {
 		})
 
 		const transformSpy = vi.spyOn(ctx, 'transform')
-		const svelteId = join(cwd, 'src/App.svelte')
+		const vueId = join(cwd, 'src/App.vue')
 
-		expect(ctx.isTransformTarget(svelteId))
+		expect(ctx.isTransformTarget(vueId))
 			.toBe(false)
-		expect(await plugin.transform.handler.call({}, '<div></div>', svelteId))
+		expect(await plugin.transform.handler.call({}, '<template><div /></template>', vueId))
 			.toBeNull()
 		expect(transformSpy)
 			.not.toHaveBeenCalled()

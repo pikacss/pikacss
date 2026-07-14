@@ -11,6 +11,7 @@ const mockDebounce = vi.fn((fn: (...args: any[]) => any) => {
 const mockLog = {
 	debug: vi.fn(),
 	info: vi.fn(),
+	warn: vi.fn(),
 	error: vi.fn(),
 }
 
@@ -21,20 +22,6 @@ vi.mock('node:fs', () => ({
 vi.mock('@pikacss/integration', () => ({
 	createCtx: mockCreateCtx,
 	log: mockLog,
-	DEFAULT_MARKUP_EXTENSIONS: ['vue', 'svelte', 'astro', 'html', 'htm'],
-	// Mirrors the real helper: strip leading dots, drop empties, dedupe in order.
-	normalizeMarkupExtensions: (extensions: string[]) => {
-		const seen = new Set<string>()
-		const result: string[] = []
-		for (const ext of extensions) {
-			const normalized = ext.replace(/^\.+/, '')
-			if (normalized.length === 0 || seen.has(normalized))
-				continue
-			seen.add(normalized)
-			result.push(normalized)
-		}
-		return result
-	},
 }))
 
 vi.mock('perfect-debounce', () => ({
@@ -112,6 +99,17 @@ function createCtxStub() {
 			})
 		}),
 		isTransformTarget: vi.fn(() => true),
+		// Mirror the real dropModule: clears state and queues regeneration
+		// through the ctx hooks only when the file had styles.
+		dropModule: vi.fn((id: string) => {
+			const hadUsages = stub.usages.delete(id)
+			const hadPreview = (stub as any).previewUsages?.delete(id) ?? false
+			if (hadUsages || hadPreview) {
+				void hooks.styleUpdated.emit()
+				void hooks.tsCodegenUpdated.emit()
+			}
+		}),
+		getScannedButNotTransformedFiles: vi.fn(() => [] as string[]),
 		transformFilter: {
 			include: ['src/**/*.ts'],
 			exclude: [],
@@ -166,7 +164,7 @@ describe('unpluginFactory', () => {
 				transformedFormat: 'string',
 				autoCreateConfig: true,
 				scan: {
-					include: ['**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}'],
+					include: ['**/*.{js,ts,jsx,tsx,vue}'],
 					exclude: ['node_modules/**', 'dist/**'],
 				},
 			}))
@@ -818,24 +816,67 @@ describe('unpluginFactory', () => {
 			.toHaveBeenCalledWith('code', 'src/demo.ts')
 	})
 
-	it('derives the default scan include from the effective markup extensions', async () => {
+	it('warns about scanned-but-not-transformed files at buildEnd in build mode only', async () => {
+		const ctx = createCtxStub() as any
+		ctx.getScannedButNotTransformedFiles = vi.fn(() => ['/app/src/dead.ts'])
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		// Serve mode: never warns.
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildEnd?.()
+		expect(mockLog.warn)
+			.not.toHaveBeenCalled()
+
+		// Build mode: waits for idle and warns per file.
+		plugin.vite.configResolved?.({ root: '/app', command: 'build' } as any)
+		await plugin.buildEnd?.()
+		expect(ctx.waitForIdle)
+			.toHaveBeenCalled()
+		expect(mockLog.warn)
+			.toHaveBeenCalledWith(expect.stringContaining('/app/src/dead.ts'))
+	})
+
+	it('propagates transform hard errors while keeping the write queue functional', async () => {
+		const ctx = createCtxStub() as any
+		ctx.transformImpl = vi.fn(async () => {
+			throw new Error('[pikacss] Failed to statically evaluate pika() argument')
+		})
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
+		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
+
+		await expect(plugin.transform.handler.call({}, 'code', 'src/demo.ts'))
+			.rejects.toThrow('Failed to statically evaluate')
+		// The idle bookkeeping recovered (finally paths ran), so later queued
+		// writes still flush.
+		expect(ctx.isIdle)
+			.toBe(true)
+		ctx.hooks.styleUpdated.listeners.forEach((listener: () => unknown) => listener())
+		await flushAsyncWork()
+		expect(ctx.writeCssCodegenFile)
+			.toHaveBeenCalled()
+	})
+
+	it('uses the compiler-supported default scan include unless overridden', async () => {
 		const ctx = createCtxStub()
 		mockCreateCtx.mockReturnValue(ctx)
 		const mod = await import('./index')
 
-		// User extensions extend the built-in markup defaults; leading dots are
-		// stripped and duplicates collapse.
-		mod.unpluginFactory({ markupExtensions: ['riot', '.marko', 'vue'] }, { framework: 'vite' } as any)
+		mod.unpluginFactory(undefined, { framework: 'vite' } as any)
 		expect(mockCreateCtx)
 			.toHaveBeenLastCalledWith(expect.objectContaining({
 				scan: expect.objectContaining({
-					include: ['**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm,riot,marko}'],
+					include: ['**/*.{js,ts,jsx,tsx,vue}'],
 				}),
 			}))
 
-		// An explicit scan.include wins verbatim over the derived default.
+		// An explicit scan.include wins verbatim over the default.
 		mod.unpluginFactory({
-			markupExtensions: ['riot'],
 			scan: { include: ['src/**/*.ts'] },
 		}, { framework: 'vite' } as any)
 		expect(mockCreateCtx)

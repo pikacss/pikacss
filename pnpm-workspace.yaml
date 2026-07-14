@@ -24,6 +24,9 @@ packages:
   - playground
   - packages/*
 catalog:
+  '@babel/parser': ^7.29.7
+  '@babel/traverse': ^7.29.7
+  '@babel/types': ^7.29.7
   '@clack/prompts': ^1.6.0
   '@deviltea/eslint-config': ^8.0.2
   '@deviltea/tsconfig': ^0.0.10
@@ -34,10 +37,13 @@ catalog:
   '@nuxt/kit': ^4.4.8
   '@nuxt/schema': ^4.4.8
   '@shikijs/vitepress-twoslash': ^3.23.0
+  '@types/babel__traverse': ^7.28.0
   '@types/node': ^24.13.2
   '@types/picomatch': ^4.0.3
   '@vitejs/plugin-vue': ^6.0.7
   '@vitest/coverage-v8': ^4.1.9
+  '@vue/compiler-core': ^3.5.39
+  '@vue/compiler-sfc': ^3.5.39
   '@vue/tsconfig': ^0.8.1
   '@vueuse/core': ^14.1.0
   '@webcontainer/api': ^1.6.1
@@ -75,7 +81,6 @@ catalog:
   publint: ^0.3.21
   repomix: ^1.16.0
   simple-git-hooks: ^2.13.1
-  strip-literal: ^3.1.0
   tsdown: 0.21.7
   tsx: ^4.22.5
   typescript: ^5.9.3

@@ -3,7 +3,7 @@ import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
 import { readFileSync } from 'node:fs'
 import process from 'node:process'
-import { createCtx, DEFAULT_MARKUP_EXTENSIONS, log, normalizeMarkupExtensions } from '@pikacss/integration'
+import { createCtx, log } from '@pikacss/integration'
 import { resolve } from 'pathe'
 import { debounce } from 'perfect-debounce'
 import { createUnplugin } from 'unplugin'
@@ -47,29 +47,16 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		cssCodegen = true,
 		scan = {},
 		fnName = 'pika',
-		markupExtensions,
 		transformedFormat = 'string',
 		autoCreateConfig = true,
 	} = options ?? {}
 
 	log.debug('Creating unplugin factory with options:', options)
 
-	// The default include glob must cover every extension the scanner
-	// supports: the JS family plus the effective markup extensions — the
-	// integration merges user `markupExtensions` with the built-in defaults,
-	// so the default glob mirrors that merge. An explicit `scan.include`
+	// The default include glob covers every extension the AST compiler
+	// supports: the JS family plus Vue SFCs. An explicit `scan.include`
 	// always wins verbatim.
-	const defaultIncludeExtensions = [
-		'js',
-		'ts',
-		'jsx',
-		'tsx',
-		// Same normalization (strip leading dots, dedupe) that `createMarkupIdRE`
-		// uses, so the default scan glob and the markup-mode matcher never select
-		// different file sets.
-		...normalizeMarkupExtensions([...DEFAULT_MARKUP_EXTENSIONS, ...(markupExtensions ?? [])]),
-	]
-	const defaultInclude = [`**/*.{${defaultIncludeExtensions.join(',')}}`]
+	const defaultInclude = ['**/*.{js,ts,jsx,tsx,vue}']
 
 	const resolvedOptions: ResolvedPluginOptions = {
 		currentPackageName,
@@ -81,7 +68,6 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**']),
 		},
 		fnName,
-		markupExtensions,
 		transformedFormat,
 		autoCreateConfig,
 	}
@@ -383,15 +369,25 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			},
 		},
 
+		async buildEnd() {
+			if (mode !== 'build')
+				return
+			await ctx.waitForIdle()
+			// Files whose styles entered the generated CSS during the full scan
+			// but that the bundler never reached: dead files or missing imports.
+			for (const file of ctx.getScannedButNotTransformedFiles()) {
+				log.warn(`Styles from ${file} were included in the generated CSS but the file was never reached by the bundler — dead file or missing import?`)
+			}
+		},
+
 		watchChange(id: string, change?: { event: 'create' | 'update' | 'delete' }) {
-			if (change?.event === 'delete' && (ctx.usages.has(id) || ctx.previewUsages.has(id))) {
+			if (change?.event === 'delete') {
 				// Drop styles contributed by deleted source files so they do not
 				// linger in the generated CSS until the next full rebuild.
-				log.debug(`Source file deleted, dropping its usages: ${id}`)
-				ctx.usages.delete(id)
-				ctx.previewUsages.delete(id)
-				queueCssWrite()
-				queueTsWrite()
+				// dropModule normalizes the id and queues regeneration itself
+				// (through the ctx hooks bound above) only when styles existed.
+				log.debug(`Source file deleted, dropping its state: ${id}`)
+				ctx.dropModule(id)
 			}
 			if (id === ctx.resolvedConfigPath) {
 				let currentContent: string | null = null

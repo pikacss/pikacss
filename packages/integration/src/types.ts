@@ -17,27 +17,6 @@ export interface UsageRecord {
 }
 
 /**
- * Classifier and regex utilities for recognizing all `pika()` function call variants in source code.
- *
- * @remarks
- * The function name is configurable via `IntegrationContextOptions.fnName`, so all
- * variants (`.str`, `.arr`, preview `p` suffix, bracket notation) are derived
- * dynamically from that base name.
- */
-export interface FnUtils {
-	/** Returns `true` if the given function name is a normal call (output format determined by `transformedFormat`). */
-	isNormal: (fnName: string) => boolean
-	/** Returns `true` if the given function name forces string output (e.g., `pika.str`). */
-	isForceString: (fnName: string) => boolean
-	/** Returns `true` if the given function name forces array output (e.g., `pika.arr`). */
-	isForceArray: (fnName: string) => boolean
-	/** Returns `true` if the given function name is a preview variant (e.g., `pikap`, `pikap.str`). */
-	isPreview: (fnName: string) => boolean
-	/** A compiled global regex that matches all recognized function call variants, including bracket-notation accessors. */
-	RE: RegExp
-}
-
-/**
  * Configuration options for creating an integration context.
  *
  * @remarks
@@ -58,13 +37,6 @@ export interface IntegrationContextOptions {
 	configOrPath: EngineConfig | string | Nullish
 	/** The base function name to recognize in source code (e.g., `'pika'`). All variants (`.str`, `.arr`, preview) are derived from this name. */
 	fnName: string
-	/**
-	 * Additional file extensions (leading dots optional) scanned in markup mode, where the
-	 * source's top-level syntax is not JavaScript and `pika()` calls live inside quoted
-	 * template attributes (e.g., Vue SFCs). Merged with the built-in defaults
-	 * (`['vue', 'svelte', 'astro', 'html', 'htm']`).
-	 */
-	markupExtensions?: string[]
 	/** Controls the default output format of normal `pika()` calls: `'string'` produces a space-joined class string, `'array'` produces a string array. */
 	transformedFormat: 'string' | 'array'
 	/** Path to the generated TypeScript declaration file (`pika.gen.ts`), or `false` to disable TypeScript codegen entirely. */
@@ -180,8 +152,29 @@ export interface IntegrationContext {
 	 * drain in-flight transforms before swapping the engine.
 	 */
 	waitForIdle: () => Promise<void>
-	/** Processes a source file by extracting `pika()` calls, resolving them through the engine, and replacing them with computed output. Returns the transformed code and source map, or `null` if no calls were found. */
+	/**
+	 * Processes a source file by extracting `pika()` calls via the AST compiler, resolving them
+	 * through the engine, and replacing them with computed output.
+	 *
+	 * @returns The transformed code and source map, or `null` when the module has no macro calls
+	 * or is filtered out (unsupported extension, fn-name substring absent, Vue SFC sub-request).
+	 * @throws `PikaTransformError` when any call in the module fails to parse, resolve, or
+	 * statically evaluate — module transforms are atomic and never commit partial results; the
+	 * module's previously committed usages stay intact (last-good).
+	 */
 	transform: (code: string, id: string) => Promise<{ code: string, map: SourceMap } | Nullish>
+	/**
+	 * Drops all state for a module (usages, preview usages, prepared results), e.g. when the
+	 * bundler reports the file as deleted. Accepts raw bundler ids (relative paths, query/hash
+	 * suffixes) and normalizes them internally. Queues output regeneration when styles were dropped.
+	 */
+	dropModule: (id: string) => void
+	/**
+	 * Returns the physical files whose styles entered the generated CSS during the build-mode
+	 * full scan but that the bundler's own transform pass never reached — dead files or files
+	 * missing from the import graph. Sorted; empty in dev mode (no full scan).
+	 */
+	getScannedButNotTransformedFiles: () => string[]
 	/** Generates the full CSS output string, including layer declarations, preflights, and all atomic styles collected from transforms. */
 	getCssCodegenContent: () => Promise<string | Nullish>
 	/** Generates the full TypeScript declaration content for `pika.gen.ts`, or `null` if TypeScript codegen is disabled. */

@@ -33,7 +33,7 @@ export type ModuleOptions = Omit<PluginOptions, 'currentPackageName'>
  *
  * Configure options under the `pikacss` key in `nuxt.config`. When no
  * options are provided, the unplugin defaults apply: sources matching
- * `**\/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}` are scanned.
+ * `**\/*.{js,ts,jsx,tsx,vue}` are scanned.
  */
 export default (defineNuxtModule<ModuleOptions>({
 	meta: {
@@ -52,8 +52,7 @@ export default (defineNuxtModule<ModuleOptions>({
 		// and `nuxt.options.pikacss`; reading only `nuxt.options.pikacss` would
 		// silently drop inline options.
 		// No `scan` default is set here: the unplugin layer's own default
-		// resolution (JS family plus supported markup extensions) is the
-		// single source of truth.
+		// resolution (JS family plus Vue SFCs) is the single source of truth.
 		const resolvedOptions: ModuleOptions = {
 			// Nuxt sets the Vite root to `srcDir`; resolve config discovery and
 			// codegen outputs against the project root instead.

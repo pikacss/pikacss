@@ -49,7 +49,11 @@
 		"test:watch": "vitest --config ./vitest.config.ts"
 	},
 	"dependencies": {
+		"@babel/parser": "catalog:",
+		"@babel/traverse": "catalog:",
+		"@babel/types": "catalog:",
 		"@pikacss/core": "workspace:*",
+		"@vue/compiler-sfc": "catalog:",
 		"alien-signals": "catalog:",
 		"globby": "catalog:",
 		"jiti": "catalog:",
@@ -57,10 +61,11 @@
 		"local-pkg": "catalog:",
 		"magic-string": "catalog:",
 		"pathe": "catalog:",
-		"picomatch": "catalog:",
-		"strip-literal": "catalog:"
+		"picomatch": "catalog:"
 	},
 	"devDependencies": {
-		"@types/picomatch": "catalog:"
+		"@types/babel__traverse": "catalog:",
+		"@types/picomatch": "catalog:",
+		"@vue/compiler-core": "catalog:"
 	}
 }
