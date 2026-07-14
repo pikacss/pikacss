@@ -26,9 +26,9 @@
 
 <!-- Point to the dedicated module instead of manual wiring; link to the Nuxt page -->
 
-## Other Markup Files
+## Supported File Types
 
-<!-- Mention default markup extensions (.svelte, .astro, .html, .htm, plus markupExtensions); link to Unplugin for scan options -->
+<!-- State the supported set: JS family (.js/.ts/.jsx/.tsx) plus Vue SFCs (.vue); other markup formats are not processed; link to Unplugin for scan options -->
 
 ## Next
 <!-- Link to Setup, SSR & Production, and Unplugin -->

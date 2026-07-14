@@ -18,7 +18,7 @@ export default defineConfig({
       fnName: 'pika',
       transformedFormat: 'string',
       scan: {
-        include: ['**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}'],
+        include: ['**/*.{js,ts,jsx,tsx,vue}'],
         exclude: ['node_modules/**', 'dist/**'],
       },
     }),
@@ -34,9 +34,8 @@ The default generated filenames (`pika.gen.ts` and `pika.gen.css`) are convenien
 |---|---|---|---|
 | `fnName` | `string` | `'pika'` | Base function name recognized by the transform |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of `pika()` calls |
-| `scan.include` | `string[]` | `['**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}']` | Glob patterns for files to scan |
+| `scan.include` | `string[]` | `['**/*.{js,ts,jsx,tsx,vue}']` | Glob patterns for files to scan |
 | `scan.exclude` | `string[]` | `['node_modules/**', 'dist/**']` | Glob patterns to exclude |
-| `markupExtensions` | `string[]` | `['vue', 'svelte', 'astro', 'html', 'htm']` (built-ins) | Extra extensions scanned in markup mode, merged with the built-ins; also extends the default `scan.include` glob |
 | `config` | `EngineConfig \| string` | auto-discovery | Engine config object or path to config file |
 | `autoCreateConfig` | `boolean` | `true` | Scaffold default config file if missing |
 | `tsCodegen` | `boolean \| string` | `true` (`pika.gen.ts`) | TypeScript declaration output path when set to a string; `false` disables codegen |
@@ -64,15 +63,15 @@ pikacss({
 
 ### Scan additional file types
 
-`vue`, `svelte`, `astro`, `html`, and `htm` are already scanned by default. To add another markup extension, prefer `markupExtensions` — it merges with the built-ins and extends the default `scan.include` glob:
+JS-family sources (`js`, `ts`, `jsx`, `tsx`, plus `mjs`/`cjs`/`mts`/`cts`) and Vue SFCs (`vue`) are supported by the AST-based transform. The default `scan.include` covers `js`, `ts`, `jsx`, `tsx`, and `vue`; widen it when supported files live behind other globs:
 
 ```ts
 pikacss({
-  markupExtensions: ['mdx'],
+  scan: { include: ['src/**/*.{ts,tsx,vue}', 'shared/**/*.mts'] },
 })
 ```
 
-Setting `scan.include` explicitly replaces the default glob entirely.
+Setting `scan.include` explicitly replaces the default glob entirely. Other markup formats (Svelte, Astro, plain HTML) are not processed.
 
 ### Disable TypeScript generation
 

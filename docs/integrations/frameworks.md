@@ -189,9 +189,9 @@ render(() => <App />, document.getElementById('root')!)
 
 Use the dedicated module instead of wiring the Vite plugin yourself — it registers the plugin and auto-imports `pika.css`. See [Nuxt](/integrations/nuxt).
 
-## Other Markup Files
+## Supported File Types
 
-By default the scanner also processes `.svelte`, `.astro`, `.html`, and `.htm` files (plus anything added via `markupExtensions`), so `pika()` calls in those templates are transformed the same way. See [Unplugin](/integrations/unplugin) for the scan options.
+The transform supports JavaScript-family sources (`.js`, `.ts`, `.jsx`, `.tsx`) and Vue single-file components (`.vue`). Other markup formats (Svelte, Astro, plain HTML) are not processed. See [Unplugin](/integrations/unplugin) for the scan options.
 
 ## Next
 

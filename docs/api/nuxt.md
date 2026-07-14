@@ -41,7 +41,7 @@ generated `pika.css` stylesheet.
 
 Configure options under the `pikacss` key in `nuxt.config`. When no
 options are provided, the unplugin defaults apply: sources matching
-`**\/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}` are scanned.
+`**\/*.{js,ts,jsx,tsx,vue}` are scanned.
 
 <br>
 <br>

@@ -42,11 +42,11 @@ If you are using the Nuxt module, the import is injected automatically. With the
 
 ## `ReferenceError: pika is not defined`
 
-This runtime error means a `pika()` call reached the browser untransformed — `pika` only exists at compile time and has no runtime export. The most common cause is that the file is not matched by the scan globs, so the plugin never processed it. The default `scan.include` is `**/*.{js,ts,jsx,tsx,vue,svelte,astro,html,htm}` with `node_modules/**` and `dist/**` excluded.
+This runtime error means a `pika()` call reached the browser untransformed — `pika` only exists at compile time and has no runtime export. The most common cause is that the file is not matched by the scan globs, so the plugin never processed it. The default `scan.include` is `**/*.{js,ts,jsx,tsx,vue}` with `node_modules/**` and `dist/**` excluded.
 
 Fixes:
 
-1. If the file uses another extension, extend `scan.include` (or `markupExtensions` for markup-style files) in the plugin options.
+1. If the file uses another extension, extend `scan.include` in the plugin options. Note that only JS-family sources and Vue SFCs are supported by the transform.
 2. Confirm the PikaCSS plugin is actually registered in your build config.
 
 ## `Cannot find name 'pika'`
