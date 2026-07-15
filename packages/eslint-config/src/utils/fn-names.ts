@@ -126,6 +126,37 @@ function unwrapExpression(node: any): any {
  * getCalleeName(node) // 'pika.str'
  * ```
  */
+/**
+ * Extracts the ROOT identifier name of a call-expression callee — the `pika`
+ * in `pika(...)`, `pika.str(...)`, or `pika['str'](...)`.
+ * @internal
+ *
+ * @param node - EST call-expression node with a `callee` property.
+ * @param node.type - The ESTree node type.
+ * @param node.callee - The callee subtree to inspect.
+ * @returns The root identifier name, or `null` when the callee root is not a plain identifier.
+ *
+ * @remarks
+ * Used to resolve the callee against the ESLint scope: when the root is a local
+ * binding (import, variable, parameter, function/class declaration) the call is
+ * the user's own function, not a PikaCSS macro, and the rule must skip it — the
+ * same shadowing semantics the transformer applies via Babel scope.
+ */
+export function getCalleeRootName(node: {
+	type: string
+	callee: any
+}): string | null {
+	const callee = unwrapExpression(node.callee)
+	if (callee.type === 'Identifier')
+		return callee.name
+	if (callee.type === 'MemberExpression') {
+		const calleeObject = unwrapExpression(callee.object)
+		if (calleeObject.type === 'Identifier')
+			return calleeObject.name
+	}
+	return null
+}
+
 export function getCalleeName(node: {
 	type: string
 	callee: any

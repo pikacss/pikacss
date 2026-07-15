@@ -1,47 +1,94 @@
-import type { Rule } from 'eslint'
-import { buildFnNamePatterns, getCalleeName } from '../utils/fn-names'
+import type { Rule, Scope } from 'eslint'
+import { buildFnNamePatterns, getCalleeName, getCalleeRootName } from '../utils/fn-names'
+
+// Global constant identifiers the compiler evaluates statically (only when they
+// are NOT shadowed by a local binding). Mirrors GLOBAL_CONSTANTS in
+// `@pikacss/integration`'s compiler evaluator.
+const GLOBAL_CONSTANTS = new Set(['undefined', 'NaN', 'Infinity'])
+// Operators the compiler's static evaluator understands. Kept in sync with
+// `evaluateBinary`/`evaluateUnary`/`evaluateLogical` in the integration package.
+const STATIC_BINARY_OPERATORS = new Set(['+', '-', '*', '/', '===', '!=='])
+const STATIC_UNARY_OPERATORS = new Set(['-', '+', '!', 'void'])
+const STATIC_LOGICAL_OPERATORS = new Set(['&&', '||', '??'])
 
 /**
- * Check whether a node belongs to the lint-safe subset enforced by this rule.
- *
- * The transformer evaluates matched arguments at build time, but this rule is
- * intentionally stricter: it only allows literals and recursively static
- * object/array structures so builds stay predictable and side-effect free.
+ * Whether `name` resolves to a binding declared in the given scope chain
+ * (import, variable, parameter, function/class declaration).
  */
-function isStaticNode(node: any): boolean {
+function isDeclaredInScope(name: string, scope: Scope.Scope | null | undefined): boolean {
+	for (let s = scope; s != null; s = s.upper) {
+		if (s.variables.some(variable => variable.name === name))
+			return true
+	}
+	return false
+}
+
+/**
+ * Check whether a node belongs to the static subset the rule accepts.
+ *
+ * Aligned with the compiler's build-time evaluator (`evaluateStatic` in
+ * `@pikacss/integration`): literals, recursively-static objects/arrays,
+ * template literals whose expressions are all static, the compiler's unary /
+ * binary / logical / conditional operators, and the unshadowed global
+ * constants `undefined`/`NaN`/`Infinity`. Anything the compiler cannot
+ * evaluate (identifiers, member/call expressions, unsupported operators) is
+ * rejected so the rule never flags code the compiler would accept and never
+ * accepts code the compiler would reject.
+ */
+function isStaticNode(node: any, scope: Scope.Scope | null | undefined): boolean {
+	if (node == null)
+		return false
 	switch (node.type) {
 		case 'Literal':
 			return true
 
+		case 'Identifier':
+			// undefined / NaN / Infinity are static only when not shadowed.
+			return GLOBAL_CONSTANTS.has(node.name) && !isDeclaredInScope(node.name, scope)
+
 		case 'TemplateLiteral':
-			// Only static if there are no expressions
-			return node.expressions.length === 0
+			// Static when every interpolated expression is itself static.
+			return node.expressions.every((expr: any) => isStaticNode(expr, scope))
 
 		case 'UnaryExpression':
-			// Allow -1, +2, etc.
-			return (node.operator === '-' || node.operator === '+')
-				&& isStaticNode(node.argument)
+			return STATIC_UNARY_OPERATORS.has(node.operator)
+				&& isStaticNode(node.argument, scope)
+
+		case 'BinaryExpression':
+			return STATIC_BINARY_OPERATORS.has(node.operator)
+				&& isStaticNode(node.left, scope)
+				&& isStaticNode(node.right, scope)
+
+		case 'LogicalExpression':
+			return STATIC_LOGICAL_OPERATORS.has(node.operator)
+				&& isStaticNode(node.left, scope)
+				&& isStaticNode(node.right, scope)
+
+		case 'ConditionalExpression':
+			return isStaticNode(node.test, scope)
+				&& isStaticNode(node.consequent, scope)
+				&& isStaticNode(node.alternate, scope)
 
 		case 'ArrayExpression':
 			return node.elements.every((el: any) => {
 				if (el === null)
 					return true // sparse arrays: [,]
 				if (el.type === 'SpreadElement')
-					return isStaticNode(el.argument)
-				return isStaticNode(el)
+					return isStaticNode(el.argument, scope)
+				return isStaticNode(el, scope)
 			})
 
 		case 'ObjectExpression':
 			return node.properties.every((prop: any) => {
 				if (prop.type === 'SpreadElement') {
 					// Spread is only allowed if the argument is itself a static object
-					return isStaticNode(prop.argument)
+					return isStaticNode(prop.argument, scope)
 				}
 				// Computed property keys must also be static
-				if (prop.computed && !isStaticNode(prop.key))
+				if (prop.computed && !isStaticNode(prop.key, scope))
 					return false
 				// Non-computed keys are always static (Identifier or Literal)
-				return isStaticNode(prop.value)
+				return isStaticNode(prop.value, scope)
 			})
 
 		default:
@@ -101,11 +148,17 @@ function reportDynamicNode(
 /**
  * ESLint rule that disallows dynamic arguments in PikaCSS function calls.
  *
- * Enforces a strict static-subset constraint: every argument passed to the
- * configured PikaCSS callee (and its `.str`, `.arr`, and preview variants)
- * must be a literal, a recursively static object/array, or a static
- * template literal with no expressions. This ensures build-time transforms
- * can evaluate the call site without runtime information.
+ * Every argument passed to the configured PikaCSS callee (and its `.str`,
+ * `.arr`, and preview variants) must fall within the same static subset the
+ * build-time compiler can evaluate: literals, recursively-static objects and
+ * arrays, template literals whose expressions are static, the compiler's
+ * unary/binary/logical/conditional operators, and the unshadowed global
+ * constants `undefined`/`NaN`/`Infinity`. The rule stays aligned with the
+ * compiler so it never flags a call the transform would accept.
+ *
+ * Calls whose callee root is a local binding (import, variable, parameter,
+ * function/class) are skipped — they are the user's own function, not a macro,
+ * matching the transformer's scope-based shadowing.
  *
  * Reports four distinct message IDs depending on violation location:
  * `noDynamicArg`, `noDynamicProperty`, `noDynamicSpread`, and
@@ -121,7 +174,7 @@ const rule: Rule.RuleModule = {
 		type: 'problem',
 		docs: {
 			description: 'Disallow dynamic arguments in PikaCSS calls when enforcing the predictable static subset recommended for build-time transforms.',
-			url: 'https://github.com/pikacss/pikacss/blob/main/packages/eslint-plugin/docs/rules/no-dynamic-args.md',
+			url: 'https://github.com/pikacss/pikacss/blob/main/packages/eslint-config/docs/rules/no-dynamic-args.md',
 		},
 		messages: {
 			noDynamicArg: 'PikaCSS static-subset violation: {{ reason }}. All arguments to {{ fnName }}() must stay within the predictable literal subset enforced by this rule.',
@@ -147,21 +200,21 @@ const rule: Rule.RuleModule = {
 		const options = context.options[0] as { fnName?: string } | undefined
 		const { allNames } = buildFnNamePatterns(options?.fnName)
 
-		function validateObjectExpression(argNode: any, fnName: string): void {
+		function validateObjectExpression(argNode: any, fnName: string, scope: Scope.Scope | null | undefined): void {
 			for (const prop of argNode.properties) {
 				if (prop.type === 'SpreadElement') {
-					if (!isStaticNode(prop.argument))
+					if (!isStaticNode(prop.argument, scope))
 						reportDynamicNode(context, prop, 'noDynamicSpread', fnName)
 					continue
 				}
 
-				if (prop.computed && !isStaticNode(prop.key)) {
+				if (prop.computed && !isStaticNode(prop.key, scope)) {
 					reportDynamicNode(context, prop.key, 'noDynamicComputedKey', fnName, getDynamicReason(prop.key))
 				}
 
-				if (!isStaticNode(prop.value)) {
+				if (!isStaticNode(prop.value, scope)) {
 					if (prop.value.type === 'ObjectExpression' || prop.value.type === 'ArrayExpression') {
-						validateArg(prop.value, fnName)
+						validateArg(prop.value, fnName, scope)
 					}
 					else {
 						reportDynamicNode(context, prop.value, 'noDynamicProperty', fnName, getDynamicReason(prop.value))
@@ -170,17 +223,17 @@ const rule: Rule.RuleModule = {
 			}
 		}
 
-		function validateArrayExpression(argNode: any, fnName: string): void {
+		function validateArrayExpression(argNode: any, fnName: string, scope: Scope.Scope | null | undefined): void {
 			for (const el of argNode.elements) {
 				if (el === null)
 					continue
 				if (el.type === 'SpreadElement') {
-					if (!isStaticNode(el.argument))
+					if (!isStaticNode(el.argument, scope))
 						reportDynamicNode(context, el, 'noDynamicSpread', fnName)
 					continue
 				}
-				if (!isStaticNode(el))
-					validateArg(el, fnName)
+				if (!isStaticNode(el, scope))
+					validateArg(el, fnName, scope)
 			}
 		}
 
@@ -189,17 +242,17 @@ const rule: Rule.RuleModule = {
 		 * messages depending on the position (top-level arg, property value,
 		 * spread, computed key).
 		 */
-		function validateArg(argNode: any, fnName: string): void {
-			if (isStaticNode(argNode))
+		function validateArg(argNode: any, fnName: string, scope: Scope.Scope | null | undefined): void {
+			if (isStaticNode(argNode, scope))
 				return
 
 			if (argNode.type === 'ObjectExpression') {
-				validateObjectExpression(argNode, fnName)
+				validateObjectExpression(argNode, fnName, scope)
 				return
 			}
 
 			if (argNode.type === 'ArrayExpression') {
-				validateArrayExpression(argNode, fnName)
+				validateArrayExpression(argNode, fnName, scope)
 				return
 			}
 
@@ -211,17 +264,26 @@ const rule: Rule.RuleModule = {
 			if (calleeName === null || !allNames.has(calleeName))
 				return
 
+			// Skip when the callee root is a local binding (import, variable,
+			// parameter, function/class): it is the user's own function, not a
+			// PikaCSS macro. Mirrors the transformer's Babel-scope shadowing so the
+			// rule never flags calls the compiler would leave untouched.
+			const scope = context.sourceCode.getScope?.(node)
+			const rootName = getCalleeRootName(node)
+			if (rootName != null && isDeclaredInScope(rootName, scope))
+				return
+
 			// Derive the displayed function name (just the base, e.g. 'pika' or 'pika.str')
 			const displayFnName = calleeName
 
 			for (const arg of node.arguments) {
 				if (arg.type === 'SpreadElement') {
-					if (!isStaticNode(arg.argument)) {
+					if (!isStaticNode(arg.argument, scope)) {
 						reportDynamicNode(context, arg, 'noDynamicSpread', displayFnName)
 					}
 					continue
 				}
-				validateArg(arg, displayFnName)
+				validateArg(arg, displayFnName, scope)
 			}
 		}
 
