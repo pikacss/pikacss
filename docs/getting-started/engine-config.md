@@ -12,7 +12,7 @@ order: 40
 
 # Engine Config
 
-The engine configuration controls every aspect of PikaCSS. Note that the first dev run auto-creates a `pika.config.js` for you (see [Setup](/getting-started/setup#pika-config-js)) — edit that file, or replace it with a `pika.config.ts`. Never keep both: only the first matching config file is loaded.
+The engine configuration controls every aspect of PikaCSS. Create a `pika.config.ts` (or `.js`) in your project root — the plugin does not create one for you unless you opt in with `autoCreateConfig: true` (see [Setup](/getting-started/setup#pika-config-js)). Never keep both a `pika.config.ts` and `pika.config.js`: config discovery loads the highest-priority root-level candidate and ignores the rest.
 
 ```ts
 import { defineEngineConfig } from '@pikacss/core'

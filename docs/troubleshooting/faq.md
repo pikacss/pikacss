@@ -57,7 +57,7 @@ Either point the output into `src/` with `tsCodegen: './src/pika.gen.ts'`, or ad
 
 ## Why do I get "no-dynamic-args" ESLint errors?
 
-The `pikacss/no-dynamic-args` rule requires each argument passed to `pika()` to stay within a recursively statically analyzable literal structure. Plain literals, static template literals, and nested object/array literals are fine; runtime variables, conditionals, function calls, and template expressions are not. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
+The `pikacss/no-dynamic-args` rule requires each argument passed to `pika()` to stay within the same static subset the build-time compiler can evaluate. That includes literals, nested object/array literals, and operator expressions — conditional (`a ? b : c`), binary (`+ - * / === !==`), logical (`&& || ??`), template literals, and unary `! + - void` — **as long as every operand is itself static**. Anything that depends on runtime values (plain variables, member/function-call results, or an operator expression with a runtime operand) is rejected. A `pika` that is a local binding (import, variable, parameter) is treated as your own function, not the macro, and is left alone. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
 
 ```ts
 // ❌ Invalid — conditional argument

@@ -403,6 +403,7 @@ The main build-tool integration context that bridges the PikaCSS engine with bun
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `cwd` | `string` | The current working directory. Can be updated at runtime (e.g., when the project root changes). | — |
+| `configErrorBehavior` | `'throw' \| 'retain-last-good'` | How the context reacts to a config file that fails to evaluate or an engine that fails to build. Set by the bundler adapter from the build mode. | — |
 | `currentPackageName` | `string` | The npm package name of the integration consumer, used in generated file headers and module declarations. | — |
 | `fnName` | `string` | The base function name recognized in source transforms (e.g., `'pika'`). | — |
 | `transformedFormat` | `'string' \| 'array'` | The default output format for normal `pika()` calls: `'string'` or `'array'`. | — |
@@ -413,7 +414,7 @@ The main build-tool integration context that bridges the PikaCSS engine with bun
 | `resolvedConfigPath` | `string \| Nullish` | Absolute path to the resolved config file on disk, or `null` for inline configs or when no config was loaded. | — |
 | `resolvedConfigContent` | `string \| Nullish` | Raw string content of the config file, or `null` for inline configs or when no config was loaded. | — |
 | `loadConfig` | `() => Promise<LoadedConfigResult>` | Loads (or reloads) the engine configuration from disk or inline source, updating `resolvedConfig`, `resolvedConfigPath`, and `resolvedConfigContent`. | — |
-| `usages` | `Map<string, UsageRecord[]>` | Map from source file ID to the list of `UsageRecord` entries extracted during transforms. Keyed by the file path relative to `cwd`. | — |
+| `usages` | `Map<string, UsageRecord[]>` | Map from source file ID to the list of `UsageRecord` entries extracted during transforms. Keyed by the normalized absolute file path (`parseModuleId(...).file`). | — |
 | `previewUsages` | `Map<string, UsageRecord[]>` | Map from source file ID to preview-only `UsageRecord` entries (from `pikap()` calls). Only these drive TypeScript preview overload generation. | — |
 | `hooks` | `{ 		styleUpdated: ReturnType<typeof createEventHook<void>> 		tsCodegenUpdated: ReturnType<typeof createEventHook<void>> 	}` | Event hooks for notifying plugins when generated outputs need refreshing. `styleUpdated` fires on CSS changes; `tsCodegenUpdated` fires on TypeScript declaration changes. | — |
 | `engine` | `Engine` | The initialized PikaCSS engine instance. Throws if accessed before `setup()` completes. | — |
