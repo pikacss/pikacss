@@ -8,12 +8,21 @@ import { $fetch } from 'ofetch'
 
 /**
  * Environment flags helper function to detect the current runtime environment.
+ *
+ * @remarks
+ * `isESLint` is keyed off `process.env.ESLINT`, which `@pikacss/eslint-config`
+ * sets explicitly when linting — an autocomplete-only context where loading
+ * icon SVGs from the filesystem is unnecessary, so it falls back to the CDN.
+ * We deliberately do NOT gate on `process.env.VSCODE_PID`: that variable is
+ * ambient and inherited by every process spawned from a VS Code integrated
+ * terminal, including a real `vite`/`webpack` dev or build. Gating local icon
+ * resolution on it silently broke icon generation for the very common "run the
+ * dev server in the VS Code terminal" workflow.
  */
 function getEnvFlags() {
 	const isNode = typeof process !== 'undefined' && typeof process.versions?.node !== 'undefined'
-	const isVSCode = isNode && !!process.env.VSCODE_PID
 	const isESLint = isNode && !!process.env.ESLINT
-	return { isNode, isVSCode, isESLint }
+	return { isNode, isESLint }
 }
 
 interface IconMeta {
@@ -339,7 +348,7 @@ async function resolveIcon(body: string, config: IconsConfig, flags: ReturnType<
 		}
 	}
 
-	if (flags.isNode && !flags.isVSCode && !flags.isESLint) {
+	if (flags.isNode && !flags.isESLint) {
 		const localProps: Record<string, string> = {}
 		const localSvg = await loadNodeIcon(parsed.prefix, parsed.name, {
 			...createLoaderOptions(config, localProps),

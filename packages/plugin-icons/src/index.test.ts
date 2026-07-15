@@ -306,14 +306,42 @@ describe('icons plugin', () => {
 			)
 	})
 
-	it('skips the local node loader in VS Code environments and expands CDN base URLs without placeholders', async () => {
+	it('still runs the local node loader under VS Code (VSCODE_PID is ambient, not an editor-tooling signal)', async () => {
 		const { icons } = await import('./index')
 		const engine = createEngine()
 
+		// A dev/build spawned from a VS Code integrated terminal inherits
+		// VSCODE_PID; it must still resolve icons from the local filesystem.
 		process.env.VSCODE_PID = '1'
+		const plugin = icons()
+		mockStringToIcon.mockReturnValue({ prefix: 'vscode-icons', name: 'default-folder' })
+		mockLoadIcon.mockResolvedValue(null)
+		mockLoadNodeIcon.mockResolvedValue('<svg currentColor></svg>')
+
+		await plugin.configureRawConfig?.({ icons: {} } as any)
+		await plugin.configureEngine?.(engine as any)
+
+		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
+		const style = await shortcutEntry.value(['i-vscode-icons:default-folder', 'vscode-icons:default-folder', 'auto'])
+
+		expect(mockLoadNodeIcon)
+			.toHaveBeenCalled()
+		expect(mockFetch)
+			.not.toHaveBeenCalled()
+		expect(style)
+			.toMatchObject({
+				'-webkit-mask': 'var(--svg-icon) no-repeat',
+			})
+	})
+
+	it('expands CDN base URLs without placeholders when local sources are unavailable', async () => {
+		const { icons } = await import('./index')
+		const engine = createEngine()
+
 		const plugin = icons()
 		mockStringToIcon.mockReturnValue({ prefix: 'mdi', name: 'bell' })
 		mockLoadIcon.mockResolvedValue(null)
+		mockLoadNodeIcon.mockResolvedValue(null)
 		mockFetch.mockResolvedValue({ prefix: 'mdi' })
 		mockQuicklyValidateIconSet.mockReturnValue({ prefix: 'mdi' })
 		mockSearchForIcon.mockResolvedValue('<svg currentColor></svg>')
@@ -328,8 +356,6 @@ describe('icons plugin', () => {
 		const shortcutEntry = engine.shortcuts.add.mock.calls[0]![0]
 		const style = await shortcutEntry.value(['i-mdi:bell', 'mdi:bell', 'auto'])
 
-		expect(mockLoadNodeIcon)
-			.not.toHaveBeenCalled()
 		expect(mockFetch)
 			.toHaveBeenCalledWith('https://cdn.example.com/icons/mdi.json')
 		expect(style)
