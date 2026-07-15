@@ -64,11 +64,11 @@ function onClick(name: string, node: DirectoryNode | FileNode | any) {
 				<!-- Icon -->
 				<span
 					v-if="'directory' in node"
-					:class="pika('i-vscode-icons-default-folder', { width: '1rem', height: '1rem', marginRight: '0.375rem', flexShrink: '0' })"
+					:class="pika('i-vscode-icons:default-folder', { width: '1rem', height: '1rem', marginRight: '0.375rem', flexShrink: '0' })"
 				/>
 				<span
 					v-else
-					:class="pika('i-vscode-icons-default-file', { width: '1rem', height: '1rem', marginRight: '0.375rem', flexShrink: '0' })"
+					:class="pika('i-vscode-icons:default-file', { width: '1rem', height: '1rem', marginRight: '0.375rem', flexShrink: '0' })"
 				/>
 
 				<!-- Name -->
