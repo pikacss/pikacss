@@ -43,6 +43,7 @@
 		"playground:preview": "pnpm -r --filter=@pikacss/playground run preview",
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm test:css-data && pnpm -r --filter='./packages/*' run test",
+		"test:e2e": "node packages/unplugin/e2e/vite-build.mjs",
 		"lint": "eslint --max-warnings=0 .",
 		"lint:fix": "eslint --fix .",
 		"prepare": "simple-git-hooks"
