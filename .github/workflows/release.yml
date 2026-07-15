@@ -20,6 +20,11 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Gate publishing behind a GitHub Environment so a maintainer can require
+    # manual approval and restrict which refs may release. Add "Required
+    # reviewers"/branch protection to this environment in the repo settings;
+    # until configured it runs immediately (no protection).
+    environment: release
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -38,7 +43,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: validate
-        run: pnpm build && pnpm publint && pnpm typecheck && pnpm test
+        run: pnpm build && pnpm publint && pnpm attw && pnpm typecheck && pnpm test
 
       - name: bump version
         run: |
@@ -50,6 +55,7 @@ jobs:
         run: pnpm build && pnpm publish:packages
 
       - name: generate release notes
-        run: npx changelogithub
+        # Pinned via the lockfile (devDependency) instead of an unpinned `npx`.
+        run: pnpm exec changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

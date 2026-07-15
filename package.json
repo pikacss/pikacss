@@ -30,6 +30,7 @@
 		"newpkg": "tsx ./scripts/newpkg.ts",
 		"newplugin": "tsx ./scripts/newplugin.ts",
 		"publint": "pnpm -r --filter='./packages/*' exec publint",
+		"attw": "pnpm -r --filter='./packages/*' exec attw --pack . --profile esm-only",
 		"publish:packages": "pnpm -r --filter='./packages/*' publish --no-git-checks",
 		"docs:dev": "pnpm -r --filter=@pikacss/docs run dev",
 		"repopack": "tsx ./scripts/repopack.ts",
@@ -47,6 +48,7 @@
 		"prepare": "simple-git-hooks"
 	},
 	"devDependencies": {
+		"@arethetypeswrong/cli": "catalog:",
 		"@clack/prompts": "catalog:",
 		"@deviltea/eslint-config": "catalog:",
 		"@deviltea/tsconfig": "catalog:",
@@ -57,6 +59,7 @@
 		"@vitest/coverage-v8": "catalog:",
 		"@webref/css": "catalog:",
 		"bumpp": "catalog:",
+		"changelogithub": "catalog:",
 		"eslint": "catalog:",
 		"globby": "catalog:",
 		"gray-matter": "catalog:",

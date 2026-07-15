@@ -32,6 +32,9 @@ jobs:
       - name: check for uncommitted build/codegen drift
         run: git diff --exit-code
 
+      - name: check publish correctness (publint + are-the-types-wrong)
+        run: pnpm publint && pnpm attw
+
       - name: lint files
         run: pnpm lint
 
