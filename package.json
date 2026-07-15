@@ -30,7 +30,7 @@
 		"newpkg": "tsx ./scripts/newpkg.ts",
 		"newplugin": "tsx ./scripts/newplugin.ts",
 		"publint": "pnpm -r --filter='./packages/*' exec publint",
-		"attw": "pnpm -r --filter='./packages/*' exec attw --pack . --profile esm-only",
+		"attw": "node scripts/check-attw.mjs",
 		"publish:packages": "pnpm -r --filter='./packages/*' publish --no-git-checks",
 		"docs:dev": "pnpm -r --filter=@pikacss/docs run dev",
 		"repopack": "tsx ./scripts/repopack.ts",
