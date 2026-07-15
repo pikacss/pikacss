@@ -253,10 +253,11 @@ describe('createCtx', () => {
 			.toContain('color: orange;')
 	})
 
-	it('warns which config file is loaded and which are ignored when multiple files match', async () => {
+	it('deterministically prefers pika over pikacss and warns about the ignored file when multiple match', async () => {
 		const cwd = await createTempDir()
-		const candidatePaths = [join(cwd, 'pika.config.ts'), join(cwd, 'pikacss.config.ts')]
-		for (const candidatePath of candidatePaths) {
+		const preferredPath = join(cwd, 'pika.config.ts')
+		const ignoredPath = join(cwd, 'pikacss.config.ts')
+		for (const candidatePath of [ignoredPath, preferredPath]) {
 			await writeFile(candidatePath, 'export default {}\n')
 		}
 
@@ -273,18 +274,57 @@ describe('createCtx', () => {
 			await ctx.setup()
 		})
 
-		const loadedPath = ctx.resolvedConfigPath
-		expect(candidatePaths)
-			.toContain(loadedPath)
-		const ignoredPath = candidatePaths.find(candidatePath => candidatePath !== loadedPath)!
+		// Deterministic: `pika` wins over `pikacss` regardless of filesystem order.
+		expect(ctx.resolvedConfigPath)
+			.toBe(preferredPath)
 		const warnings = warn.mock.calls.map(call => call.join(' '))
 			.join('\n')
 		expect(warnings)
 			.toContain('Multiple config files found')
 		expect(warnings)
-			.toContain(`Using "${loadedPath}"`)
+			.toContain(`Using "${preferredPath}"`)
 		expect(warnings)
 			.toContain(`"${ignoredPath}"`)
+	})
+
+	it('deterministically prefers the TS config variant over the JS one', async () => {
+		const cwd = await createTempDir()
+		await writeFile(join(cwd, 'pika.config.js'), 'export default {}\n')
+		await writeFile(join(cwd, 'pika.config.ts'), 'export default {}\n')
+		log.setWarnFn(vi.fn())
+
+		const ctx = createCtx(createOptions({
+			cwd,
+			configOrPath: null,
+			autoCreateConfig: false,
+		}))
+
+		await withProcessCwd(cwd, async () => {
+			await ctx.setup()
+		})
+
+		expect(ctx.resolvedConfigPath)
+			.toBe(join(cwd, 'pika.config.ts'))
+	})
+
+	it('does not discover a config file nested in a subdirectory (root-only discovery)', async () => {
+		const cwd = await createTempDir()
+		await mkdir(join(cwd, 'fixtures'), { recursive: true })
+		await writeFile(join(cwd, 'fixtures/pika.config.ts'), 'export default {}\n')
+		log.setWarnFn(vi.fn())
+
+		const ctx = createCtx(createOptions({
+			cwd,
+			configOrPath: null,
+			autoCreateConfig: false,
+		}))
+
+		await withProcessCwd(cwd, async () => {
+			await ctx.setup()
+		})
+
+		expect(ctx.resolvedConfigPath)
+			.toBeNull()
 	})
 
 	it('resolves null when no function call matches and rejects when argument evaluation fails', async () => {
@@ -1128,7 +1168,7 @@ describe('createCtx', () => {
 		expect(invalidExt.resolvedConfigPath)
 			.toBeNull()
 		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Config file not found and autoCreateConfig is false')))
+			.includes('No PikaCSS config file found')))
 			.toBe(true)
 	})
 
@@ -1174,6 +1214,100 @@ describe('createCtx', () => {
 		expect(error.mock.calls.some(call => call.join(' ')
 			.includes('Failed to evaluate config file: invalid config')))
 			.toBe(true)
+	})
+
+	it('build mode: rejects setup instead of falling back when the config file fails to evaluate', async () => {
+		const cwd = await createTempDir()
+		log.setErrorFn(vi.fn())
+		const configPath = join(cwd, 'pika.config.ts')
+		await writeFile(configPath, 'throw new Error("invalid config")')
+
+		const ctx = createCtx(createOptions({
+			cwd,
+			configOrPath: configPath,
+			autoCreateConfig: false,
+		}))
+		ctx.configErrorBehavior = 'throw'
+
+		await withProcessCwd(cwd, async () => {
+			await expect(ctx.setup())
+				.rejects
+				.toThrow('invalid config')
+		})
+		// A failed build setup must not leave a usable engine behind.
+		expect(() => ctx.engine)
+			.toThrow('Engine is not initialized yet')
+	})
+
+	it('build mode: rejects setup when engine creation fails instead of falling back to defaults', async () => {
+		vi.doMock('@pikacss/core', async (importOriginal) => {
+			const actual = await importOriginal<typeof import('@pikacss/core')>()
+			return {
+				...actual,
+				createEngine: vi.fn(async () => {
+					throw new Error('engine boom')
+				}),
+			}
+		})
+
+		const { createCtx: createMockedCtx } = await import('./ctx')
+		const core = await import('@pikacss/core')
+		core.log.setErrorFn(vi.fn())
+		const ctx = createMockedCtx({
+			cwd: '/tmp/pikacss-build-throw',
+			currentPackageName: '@pikacss/core',
+			scan: { include: ['src/**/*.ts'], exclude: [] },
+			configOrPath: {},
+			fnName: 'pika',
+			transformedFormat: 'string',
+			tsCodegen: false,
+			cssCodegen: 'generated/pika.gen.css',
+			autoCreateConfig: false,
+		})
+		ctx.configErrorBehavior = 'throw'
+
+		await expect(ctx.setup())
+			.rejects
+			.toThrow('engine boom')
+		// The plugin-only default fallback must not run in build mode.
+		expect((core.createEngine as any).mock.calls)
+			.toHaveLength(1)
+	})
+
+	it('dev mode: retains the last known good engine when a config reload fails, then recovers', async () => {
+		const cwd = await createTempDir()
+		log.setErrorFn(vi.fn())
+		const configPath = join(cwd, 'pika.config.ts')
+		await writeFile(configPath, 'export default {}')
+
+		const ctx = createCtx(createOptions({
+			cwd,
+			configOrPath: configPath,
+			autoCreateConfig: false,
+		}))
+		// Default behavior is 'retain-last-good'; assert it explicitly.
+		expect(ctx.configErrorBehavior)
+			.toBe('retain-last-good')
+
+		await withProcessCwd(cwd, async () => {
+			await ctx.setup()
+			const goodEngine = ctx.engine
+
+			// Break the config and reload: the engine must be retained untouched.
+			await writeFile(configPath, 'throw new Error("broke it")')
+			await ctx.setup()
+			expect(ctx.engine)
+				.toBe(goodEngine)
+			expect(ctx.resolvedConfig)
+				.toBeNull()
+
+			// Fix the config and reload: the engine is rebuilt (recovery).
+			await writeFile(configPath, 'export default {}')
+			await ctx.setup()
+			expect(ctx.engine)
+				.not
+				.toBe(goodEngine)
+		})
 	})
 
 	it('skips writing generated files when the derived content is null', async () => {

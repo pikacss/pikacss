@@ -162,9 +162,9 @@ describe('unpluginFactory', () => {
 				cssCodegen: 'pika.gen.css',
 				fnName: 'pika',
 				transformedFormat: 'string',
-				autoCreateConfig: true,
+				autoCreateConfig: false,
 				scan: {
-					include: ['**/*.{js,ts,jsx,tsx,vue}'],
+					include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
 					exclude: ['node_modules/**', 'dist/**'],
 				},
 			}))
@@ -376,7 +376,7 @@ describe('unpluginFactory', () => {
 			.toHaveBeenCalled()
 	})
 
-	it('recovers after a failed setup instead of poisoning later builds', async () => {
+	it('dev mode: recovers after a failed setup instead of poisoning later builds', async () => {
 		const ctx = createCtxStub() as any
 		ctx.setup = vi.fn()
 			// A non-Error rejection also exercises the `?? error` fallback.
@@ -385,6 +385,8 @@ describe('unpluginFactory', () => {
 		mockCreateCtx.mockReturnValue(ctx)
 		const mod = await import('./index')
 		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+		// Serve mode retains-last-good: a failed setup is logged, not fatal.
+		plugin.vite.configResolved?.({ root: '/app', command: 'serve' } as any)
 
 		await plugin.buildStart.call({ addWatchFile: vi.fn() } as any)
 		expect(mockLog.error)
@@ -395,6 +397,21 @@ describe('unpluginFactory', () => {
 		await flushAsyncWork()
 		expect(ctx.setup)
 			.toHaveBeenCalledTimes(2)
+	})
+
+	it('build mode: propagates a failed setup so the bundler fails the build', async () => {
+		const ctx = createCtxStub() as any
+		ctx.setup = vi.fn()
+			.mockRejectedValueOnce(new Error('bad config'))
+		mockCreateCtx.mockReturnValue(ctx)
+		const mod = await import('./index')
+		const plugin = mod.unpluginFactory(undefined, { framework: 'vite' } as any) as any
+		// Default mode is build; the failed setup must reject buildStart.
+		await expect(plugin.buildStart.call({ addWatchFile: vi.fn() } as any))
+			.rejects
+			.toThrow('bad config')
+		expect(ctx.configErrorBehavior)
+			.toBe('throw')
 	})
 
 	it('applies a pending reload on the next build when a config change raced the debounce', async () => {
@@ -871,7 +888,7 @@ describe('unpluginFactory', () => {
 		expect(mockCreateCtx)
 			.toHaveBeenLastCalledWith(expect.objectContaining({
 				scan: expect.objectContaining({
-					include: ['**/*.{js,ts,jsx,tsx,vue}'],
+					include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
 				}),
 			}))
 

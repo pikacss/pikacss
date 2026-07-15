@@ -94,6 +94,29 @@ describe('unpluginFactory scan defaults', () => {
 			.toHaveLength(1)
 	})
 
+	it('scans and transforms every JS-family extension the AST compiler supports', async () => {
+		const { plugin, cwd, ctx } = await createPlugin()
+
+		// The full JS family (`JS_PROCESSOR_EXTENSIONS`), notably the module
+		// (`.mjs`/`.mts`) and CommonJS (`.cjs`/`.cts`) variants the previous
+		// default glob omitted.
+		for (const ext of ['js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx']) {
+			const id = join(cwd, `src/entry.${ext}`)
+			expect(ctx.isTransformTarget(id), `${ext} should be a transform target`)
+				.toBe(true)
+
+			const result = await plugin.transform.handler.call(
+				{},
+				'const c = pika({ color: \'red\' })\n',
+				id,
+			)
+			expect(result?.code.includes('pika('), `${ext} should be transformed`)
+				.toBe(false)
+			expect(ctx.usages.get(id))
+				.toHaveLength(1)
+		}
+	})
+
 	it('does not scan unsupported markup extensions', async () => {
 		const { plugin, cwd, ctx } = await createPlugin()
 
