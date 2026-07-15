@@ -42,7 +42,8 @@
 		"playground:preview": "pnpm -r --filter=@pikacss/playground run preview",
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm test:css-data && pnpm -r --filter='./packages/*' run test",
-		"lint": "eslint --fix .",
+		"lint": "eslint --max-warnings=0 .",
+		"lint:fix": "eslint --fix .",
 		"prepare": "simple-git-hooks"
 	},
 	"devDependencies": {

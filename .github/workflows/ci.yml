@@ -29,6 +29,9 @@ jobs:
       - name: build
         run: pnpm build
 
+      - name: check for uncommitted build/codegen drift
+        run: git diff --exit-code
+
       - name: lint files
         run: pnpm lint
 
