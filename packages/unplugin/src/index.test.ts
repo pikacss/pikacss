@@ -165,7 +165,7 @@ describe('unpluginFactory', () => {
 				autoCreateConfig: false,
 				scan: {
 					include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
-					exclude: ['node_modules/**', 'dist/**'],
+					exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'],
 				},
 			}))
 

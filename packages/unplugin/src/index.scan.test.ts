@@ -117,6 +117,22 @@ describe('unpluginFactory scan defaults', () => {
 		}
 	})
 
+	it('excludes dependency, build, coverage, VCS, and framework build dirs by default', async () => {
+		const { cwd, ctx } = await createPlugin()
+
+		for (const file of [
+			'node_modules/pkg/index.ts',
+			'dist/out.ts',
+			'.git/hooks/x.ts',
+			'.nuxt/dev/entry.mjs',
+			'.output/server/index.mjs',
+			'coverage/lcov.ts',
+		]) {
+			expect(ctx.isTransformTarget(join(cwd, file)), `${file} should be excluded`)
+				.toBe(false)
+		}
+	})
+
 	it('does not scan unsupported markup extensions', async () => {
 		const { plugin, cwd, ctx } = await createPlugin()
 

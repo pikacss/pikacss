@@ -65,7 +65,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		cssCodegen: cssCodegen === true ? 'pika.gen.css' : cssCodegen,
 		scan: {
 			include: typeof scan?.include === 'string' ? [scan.include] : (scan?.include || defaultInclude),
-			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**']),
+			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']),
 		},
 		fnName,
 		transformedFormat,

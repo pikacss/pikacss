@@ -37,7 +37,7 @@ export interface PluginOptions {
 	/**
 	 * Glob patterns controlling which source files are scanned for `pika()` calls.
 	 *
-	 * @default `{ include: ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'], exclude: ['node_modules/**', 'dist/**'] }`
+	 * @default `{ include: ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'], exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'] }`
 	 */
 	scan?: {
 		/**
@@ -49,7 +49,9 @@ export interface PluginOptions {
 		include?: string | string[]
 		/**
 		 * File glob patterns to exclude. Supports a single string or array of strings.
-		 * @default ['node_modules/**', 'dist/**']
+		 * The default skips dependencies, build outputs, coverage, VCS metadata, and
+		 * framework build dirs (`.nuxt`/`.output`). An explicit value wins verbatim.
+		 * @default ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']
 		 */
 		exclude?: string | string[]
 	}
