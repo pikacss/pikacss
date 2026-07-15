@@ -8,6 +8,9 @@ export function createPackageVitestConfig(): ViteUserConfigExport {
 				provider: 'v8',
 				thresholds: {
 					branches: 95,
+					functions: 95,
+					lines: 95,
+					statements: 95,
 				},
 				include: [
 					'src/**/*.{ts,tsx}',

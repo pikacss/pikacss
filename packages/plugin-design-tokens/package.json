@@ -21,6 +21,7 @@
 		"pikacss-plugin",
 		"design-tokens"
 	],
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"import": {
