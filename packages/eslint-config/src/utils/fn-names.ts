@@ -105,28 +105,6 @@ function unwrapExpression(node: any): any {
 }
 
 /**
- * Extracts the full callee name from a call-expression AST node.
- * @internal
- *
- * @param node - EST call-expression node with a `callee` property.
- * @param node.type - The ESTree node type.
- * @param node.callee - The callee subtree to inspect.
- * @returns The dot-joined callee string (e.g. `'pika.str'`), or `null` if the callee shape is unsupported.
- *
- * @remarks
- * Handles plain identifiers (`pika`), non-computed member expressions
- * (`pika.str`), computed literal keys (`pika['str']`), and static
- * template-literal keys (`` pika[`str`] ``). TypeScript assertion wrappers
- * (`pika!`, `pika as X`, `pika satisfies X`, `<X>pika`) and parentheses are
- * unwrapped before extraction. Returns `null` for anything more complex.
- *
- * @example
- * ```ts
- * // Given an AST node for `pika.str('...')`
- * getCalleeName(node) // 'pika.str'
- * ```
- */
-/**
  * Extracts the ROOT identifier name of a call-expression callee — the `pika`
  * in `pika(...)`, `pika.str(...)`, or `pika['str'](...)`.
  * @internal
@@ -157,6 +135,28 @@ export function getCalleeRootName(node: {
 	return null
 }
 
+/**
+ * Extracts the full callee name from a call-expression AST node.
+ * @internal
+ *
+ * @param node - EST call-expression node with a `callee` property.
+ * @param node.type - The ESTree node type.
+ * @param node.callee - The callee subtree to inspect.
+ * @returns The dot-joined callee string (e.g. `'pika.str'`), or `null` if the callee shape is unsupported.
+ *
+ * @remarks
+ * Handles plain identifiers (`pika`), non-computed member expressions
+ * (`pika.str`), computed literal keys (`pika['str']`), and static
+ * template-literal keys (`` pika[`str`] ``). TypeScript assertion wrappers
+ * (`pika!`, `pika as X`, `pika satisfies X`, `<X>pika`) and parentheses are
+ * unwrapped before extraction. Returns `null` for anything more complex.
+ *
+ * @example
+ * ```ts
+ * // Given an AST node for `pika.str('...')`
+ * getCalleeName(node) // 'pika.str'
+ * ```
+ */
 export function getCalleeName(node: {
 	type: string
 	callee: any

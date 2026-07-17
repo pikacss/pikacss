@@ -1,3 +1,4 @@
+import { Linter } from 'eslint'
 import { describe, expect, it } from 'vitest'
 
 import rule from './no-dynamic-args'
@@ -305,7 +306,6 @@ describe('no-dynamic-args rule behavior', () => {
 
 	it.each([
 		['Identifier', { type: 'Identifier', name: 'value' }, 'noDynamicArg', 'Variable reference \'value\' is not statically analyzable'],
-		['TemplateLiteral', { type: 'TemplateLiteral', expressions: [{}], quasis: [] }, 'noDynamicArg', 'Template literals with expressions are not statically analyzable'],
 		['ConditionalExpression', { type: 'ConditionalExpression' }, 'noDynamicArg', 'Conditional expressions are not statically analyzable'],
 		['BinaryExpression', { type: 'BinaryExpression', operator: '+' }, 'noDynamicArg', '\'+\' expressions are not statically analyzable'],
 		['LogicalExpression', { type: 'LogicalExpression', operator: '&&' }, 'noDynamicArg', '\'&&\' expressions are not statically analyzable'],
@@ -332,6 +332,26 @@ describe('no-dynamic-args rule behavior', () => {
 						reason,
 					},
 					node: argNode,
+				},
+			])
+	})
+
+	it('reports the failing interpolated expression of a dynamic template literal', () => {
+		const inner = { type: 'Identifier', name: 'size' }
+		const argNode = {
+			type: 'TemplateLiteral',
+			expressions: [inner],
+			quasis: [{ value: { cooked: 'p-' } }, { value: { cooked: '' } }],
+		}
+		expect(runRule(createCallExpression({ type: 'Identifier', name: 'pika' }, [argNode])))
+			.toEqual([
+				{
+					messageId: 'noDynamicArg',
+					data: {
+						fnName: 'pika',
+						reason: 'Variable reference \'size\' is not statically analyzable',
+					},
+					node: inner,
 				},
 			])
 	})
@@ -398,11 +418,12 @@ describe('no-dynamic-args rule behavior', () => {
 		expect(arrReports[0]!.messageId)
 			.toBe('noDynamicArg')
 
-		// static top-level spread alongside a dynamic argument
+		// static array top-level spread alongside a dynamic argument (call-level
+		// spreads must be arrays, matching the compiler's evaluateCallArgs)
 		const topReports = runRule(createCallExpression(
 			{ type: 'Identifier', name: 'pika' },
 			[
-				{ type: 'SpreadElement', argument: { type: 'ObjectExpression', properties: [] } },
+				{ type: 'SpreadElement', argument: { type: 'ArrayExpression', elements: [] } },
 				{ type: 'Identifier', name: 'dyn' },
 			],
 		))
@@ -459,14 +480,26 @@ describe('no-dynamic-args compiler-aligned static subset', () => {
 		}
 	})
 
-	it('treats a shadowed global-constant name as dynamic', () => {
-		const scope = { variables: [{ name: 'undefined' }], upper: null }
+	it('treats a global-constant name shadowed by a real declaration as dynamic', () => {
+		const scope = { variables: [{ name: 'undefined', defs: [{}] }], upper: null }
 		expect(runRule(
 			createCallExpression({ type: 'Identifier', name: 'pika' }, [{ type: 'Identifier', name: 'undefined' }]),
 			undefined,
 			scope,
 		))
 			.toHaveLength(1)
+	})
+
+	it('does not treat the ambient global-scope variable (zero defs) as shadowing', () => {
+		// ESLint's global scope always contains undefined/NaN/Infinity with an
+		// empty defs array; Babel getBinding (the compiler) ignores those.
+		const scope = { variables: [{ name: 'undefined', defs: [] }], upper: null }
+		expect(runRule(
+			createCallExpression({ type: 'Identifier', name: 'pika' }, [{ type: 'Identifier', name: 'undefined' }]),
+			undefined,
+			scope,
+		))
+			.toEqual([])
 	})
 })
 
@@ -479,13 +512,13 @@ describe('no-dynamic-args callee scope shadowing', () => {
 	}
 
 	it('skips the call when the callee root is a local binding', () => {
-		const scope = { variables: [{ name: 'pika' }], upper: null }
+		const scope = { variables: [{ name: 'pika', defs: [{}] }], upper: null }
 		expect(runRule(callWithArg(), undefined, scope))
 			.toEqual([])
 	})
 
 	it('skips the call when the callee root is declared in an outer scope', () => {
-		const scope = { variables: [], upper: { variables: [{ name: 'pika' }], upper: null } }
+		const scope = { variables: [], upper: { variables: [{ name: 'pika', defs: [{}] }], upper: null } }
 		expect(runRule(callWithArg(), undefined, scope))
 			.toEqual([])
 	})
@@ -496,14 +529,251 @@ describe('no-dynamic-args callee scope shadowing', () => {
 			.toHaveLength(1)
 	})
 
+	it('still reports when the callee root is only an ambient global (zero defs)', () => {
+		// Regression: `languageOptions.globals: { pika: 'readonly' }` puts a
+		// zero-defs variable in the global scope; the transformer still rewrites
+		// bare pika() calls, so the rule must keep checking them.
+		const scope = { variables: [{ name: 'pika', defs: [] }], upper: null }
+		expect(runRule(callWithArg(), undefined, scope))
+			.toHaveLength(1)
+	})
+
 	it('does not skip a same-named binding for a different member variant', () => {
 		// `styled.str(dynamic)` with only `pika` in scope stays reported.
 		const node = createCallExpression(
 			{ type: 'MemberExpression', computed: false, object: { type: 'Identifier', name: 'styled' }, property: { type: 'Identifier', name: 'str' } },
 			[{ type: 'Identifier', name: 'dynamic' }],
 		)
-		const scope = { variables: [{ name: 'pika' }], upper: null }
+		const scope = { variables: [{ name: 'pika', defs: [{}] }], upper: null }
 		expect(runRule(node, { fnName: 'styled' }, scope))
 			.toHaveLength(1)
 	})
 })
+
+describe('no-dynamic-args value-aware evaluation edge nodes', () => {
+	const lit = (value: any) => ({ type: 'Literal', value })
+	const pikaCall = (...args: any[]) => createCallExpression({ type: 'Identifier', name: 'pika' }, args)
+
+	it('unwraps TypeScript assertion wrappers and parentheses like the compiler', () => {
+		expect(runRule(pikaCall({
+			type: 'TSAsExpression',
+			expression: { type: 'ParenthesizedExpression', expression: lit('red') },
+		})))
+			.toEqual([])
+	})
+
+	it('reports a wrapper whose inner expression is missing on the wrapper itself', () => {
+		const argNode = { type: 'TSNonNullExpression', expression: undefined }
+		const reports = runRule(pikaCall(argNode))
+		expect(reports)
+			.toHaveLength(1)
+		expect(reports[0])
+			.toMatchObject({ messageId: 'noDynamicArg', node: argNode })
+	})
+
+	it('reports template literals with an invalid escape sequence (compiler hard error)', () => {
+		const argNode = { type: 'TemplateLiteral', expressions: [], quasis: [{ value: { cooked: null } }] }
+		const reports = runRule(pikaCall(argNode))
+		expect(reports)
+			.toEqual([
+				{
+					messageId: 'noDynamicArg',
+					data: { fnName: 'pika', reason: 'Template literal contains an invalid escape sequence' },
+					node: argNode,
+				},
+			])
+	})
+
+	it('reports unsupported logical operators even with static operands', () => {
+		const argNode = { type: 'LogicalExpression', operator: '~>', left: lit(1), right: lit(2) }
+		const reports = runRule(pikaCall(argNode))
+		expect(reports)
+			.toEqual([
+				{
+					messageId: 'noDynamicArg',
+					data: { fnName: 'pika', reason: '\'~>\' expressions are not statically analyzable' },
+					node: argNode,
+				},
+			])
+	})
+
+	it('reports malformed operator nodes with missing children on the containing node', () => {
+		const unary = { type: 'UnaryExpression', operator: '-' }
+		expect(runRule(pikaCall(unary)))
+			.toEqual([
+				{
+					messageId: 'noDynamicArg',
+					data: { fnName: 'pika', reason: '\'-\' expressions are not statically analyzable' },
+					node: unary,
+				},
+			])
+	})
+
+	it('reports object properties with a missing value on the property node', () => {
+		const prop = { type: 'Property', computed: false, key: { type: 'Identifier', name: 'a' } }
+		const reports = runRule(pikaCall({ type: 'ObjectExpression', properties: [prop] }))
+		expect(reports)
+			.toHaveLength(1)
+		expect(reports[0])
+			.toMatchObject({ messageId: 'noDynamicProperty', node: prop })
+	})
+
+	it('reports array spreads with a missing argument as dynamic spreads', () => {
+		const spread = { type: 'SpreadElement' }
+		const reports = runRule(pikaCall({ type: 'ArrayExpression', elements: [spread] }))
+		expect(reports)
+			.toHaveLength(1)
+		expect(reports[0])
+			.toMatchObject({ messageId: 'noDynamicSpread', node: spread })
+	})
+
+	it('reports non-Property object members (e.g. Babel-only ObjectMethod shapes)', () => {
+		const member = { type: 'ObjectMethod' }
+		const reports = runRule(pikaCall({ type: 'ObjectExpression', properties: [member] }))
+		expect(reports)
+			.toEqual([
+				{
+					messageId: 'noDynamicProperty',
+					data: { fnName: 'pika', reason: 'This expression is not statically analyzable' },
+					node: member,
+				},
+			])
+	})
+})
+
+// The fixtures below are strings of source code, so `${...}` inside ordinary
+// string literals is intentional.
+/* eslint-disable no-template-curly-in-string */
+describe('no-dynamic-args with real ESLint scope analysis', () => {
+	function lintCode(code: string, globals: Record<string, 'readonly' | 'writable'> = {}) {
+		const linter = new Linter()
+		return linter.verify(code, {
+			plugins: { pikacss: { rules: { 'no-dynamic-args': rule } } },
+			rules: { 'pikacss/no-dynamic-args': 'error' },
+			languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals },
+		})
+	}
+
+	it.each([
+		// Defect 1: ambient globals are always in ESLint's global scope but are
+		// NOT local bindings — the compiler evaluates them.
+		'pika(undefined)',
+		'pika(NaN)',
+		'pika(Infinity)',
+		// Defect 2: short-circuit — the dead operand may be dynamic.
+		'pika(false && dyn)',
+		'pika(true || dyn)',
+		'pika("base" ?? dyn)',
+		'pika(true ? "a" : dyn)',
+		'pika(false ? dyn : "b")',
+		'pika(false || "x")',
+		'pika(null ?? "x")',
+		// Value-producing operators the compiler evaluates.
+		'pika("x-" + 1)',
+		'pika(1 + 2)',
+		'pika(3 - 1)',
+		'pika(4 * 2)',
+		'pika(8 / 2)',
+		'pika("a" === "a")',
+		'pika("a" !== "b")',
+		// JS number coercion: the compiler computes (null as number) - (null as number) === 0.
+		'pika(null - null)',
+		'pika(!0)',
+		'pika(void 0)',
+		'pika(-1)',
+		'pika(+"2")',
+		// Template interpolation: null/undefined/boolean/number/string are allowed.
+		'pika(`x-${null}`)',
+		'pika(`x-${undefined}`)',
+		'pika(`x-${true}`)',
+		'pika(`x-${1 + 2}`)',
+		// Spread shapes the compiler accepts.
+		'pika(...["a"])',
+		'pika([...["a"], "b"])',
+		'pika({ ...{ color: "red" } })',
+		// Object keys: static computed string/number keys and literal keys.
+		'pika({ ["color"]: "red", [0]: "x", 1.5: "y", "quoted": 1 })',
+		// Callee shadowed by a real local binding: the user's own function.
+		'const pika = (v) => v; pika(dyn)',
+	])('accepts %s', (code) => {
+		expect(lintCode(code))
+			.toEqual([])
+	})
+
+	it.each([
+		// Defect 1 mirror: a real declaration shadows the global constant.
+		['const undefined = 1; pika(undefined)', 'noDynamicArg'],
+		['function f(NaN) { pika(NaN) }', 'noDynamicArg'],
+		['pika(dyn)', 'noDynamicArg'],
+		// Needed operands must be static.
+		['pika(true && dyn)', 'noDynamicArg'],
+		['pika(false || dyn)', 'noDynamicArg'],
+		['pika(null ?? dyn)', 'noDynamicArg'],
+		['pika(cond ? "a" : "b")', 'noDynamicArg'],
+		// Defect 3: compiler hard errors on type-invalid static forms.
+		['pika(null + null)', 'noDynamicArg'],
+		['pika(true + 1)', 'noDynamicArg'],
+		['pika(`x-${{ a: 1 }}`)', 'noDynamicArg'],
+		['pika(`x-${[1]}`)', 'noDynamicArg'],
+		['pika(...{})', 'noDynamicSpread'],
+		['pika(...dyn)', 'noDynamicSpread'],
+		['pika({ ...[1] })', 'noDynamicSpread'],
+		['pika({ ...null })', 'noDynamicSpread'],
+		['pika([...{ a: 1 }])', 'noDynamicSpread'],
+		['pika({ [null]: "x" })', 'noDynamicComputedKey'],
+		['pika({ [dyn]: "x" })', 'noDynamicComputedKey'],
+		['pika({ 1n: "x" })', 'noDynamicProperty'],
+		['pika({ color: dyn })', 'noDynamicProperty'],
+		['pika({ get a() { return 1 } })', 'noDynamicProperty'],
+		// Unsupported literal kinds and operators.
+		['pika(/x/)', 'noDynamicArg'],
+		['pika(1n)', 'noDynamicArg'],
+		['pika(typeof "a")', 'noDynamicArg'],
+		['pika(1 % 2)', 'noDynamicArg'],
+	])('reports %s', (code, messageId) => {
+		const messages = lintCode(code)
+		expect(messages)
+			.toHaveLength(1)
+		expect(messages[0]!.messageId)
+			.toBe(messageId)
+	})
+
+	it('reports inherited Object.prototype keys like the compiler evaluator', () => {
+		// Alignment lock: the compiler's own-key global-constant lookup rejects
+		// `pika(toString)` / `pika(hasOwnProperty)`; the rule must report them too.
+		for (const code of ['pika(toString)', 'pika(hasOwnProperty)']) {
+			const messages = lintCode(code)
+			expect(messages, code)
+				.toHaveLength(1)
+			expect(messages[0]!.messageId)
+				.toBe('noDynamicArg')
+		}
+	})
+
+	it('keeps checking pika() calls when pika is only a configured ESLint global', () => {
+		// Regression: `languageOptions.globals: { pika: 'readonly' }` (a common
+		// way to silence no-undef) made the callee look like a local binding and
+		// silenced the rule for every call.
+		const globals = { pika: 'readonly' } as const
+		const messages = lintCode('pika(dynamicVar)', globals)
+		expect(messages)
+			.toHaveLength(1)
+		expect(messages[0]!.messageId)
+			.toBe('noDynamicArg')
+		// Static calls stay accepted with the global configured.
+		expect(lintCode('pika({ color: "red" })', globals))
+			.toEqual([])
+	})
+
+	it('still skips a genuinely shadowed pika even with the global configured', () => {
+		expect(lintCode('const pika = (v) => v; pika(dynamicVar)', { pika: 'readonly' }))
+			.toEqual([])
+	})
+
+	it('explains compiler hard errors in the report message', () => {
+		const messages = lintCode('pika(null + null)')
+		expect(messages[0]!.message)
+			.toContain('\'+\' on operands that are neither strings nor two numbers')
+	})
+})
+/* eslint-enable no-template-curly-in-string */
