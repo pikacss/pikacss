@@ -29,8 +29,20 @@ jobs:
       - name: build
         run: pnpm build
 
-      - name: check for uncommitted build/codegen drift
-        run: git diff --exit-code
+      # `build` only writes gitignored dist/, so a bare `git diff` can never see
+      # drift of committed generated artifacts. Re-run the real generators for the
+      # tracked outputs (packages/core/src/generated/*.ts + docs/api/*.md) and fail
+      # if the working tree changed. Both generators are idempotent on a clean tree.
+      - name: check for uncommitted codegen drift (css-data + api docs)
+        run: |
+          pnpm generate:core:css
+          pnpm maintain-docs:gen-api
+          git diff --exit-code
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Committed generated outputs are out of date. Run 'pnpm generate:core:css' and 'pnpm maintain-docs:gen-api', then commit the result."
+            git status --porcelain
+            exit 1
+          fi
 
       - name: check publish correctness (publint + are-the-types-wrong)
         run: pnpm publint && pnpm attw
