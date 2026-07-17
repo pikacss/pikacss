@@ -20,6 +20,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.bump.outputs.tag }}
     # Gate publishing behind a GitHub Environment so a maintainer can require
     # manual approval and restrict which refs may release. Add "Required
     # reviewers"/branch protection to this environment in the repo settings;
@@ -46,10 +48,14 @@ jobs:
         run: pnpm build && pnpm publint && pnpm attw && pnpm typecheck && pnpm test
 
       - name: bump version
+        id: bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           pnpm exec bumpp -r ${{ github.event.inputs.bump_type }} -y
+
+          tag="$(git describe --tags --exact-match HEAD)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
 
       - name: publish (npm trusted publishing)
         run: pnpm build && pnpm publish:packages
@@ -59,3 +65,10 @@ jobs:
         run: pnpm exec changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  repopack:
+    name: Generate repopack artifact
+    needs: release
+    uses: ./.github/workflows/repopack.yml
+    with:
+      ref: ${{ needs.release.outputs.tag }}
