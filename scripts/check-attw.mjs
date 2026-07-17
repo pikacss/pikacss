@@ -18,11 +18,21 @@ let failed = false
 for (const dir of packages) {
 	const out = mkdtempSync(join(tmpdir(), 'pikacss-attw-'))
 	try {
-		// pnpm pack applies publishConfig; prints the tarball path on stdout.
-		const tarball = execFileSync('pnpm', ['pack', '--pack-destination', out], { cwd: dir, encoding: 'utf8' })
-			.trim()
-			.split('\n')
-			.pop()
+		let tarball
+		try {
+			// pnpm pack applies publishConfig; prints the tarball path on stdout.
+			tarball = execFileSync('pnpm', ['pack', '--pack-destination', out], { cwd: dir, encoding: 'utf8' })
+				.trim()
+				.split('\n')
+				.pop()
+		}
+		catch (e) {
+			// execFileSync default stdio 'pipe' buffers stderr; surface it so a
+			// pack failure is not mislabeled as an attw type problem.
+			failed = true
+			console.error(`\n❌ pnpm pack failed for ${dir}:\n${e?.stderr ?? e?.message}`)
+			continue
+		}
 		execFileSync('pnpm', ['exec', 'attw', tarball, '--profile', 'esm-only'], { stdio: 'inherit' })
 	}
 	catch {
