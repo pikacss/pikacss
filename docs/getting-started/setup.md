@@ -64,19 +64,19 @@ This import resolves to the generated CSS output that contains all your atomic s
 
 ## Generated Files
 
-On the first dev or build run, the plugin creates up to three files in the project root (the plugin working directory — your Vite root unless the `cwd` option is set):
+On each dev or build run, the plugin generates codegen output in the project root (the plugin working directory — your Vite root unless the `cwd` option is set):
 
 | File | Purpose |
 |---|---|
-| `pika.config.js` | Scaffolded engine config — only created when no config file exists |
 | `pika.gen.ts` | TypeScript declarations for the `pika` global |
 | `pika.gen.css` | The generated CSS output |
+| `pika.config.js` | Engine config — **not** created automatically; only scaffolded when you opt in with `autoCreateConfig: true` |
 
 Setting `tsCodegen` or `cssCodegen` to a string writes the codegen outputs to custom paths. Setting `tsCodegen` to `false` disables TypeScript declaration codegen entirely.
 
 ### pika.config.js
 
-When no config file is found, the first run scaffolds a `pika.config.js` (`autoCreateConfig` defaults to `true`; set it to `false` to opt out):
+`autoCreateConfig` defaults to `false`, so the plugin never writes a config into your repository on its own — create one yourself. Running with no config still works (the engine uses its defaults) and logs a hint. To have the first run scaffold one for you, opt in with `autoCreateConfig: true`. Either way the file looks like:
 
 ```js
 /// <reference path="./pika.gen.ts" />
@@ -89,7 +89,7 @@ export default defineEngineConfig({
 
 The triple-slash reference pulls the generated `pika.gen.ts` declarations into the TypeScript program whenever the config file itself is type-checked — it only helps when your tsconfig covers the config file, so do not rely on it in place of the recipes in [pika.gen.ts](#pika-gen-ts) below.
 
-Edit this scaffolded file, or replace it with a `pika.config.ts` — but never keep both. Config discovery matches `**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}` and loads only the first file it finds, so when two config files exist, the one you are editing may be silently ignored.
+Use either a `pika.config.ts` or `pika.config.js` — but never keep two. Config discovery is limited to the **project root** and checks a fixed candidate list in priority order (`pika.config.{ts,mts,cts,js,mjs,cjs}`, then the `pikacss.config.*` equivalents). When more than one exists, the highest-priority file is loaded and the rest are logged as ignored.
 
 ### pika.gen.ts
 

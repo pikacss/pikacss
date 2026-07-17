@@ -48,15 +48,15 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		scan = {},
 		fnName = 'pika',
 		transformedFormat = 'string',
-		autoCreateConfig = true,
+		autoCreateConfig = false,
 	} = options ?? {}
 
 	log.debug('Creating unplugin factory with options:', options)
 
 	// The default include glob covers every extension the AST compiler
-	// supports: the JS family plus Vue SFCs. An explicit `scan.include`
-	// always wins verbatim.
-	const defaultInclude = ['**/*.{js,ts,jsx,tsx,vue}']
+	// supports: the full JS family (`JS_PROCESSOR_EXTENSIONS`) plus Vue SFCs.
+	// An explicit `scan.include` always wins verbatim.
+	const defaultInclude = ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']
 
 	const resolvedOptions: ResolvedPluginOptions = {
 		currentPackageName,
@@ -65,7 +65,7 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		cssCodegen: cssCodegen === true ? 'pika.gen.css' : cssCodegen,
 		scan: {
 			include: typeof scan?.include === 'string' ? [scan.include] : (scan?.include || defaultInclude),
-			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**']),
+			exclude: typeof scan?.exclude === 'string' ? [scan.exclude] : (scan?.exclude || ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']),
 		},
 		fnName,
 		transformedFormat,
@@ -89,6 +89,8 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			ctx.cwd = resolve(nextCwd)
 		}
 		mode = nextMode
+		// Build hard-fails on a bad config; dev keeps serving on the last-good engine.
+		ctx.configErrorBehavior = nextMode === 'build' ? 'throw' : 'retain-last-good'
 	}
 
 	const debouncedWriteCssCodegenFile = debounce(async () => {
@@ -239,8 +241,12 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			}
 		})
 			// A rejected setup (e.g. reloadModule failing on a transient syntax
-			// error) must not poison the promise chain for every later call.
+			// error) must not poison the promise chain for every later call — in
+			// dev. In build mode a failed setup (bad config/engine) must propagate
+			// so the bundler fails the build instead of emitting empty CSS.
 			.catch((error: any) => {
+				if (mode === 'build')
+					throw error
 				log.error(`Failed to setup integration context: ${error?.message ?? error}`, error)
 			})
 		return setupPromise
@@ -299,6 +305,11 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		async buildStart() {
 			log.debug('Plugin buildStart hook triggered')
 			log.debug(`Current mode: ${mode}, cwd: ${ctx.cwd}`)
+
+			// Bundlers without a dedicated adapter hook (e.g. Rollup) never call
+			// applyRuntimeContext, so reaffirm the error policy from the current
+			// mode before setup runs.
+			ctx.configErrorBehavior = mode === 'build' ? 'throw' : 'retain-last-good'
 
 			await ensureSetup()
 

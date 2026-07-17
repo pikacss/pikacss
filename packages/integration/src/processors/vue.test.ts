@@ -167,6 +167,54 @@ describe('vueProcessor template scope shadowing', () => {
 			.toEqual([])
 	})
 
+	it('a <script setup> const binding shadows pika in the template', async () => {
+		const code = '<script setup lang="ts">\nconst pika = (value: string) => value\n</script>\n<template>\n  <div>{{ pika(\'hello\') }}</div>\n</template>\n'
+		const { calls } = await analyze(code)
+
+		expect(calls)
+			.toEqual([])
+	})
+
+	it('a <script setup> function/class/import binding shadows pika in the template', async () => {
+		for (const decl of [
+			'function pika() { return \'\' }',
+			'class pika {}',
+			'import { pika } from \'./local\'',
+			'const { pika } = obj',
+			'const [pika] = arr',
+		]) {
+			const code = `<script setup>\n${decl}\n</script>\n<template>\n  <div :class="pika('x')" />\n</template>\n`
+			const { calls } = await analyze(code)
+
+			expect(snippets(code, calls))
+				.toEqual([])
+		}
+	})
+
+	it('a <script setup> binding named pika does not shadow pikap in the template', async () => {
+		const code = '<script setup>\nconst pika = (v) => v\n</script>\n<template>\n  <div :class="pikap(\'kept\')" />\n</template>\n'
+		const { calls } = await analyze(code)
+
+		expect(snippets(code, calls))
+			.toEqual(['pikap(\'kept\')'])
+	})
+
+	it('an Options-API <script> return binding shadows pika in the template', async () => {
+		const code = '<script>\nexport default {\n  setup() {\n    const pika = (v) => v\n    return { pika }\n  },\n}\n</script>\n<template>\n  <div :class="pika(\'x\')" />\n</template>\n'
+		const { calls } = await analyze(code)
+
+		expect(calls)
+			.toEqual([])
+	})
+
+	it('keeps transforming template pika when the script does not expose it', async () => {
+		const code = '<script setup>\nconst other = 1\n</script>\n<template>\n  <div :class="pika(\'kept\')" />\n</template>\n'
+		const { calls } = await analyze(code)
+
+		expect(snippets(code, calls))
+			.toEqual(['pika(\'kept\')'])
+	})
+
 	it('restores the shadow when leaving the subtree (nested same-name aliases)', async () => {
 		const code = '<template>\n  <ul v-for="pika in outer">\n    <li v-for="pika in inner">{{ pika(\'in\') }}</li>\n    <span>{{ pika(\'mid\') }}</span>\n  </ul>\n  <i>{{ pika(\'out\') }}</i>\n</template>\n'
 		const { calls } = await analyze(code)
@@ -249,9 +297,13 @@ describe('vueProcessor errors and edge cases', () => {
 			strip({ children: descriptor.template!.ast!.children })
 
 			const { vi } = await import('vitest')
-			vi.doMock('@vue/compiler-sfc', () => ({
-				parse: () => ({ descriptor, errors: [] }),
-			}))
+			vi.doMock('@vue/compiler-sfc', async (importOriginal) => {
+				const actual = await importOriginal<typeof import('@vue/compiler-sfc')>()
+				return {
+					...actual,
+					parse: () => ({ descriptor, errors: [] }),
+				}
+			})
 			vi.resetModules()
 			try {
 				const { vueProcessor: patched } = await import('./vue')

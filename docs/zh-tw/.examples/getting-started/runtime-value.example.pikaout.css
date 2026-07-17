@@ -1,0 +1,14 @@
+@layer utilities {
+  .pk-a {
+    width: var(--progress, 0%);
+  }
+  .pk-b {
+    height: 0.5rem;
+  }
+  .pk-c {
+    background-color: #3b82f6;
+  }
+  .pk-d {
+    transition: width 0.2s ease;
+  }
+}

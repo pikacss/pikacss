@@ -191,7 +191,7 @@ Use the dedicated module instead of wiring the Vite plugin yourself — it regis
 
 ## Supported File Types
 
-The transform supports JavaScript-family sources (`.js`, `.ts`, `.jsx`, `.tsx`) and Vue single-file components (`.vue`). Other markup formats (Svelte, Astro, plain HTML) are not processed. See [Unplugin](/integrations/unplugin) for the scan options.
+The transform supports JavaScript-family sources (`.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.mts`, `.cts`, `.tsx`) and Vue single-file components (`.vue`). Other markup formats (Svelte, Astro, plain HTML) are not processed. See [Unplugin](/integrations/unplugin) for the scan options.
 
 ## Next
 

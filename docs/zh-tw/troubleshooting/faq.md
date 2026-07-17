@@ -1,0 +1,168 @@
+---
+title: FAQ
+description: 關於 PikaCSS 的常見問題與疑難排解訣竅。
+relatedPackages:
+  - '@pikacss/core'
+  - '@pikacss/unplugin-pikacss'
+  - '@pikacss/nuxt-pikacss'
+  - '@pikacss/eslint-config'
+relatedSources:
+  - packages/core/src/engine.ts
+  - packages/core/src/types/engine.ts
+  - packages/core/src/plugins/selectors.ts
+  - packages/integration/src/ctx.ts
+  - packages/integration/src/ctx.transform-utils.ts
+  - packages/integration/src/tsCodegen.ts
+  - packages/unplugin/src/index.ts
+  - packages/unplugin/src/types.ts
+  - packages/nuxt/src/index.ts
+  - packages/eslint-config/src/rules/no-dynamic-args.ts
+  - packages/plugin-typography/src/index.ts
+  - packages/plugin-typography/package.json
+category: troubleshooting
+order: 10
+translation:
+  sourceFile: docs/troubleshooting/faq.md
+  sourceCommit: ee25703206bb11f86a899f6e9673250ddabc235c
+  sourceBlob: 6277cfe947cc40980d0f63fb8febe6593da50fad
+---
+
+# FAQ {#faq}
+
+PikaCSS 的常見問題與解決方法。
+
+## 為什麼我的樣式沒有出現？ {#why-are-my-styles-not-appearing}
+
+請確認你的應用程式進入點有匯入產生出來的 CSS 模組：
+
+```ts
+// main.ts
+import 'pika.css'
+```
+
+`import 'pika.css'` 會解析到設定的 CSS codegen 輸出。預設情況下，那個檔案是 `pika.gen.css`。
+
+如果你使用的是 Nuxt 模組，這個匯入會自動注入。若使用一般的 unplugin 整合，請確認你有自己加上這行匯入，而且外掛已在你的建置設定中註冊。
+
+## `ReferenceError: pika is not defined` {#referenceerror-pika-is-not-defined}
+
+這個執行階段錯誤代表有個 `pika()` 呼叫沒有經過轉換就到了瀏覽器：`pika` 只存在於編譯時期，並沒有任何執行階段的匯出。最常見的原因是 scan glob 沒有比對到這個檔案，所以外掛從未處理它。預設的 `scan.include` 是 `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}`，而預設的 `scan.exclude` 會略過 `node_modules`、`dist`、`.git`、`.nuxt`、`.output`，以及 `coverage`。
+
+修正方式：
+
+1. 如果你設定了自訂的 `scan.include`，請確認它仍然能比對到該檔案：自訂值會原封不動地取代預設值，而不是加以擴充。預設的 glob 已經涵蓋轉換所支援的每一種副檔名（JS 家族加上 Vue SFC），其他副檔名即使加進去也無法轉換。
+2. 檢查該檔案是否位於被排除的路徑底下（`node_modules`、`dist`、`.git`、`.nuxt`、`.output`、`coverage`）。如果你設定了自訂的 `scan.exclude`，請確認它不會不小心比對到該檔案。
+3. 確認 PikaCSS 外掛確實已在你的建置設定中註冊。
+
+## `Cannot find name 'pika'` {#cannot-find-name-pika}
+
+這個 TypeScript 錯誤代表產生出來的 `pika.gen.ts` 宣告檔不屬於你的 TypeScript program：可能是它從未產生過（請執行一次開發伺服器或建置），或是你的 tsconfig `include` 沒有涵蓋它。這個檔案預設會寫到專案根目錄，而未經修改的 `"include": ["src"]` 不會抓到它。
+
+你可以用 `tsCodegen: './src/pika.gen.ts'` 把輸出指向 `src/`，或是把 `pika.gen.ts` 加入你的 tsconfig `include`。完整的做法請見 [產生的檔案](/zh-tw/getting-started/setup#generated-files)。
+
+## 為什麼我會出現「no-dynamic-args」ESLint 錯誤？ {#why-do-i-get-no-dynamic-args-eslint-errors}
+
+`pikacss/no-dynamic-args` 規則要求傳給 `pika()` 的每個引數，都必須落在建置時期編譯器能夠求值的那個靜態子集內。這包含常值、巢狀的物件／陣列常值，以及各種運算子運算式；運算式涵蓋條件（`a ? b : c`）、二元（`+ - * / === !==`）、邏輯（`&& || ??`）、範本常值（template literal），以及一元的 `! + - void`，**前提是每個運算元本身都是靜態的**。任何取決於執行階段值的東西（一般變數、成員／函式呼叫的結果，或帶有執行階段運算元的運算式）都會被拒絕。若 `pika` 是一個區域繫結（import、變數、參數），它會被視為你自己的函式，而不是這個 macro，因此會維持原狀。請把動態的部分抽出成獨立的 `pika()` 呼叫，然後在呼叫位置把得到的 class 名稱組合起來：
+
+```ts
+// ❌ 無效：條件式引數
+pika(isDark ? { color: 'white' } : { color: 'black' })
+
+// ✅ 有效：分開呼叫，在呼叫位置組合
+const className = isDark
+  ? pika({ color: 'white' })
+  : pika({ color: 'black' })
+```
+
+## 我要怎麼改變 layer 順序？ {#how-do-i-change-the-layer-order}
+
+在你的引擎設定裡定義一個自訂的 `layers` map。數字越小，越早渲染：
+
+```ts
+import { defineEngineConfig } from '@pikacss/core'
+
+export default defineEngineConfig({
+  layers: {
+    reset: -1,
+    preflights: 1,
+    components: 5,
+    utilities: 10,
+  },
+})
+```
+
+完整範例請見 [Layers](/zh-tw/customizations/layers)。
+
+## 我可以不用建置外掛就使用 PikaCSS 嗎？ {#can-i-use-pikacss-without-a-build-plugin}
+
+可以。`@pikacss/core` 不需要打包工具的外掛也能運作。建立一個引擎，用 `await engine.use(...)` 註冊樣式，接著從 layer 宣告、preflight，以及原子樣式組合出 CSS 輸出：
+
+<<< @/zh-tw/.examples/troubleshooting/without-build-plugin.example.ts#example
+
+unplugin 整合會加上 HMR 與靜態擷取，但並非必要。Nuxt 模組也會自動注入 CSS 匯入，而一般的 unplugin 整合仍然預期你要自己加上 `import 'pika.css'`。
+
+## 我要如何加入自訂的偽類（pseudo-class）或斷點？ {#how-do-i-add-a-custom-pseudo-class-or-breakpoint}
+
+使用 `selectors` 設定屬性來註冊自訂選擇器，包含偽類與媒體查詢的 RWD 斷點：
+
+```ts
+import { defineEngineConfig } from '@pikacss/core'
+
+export default defineEngineConfig({
+  selectors: {
+    definitions: [
+      ['@dark', 'html.dark $'],
+      ['@sm', '@media (min-width: 640px)'],
+    ],
+  },
+})
+```
+
+請見 [選擇器](/zh-tw/customizations/selectors)。
+
+## TypeScript 找不到外掛的模組擴增 {#typescript-cannot-find-module-augmentations-from-a-plugin}
+
+請確認外掛套件已安裝，而且你的 `tsconfig.json` 使用了現代的模組解析模式，例如 `moduleResolution: 'bundler'` 或 `'node16'`，這樣 TypeScript 才能沿著外掛套件的 export map 找到它的宣告檔，以及 `@pikacss/core` 的模組擴增：
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler"
+  }
+}
+```
+
+## 開發時樣式沒有更新（HMR） {#styles-are-not-updating-during-development-hmr}
+
+PikaCSS 的 Vite 外掛會自動處理 HMR。如果樣式沒有更新：
+
+1. 確認外掛已用 `PikaCSS()` 在 `vite.config.ts` 中註冊。
+2. 檢查你的進入點檔案裡有 `import 'pika.css'`。
+3. 變更 `pika.config.ts` 應該會自動觸發設定重新載入。如果沒有，請確認你編輯的是解析後的設定檔路徑，而且存檔的內容確實有變更。
+
+## 我要如何有條件地組合 PikaCSS class？ {#how-do-i-combine-pikacss-classes-conditionally}
+
+預設情況下，轉換後的 `pika()` 呼叫會產生一個單純的 class 名稱字串，所以標準的 JavaScript 組合方式都能運作：
+
+```ts
+const base = pika({ display: 'flex', padding: '1rem' })
+const active = pika({ color: 'blue' })
+const inactive = pika({ color: 'gray' })
+
+const className = `${base} ${isActive ? active : inactive}`
+```
+
+如果你的整合使用 `transformedFormat: 'array'`，一般的 `pika()` 呼叫就會改為回傳陣列。`pika.arr()` 同樣會強制輸出陣列，所以請用你框架慣用、以陣列為基礎的 class 處理方式來組合這些結果。
+
+## PikaCSS 能搭配 SSR／SSG 運作嗎？ {#does-pikacss-work-with-ssr-ssg}
+
+可以。所有樣式都會在建置時期擷取到一個靜態 CSS 檔案（`pika.gen.css`），而且每一次 `pika()` 呼叫都會替換成單純的 class 名稱字串，完全沒有執行階段的樣式注入。伺服器端渲染、靜態產生，以及串流都不需要特殊處理：伺服器只要提供同一份靜態樣式表即可。Nuxt 模組會透過註冊 Vite 外掛，並經由一個產生出來的 Nuxt 外掛匯入 `pika.css`，自動把這一切接起來。
+
+## 我應該提交產生的檔案嗎？ {#should-i-commit-the-generated-files}
+
+`pika.gen.ts` 與 `pika.gen.css` 是每一次開發或建置執行時都會重新產生的建置產物，所以把它們忽略掉也沒問題，前提是 CI 在任何獨立執行的型別檢查之前會先跑一次建置，因為 `tsc --noEmit` 需要 `pika.gen.ts` 存在。如果 CI 沒有這麼做，就把 `pika.gen.ts` 提交進版控。詳情請見 [產生的檔案](/zh-tw/getting-started/setup#generated-files)。
+
+## 下一步 {#next}
+
+- [快速開始](/zh-tw/getting-started/what-is-pikacss)：從頭開始。
+- [API 參考](/api/)：完整的 API 細節。

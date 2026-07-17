@@ -37,7 +37,7 @@ export function writeToTerminal(data: string) {
 	terminalOutput.value += data
 	terminalInstance.value?.write(data)
 }
-function flattenTree(tree: FileSystemTree, prefix = ''): Record<string, string> {
+export function flattenTree(tree: FileSystemTree, prefix = ''): Record<string, string> {
 	const result: Record<string, string> = {}
 	for (const [name, node] of Object.entries(tree)) {
 		const path = prefix ? `${prefix}/${name}` : name

@@ -37,19 +37,21 @@ export interface PluginOptions {
 	/**
 	 * Glob patterns controlling which source files are scanned for `pika()` calls.
 	 *
-	 * @default `{ include: ['**\/*.{js,ts,jsx,tsx,vue}'], exclude: ['node_modules/**', 'dist/**'] }`
+	 * @default `{ include: ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'], exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'] }`
 	 */
 	scan?: {
 		/**
 		 * File glob patterns to scan. Supports a single string or array of strings.
 		 * When omitted, the default covers every extension the AST compiler
-		 * supports: the JS family plus Vue SFCs. An explicit value wins verbatim.
-		 * @default ['**\/*.{js,ts,jsx,tsx,vue}']
+		 * supports: the full JS family plus Vue SFCs. An explicit value wins verbatim.
+		 * @default ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']
 		 */
 		include?: string | string[]
 		/**
 		 * File glob patterns to exclude. Supports a single string or array of strings.
-		 * @default ['node_modules/**', 'dist/**']
+		 * The default skips dependencies, build outputs, coverage, VCS metadata, and
+		 * framework build dirs (`.nuxt`/`.output`). An explicit value wins verbatim.
+		 * @default ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']
 		 */
 		exclude?: string | string[]
 	}
@@ -65,7 +67,12 @@ export interface PluginOptions {
 	/**
 	 * When `true`, automatically scaffolds a default `pika.config.js` file if no existing config is found.
 	 *
-	 * @default `true`
+	 * @remarks
+	 * Defaults to `false`: a build plugin should not silently write files into the
+	 * user's repository (a footgun in read-only CI, containers, and installed
+	 * packages). Scaffold a config explicitly (or opt back in with `true`).
+	 *
+	 * @default `false`
 	 */
 	autoCreateConfig?: boolean
 
@@ -103,7 +110,7 @@ export interface PluginOptions {
 
 	/**
 	 * npm package name of the plugin consumer, embedded in generated file headers and import paths.
-	 * Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt`).
+	 * Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt-pikacss`).
 	 *
 	 * @default `'@pikacss/unplugin-pikacss'`
 	 */

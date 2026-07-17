@@ -15,6 +15,17 @@ import { createCtx } from '@pikacss/integration'
 
 const ctx = createCtx({
   cwd: process.cwd(),
+  currentPackageName: '@pikacss/unplugin-pikacss',
+  scan: {
+    include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
+    exclude: ['node_modules/**', 'dist/**'],
+  },
+  configOrPath: undefined,
+  fnName: 'pika',
+  transformedFormat: 'string',
+  tsCodegen: 'pika.gen.ts',
+  cssCodegen: 'pika.gen.css',
+  autoCreateConfig: false,
 })
 ```
 

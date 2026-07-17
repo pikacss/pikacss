@@ -94,6 +94,45 @@ describe('unpluginFactory scan defaults', () => {
 			.toHaveLength(1)
 	})
 
+	it('scans and transforms every JS-family extension the AST compiler supports', async () => {
+		const { plugin, cwd, ctx } = await createPlugin()
+
+		// The full JS family (`JS_PROCESSOR_EXTENSIONS`), notably the module
+		// (`.mjs`/`.mts`) and CommonJS (`.cjs`/`.cts`) variants the previous
+		// default glob omitted.
+		for (const ext of ['js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx']) {
+			const id = join(cwd, `src/entry.${ext}`)
+			expect(ctx.isTransformTarget(id), `${ext} should be a transform target`)
+				.toBe(true)
+
+			const result = await plugin.transform.handler.call(
+				{},
+				'const c = pika({ color: \'red\' })\n',
+				id,
+			)
+			expect(result?.code.includes('pika('), `${ext} should be transformed`)
+				.toBe(false)
+			expect(ctx.usages.get(id))
+				.toHaveLength(1)
+		}
+	})
+
+	it('excludes dependency, build, coverage, VCS, and framework build dirs by default', async () => {
+		const { cwd, ctx } = await createPlugin()
+
+		for (const file of [
+			'node_modules/pkg/index.ts',
+			'dist/out.ts',
+			'.git/hooks/x.ts',
+			'.nuxt/dev/entry.mjs',
+			'.output/server/index.mjs',
+			'coverage/lcov.ts',
+		]) {
+			expect(ctx.isTransformTarget(join(cwd, file)), `${file} should be excluded`)
+				.toBe(false)
+		}
+	})
+
 	it('does not scan unsupported markup extensions', async () => {
 		const { plugin, cwd, ctx } = await createPlugin()
 

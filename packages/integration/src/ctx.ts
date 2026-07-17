@@ -29,6 +29,25 @@ interface Computed<T> {
 
 const RE_VALID_CONFIG_EXT = /\.(?:js|cjs|mjs|ts|cts|mts)$/
 
+// Config file candidates checked at the cwd root, in descending priority. The
+// `pika` prefix wins over `pikacss`, and TS variants win over JS. Discovery is
+// intentionally NOT recursive: a `**/…` glob could pick up a fixture/example
+// config in a monorepo, and its result was filesystem-order dependent.
+const CONFIG_CANDIDATES = [
+	'pika.config.ts',
+	'pika.config.mts',
+	'pika.config.cts',
+	'pika.config.js',
+	'pika.config.mjs',
+	'pika.config.cjs',
+	'pikacss.config.ts',
+	'pikacss.config.mts',
+	'pikacss.config.cts',
+	'pikacss.config.js',
+	'pikacss.config.mjs',
+	'pikacss.config.cjs',
+]
+
 function createConfigScaffoldContent({
 	currentPackageName,
 	resolvedConfigPath,
@@ -60,7 +79,7 @@ async function writeGeneratedFile(filepath: string, content: string) {
 	await writeFile(filepath, content)
 }
 
-async function evaluateConfigModule(resolvedConfigPath: string): Promise<LoadedConfigResult> {
+async function evaluateConfigModule(resolvedConfigPath: string): Promise<LoadedConfigResult & { error?: Error }> {
 	log.info(`Using config file: ${resolvedConfigPath}`)
 	const { createJiti } = await import('jiti')
 	const jiti = createJiti(
@@ -85,9 +104,10 @@ async function evaluateConfigModule(resolvedConfigPath: string): Promise<LoadedC
 	}
 	catch (error: any) {
 		// Keep the file path and content so integrations can still watch the
-		// config file and reload once the user fixes it.
+		// config file and reload once the user fixes it. `error` is surfaced so
+		// build mode can hard-fail instead of silently falling back to defaults.
 		log.error(`Failed to evaluate config file: ${error.message}`, error)
-		return { config: null, file: resolvedConfigPath, content }
+		return { config: null, file: resolvedConfigPath, content, error }
 	}
 }
 
@@ -117,17 +137,12 @@ function useConfig({
 	currentPackageName,
 	autoCreateConfig,
 	configOrPath,
-	scan,
 }: {
 	cwd: Signal<string>
 	tsCodegenFilepath: Computed<string | Nullish>
 	currentPackageName: string
 	autoCreateConfig: boolean
 	configOrPath: EngineConfig | string | Nullish
-	scan: {
-		include: string[]
-		exclude: string[]
-	}
 }) {
 	const specificConfigPath = computed(() => {
 		if (
@@ -137,7 +152,7 @@ function useConfig({
 		}
 		return null
 	})
-	async function findFirstExistingConfigPath(): Promise<string | null> {
+	function findFirstExistingConfigPath(): string | null {
 		const _cwd = cwd()
 		const _specificConfigPath = specificConfigPath()
 		const specificConfigFound = _specificConfigPath != null
@@ -147,22 +162,15 @@ function useConfig({
 			return _specificConfigPath
 		}
 
-		const stream = globbyStream(
-			'**/{pika,pikacss}.config.{js,cjs,mjs,ts,cts,mts}',
-			{
-				cwd: _cwd,
-				ignore: scan.exclude,
-			},
-		)
-		const matches: string[] = []
-		for await (const entry of stream) {
-			matches.push(join(_cwd, entry))
-		}
-		const [first, ...ignored] = matches
+		const found = CONFIG_CANDIDATES
+			.map(name => join(_cwd, name))
+			.filter(path => statSync(path, { throwIfNoEntry: false })
+				?.isFile() === true)
+		const [first, ...ignored] = found
 		if (first == null)
 			return null
 		if (ignored.length > 0) {
-			log.warn(`Multiple config files found. Using "${first}" and ignoring: ${ignored.map(path => `"${path}"`)
+			log.warn(`Multiple config files found in "${_cwd}". Using "${first}" and ignoring: ${ignored.map(path => `"${path}"`)
 				.join(', ')}`)
 		}
 		return first
@@ -172,7 +180,11 @@ function useConfig({
 			return candidatePath
 
 		if (autoCreateConfig === false) {
-			log.warn('Config file not found and autoCreateConfig is false')
+			log.warn(
+				'No PikaCSS config file found; continuing with the default engine config. '
+				+ 'Create a `pika.config.ts` (export default defineEngineConfig({ ... })) '
+				+ 'or set `autoCreateConfig: true` to scaffold one automatically.',
+			)
 			return null
 		}
 
@@ -188,7 +200,7 @@ function useConfig({
 		return resolvedConfigPath
 	}
 	const inlineConfig = typeof configOrPath === 'object' ? configOrPath : null
-	async function _loadConfig() {
+	async function _loadConfig(): Promise<LoadedConfigResult & { error?: Error }> {
 		try {
 			log.debug('Loading engine config')
 			if (inlineConfig != null) {
@@ -196,7 +208,7 @@ function useConfig({
 				return { config: klona(inlineConfig), file: null, content: null }
 			}
 
-			const resolvedConfigPath = await ensureConfigPath(await findFirstExistingConfigPath())
+			const resolvedConfigPath = await ensureConfigPath(findFirstExistingConfigPath())
 			if (resolvedConfigPath == null)
 				return { config: null, file: null, content: null }
 
@@ -204,18 +216,24 @@ function useConfig({
 		}
 		catch (error: any) {
 			log.error(`Failed to load config file: ${error.message}`, error)
-			return { config: null, file: null, content: null }
+			return { config: null, file: null, content: null, error }
 		}
 	}
 
 	const resolvedConfig = signal(inlineConfig)
 	const resolvedConfigPath = signal(null as string | null)
 	const resolvedConfigContent = signal(null as string | null)
-	async function loadConfig() {
-		const result = await _loadConfig()
+	// Non-null after a load whose config file existed (or inline config was
+	// provided) but failed to evaluate. `null` for a successful load or a
+	// legitimate absence (no config file). setup() reads this to decide between
+	// hard-failing (build) and retaining last-good (dev).
+	const configLoadError = signal(null as Error | null)
+	async function loadConfig(): Promise<LoadedConfigResult> {
+		const { error, ...result } = await _loadConfig()
 		resolvedConfig(result.config)
 		resolvedConfigPath(result.file)
 		resolvedConfigContent(result.content)
+		configLoadError(error ?? null)
 		return result
 	}
 
@@ -223,6 +241,7 @@ function useConfig({
 		resolvedConfig,
 		resolvedConfigPath,
 		resolvedConfigContent,
+		configLoadError,
 		loadConfig,
 	}
 }
@@ -507,12 +526,19 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		resolvedConfig,
 		resolvedConfigPath,
 		resolvedConfigContent,
+		configLoadError,
 		loadConfig,
 	} = useConfig({
 		...options,
 		cwd,
 		tsCodegenFilepath,
 	})
+
+	// Runtime-mutable error policy set by the bundler adapter from the build
+	// mode: `throw` (build) hard-fails on config/engine errors; `retain-last-good`
+	// (dev) keeps the process alive on the previous engine. Defaults to the dev
+	// policy so a bare `createCtx()` never crashes.
+	let configErrorBehavior: 'throw' | 'retain-last-good' = 'retain-last-good'
 
 	const usages = new Map<string, UsageRecord[]>()
 	const previewUsages = new Map<string, UsageRecord[]>()
@@ -626,6 +652,8 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		transformedFormat: options.transformedFormat,
 		get cwd() { return cwd() },
 		set cwd(v) { cwd(v) },
+		get configErrorBehavior() { return configErrorBehavior },
+		set configErrorBehavior(v) { configErrorBehavior = v },
 		get cssCodegenFilepath() { return cssCodegenFilepath() },
 		get tsCodegenFilepath() { return tsCodegenFilepath() },
 		get hasVue() { return isPackageExists('vue', { paths: [cwd()] }) },
@@ -744,10 +772,16 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 			// and only the latest call clears the shared promise.
 			const promise: Promise<void> = (ctx.setupPromise ?? Promise.resolve())
 				.then(() => setup())
-				.catch((error) => {
+				.catch((error: any) => {
+					// Build mode (`throw`) propagates so the bundler fails the build
+					// loudly. Dev mode (`retain-last-good`) swallows so a transient
+					// bad config edit cannot kill the dev server; the engine stays on
+					// its last-good instance (or the default fallback) from setup().
+					if (configErrorBehavior === 'throw')
+						throw error
 					log.error(`Failed to setup integration context: ${error.message}`, error)
 				})
-				.then(() => {
+				.finally(() => {
 					if (ctx.setupPromise === promise)
 						ctx.setupPromise = null
 				})
@@ -758,6 +792,58 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 
 	async function setup() {
 		log.debug('Setting up integration context')
+
+		// Build the next engine BEFORE touching live state so a config/engine
+		// failure leaves the current engine and usages intact (last-good). Only
+		// after a new engine is in hand do we drain, clear, and swap.
+		await loadConfig()
+		const devPlugin = defineEnginePlugin({
+			name: '@pikacss/integration:dev',
+			preflightUpdated: queueStyleUpdated,
+			atomicStyleAdded: queueStyleUpdated,
+			autocompleteConfigUpdated: queueTsCodegenUpdated,
+		})
+
+		let nextEngine: Engine | null = null
+		// A config file that exists but fails to evaluate is a hard input error;
+		// treat it the same as an engine-creation failure below.
+		let setupError: Error | null = configLoadError()
+		if (setupError == null) {
+			try {
+				const config = resolvedConfig() ?? {}
+				config.plugins = config.plugins ?? []
+				config.plugins.unshift(devPlugin)
+				log.debug('Creating engine with loaded/default config')
+				nextEngine = await createEngine(config)
+			}
+			catch (error: any) {
+				setupError = error
+			}
+		}
+
+		if (setupError != null) {
+			// Build mode: propagate so the bundler fails loudly instead of
+			// emitting CSS from a silently-empty config.
+			if (configErrorBehavior === 'throw')
+				throw setupError
+
+			// Dev mode: keep serving. If an engine is already live, retain it and
+			// every collected usage untouched so the last-good CSS survives the
+			// bad edit. Only when there is no last-good engine (first setup) do we
+			// fall back to a plugin-only default engine so the dev server can boot.
+			if (engine() != null) {
+				log.error(`Failed to load config: ${setupError.message}. Retaining last known good engine.`, setupError)
+				// The adapter resets its `hooksBound` flag and re-binds after every
+				// ctx.setup(); clear here (mirroring the success path) so retained
+				// setups do not accumulate duplicate style/codegen listeners.
+				hooks.styleUpdated.listeners.clear()
+				hooks.tsCodegenUpdated.listeners.clear()
+				return
+			}
+			log.error(`Failed to load config: ${setupError.message}. Falling back to default config.`, setupError)
+			nextEngine = await createEngine({ plugins: [devPlugin] })
+		}
+
 		// Drain in-flight transforms before clearing state and swapping the
 		// engine: a transform suspended at `engine.use()` would otherwise resume
 		// against the old engine and write usages the new engine's store does not
@@ -775,26 +861,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 		pendingTsCodegenUpdated = false
 		hooks.styleUpdated.listeners.clear()
 		hooks.tsCodegenUpdated.listeners.clear()
-		engine(null)
-
-		await loadConfig()
-		const devPlugin = defineEnginePlugin({
-			name: '@pikacss/integration:dev',
-			preflightUpdated: queueStyleUpdated,
-			atomicStyleAdded: queueStyleUpdated,
-			autocompleteConfigUpdated: queueTsCodegenUpdated,
-		})
-		try {
-			const config = resolvedConfig() ?? {}
-			config.plugins = config.plugins ?? []
-			config.plugins.unshift(devPlugin)
-			log.debug('Creating engine with loaded/default config')
-			engine(await createEngine(config))
-		}
-		catch (error: any) {
-			log.error(`Failed to create engine: ${error.message}. Falling back to default config.`, error)
-			engine(await createEngine({ plugins: [devPlugin] }))
-		}
+		engine(nextEngine)
 
 		log.debug('Integration context setup successfully')
 	}

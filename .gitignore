@@ -198,3 +198,4 @@ repomix/
 .audit
 .maintain-jsdocs/
 .maintain-docs/
+.maintain-i18n/

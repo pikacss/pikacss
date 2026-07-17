@@ -1,0 +1,35 @@
+@layer utilities {
+  .pk-a {
+    color: var(--pk-prose-color-body);
+  }
+  .pk-b {
+    max-width: 65ch;
+  }
+  .pk-c {
+    font-size: 1rem;
+  }
+  .pk-d {
+    line-height: 1.75;
+  }
+  .pk-e > :first-child {
+    margin-top: 0;
+  }
+  .pk-f > :last-child {
+    margin-bottom: 0;
+  }
+  .pk-g a {
+    color: var(--pk-prose-color-links);
+  }
+  .pk-h a {
+    text-decoration: underline;
+  }
+  .pk-i a {
+    font-weight: 500;
+  }
+  .pk-j a strong {
+    color: inherit;
+  }
+  .pk-k a code {
+    color: inherit;
+  }
+}

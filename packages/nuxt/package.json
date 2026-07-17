@@ -20,6 +20,7 @@
 		"atomic-css-in-js-engine",
 		"nuxt-module"
 	],
+	"sideEffects": false,
 	"exports": {
 		".": "./src/index.ts"
 	},
@@ -28,6 +29,7 @@
 	"types": "./src/index.ts",
 	"publishConfig": {
 		"access": "public",
+		"main": "./dist/index.mjs",
 		"exports": {
 			".": {
 				"import": {

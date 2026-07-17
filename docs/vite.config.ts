@@ -12,7 +12,8 @@ export default defineConfig({
 			cssCodegen: '.vitepress/pika.gen.css',
 		}),
 		vitepressGroupIcon(),
-		llms(),
+		// Keep llms-full.txt English-only; the zh-tw locale is a translation mirror.
+		llms({ ignoreFiles: ['zh-tw/**'] }),
 	],
 	optimizeDeps: {
 		// vitepress-plugin-mermaid only lists mermaid's transitive deps

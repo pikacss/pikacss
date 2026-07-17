@@ -52,9 +52,9 @@ The Vite entry registers with `enforce: 'pre'`. PikaCSS still runs before framew
 | Property | Description |
 |---|---|
 | cwd | Explicit working directory for path resolution. Overrides the bundler-detected project root. |
-| scan | File glob patterns controlling which source files are scanned for `pika()` call sites. When `scan.include` is not set, the default covers `**/*.{js,ts,jsx,tsx,vue}`. |
-| config | PikaCSS engine configuration, either as an inline object or a path to a config module. |
-| autoCreateConfig | When `true`, auto-creates a `pika.config.js` file if none is found. Default: `true`. |
+| scan | File glob patterns controlling which source files are scanned for `pika()` call sites. When `scan.include` is not set, the default covers `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}`; the default `exclude` skips `node_modules`, `dist`, `.git`, `.nuxt`, `.output`, and `coverage`. |
+| config | PikaCSS engine configuration, either as an inline object or a path to a config module. When omitted, a config file is discovered in the project root only (candidates `pika.config.*` then `pikacss.config.*`, TS variants first). |
+| autoCreateConfig | When `true`, auto-creates a `pika.config.js` file if none is found. Default: `false` — a build plugin should not write files into your repo; create a config yourself or opt in. |
 | fnName | Function identifier the scanner looks for when extracting call sites. Default: `'pika'`. |
 | transformedFormat | Output shape of transformed `pika()` calls: `'string'` or `'array'`. |
 | tsCodegen | Controls TypeScript type-definition code generation. |

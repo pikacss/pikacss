@@ -5,7 +5,7 @@ import type {
 	SimpleExpressionNode,
 	TemplateChildNode,
 } from '@vue/compiler-core'
-import type { SFCBlock } from '@vue/compiler-sfc'
+import type { SFCBlock, SFCDescriptor } from '@vue/compiler-sfc'
 import type { JsDialect } from '../compiler/parse'
 import type { FnConfig } from '../fnConfig'
 import type { AnalyzedModule, FrameworkProcessor, MacroCall, ProcessorOptions } from './types'
@@ -229,6 +229,46 @@ function analyzeScriptBlock(block: SFCBlock, id: string, fnConfig: FnConfig): Ma
 }
 
 /**
+ * Collects the macro-root names that `<script>` / `<script setup>` expose to the
+ * template, so a user-defined binding (e.g. `const pika = ...`) is treated as a
+ * shadow rather than a PikaCSS macro. Uses `@vue/compiler-sfc` binding metadata,
+ * which mirrors Vue's own template-scope resolution (setup bindings, imports,
+ * props, Options-API returns).
+ *
+ * @remarks
+ * Gated on a script block actually mentioning a root name — the compileScript
+ * pass is skipped entirely for the common case where `pika()` appears only in
+ * the template. A compileScript failure conservatively yields no shadow (the
+ * underlying script error surfaces through the normal transform path).
+ */
+function collectScriptExposedRoots(
+	descriptor: SFCDescriptor,
+	id: string,
+	fnConfig: FnConfig,
+	compileScript: typeof import('@vue/compiler-sfc')['compileScript'],
+): string[] {
+	const { script, scriptSetup } = descriptor
+	if (script == null && scriptSetup == null) {
+		return []
+	}
+	const mentionsRoot
+		= (script != null && containsFnName(script.content, fnConfig))
+			|| (scriptSetup != null && containsFnName(scriptSetup.content, fnConfig))
+	if (!mentionsRoot) {
+		return []
+	}
+	let bindings: Record<string, unknown> | undefined
+	try {
+		bindings = compileScript(descriptor, { id }).bindings
+	}
+	catch {
+		return []
+	}
+	return Object.keys(bindings ?? {})
+		.filter(name => fnConfig.roots.has(name))
+}
+
+/**
  * The Vue SFC processor.
  *
  * @remarks
@@ -243,7 +283,7 @@ function analyzeScriptBlock(block: SFCBlock, id: string, fnConfig: FnConfig): Ma
 export const vueProcessor: FrameworkProcessor = {
 	name: 'vue',
 	async analyze(code: string, id: string, options: ProcessorOptions): Promise<AnalyzedModule> {
-		const { parse } = await import('@vue/compiler-sfc')
+		const { parse, compileScript } = await import('@vue/compiler-sfc')
 		const { descriptor, errors } = parse(code, { filename: id })
 		if (errors.length > 0) {
 			const first = errors[0] as Error & { loc?: { start: { line: number, column: number } } }
@@ -278,12 +318,18 @@ export const vueProcessor: FrameworkProcessor = {
 			}
 			else if (template.ast != null && containsFnName(template.content, fnConfig)) {
 				const scriptLang = descriptor.scriptSetup?.lang ?? descriptor.script?.lang
+				// Seed the template shadow set with script-exposed bindings so a
+				// user-defined `pika` in <script setup> is not mistaken for a macro.
+				const shadowed = new Map<string, number>()
+				for (const name of collectScriptExposedRoots(descriptor, id, fnConfig, compileScript)) {
+					shadowed.set(name, (shadowed.get(name) ?? 0) + 1)
+				}
 				walkChildren(template.ast.children, {
 					id,
 					dialect: dialectForExtension(scriptLang ?? 'js'),
 					fnConfig,
 					calls,
-					shadowed: new Map(),
+					shadowed,
 				})
 			}
 		}

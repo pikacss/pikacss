@@ -42,12 +42,13 @@ If you are using the Nuxt module, the import is injected automatically. With the
 
 ## `ReferenceError: pika is not defined`
 
-This runtime error means a `pika()` call reached the browser untransformed — `pika` only exists at compile time and has no runtime export. The most common cause is that the file is not matched by the scan globs, so the plugin never processed it. The default `scan.include` is `**/*.{js,ts,jsx,tsx,vue}` with `node_modules/**` and `dist/**` excluded.
+This runtime error means a `pika()` call reached the browser untransformed — `pika` only exists at compile time and has no runtime export. The most common cause is that the file is not matched by the scan globs, so the plugin never processed it. The default `scan.include` is `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}`, and the default `scan.exclude` skips `node_modules`, `dist`, `.git`, `.nuxt`, `.output`, and `coverage`.
 
 Fixes:
 
-1. If the file uses another extension, extend `scan.include` in the plugin options. Note that only JS-family sources and Vue SFCs are supported by the transform.
-2. Confirm the PikaCSS plugin is actually registered in your build config.
+1. If you set a custom `scan.include`, make sure it still matches the file — a custom value replaces the default verbatim rather than extending it. The default glob already covers every extension the transform supports (the JS family plus Vue SFCs); other extensions cannot be transformed even if you add them.
+2. Check that the file does not live under an excluded path (`node_modules`, `dist`, `.git`, `.nuxt`, `.output`, `coverage`). If you set a custom `scan.exclude`, confirm it does not accidentally match the file.
+3. Confirm the PikaCSS plugin is actually registered in your build config.
 
 ## `Cannot find name 'pika'`
 
@@ -57,7 +58,7 @@ Either point the output into `src/` with `tsCodegen: './src/pika.gen.ts'`, or ad
 
 ## Why do I get "no-dynamic-args" ESLint errors?
 
-The `pikacss/no-dynamic-args` rule requires each argument passed to `pika()` to stay within a recursively statically analyzable literal structure. Plain literals, static template literals, and nested object/array literals are fine; runtime variables, conditionals, function calls, and template expressions are not. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
+The `pikacss/no-dynamic-args` rule requires each argument passed to `pika()` to stay within the same static subset the build-time compiler can evaluate. That includes literals, nested object/array literals, and operator expressions — conditional (`a ? b : c`), binary (`+ - * / === !==`), logical (`&& || ??`), template literals, and unary `! + - void` — **as long as every operand is itself static**. Anything that depends on runtime values (plain variables, member/function-call results, or an operator expression with a runtime operand) is rejected. A `pika` that is a local binding (import, variable, parameter) is treated as your own function, not the macro, and is left alone. Extract the dynamic part into separate `pika()` calls and combine the resulting class names at the call site:
 
 ```ts
 // ❌ Invalid — conditional argument

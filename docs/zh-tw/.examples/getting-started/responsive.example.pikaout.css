@@ -1,0 +1,15 @@
+@layer utilities {
+  .pk-a {
+    font-size: 14px;
+  }
+  @media (min-width: 768px) {
+    .pk-b {
+      font-size: 16px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .pk-c {
+      font-size: 18px;
+    }
+  }
+}

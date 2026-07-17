@@ -38,6 +38,20 @@ describe('evaluateStatic', () => {
 			.toThrow(PikaTransformError)
 	})
 
+	it('rejects inherited Object.prototype keys as identifiers', () => {
+		// Regression: `name in GLOBAL_CONSTANTS` matched inherited keys, so
+		// `pika(toString)` evaluated to Object.prototype.toString.
+		expect(() => evaluate('toString'))
+			.toThrow(PikaTransformError)
+		expect(() => evaluate('toString'))
+			.toThrow('identifier "toString" is not statically known')
+		expect(() => evaluate('hasOwnProperty'))
+			.toThrow('identifier "hasOwnProperty" is not statically known')
+		// Real global constants keep evaluating.
+		expect(evaluate('undefined'))
+			.toBe(undefined)
+	})
+
 	it('rejects unknown identifiers with position info', () => {
 		try {
 			evaluate('theme')

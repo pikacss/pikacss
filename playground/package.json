@@ -14,6 +14,11 @@
 		"type-check": "vue-tsc --build"
 	},
 	"dependencies": {
+		"@shikijs/core": "catalog:",
+		"@shikijs/engine-javascript": "catalog:",
+		"@shikijs/langs": "catalog:",
+		"@shikijs/monaco": "catalog:",
+		"@shikijs/themes": "catalog:",
 		"@vueuse/core": "catalog:",
 		"@webcontainer/api": "catalog:",
 		"@xterm/addon-fit": "catalog:",

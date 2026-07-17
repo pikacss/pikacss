@@ -24,6 +24,7 @@ packages:
   - playground
   - packages/*
 catalog:
+  '@arethetypeswrong/cli': ^0.18.5
   '@babel/parser': ^7.29.7
   '@babel/traverse': ^7.29.7
   '@babel/types': ^7.29.7
@@ -36,6 +37,11 @@ catalog:
   '@mdn/browser-compat-data': ^8.0.5
   '@nuxt/kit': ^4.4.8
   '@nuxt/schema': ^4.4.8
+  '@shikijs/core': ^4.3.1
+  '@shikijs/engine-javascript': ^4.3.1
+  '@shikijs/langs': ^4.3.1
+  '@shikijs/monaco': ^4.3.1
+  '@shikijs/themes': ^4.3.1
   '@shikijs/vitepress-twoslash': ^3.23.0
   '@types/babel__traverse': ^7.28.0
   '@types/node': ^24.13.2
@@ -53,6 +59,7 @@ catalog:
   '@xterm/xterm': ^6.0.0
   alien-signals: ^3.2.1
   bumpp: ^11.1.0
+  changelogithub: ^14.0.0
   dockview-core: ^4.13.1
   dockview-vue: ^4.13.1
   esbuild: ^0.28.1

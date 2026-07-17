@@ -26,7 +26,7 @@ export interface UsageRecord {
 export interface IntegrationContextOptions {
 	/** The working directory used to resolve relative paths for config files, codegen outputs, and source scanning. */
 	cwd: string
-	/** The npm package name of the integration consumer (e.g., `'@pikacss/unplugin'`), embedded in generated file headers and import paths. */
+	/** The npm package name of the integration consumer (e.g., `'@pikacss/unplugin-pikacss'`), embedded in generated file headers and import paths. */
 	currentPackageName: string
 	/** Glob patterns controlling which source files are scanned for `pika()` calls. `include` specifies files to process; `exclude` specifies files to skip. */
 	scan: {
@@ -74,6 +74,18 @@ export type LoadedConfigResult
 export interface IntegrationContext {
 	/** The current working directory. Can be updated at runtime (e.g., when the project root changes). */
 	cwd: string
+	/**
+	 * How the context reacts to a config file that fails to evaluate or an engine
+	 * that fails to build. Set by the bundler adapter from the build mode.
+	 *
+	 * @remarks
+	 * `'throw'` (build) rejects `setup()` so the bundler fails the build loudly
+	 * instead of emitting CSS from a silently-empty config. `'retain-last-good'`
+	 * (dev) keeps the process alive: it retains the previous engine and all
+	 * collected usages when one exists, or boots a plugin-only default engine on
+	 * the very first setup. Defaults to `'retain-last-good'`.
+	 */
+	configErrorBehavior: 'throw' | 'retain-last-good'
 	/** The npm package name of the integration consumer, used in generated file headers and module declarations. */
 	currentPackageName: string
 	/** The base function name recognized in source transforms (e.g., `'pika'`). */
@@ -94,7 +106,7 @@ export interface IntegrationContext {
 	resolvedConfigContent: string | Nullish
 	/** Loads (or reloads) the engine configuration from disk or inline source, updating `resolvedConfig`, `resolvedConfigPath`, and `resolvedConfigContent`. */
 	loadConfig: () => Promise<LoadedConfigResult>
-	/** Map from source file ID to the list of `UsageRecord` entries extracted during transforms. Keyed by the file path relative to `cwd`. */
+	/** Map from source file ID to the list of `UsageRecord` entries extracted during transforms. Keyed by the normalized absolute file path (`parseModuleId(...).file`). */
 	usages: Map<string, UsageRecord[]>
 	/** Map from source file ID to preview-only `UsageRecord` entries (from `pikap()` calls). Only these drive TypeScript preview overload generation. */
 	previewUsages: Map<string, UsageRecord[]>
