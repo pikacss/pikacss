@@ -17,6 +17,9 @@ export default await deviltea(
 			'./.agents/**/*',
 			'.planning/**/*',
 			'./docs/.examples/**/*',
+			// zh-TW mirrors of the example fixtures (comment-only translations,
+			// validated by the docs example tests + maintain-i18n lint)
+			'./docs/zh-tw/.examples/**/*',
 			'./docs/**/*.md',
 			'./skills/**/*.md',
 			// Ignore the generated files

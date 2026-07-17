@@ -1,0 +1,22 @@
+@layer preflights {
+  :root {
+    --color-primary: #3b82f6;
+    --color-surface: #f8fafc;
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+  .dark {
+    --color-surface: #0f172a;
+  }
+}
+
+@layer utilities {
+  .pk-a {
+    background-color: var(--color-surface);
+  }
+  .pk-b {
+    color: var(--color-primary);
+  }
+  .pk-c {
+    box-shadow: var(--shadow-md);
+  }
+}

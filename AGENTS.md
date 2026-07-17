@@ -52,6 +52,8 @@ pnpm maintain-docs:analyze
 pnpm maintain-docs:gen-api
 pnpm maintain-jsdocs:scaffold --packages <name>...
 pnpm maintain-jsdocs:lint [--packages <name>...]
+pnpm maintain-i18n:status
+pnpm maintain-i18n:lint
 ```
 
 Use package-scoped commands during iterative development. Root-level `vitest --project` filtering is not the canonical package validation path in this repo.
@@ -174,7 +176,8 @@ Correctness rules encoded by regression tests — do not "simplify" them away:
 ## Request Routing
 
 - Repository orientation, contributor setup, scaffolding, package graph, and PR readiness: handle directly from this file. Do not rely on a separate `contribute` skill.
-- Docs pages, READMEs, API reference drift, docs examples, or zh-TW sync: use the `maintain-docs` skill directly from the main agent, then hand completed work to `maintain-docs-review`.
+- Docs pages, READMEs, API reference drift, or docs examples: use the `maintain-docs` skill directly from the main agent, then hand completed work to `maintain-docs-review`.
+- zh-TW docs translation, translation freshness, or Taiwan-terminology questions: use the `maintain-i18n` skill directly from the main agent. English docs changes that touch translated pages should finish by running `pnpm maintain-i18n:status` to surface new staleness.
 - Exported-surface JSDoc maintenance: use the `maintain-jsdocs` workflow skill. It runs a streamlined scan-fill-apply-validate flow without intermediate templates or multi-agent review rounds.
 - Unit or integration test creation, refinement, coverage work, or downstream validation: use the `maintain-tests` skill directly from the main agent, then hand completed work to `maintain-tests-review`.
 - Consumer installation, application configuration, troubleshooting, examples for using PikaCSS in a project, and authoring or modifying plugin implementation, hook usage, config augmentation, and plugin tests: use the `pikacss-use` domain skill directly from the main agent. It does not have a dedicated paired custom agent.
@@ -186,6 +189,7 @@ Correctness rules encoded by regression tests — do not "simplify" them away:
 - Use the single `pikacss-use` skill for both consuming and authoring plugins.
 - Treat `maintain-jsdocs` as a workflow skill with an implementation agent. The review agent is optional and not part of the default flow.
 - Treat `maintain-docs` and `maintain-tests` as main-agent execution skills that keep paired review agents only.
+- `maintain-docs` (English) and `maintain-i18n` (zh-TW) compose: docs edits flow English-first, then i18n sync.
 - Use `pikacss-use` as skill-only domain guidance in the main conversation unless a dedicated agent is added later.
 - After heavy workflow changes, hand off to the matching review agent instead of embedding review policy into implementation steps.
 - If a paired implementation agent exists for the selected workflow, use it for execution and reserve the review agent for findings.
@@ -197,6 +201,7 @@ Correctness rules encoded by regression tests — do not "simplify" them away:
 - `maintain-jsdocs-review` is an optional quality reviewer, not part of the default workflow. Use only when explicitly requested.
 - `maintain-tests` is executed directly by the main agent. `maintain-tests-review` reviews test changes after implementation stabilizes.
 - `pikacss-use` is a skill-only domain guide covering both consumer usage and plugin authoring. It has no paired `.agent.md` file at this time.
+- `maintain-i18n` is a main-agent execution skill with no paired agent.
 
 ## Global Rules
 
@@ -225,4 +230,5 @@ Correctness rules encoded by regression tests — do not "simplify" them away:
 - Do not modify `docs/.examples/_utils/pika-example.ts`. It uses `createCtx` from `@pikacss/integration` to simulate the real build pipeline. Replacing it with `createEngine`/`engine.use()` bypasses the transform/extract flow and breaks all examples.
 - Do not import from `@pikacss/core` in `.pikain.ts` files. Pikain files must use bare `pika()` calls exactly as real users write them.
 - Do not run workspace-wide `pnpm build` during iterative development.
+- Do not edit `docs/zh-tw/**` translation content without updating the `translation:` frontmatter via `maintain-i18n:status --mark-synced`; do not hand-edit the `translation:` block.
 - Do not guess through unclear requirements when a short follow-up question would remove risk.

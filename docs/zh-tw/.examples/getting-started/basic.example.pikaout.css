@@ -1,0 +1,8 @@
+@layer utilities {
+  .pk-a {
+    color: red;
+  }
+  .pk-b {
+    font-size: 16px;
+  }
+}

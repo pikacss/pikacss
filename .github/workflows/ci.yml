@@ -59,6 +59,17 @@ jobs:
       - name: build docs (dead-link check)
         run: pnpm docs:build
 
+      # Blocking (Decision D4). The linter only scans docs/zh-tw/**, so it is
+      # inherently scoped to the translation locale.
+      - name: i18n lint (zh-tw terminology + anchors + fixtures)
+        run: pnpm maintain-i18n:lint
+
+      # Non-blocking visibility summary: translation freshness is a workflow
+      # signal, not a defect (Decision D4).
+      - name: i18n status (zh-tw freshness summary)
+        run: pnpm maintain-i18n:status
+        continue-on-error: true
+
   test:
     runs-on: ${{ matrix.os }}
 

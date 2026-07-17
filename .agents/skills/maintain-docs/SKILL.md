@@ -139,7 +139,7 @@ pnpm --filter @pikacss/docs typecheck
 ## Scope Boundaries
 
 - **In scope**: English docs pages, examples, package READMEs, API reference generation, nav/sidebar alignment, reading experience quality (content presentation, layout consistency, custom container usage).
-- **Out of scope**: zh-TW translation (archived in `_archived/` for future use), direct editing of generated `dist/` or `coverage/` outputs.
+- **Out of scope**: zh-TW translation — use the `maintain-i18n` skill (`.agents/skills/maintain-i18n/`), which owns `docs/zh-tw/**` and Taiwan-terminology enforcement. Also out of scope: direct editing of generated `dist/` or `coverage/` outputs.
 
 ## Sections
 

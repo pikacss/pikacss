@@ -1,0 +1,29 @@
+@layer utilities {
+  .pk-a {
+    display: inline-flex;
+  }
+  .pk-b {
+    align-items: center;
+  }
+  .pk-c {
+    padding: 0.5rem 1rem;
+  }
+  .pk-d {
+    border-radius: 0.5rem;
+  }
+  .pk-e {
+    border: none;
+  }
+  .pk-f {
+    cursor: pointer;
+  }
+  .pk-g {
+    background-color: #3b82f6;
+  }
+  .pk-h {
+    color: white;
+  }
+  .pk-i {
+    background-color: #ef4444;
+  }
+}

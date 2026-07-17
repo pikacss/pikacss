@@ -1,0 +1,8 @@
+@layer utilities {
+  .pk-a {
+    padding: 1rem;
+  }
+  .pk-b {
+    color: blue;
+  }
+}
