@@ -211,7 +211,9 @@ export function evaluateStatic(node: t.Node, ctx: EvaluateContext): unknown {
 		case 'NullLiteral':
 			return null
 		case 'Identifier':
-			if (target.name in GLOBAL_CONSTANTS && !ctx.hasLocalBinding(target.name)) {
+			// Own-key lookup only: `in` would also match inherited Object.prototype
+			// keys (`toString`, `hasOwnProperty`, ...) and leak their functions.
+			if (Object.hasOwn(GLOBAL_CONSTANTS, target.name) && !ctx.hasLocalBinding(target.name)) {
 				return GLOBAL_CONSTANTS[target.name]
 			}
 			return fail(target, ctx, `identifier "${target.name}" is not statically known`)
