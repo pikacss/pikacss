@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DockviewApi, DockviewReadyEvent } from 'dockview-vue'
+import { useDebounceFn } from '@vueuse/core'
 import { DockviewVue } from 'dockview-vue'
 import { markRaw, onMounted, ref, shallowRef, watch } from 'vue'
 import EditorPanel from './components/panels/EditorPanel.vue'
@@ -12,12 +13,14 @@ import { bytesToBase64, fetchStaticSnapshot, getCachedSnapshot, putCachedSnapsho
 import { useWebContainer } from './composables/useWebContainer'
 import {
 	activeFilePath,
+	flattenTree,
 	getInitialTemplateKey,
 	handleTemplateSwitch,
 	loadFromHash,
 	onFileSelect,
 	projectTree,
 	selectedTemplate,
+	terminalOutput,
 	writeToTerminal,
 } from './composables/useWorkbench'
 import { templates } from './templates'
@@ -33,7 +36,35 @@ defineOptions({
 
 // -- Dependencies --
 const { boot, install, mountCachedSnapshot, exportSnapshot, startDevServer, isBooting, isInstalling, isRunning, instance } = useWebContainer()
-const { loadMonacoConfig, loadPikaGlobals } = useMonacoConfig()
+const { loadMonacoConfig, loadPikaGlobals, loadPikaGenTypes, preloadTemplateModels } = useMonacoConfig()
+
+// Resolves once node_modules types + tsconfig have been fed to Monaco; the
+// generated pika types must load after it (loadTypes' setExtraLibs would wipe
+// them, and their imports need the loaded node_modules to resolve).
+let monacoConfigReady: Promise<void> = Promise.resolve()
+
+// Feed the real generated `src/pika.gen.ts` types to Monaco once the dev
+// server has written them, and refresh whenever the terminal mentions a
+// pika.gen update (config edits regenerate the file). Debounced: HMR bursts
+// arrive in several chunks; the read is cheap and no-ops when unchanged.
+const refreshPikaGenTypes = useDebounceFn(async () => {
+	if (!instance.value)
+		return
+	await monacoConfigReady
+	await loadPikaGenTypes(instance.value)
+		.catch(e => console.error('[MonacoConfig] Failed to load pika.gen.ts types:', e))
+}, 500)
+watch(isRunning, (running) => {
+	if (running)
+		refreshPikaGenTypes()
+})
+let pikaGenScanOffset = 0
+watch(terminalOutput, (output) => {
+	const chunk = output.slice(pikaGenScanOffset)
+	pikaGenScanOffset = output.length
+	if (chunk.includes('pika.gen'))
+		refreshPikaGenTypes()
+})
 
 const initialTemplateKey = getInitialTemplateKey()
 // `?__generate` runs a fresh install (ignoring any cache) and exposes the
@@ -150,6 +181,10 @@ onMounted(async () => {
 	// Set initial content for the default active file
 	onFileSelect(activeFilePath.value)
 
+	// Create models for all template TS/TSX sources so cross-file imports
+	// resolve without each file having been opened first.
+	preloadTemplateModels(flattenTree(projectTree))
+
 	// Boot
 	try {
 		const config = templates[initialTemplateKey]!
@@ -181,7 +216,7 @@ onMounted(async () => {
 			// Load types and config from VFS in background. Declare the `pika`
 			// global afterwards (loadTypes calls setExtraLibs, which would otherwise
 			// wipe it) so the editor stops reporting "Cannot find name 'pika'".
-			loadMonacoConfig(instance.value)
+			monacoConfigReady = loadMonacoConfig(instance.value)
 				.catch(e => console.error('[MonacoConfig] Failed:', e))
 				.finally(() => loadPikaGlobals())
 		}

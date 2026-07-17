@@ -12,6 +12,12 @@ function getLanguage(path: string) {
 		return 'html'
 	if (path.endsWith('.json'))
 		return 'json'
+	// Registered by setupShikiMonaco; keeps .vue files away from the TS worker,
+	// which would otherwise flag the whole SFC with false diagnostics.
+	if (path.endsWith('.vue'))
+		return 'vue'
+	if (path.endsWith('.md'))
+		return 'markdown'
 	return 'typescript'
 }
 </script>

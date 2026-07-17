@@ -6,6 +6,7 @@ import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { getEditorTheme, setupShikiMonaco } from '../composables/useShikiMonaco'
 
 const props = defineProps<{
 	modelValue: string
@@ -36,6 +37,9 @@ globalThis.MonacoEnvironment = {
 	},
 }
 
+// Registers the `vue` language and kicks off the async shiki highlighter.
+setupShikiMonaco()
+
 const container = ref<HTMLElement | null>(null)
 const editor = shallowRef<monaco.editor.IStandaloneCodeEditor | null>(null)
 
@@ -45,7 +49,10 @@ const ts = monaco.languages.typescript as any
 ts.typescriptDefaults.setCompilerOptions({
 	target: ts.ScriptTarget.ESNext,
 	allowNonTsExtensions: true,
-	moduleResolution: ts.ModuleResolutionKind.NodeJs,
+	// ts.ModuleResolutionKind only exposes Classic/NodeJs, but the worker embeds
+	// TS 5.9, which accepts the real enum value for `bundler` (100). Bundler
+	// resolution reads package.json `exports`, which the templates rely on.
+	moduleResolution: 100,
 	module: ts.ModuleKind.ESNext,
 	noEmit: true,
 	esModuleInterop: true,
@@ -57,6 +64,10 @@ ts.typescriptDefaults.setCompilerOptions({
 	},
 	resolveJsonModule: true,
 })
+
+// Sync models to the TS worker even when they are not bound to an editor —
+// required for the preloaded template models (see preloadTemplateModels).
+ts.typescriptDefaults.setEagerModelSync(true)
 
 onMounted(() => {
 	if (!container.value)
@@ -77,7 +88,7 @@ onMounted(() => {
 	editor.value = monaco.editor.create(container.value, {
 		model,
 		// value: props.modelValue, // remove value prop when using model
-		theme: 'vs-dark',
+		theme: getEditorTheme(),
 		readOnly: props.readOnly || false,
 		automaticLayout: true,
 		minimap: { enabled: false },

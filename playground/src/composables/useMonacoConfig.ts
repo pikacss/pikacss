@@ -2,6 +2,12 @@ import type { WebContainer } from '@webcontainer/api'
 import JSON5 from 'json5'
 import * as monaco from 'monaco-editor'
 
+// Singleton state: the fallback `pika` globals lib is disposed once the real
+// generated `src/pika.gen.ts` types have been loaded.
+let pikaFallbackLib: monaco.IDisposable | null = null
+let pikaGenLib: monaco.IDisposable | null = null
+let pikaGenContent = ''
+
 /**
  * Loads Monaco configuration (tsconfig) and types (node_modules) from WebContainer.
  * Refactored to simulate Node.js module resolution using file:/// URIs.
@@ -16,19 +22,15 @@ export function useMonacoConfig() {
 	}
 
 	/**
-	 * Declares the `pika`/`pikap` globals in Monaco so the editor stops reporting
-	 * "Cannot find name 'pika'".
+	 * Declares fallback `pika`/`pikap` globals in Monaco so the editor stops
+	 * reporting "Cannot find name 'pika'" before {@link loadPikaGenTypes} has
+	 * managed to load the real generated declarations (or if it never does).
+	 * Self-contained (no imports) so it applies regardless of module resolution.
+	 * Must run after `loadTypes` (which calls `setExtraLibs` and would otherwise
+	 * drop this lib).
 	 *
-	 * The dev server generates `src/pika.gen.ts` with the real (richly typed)
-	 * declarations, but that file `import`s from `@pikacss/unplugin-pikacss`, which
-	 * Monaco cannot resolve in the WebContainer FS — the failed import invalidates
-	 * its `declare global` block. Instead we register a small, self-contained
-	 * ambient declaration (`addExtraLib`), so the globals always apply regardless
-	 * of node module resolution. Must run after `loadTypes` (which calls
-	 * `setExtraLibs` and would otherwise drop this lib).
-	 *
-	 * limit: this provides loose typing (no shortcut-name autocomplete). Wiring the
-	 * generated types into Monaco's module resolution is the upgrade path.
+	 * Also registers the `*.vue` / `*.css` module shims (a separate lib, so a
+	 * template without `vue` installed cannot invalidate the pika globals).
 	 */
 	function loadPikaGlobals() {
 		const source = `
@@ -41,8 +43,61 @@ interface PikaFn {
 declare const pika: PikaFn
 declare const pikap: PikaFn
 `
+		// `vite/client` is not wired into the worker, so shim the asset modules the
+		// templates import: `./App.vue` in main.ts and css imports (the `*.css`
+		// pattern also matches the bare `pika.css` virtual module).
+		const shims = `
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<Record<string, never>, Record<string, never>, any>
+  export default component
+}
+declare module '*.css' {}
+`
 		const ts = (monaco.languages.typescript as any).typescriptDefaults
-		ts.addExtraLib(source, 'file:///pika-globals.d.ts')
+		pikaFallbackLib?.dispose()
+		pikaFallbackLib = pikaGenLib ? null : ts.addExtraLib(source, 'file:///pika-globals.d.ts')
+		ts.addExtraLib(shims, 'file:///module-shims.d.ts')
+	}
+
+	/**
+	 * Loads the real generated `src/pika.gen.ts` from the WebContainer into
+	 * Monaco, replacing the loose fallback globals from {@link loadPikaGlobals}
+	 * so `pika({ ... })` gets the actual CSS property / shortcut autocomplete.
+	 * Requires `loadTypes` to have finished (the generated file imports from
+	 * `@pikacss/unplugin-pikacss`, resolved against the loaded node_modules) —
+	 * callers must await `loadMonacoConfig` first. Safe to call repeatedly
+	 * (e.g. after pika.gen HMR updates); no-ops while the content is unchanged.
+	 */
+	async function loadPikaGenTypes(webcontainerInstance: WebContainer) {
+		const content = await webcontainerInstance.fs.readFile('/src/pika.gen.ts', 'utf-8')
+			.catch(() => '')
+		if (!content || content === pikaGenContent)
+			return
+		pikaGenContent = content
+		const ts = (monaco.languages.typescript as any).typescriptDefaults
+		pikaGenLib?.dispose()
+		pikaGenLib = ts.addExtraLib(content, 'file:///src/pika.gen.ts')
+		pikaFallbackLib?.dispose()
+		pikaFallbackLib = null
+	}
+
+	/**
+	 * Creates Monaco models for the template's TS/TSX sources up front. Models
+	 * are otherwise created lazily on first open, so imports between template
+	 * files (e.g. `./components/PreferencesCard.tsx` from App.tsx) report
+	 * "Cannot find module" until the target file has been opened once. Requires
+	 * eager model sync (set in MonacoEditor.vue) so the TS worker sees models
+	 * that are not bound to an editor.
+	 */
+	function preloadTemplateModels(files: Record<string, string>) {
+		for (const [path, content] of Object.entries(files)) {
+			if (!/\.tsx?$/.test(path))
+				continue
+			const uri = monaco.Uri.parse(`file:///${path}`)
+			if (!monaco.editor.getModel(uri))
+				monaco.editor.createModel(content, 'typescript', uri)
+		}
 	}
 
 	async function loadTypes(webcontainerInstance: WebContainer) {
@@ -61,16 +116,24 @@ declare const pikap: PikaFn
 						await walk(fullPath)
 					}
 					else if (entry.isFile()) {
-						if (entry.name.endsWith('.d.ts')) {
+						// `.d.mts`/`.d.cts` matter: several packages (vue,
+						// @pikacss/unplugin-pikacss, @vitejs/plugin-*) ship ESM-only types.
+						if (/\.d\.[mc]?ts$/.test(entry.name)) {
 							const content = await webcontainerInstance.fs.readFile(fullPath, 'utf-8')
 							// Use file:/// URIs to match Monaco's internal Node resolution
 							libMap.set(`file://${fullPath}`, content)
 						}
 						else if (entry.name === 'package.json') {
-							// Check for custom types entry
 							try {
 								const content = await webcontainerInstance.fs.readFile(fullPath, 'utf-8')
 								const pkg = JSON5.parse(content)
+
+								// Expose the manifest to the worker: bundler module resolution
+								// reads package.json (`exports`, `types`, `main`) via
+								// host.readFile. (Extra libs are also parsed as root files, but
+								// any parse noise stays invisible — diagnostics are only
+								// requested for open editor models.)
+								libMap.set(`file://${fullPath}`, content)
 								const typesPath = pkg.types || pkg.typings
 
 								// Node resolution defaults to index.d.ts.
@@ -186,7 +249,8 @@ declare const pikap: PikaFn
 		if (options.jsx)
 			monacoOptions.jsx = mapJsx(options.jsx)
 
-		// Copy direct values
+		// Copy direct values (boolean/string options pass through as-is; only
+		// enum-valued options need mapping to the TS numeric values above).
 		const directCopy = [
 			'jsxImportSource',
 			'strict',
@@ -196,6 +260,7 @@ declare const pikap: PikaFn
 			'paths',
 			'allowJs',
 			'checkJs',
+			'allowImportingTsExtensions',
 		]
 
 		for (const key of directCopy) {
@@ -204,8 +269,11 @@ declare const pikap: PikaFn
 			}
 		}
 
-		// Force critical overrides for WebContainer environment
-		monacoOptions.moduleResolution = (monaco.languages.typescript as any).ModuleResolutionKind.NodeJs
+		// Force critical overrides for WebContainer environment.
+		// `bundler` (100) is not in monaco's ModuleResolutionKind, but the worker's
+		// TS 5.9 accepts it; it is what the templates use, and it resolves the
+		// package.json `exports` maps loaded by `loadTypes`.
+		monacoOptions.moduleResolution = 100
 		monacoOptions.allowNonTsExtensions = true
 
 		// If baseUrl is not set in tsconfig, default it to file:/// (done in initialization, but good to reinforce)
@@ -264,5 +332,7 @@ declare const pikap: PikaFn
 	return {
 		loadMonacoConfig,
 		loadPikaGlobals,
+		loadPikaGenTypes,
+		preloadTemplateModels,
 	}
 }
