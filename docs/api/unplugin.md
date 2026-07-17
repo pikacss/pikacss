@@ -113,7 +113,7 @@ User-facing configuration options for the PikaCSS bundler plugin.
 | `transformedFormat?` | `'string' \| 'array'` | Default output format for normal `pika()` calls. `'string'` produces a space-joined class string; `'array'` produces a string array of class names. | ``'string'`` |
 | `tsCodegen?` | `boolean \| string` | Controls TypeScript declaration codegen. `true` writes to `'pika.gen.ts'`, a string sets a custom output path, and `false` disables codegen entirely. | ``true`` |
 | `cssCodegen?` | `true \| string` | Controls CSS output file generation. `true` writes to `'pika.gen.css'`; a string sets a custom output path. | ``true`` |
-| `currentPackageName?` | `string` | npm package name of the plugin consumer, embedded in generated file headers and import paths. Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt`). | ``'@pikacss/unplugin-pikacss'`` |
+| `currentPackageName?` | `string` | npm package name of the plugin consumer, embedded in generated file headers and import paths. Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt-pikacss`). | ``'@pikacss/unplugin-pikacss'`` |
 
 **Remarks:**
 

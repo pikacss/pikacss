@@ -64,19 +64,21 @@ Enforces that all arguments to `pika()`, `pika.str()`, `pika.arr()`, and their p
 
 #### What Counts as Static
 
-- String literals: `'flex-center'`
-- Object literals with string/number values: `{ color: 'red' }`
-- Array literals of the above: `[{ color: 'red' }, 'flex-center']`
-- Template literals without expressions: `` `literal` ``
-- References to `const` declarations initialized with static values
+The rule evaluates each argument with the same value-aware evaluator the build-time compiler uses. These forms are static:
+
+- Literals: strings, numbers, booleans, and `null`
+- Object and array literals whose values are themselves static (nesting allowed): `{ color: 'red' }`, `[{ color: 'red' }, 'flex-center']`
+- Template literals whose interpolations evaluate to static primitives
+- Unary, binary, logical, and conditional expressions over static operands — a conditional's test must be static, but only the branch it selects has to be (and only the taken side of `&&`/`||`/`??`)
+- The global constants `undefined`, `NaN`, and `Infinity`, unless shadowed by a local declaration
 
 The following are **not** static:
 
-- Variable references (non-const or with dynamic initializers)
+- Any other variable or identifier reference — including a reference to a `const`, because the compiler never resolves bindings
 - Function calls
-- Conditional expressions
-- Spread operators
-- Template literals with expressions
+- Member expressions
+- Spread of a value that is not a static array or object
+- Template literals interpolating a dynamic or non-primitive value
 
 #### Examples
 

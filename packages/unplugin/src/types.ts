@@ -110,7 +110,7 @@ export interface PluginOptions {
 
 	/**
 	 * npm package name of the plugin consumer, embedded in generated file headers and import paths.
-	 * Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt`).
+	 * Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt-pikacss`).
 	 *
 	 * @default `'@pikacss/unplugin-pikacss'`
 	 */

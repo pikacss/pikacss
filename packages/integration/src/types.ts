@@ -26,7 +26,7 @@ export interface UsageRecord {
 export interface IntegrationContextOptions {
 	/** The working directory used to resolve relative paths for config files, codegen outputs, and source scanning. */
 	cwd: string
-	/** The npm package name of the integration consumer (e.g., `'@pikacss/unplugin'`), embedded in generated file headers and import paths. */
+	/** The npm package name of the integration consumer (e.g., `'@pikacss/unplugin-pikacss'`), embedded in generated file headers and import paths. */
 	currentPackageName: string
 	/** Glob patterns controlling which source files are scanned for `pika()` calls. `include` specifies files to process; `exclude` specifies files to skip. */
 	scan: {

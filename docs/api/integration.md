@@ -449,7 +449,7 @@ Configuration options for creating an integration context.
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `cwd` | `string` | The working directory used to resolve relative paths for config files, codegen outputs, and source scanning. | — |
-| `currentPackageName` | `string` | The npm package name of the integration consumer (e.g., `'@pikacss/unplugin'`), embedded in generated file headers and import paths. | — |
+| `currentPackageName` | `string` | The npm package name of the integration consumer (e.g., `'@pikacss/unplugin-pikacss'`), embedded in generated file headers and import paths. | — |
 | `scan` | `{ 		include: string[] 		exclude: string[] 	}` | Glob patterns controlling which source files are scanned for `pika()` calls. `include` specifies files to process; `exclude` specifies files to skip. | — |
 | `configOrPath` | `EngineConfig \| string \| Nullish` | The engine configuration object, a path to a config file, or `null`/`undefined` to trigger auto-discovery of `pika.config.*` files. | — |
 | `fnName` | `string` | The base function name to recognize in source code (e.g., `'pika'`). All variants (`.str`, `.arr`, preview) are derived from this name. | — |

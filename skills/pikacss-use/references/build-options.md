@@ -18,8 +18,8 @@ export default defineConfig({
       fnName: 'pika',
       transformedFormat: 'string',
       scan: {
-        include: ['**/*.{js,ts,jsx,tsx,vue}'],
-        exclude: ['node_modules/**', 'dist/**'],
+        include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
+        exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'],
       },
     }),
   ],
@@ -34,12 +34,12 @@ The default generated filenames (`pika.gen.ts` and `pika.gen.css`) are convenien
 |---|---|---|---|
 | `fnName` | `string` | `'pika'` | Base function name recognized by the transform |
 | `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of `pika()` calls |
-| `scan.include` | `string[]` | `['**/*.{js,ts,jsx,tsx,vue}']` | Glob patterns for files to scan |
-| `scan.exclude` | `string[]` | `['node_modules/**', 'dist/**']` | Glob patterns to exclude |
+| `scan.include` | `string[]` | `['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']` | Glob patterns for files to scan |
+| `scan.exclude` | `string[]` | `['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']` | Glob patterns to exclude |
 | `config` | `EngineConfig \| string` | auto-discovery | Engine config object or path to config file |
-| `autoCreateConfig` | `boolean` | `true` | Scaffold default config file if missing |
+| `autoCreateConfig` | `boolean` | `false` | Opt in to scaffolding a default config file when none is found |
 | `tsCodegen` | `boolean \| string` | `true` (`pika.gen.ts`) | TypeScript declaration output path when set to a string; `false` disables codegen |
-| `cssCodegen` | `boolean \| string` | `true` (`pika.gen.css`) | CSS output file path when set to a string |
+| `cssCodegen` | `true \| string` | `true` (`pika.gen.css`) | CSS output file path when set to a string; cannot be disabled |
 
 ## Common Scenarios
 
@@ -61,9 +61,9 @@ pikacss({
 })
 ```
 
-### Scan additional file types
+### Customize the scan globs
 
-JS-family sources (`js`, `ts`, `jsx`, `tsx`, plus `mjs`/`cjs`/`mts`/`cts`) and Vue SFCs (`vue`) are supported by the AST-based transform. The default `scan.include` covers `js`, `ts`, `jsx`, `tsx`, and `vue`; widen it when supported files live behind other globs:
+JS-family sources (`js`, `mjs`, `cjs`, `jsx`, `ts`, `mts`, `cts`, `tsx`) and Vue SFCs (`vue`) are supported by the AST-based transform. The default `scan.include` already covers every supported extension; override it to narrow the scan to specific directories:
 
 ```ts
 pikacss({

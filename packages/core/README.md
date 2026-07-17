@@ -11,14 +11,14 @@ pnpm add @pikacss/core
 ## Usage
 
 ```ts
-import { createEngine, defineEngineConfig } from '@pikacss/core'
+import { createEngine } from '@pikacss/core'
 
 const engine = await createEngine({
   prefix: 'pk-',
 })
 
 const ids = await engine.use({ display: 'flex', color: 'red' })
-const css = engine.renderAtomicStyles(true, { atomicStyleIds: ids })
+const css = await engine.renderAtomicStyles(true, { atomicStyleIds: ids })
 ```
 
 ## Documentation

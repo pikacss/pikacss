@@ -10,7 +10,7 @@ order: 30
 
 # Agent Skills
 
-PikaCSS ships with a Copilot agent skill that provides AI-assisted guidance for both consuming and extending PikaCSS. You can install it with the [`skills` CLI](https://www.npmjs.com/package/skills) to use it in any supported coding agent.
+PikaCSS ships with an agent skill that provides AI-assisted guidance for both consuming and extending PikaCSS. You can install it with the [`skills` CLI](https://www.npmjs.com/package/skills) to use it in any supported coding agent.
 
 ## Install
 

@@ -169,7 +169,7 @@ Correctness rules encoded by regression tests — do not "simplify" them away:
 - Every confirmed bug fix lands together with a minimal co-located regression test that fails without the fix.
 - Downstream packages test against built upstream `dist/` output: rebuild the upstream package (`pnpm --filter @pikacss/core build`) before validating consumers.
 - New plugin package checklist: `pnpm newplugin <name>` → implement (`defineEnginePlugin` + `declare module '@pikacss/core'` augmentation, factory named after the plugin) → register in `scripts/_skill-shared/index.ts` `PACKAGES` → docs page + template (`.agents/skills/maintain-docs/templates/pages/...`) + example triple in `docs/.examples/` → sidebar entry in `docs/.vitepress/sidebarAndNav.ts` → `pnpm maintain-docs:gen-api` until zero JSDoc gaps → package `README.md`.
-- Coverage thresholds (95% branches) are enforced per package; when a fix adds branches, add tests covering the new branches in the same change.
+- Coverage thresholds (95% branches/functions/lines/statements) are enforced per package; when a fix adds branches, add tests covering the new branches in the same change.
 
 ## Request Routing
 

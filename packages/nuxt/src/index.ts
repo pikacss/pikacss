@@ -33,7 +33,8 @@ export type ModuleOptions = Omit<PluginOptions, 'currentPackageName'>
  *
  * Configure options under the `pikacss` key in `nuxt.config`. When no
  * options are provided, the unplugin defaults apply: sources matching
- * `**\/*.{js,ts,jsx,tsx,vue}` are scanned.
+ * `**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}` are scanned, excluding
+ * `node_modules`, `dist`, `.git`, `.nuxt`, `.output`, and `coverage`.
  */
 export default (defineNuxtModule<ModuleOptions>({
 	meta: {
