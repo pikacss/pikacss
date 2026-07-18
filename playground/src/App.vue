@@ -53,6 +53,12 @@ const refreshPikaGenTypes = useDebounceFn(async () => {
 	await monacoConfigReady
 	await loadPikaGenTypes(instance.value)
 		.catch(e => console.error('[MonacoConfig] Failed to load pika.gen.ts types:', e))
+	// Bench scaffolding (temporary): signals the suggest-latency harness that
+	// node_modules types AND the generated pika types are fully loaded.
+	if (new URLSearchParams(window.location.search)
+		.has('__bench')) {
+		(window as any).__benchReady = true
+	}
 }, 500)
 watch(isRunning, (running) => {
 	if (running)

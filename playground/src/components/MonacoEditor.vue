@@ -4,9 +4,11 @@ import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { getEditorTheme, setupShikiMonaco } from '../composables/useShikiMonaco'
+// Custom TS worker (root-file trim): rollback = swap back to
+// `monaco-editor/esm/vs/language/typescript/ts.worker?worker`.
+import PikaTsWorker from '../workers/pika-ts.worker?worker'
 
 const props = defineProps<{
 	modelValue: string
@@ -18,6 +20,11 @@ const props = defineProps<{
 const emit = defineEmits<{
 	(e: 'update:modelValue', value: string): void
 }>()
+
+// `?__bench` exposes editor handles for scripts/bench-suggest.mjs (the
+// quick-suggest latency/visibility regression harness).
+const BENCH_MODE = new URLSearchParams(globalThis.location?.search ?? '')
+	.has('__bench')
 
 globalThis.MonacoEnvironment = {
 	getWorker(_, label) {
@@ -31,7 +38,7 @@ globalThis.MonacoEnvironment = {
 			return new HtmlWorker()
 		}
 		if (label === 'typescript' || label === 'javascript') {
-			return new TsWorker()
+			return new PikaTsWorker()
 		}
 		return new EditorWorker()
 	},
@@ -96,6 +103,11 @@ onMounted(() => {
 		scrollBeyondLastLine: false,
 		fixedOverflowWidgets: true,
 	})
+
+	if (BENCH_MODE) {
+		;(globalThis as any).__ed = editor.value
+		;(globalThis as any).__monaco = monaco
+	}
 
 	// No local ATA here anymore. We will load types globally via useTypeLoader in App.vue
 
