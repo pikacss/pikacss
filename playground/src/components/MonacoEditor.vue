@@ -28,6 +28,12 @@ const BENCH_MODE = new URLSearchParams(globalThis.location?.search ?? '')
 
 globalThis.MonacoEnvironment = {
 	getWorker(_, label) {
+		if (label === 'vue') {
+			// Lazy import keeps the heavy Volar chunk (bundled typescript +
+			// @vue/language-service) out of sessions that never open a vue-ts
+			// template. Instantiated via createWebWorker in useVueLanguageService.
+			return import('../workers/vue.worker?worker').then(({ default: VueWorker }) => new VueWorker())
+		}
 		if (label === 'json') {
 			return new JsonWorker()
 		}

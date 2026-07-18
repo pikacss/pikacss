@@ -71,6 +71,22 @@ export default defineConfig(async () => {
 		resolve: {
 			dedupe: ['vue'],
 		},
+		optimizeDeps: {
+			// monaco-editor is pure ESM and must NOT be pre-bundled: esbuild
+			// optimization turns each deep worker import (editor.worker.js,
+			// tsWorker.js) into a separate bundle with its own copy of monaco's
+			// worker bootstrap, and the duplicated `webWorkerServer` module state
+			// kills every custom worker at the init handshake ("Cannot access
+			// 'webWorkerServer' before initialization" / "already initialized").
+			exclude: ['monaco-editor'],
+		},
+		worker: {
+			// Vite 8 defaults to iife; the Volar vue worker's dependency graph
+			// (typescript + @vue/language-service) needs ESM. Monaco's own
+			// workers build fine as ES modules too (dev always serves them as
+			// module workers already).
+			format: 'es' as const,
+		},
 		server: {
 			headers: CROSS_ORIGIN_ISOLATION_HEADERS,
 		},

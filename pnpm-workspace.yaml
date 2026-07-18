@@ -48,9 +48,16 @@ catalog:
   '@types/picomatch': ^4.0.3
   '@vitejs/plugin-vue': ^6.0.7
   '@vitest/coverage-v8': ^4.1.9
+  '@volar/monaco': ^2.4.28
   '@vue/compiler-core': ^3.5.39
   '@vue/compiler-sfc': ^3.5.39
+  # @vue/language-* pinned exactly and kept in lockstep: language-service pins
+  # language-core to an exact version, and a split would create two package
+  # instances (`instanceof VueVirtualCode` breaks across them).
+  '@vue/language-core': 3.3.6
+  '@vue/language-service': 3.3.6
   '@vue/tsconfig': ^0.8.1
+  '@vue/typescript-plugin': 3.3.6
   '@vueuse/core': ^14.1.0
   '@webcontainer/api': ^1.6.1
   '@webref/css': ^8.6.1
@@ -99,6 +106,10 @@ catalog:
   vitepress-plugin-llms: ^1.13.2
   vitepress-plugin-mermaid: ^2.0.17
   vitest: ^4.1.9
+  # volar-service-typescript version must match @vue/language-service's own
+  # dependency (deep imports of its semantic/directiveComment plugins).
+  volar-service-typescript: 0.0.71
+  vscode-uri: ^3.1.0
   vue: ^3.5.39
   vue-router: ^4.6.4
   vue-tsc: ^3.3.6

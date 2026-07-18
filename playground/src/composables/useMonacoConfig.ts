@@ -2,11 +2,15 @@ import type { WebContainer } from '@webcontainer/api'
 import JSON5 from 'json5'
 import * as monaco from 'monaco-editor'
 
-// Singleton state: the fallback `pika` globals lib is disposed once the real
-// generated `src/pika.gen.ts` types have been loaded.
-let pikaFallbackLib: monaco.IDisposable | null = null
-let pikaGenLib: monaco.IDisposable | null = null
+// Singleton state: the fallback `pika` globals model is disposed once the real
+// generated `src/pika.gen.ts` types have been loaded. Both live as monaco
+// MODELS (not extra libs) so that model sync feeds them to BOTH the built-in
+// TS worker and the Volar vue worker (which never sees extra libs).
+let pikaFallbackModel: monaco.editor.ITextModel | null = null
 let pikaGenContent = ''
+
+const PIKA_GEN_URI = monaco.Uri.parse('file:///src/pika.gen.ts')
+const PIKA_GLOBALS_URI = monaco.Uri.parse('file:///pika-globals.d.ts')
 
 /**
  * Loads Monaco configuration (tsconfig) and types (node_modules) from WebContainer.
@@ -26,11 +30,13 @@ export function useMonacoConfig() {
 	 * reporting "Cannot find name 'pika'" before {@link loadPikaGenTypes} has
 	 * managed to load the real generated declarations (or if it never does).
 	 * Self-contained (no imports) so it applies regardless of module resolution.
-	 * Must run after `loadTypes` (which calls `setExtraLibs` and would otherwise
-	 * drop this lib).
+	 * Lives as a model (immune to `setExtraLibs`, visible to the Volar worker).
 	 *
-	 * Also registers the `*.vue` / `*.css` module shims (a separate lib, so a
-	 * template without `vue` installed cannot invalidate the pika globals).
+	 * Also registers the `*.vue` / `*.css` module shims. These stay an EXTRA
+	 * LIB on purpose: only the built-in TS worker needs them, and the loose
+	 * `*.vue` wildcard must never be synced into the Volar worker where it
+	 * would shadow precise SFC resolution. Extra libs are wiped by `loadTypes`'
+	 * `setExtraLibs`, so this must run after it.
 	 */
 	function loadPikaGlobals() {
 		const source = `
@@ -55,8 +61,8 @@ declare module '*.vue' {
 declare module '*.css' {}
 `
 		const ts = (monaco.languages.typescript as any).typescriptDefaults
-		pikaFallbackLib?.dispose()
-		pikaFallbackLib = pikaGenLib ? null : ts.addExtraLib(source, 'file:///pika-globals.d.ts')
+		if (!monaco.editor.getModel(PIKA_GEN_URI) && !pikaFallbackModel)
+			pikaFallbackModel = monaco.editor.createModel(source, 'typescript', PIKA_GLOBALS_URI)
 		ts.addExtraLib(shims, 'file:///module-shims.d.ts')
 	}
 
@@ -75,28 +81,38 @@ declare module '*.css' {}
 		if (!content || content === pikaGenContent)
 			return
 		pikaGenContent = content
+		const existing = monaco.editor.getModel(PIKA_GEN_URI)
+		if (existing)
+			existing.setValue(content)
+		else
+			monaco.editor.createModel(content, 'typescript', PIKA_GEN_URI)
+		pikaFallbackModel?.dispose()
+		pikaFallbackModel = null
+		// Model changes only revalidate the changed model; other open models
+		// (e.g. pika.config.ts importing ./src/pika.gen.ts before the model
+		// existed) keep stale "file not found" markers. Bumping a tiny version
+		// extra lib fires onDidExtraLibsChange, which revalidates every model
+		// without restarting the worker.
 		const ts = (monaco.languages.typescript as any).typescriptDefaults
-		pikaGenLib?.dispose()
-		pikaGenLib = ts.addExtraLib(content, 'file:///src/pika.gen.ts')
-		pikaFallbackLib?.dispose()
-		pikaFallbackLib = null
+		ts.addExtraLib(`// pika.gen revision ${Date.now()}\n`, 'file:///__pika-gen-revision.d.ts')
 	}
 
 	/**
-	 * Creates Monaco models for the template's TS/TSX sources up front. Models
-	 * are otherwise created lazily on first open, so imports between template
-	 * files (e.g. `./components/PreferencesCard.tsx` from App.tsx) report
-	 * "Cannot find module" until the target file has been opened once. Requires
-	 * eager model sync (set in MonacoEditor.vue) so the TS worker sees models
-	 * that are not bound to an editor.
+	 * Creates Monaco models for the template's TS/TSX/Vue sources up front.
+	 * Models are otherwise created lazily on first open, so imports between
+	 * template files (e.g. `./components/PreferencesCard.tsx` from App.tsx)
+	 * report "Cannot find module" until the target file has been opened once.
+	 * Requires eager model sync (set in MonacoEditor.vue) so the TS worker sees
+	 * models that are not bound to an editor; the Volar worker syncs `.vue` and
+	 * `.ts/.tsx` models through its own getSyncUris list.
 	 */
 	function preloadTemplateModels(files: Record<string, string>) {
 		for (const [path, content] of Object.entries(files)) {
-			if (!/\.tsx?$/.test(path))
+			if (!/\.(?:tsx?|vue)$/.test(path))
 				continue
 			const uri = monaco.Uri.parse(`file:///${path}`)
 			if (!monaco.editor.getModel(uri))
-				monaco.editor.createModel(content, 'typescript', uri)
+				monaco.editor.createModel(content, path.endsWith('.vue') ? 'vue' : 'typescript', uri)
 		}
 	}
 

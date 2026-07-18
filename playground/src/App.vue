@@ -225,6 +225,17 @@ onMounted(async () => {
 			monacoConfigReady = loadMonacoConfig(instance.value)
 				.catch(e => console.error('[MonacoConfig] Failed:', e))
 				.finally(() => loadPikaGlobals())
+
+			// Volar-based `.vue` language features (completion, hover,
+			// diagnostics). Lazy: templates without SFCs never fetch the heavy
+			// worker chunk. Independent of monacoConfigReady — the Volar worker
+			// reads node_modules through its own WebContainer FS bridge.
+			if (Object.keys(flattenTree(projectTree))
+				.some(path => path.endsWith('.vue'))) {
+				import('./composables/useVueLanguageService')
+					.then(m => m.setupVueLanguageService(instance.value!))
+					.catch(e => console.error('[VueLS] Failed to start the vue language service:', e))
+			}
 		}
 
 		await startDevServer(config.devCommand, data => writeToTerminal(data))
