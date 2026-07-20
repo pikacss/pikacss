@@ -38,7 +38,7 @@ const ctx = createCtx({
 })
 ```
 
-`createCtx` is the low-level integration API and requires fully resolved options. Bundler adapters normally apply these scan defaults before calling it. Explicit `scan.include` and `scan.exclude` values in the higher-level bundler plugins replace the corresponding defaults; they are not merged with them.
+`createCtx` is the low-level integration API and requires fully resolved options. Bundler adapters normally apply these scan defaults before calling it. Explicit `scan.include` and `scan.exclude` values in the higher-level bundler plugins replace the bundler plugin defaults; they are not merged with them.
 
 ## Documentation
 
