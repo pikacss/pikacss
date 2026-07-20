@@ -23,6 +23,7 @@
 		"generate:core:property-effects": "pnpm generate:css-data && tsx ./scripts/css-data/generate-property-effects.ts",
 		"generate:core:css": "pnpm generate:css-data && tsx ./scripts/css-data/generate-csstype.ts && tsx ./scripts/css-data/generate-property-effects.ts",
 		"maintain-docs:analyze": "tsx ./scripts/maintain-docs/analyze.ts",
+		"maintain-docs:check-contracts": "tsx ./scripts/maintain-docs/check-contracts.ts",
 		"maintain-docs:gen-api": "tsx ./scripts/maintain-docs/gen-api-docs.ts",
 		"maintain-jsdocs:lint": "tsx ./scripts/maintain-jsdocs/lint.ts",
 		"maintain-jsdocs:scaffold": "tsx ./scripts/maintain-jsdocs/scaffold.ts",

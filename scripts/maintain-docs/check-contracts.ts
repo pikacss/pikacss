@@ -1,0 +1,169 @@
+import { readFileSync } from 'node:fs'
+import process from 'node:process'
+import { resolve } from 'pathe'
+import ts from 'typescript'
+import { PACKAGES, workspaceRoot } from '../_skill-shared'
+
+interface PackageManifest {
+	engines?: Record<string, string>
+	exports?: Record<string, unknown>
+}
+
+const UNPLUGIN_SOURCE_PATH = 'packages/unplugin/src/index.ts'
+const failures: string[] = []
+
+function readWorkspaceFile(path: string): string {
+	return readFileSync(resolve(workspaceRoot, path), 'utf8')
+}
+
+function readManifest(path: string): PackageManifest {
+	return JSON.parse(readWorkspaceFile(path)) as PackageManifest
+}
+
+function expectContains(path: string, expected: string, reason: string) {
+	const content = readWorkspaceFile(path)
+	if (!content.includes(expected))
+		failures.push(`${path}: ${reason} (missing ${JSON.stringify(expected)})`)
+}
+
+function findNode<T extends ts.Node>(root: ts.Node, predicate: (node: ts.Node) => node is T): T | undefined {
+	let match: T | undefined
+
+	function visit(node: ts.Node) {
+		if (match != null)
+			return
+		if (predicate(node)) {
+			match = node
+			return
+		}
+		ts.forEachChild(node, visit)
+	}
+
+	visit(root)
+	return match
+}
+
+function extractStringArray(expression: ts.Expression | undefined, label: string): string[] {
+	while (expression != null && ts.isParenthesizedExpression(expression))
+		expression = expression.expression
+
+	if (expression == null || !ts.isArrayLiteralExpression(expression)) {
+		failures.push(`${UNPLUGIN_SOURCE_PATH}: could not locate ${label} as a string array literal`)
+		return []
+	}
+
+	const values: string[] = []
+	for (const element of expression.elements) {
+		if (ts.isStringLiteralLike(element))
+			values.push(element.text)
+		else
+			failures.push(`${UNPLUGIN_SOURCE_PATH}: ${label} contains a non-string array element (${element.getText()})`)
+	}
+	return values
+}
+
+function extractVariableStringArray(sourceFile: ts.SourceFile, variableName: string, label: string): string[] {
+	const declaration = findNode(
+		sourceFile,
+		(node): node is ts.VariableDeclaration => ts.isVariableDeclaration(node)
+			&& ts.isIdentifier(node.name)
+			&& node.name.text === variableName,
+	)
+	return extractStringArray(declaration?.initializer, label)
+}
+
+function extractFallbackStringArray(sourceFile: ts.SourceFile, leftExpression: string, label: string): string[] {
+	const expression = findNode(
+		sourceFile,
+		(node): node is ts.BinaryExpression => ts.isBinaryExpression(node)
+			&& (node.operatorToken.kind === ts.SyntaxKind.BarBarToken || node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken)
+			&& node.left.getText(sourceFile) === leftExpression,
+	)
+	return extractStringArray(expression?.right, label)
+}
+
+const manifests = new Map(
+	PACKAGES.map(pkg => [pkg.name, readManifest(`packages/${pkg.dir}/package.json`)]),
+)
+const nodeRanges = new Map<string, string>()
+
+for (const pkg of PACKAGES) {
+	const nodeRange = manifests.get(pkg.name)?.engines?.node
+	if (nodeRange == null)
+		failures.push(`packages/${pkg.dir}/package.json: engines.node is required for public package contract checks`)
+	else
+		nodeRanges.set(pkg.name, nodeRange)
+}
+
+const distinctNodeRanges = new Set(nodeRanges.values())
+if (distinctNodeRanges.size > 1) {
+	failures.push(`public package Node.js ranges differ: ${[...nodeRanges]
+		.map(([name, range]) => `${name}=${range}`)
+		.join(', ')}`)
+}
+
+const unpluginManifest = manifests.get('@pikacss/unplugin-pikacss')
+const documentedNodeRange = unpluginManifest?.engines?.node
+if (documentedNodeRange != null) {
+	for (const path of [
+		'docs/getting-started/setup.md',
+		'docs/zh-tw/getting-started/setup.md',
+		'packages/unplugin/README.md',
+	]) {
+		expectContains(path, `\`${documentedNodeRange}\``, `document the supported Node.js range from the published packages`)
+	}
+}
+
+const unpluginExports = Object.keys(unpluginManifest?.exports ?? {})
+	.filter(subpath => subpath !== '.')
+
+for (const subpath of unpluginExports) {
+	const specifier = `@pikacss/unplugin-pikacss${subpath.slice(1)}`
+	expectContains(
+		'packages/unplugin/README.md',
+		specifier,
+		`list the exported bundler entry point ${specifier}`,
+	)
+}
+
+const unpluginSource = readWorkspaceFile(UNPLUGIN_SOURCE_PATH)
+const unpluginSourceFile = ts.createSourceFile(
+	UNPLUGIN_SOURCE_PATH,
+	unpluginSource,
+	ts.ScriptTarget.Latest,
+	true,
+	ts.ScriptKind.TS,
+)
+const defaultScanPatterns = [
+	...extractVariableStringArray(unpluginSourceFile, 'defaultInclude', 'default scan include patterns'),
+	...extractFallbackStringArray(unpluginSourceFile, 'scan?.exclude', 'default scan exclude patterns'),
+]
+
+for (const pattern of defaultScanPatterns) {
+	expectContains(
+		'packages/integration/README.md',
+		pattern,
+		`keep the direct createCtx scan example aligned with the bundler defaults`,
+	)
+}
+
+expectContains(
+	'packages/integration/README.md',
+	'currentPackageName: \'@acme/pikacss-integration\'',
+	'demonstrate that custom integrations must identify their own package',
+)
+expectContains(
+	'packages/integration/README.md',
+	'replace the bundler plugin defaults',
+	'document that explicit scan patterns replace rather than extend bundler defaults',
+)
+
+if (failures.length > 0) {
+	console.error('\nDocumentation contract checks failed:\n')
+	for (const failure of failures)
+		console.error(`  - ${failure}`)
+	console.error('')
+	process.exit(1)
+}
+
+console.log(`Documentation contracts OK (${nodeRanges.size} package engines, ${unpluginExports.length} bundler entry points, and ${defaultScanPatterns.length} scan patterns checked).`)

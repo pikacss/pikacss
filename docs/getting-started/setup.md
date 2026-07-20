@@ -40,6 +40,8 @@ yarn add -D @pikacss/core @pikacss/unplugin-pikacss
 
 :::
 
+PikaCSS requires Node.js 22 or later (package engine range: `>=22`).
+
 The Vite entry supports Vite 7 and 8 only (peer dependency `vite: ^7.0.0 || ^8.0.0`).
 
 ## Apply Vite Plugin

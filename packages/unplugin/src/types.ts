@@ -1,6 +1,33 @@
 import type { EngineConfig, IntegrationContextOptions, Nullish } from '@pikacss/integration'
 
 /**
+ * Glob patterns controlling which source files are scanned for `pika()` calls.
+ *
+ * @remarks
+ * Explicit `include` or `exclude` values replace the corresponding defaults verbatim;
+ * they are not merged with the default patterns.
+ */
+export interface ScanOptions {
+	/**
+	 * File glob patterns to scan. Supports a single string or array of strings.
+	 * When omitted, the default covers every extension the AST compiler
+	 * supports: the full JS family plus Vue SFCs.
+	 *
+	 * @default ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']
+	 */
+	include?: string | string[]
+
+	/**
+	 * File glob patterns to exclude. Supports a single string or array of strings.
+	 * The default skips dependencies, build outputs, coverage, VCS metadata, and
+	 * framework build dirs (`.nuxt`/`.output`).
+	 *
+	 * @default ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']
+	 */
+	exclude?: string | string[]
+}
+
+/**
  * User-facing configuration options for the PikaCSS bundler plugin.
  *
  * @remarks
@@ -39,22 +66,7 @@ export interface PluginOptions {
 	 *
 	 * @default `{ include: ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'], exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'] }`
 	 */
-	scan?: {
-		/**
-		 * File glob patterns to scan. Supports a single string or array of strings.
-		 * When omitted, the default covers every extension the AST compiler
-		 * supports: the full JS family plus Vue SFCs. An explicit value wins verbatim.
-		 * @default ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']
-		 */
-		include?: string | string[]
-		/**
-		 * File glob patterns to exclude. Supports a single string or array of strings.
-		 * The default skips dependencies, build outputs, coverage, VCS metadata, and
-		 * framework build dirs (`.nuxt`/`.output`). An explicit value wins verbatim.
-		 * @default ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']
-		 */
-		exclude?: string | string[]
-	}
+	scan?: ScanOptions
 
 	/**
 	 * Engine configuration object or a path to a `pika.config.*` file. When omitted, the plugin

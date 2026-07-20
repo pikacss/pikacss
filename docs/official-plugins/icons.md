@@ -94,6 +94,36 @@ yarn add -D @iconify-json/mdi
 
 > See [API Reference — Plugin Icons](/api/plugin-icons) for full type signatures and defaults.
 
+## Processor Metadata
+
+`processor` receives the mutable generated style item and metadata describing the resolved icon:
+
+```ts
+import { defineEngineConfig } from '@pikacss/core'
+import { icons } from '@pikacss/plugin-icons'
+
+export default defineEngineConfig({
+  plugins: [icons()],
+  icons: {
+    processor(styleItem, meta) {
+      // meta.collection: resolved Iconify collection
+      // meta.name: resolved icon name
+      // meta.svg: loaded SVG source
+      // meta.source: 'custom' | 'local' | 'cdn'
+      // meta.mode: final 'mask' or 'bg' mode after resolving 'auto'
+    },
+  },
+})
+```
+
+The callback may mutate `styleItem` to inject or replace declarations before the shortcut result is returned.
+
+## Loading and Retry Behavior
+
+Resolution checks custom collections first, then locally installed packages, then the configured CDN. A missing or temporarily unavailable icon logs a warning but is not cached as a permanent miss. Later resolutions retry the load, and failed CDN requests are removed from the collection cache before the next attempt.
+
+Custom collection values are opaque Iconify loader functions or inline SVG maps. Their backing file paths are therefore not known to PikaCSS and cannot currently be registered as config dependencies. Editing files used by a custom collection does not automatically trigger a config reload; restart the dev process or touch the PikaCSS config after changing those files.
+
 ## Next
 
 - [Fonts](/official-plugins/fonts) — web font loading and management.
