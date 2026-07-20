@@ -35,20 +35,28 @@ function extractStringArray(source: string, pattern: RegExp, label: string): str
 		.flatMap(match => match[1] == null ? [] : [match[1]])
 }
 
-const rootManifest = readManifest('package.json')
+const coreManifest = readManifest('packages/core/package.json')
 const unpluginManifest = readManifest('packages/unplugin/package.json')
-const nodeRange = rootManifest.engines?.node
+const coreNodeRange = coreManifest.engines?.node
+const unpluginNodeRange = unpluginManifest.engines?.node
 
-if (nodeRange == null) {
-	failures.push('package.json: engines.node is required for documentation contract checks')
+if (coreNodeRange == null)
+	failures.push('packages/core/package.json: engines.node is required for documentation contract checks')
+if (unpluginNodeRange == null)
+	failures.push('packages/unplugin/package.json: engines.node is required for documentation contract checks')
+if (coreNodeRange != null && unpluginNodeRange != null && coreNodeRange !== unpluginNodeRange) {
+	failures.push(
+		`public package Node.js ranges differ: @pikacss/core=${coreNodeRange}, @pikacss/unplugin-pikacss=${unpluginNodeRange}`,
+	)
 }
-else {
+
+if (unpluginNodeRange != null) {
 	for (const path of [
 		'docs/getting-started/setup.md',
 		'docs/zh-tw/getting-started/setup.md',
 		'packages/unplugin/README.md',
 	]) {
-		expectContains(path, `\`${nodeRange}\``, `document the supported Node.js range from package.json`)
+		expectContains(path, `\`${unpluginNodeRange}\``, `document the supported Node.js range from the published package`)
 	}
 }
 
