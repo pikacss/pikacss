@@ -20,7 +20,7 @@ const PLUGIN_NAME = 'unplugin-pikacss'
  *
  * @param options - User-supplied plugin configuration. When `undefined`, all defaults apply.
  * @param meta - Unplugin metadata providing the target bundler framework name.
- * @returns An unplugin hooks object consumed by Vite, webpack, Rollup, esbuild, and Rspack.
+ * @returns An unplugin hooks object consumed by the exported bundler adapters.
  *
  * @remarks
  * This is the core entry-point called by `createUnplugin`. It resolves user options,
