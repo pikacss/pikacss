@@ -18,20 +18,6 @@ import { createCtx } from '@pikacss/integration'
 const ctx = createCtx({
   cwd: process.cwd(),
   currentPackageName: '@pikacss/unplugin-pikacss',
-  configOrPath: undefined,
-  fnName: 'pika',
-  transformedFormat: 'string',
-  tsCodegen: 'pika.gen.ts',
-  cssCodegen: 'pika.gen.css',
-  autoCreateConfig: false,
-})
-```
-
-Bundler integrations normally resolve scan defaults before calling `createCtx`. When constructing a context directly, pass the complete patterns required by your integration:
-
-```ts
-const ctx = createCtx({
-  // ...other options
   scan: {
     include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
     exclude: [
@@ -43,10 +29,16 @@ const ctx = createCtx({
       'coverage/**',
     ],
   },
+  configOrPath: undefined,
+  fnName: 'pika',
+  transformedFormat: 'string',
+  tsCodegen: 'pika.gen.ts',
+  cssCodegen: 'pika.gen.css',
+  autoCreateConfig: false,
 })
 ```
 
-Explicit `scan.include` and `scan.exclude` values replace the bundler plugin defaults; they are not merged with them.
+`createCtx` is the low-level integration API and requires fully resolved options. Bundler adapters normally apply these scan defaults before calling it. Explicit `scan.include` and `scan.exclude` values in the higher-level bundler plugins replace the corresponding defaults; they are not merged with them.
 
 ## Documentation
 
