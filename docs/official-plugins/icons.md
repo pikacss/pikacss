@@ -99,15 +99,21 @@ yarn add -D @iconify-json/mdi
 `processor` receives the mutable generated style item and metadata describing the resolved icon:
 
 ```ts
-icons: {
-  processor(styleItem, meta) {
-    // meta.collection: resolved Iconify collection
-    // meta.name: resolved icon name
-    // meta.svg: loaded SVG source
-    // meta.source: 'custom' | 'local' | 'cdn'
-    // meta.mode: final 'mask' or 'bg' mode after resolving 'auto'
+import { defineEngineConfig } from '@pikacss/core'
+import { icons } from '@pikacss/plugin-icons'
+
+export default defineEngineConfig({
+  plugins: [icons()],
+  icons: {
+    processor(styleItem, meta) {
+      // meta.collection: resolved Iconify collection
+      // meta.name: resolved icon name
+      // meta.svg: loaded SVG source
+      // meta.source: 'custom' | 'local' | 'cdn'
+      // meta.mode: final 'mask' or 'bg' mode after resolving 'auto'
+    },
   },
-}
+})
 ```
 
 The callback may mutate `styleItem` to inject or replace declarations before the shortcut result is returned.
