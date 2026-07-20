@@ -9,8 +9,8 @@ category: official-plugins
 order: 30
 translation:
   sourceFile: docs/official-plugins/icons.md
-  sourceCommit: 4b0051bcda139d10b361eb9398d59f43a3526fcc
-  sourceBlob: 6321c8f3623749ccbf86ef2503ccb07caaecdd79
+  sourceCommit: ad1dd71266640eb455c33a53470372ad4a2c2cdb
+  sourceBlob: c524a8848c29661328ea003ce6b00473730c0bfd
 ---
 
 # 圖示 {#icons}
@@ -98,29 +98,35 @@ yarn add -D @iconify-json/mdi
 
 > 完整的型別簽章與預設值請見 [API 參考 — Plugin Icons](/api/plugin-icons)。
 
-## Processor Metadata {#processor-metadata}
+## processor 中繼資料 {#processor-metadata}
 
-`processor` 會收到可變更的產生樣式項目，以及描述已解析圖示的 metadata：
+`processor` 會收到可變更的已產生樣式項目，以及描述解析結果的中繼資料：
 
 ```ts
-icons: {
-  processor(styleItem, meta) {
-    // meta.collection：解析後的 Iconify collection
-    // meta.name：解析後的圖示名稱
-    // meta.svg：載入的 SVG 內容
-    // meta.source：'custom' | 'local' | 'cdn'
-    // meta.mode：解析 'auto' 後最終採用的 'mask' 或 'bg'
+import { defineEngineConfig } from '@pikacss/core'
+import { icons } from '@pikacss/plugin-icons'
+
+export default defineEngineConfig({
+  plugins: [icons()],
+  icons: {
+    processor(styleItem, meta) {
+      // meta.collection：解析後的 Iconify collection
+      // meta.name：解析後的圖示名稱
+      // meta.svg：載入的 SVG 內容
+      // meta.source：'custom' | 'local' | 'cdn'
+      // meta.mode：解析 'auto' 後最終採用的 'mask' 或 'bg'
+    },
   },
-}
+})
 ```
 
-callback 可以直接修改 `styleItem`，在 shortcut 結果回傳前加入或取代 CSS 宣告。
+回呼函式可以直接修改 `styleItem`，在 shortcut 結果回傳前加入或取代 CSS 宣告。
 
 ## 載入與重試行為 {#loading-and-retry-behavior}
 
-解析時會依序檢查自訂 collection、本機安裝套件，再檢查設定的 CDN。找不到或暫時無法載入的圖示會輸出警告，但不會被永久快取成失敗結果；後續再次解析時會重新嘗試載入，而失敗的 CDN 請求也會先從 collection cache 移除。
+解析時會依序檢查自訂 collection、本機安裝套件，再檢查設定的 CDN。找不到或暫時無法載入的圖示會輸出警告，但不會被永久快取成失敗結果；後續再次解析時會重新嘗試載入，而失敗的 CDN 請求也會先從 collection 快取移除。
 
-自訂 collection 的值是 Iconify loader function 或 inline SVG map，PikaCSS 無法得知其背後檔案路徑，因此目前不能把這些檔案註冊為設定相依項目。修改自訂 collection 使用的檔案不會自動觸發設定重新載入；請重新啟動開發程序，或在修改後觸碰一次 PikaCSS 設定檔。
+自訂 collection 的值是 Iconify loader 函式或 inline SVG 對照表，PikaCSS 無法得知其背後檔案路徑，因此目前不能把這些檔案註冊為設定相依項目。修改自訂 collection 使用的檔案不會自動觸發設定重新載入；請重新啟動開發程序，或在修改後觸碰一次 PikaCSS 設定檔。
 
 ## 下一步 {#next}
 
