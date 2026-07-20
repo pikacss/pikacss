@@ -24,6 +24,17 @@ function expectContains(path: string, expected: string, reason: string) {
 		failures.push(`${path}: ${reason} (missing ${JSON.stringify(expected)})`)
 }
 
+function extractStringArray(source: string, pattern: RegExp, label: string): string[] {
+	const body = source.match(pattern)?.[1]
+	if (body == null) {
+		failures.push(`packages/unplugin/src/index.ts: could not locate ${label}`)
+		return []
+	}
+
+	return [...body.matchAll(/'([^']+)'/g)]
+		.flatMap(match => match[1] == null ? [] : [match[1]])
+}
+
 const rootManifest = readManifest('package.json')
 const unpluginManifest = readManifest('packages/unplugin/package.json')
 const nodeRange = rootManifest.engines?.node
@@ -53,14 +64,21 @@ for (const subpath of unpluginExports) {
 	)
 }
 
-for (const pattern of [
-	'node_modules/**',
-	'dist/**',
-	'.git/**',
-	'.nuxt/**',
-	'.output/**',
-	'coverage/**',
-]) {
+const unpluginSource = readWorkspaceFile('packages/unplugin/src/index.ts')
+const defaultScanPatterns = [
+	...extractStringArray(
+		unpluginSource,
+		/const defaultInclude = \[([^\]]+)\]/,
+		'default scan include patterns',
+	),
+	...extractStringArray(
+		unpluginSource,
+		/scan\?\.exclude \|\| \[([^\]]+)\]/,
+		'default scan exclude patterns',
+	),
+]
+
+for (const pattern of defaultScanPatterns) {
 	expectContains(
 		'packages/integration/README.md',
 		pattern,
@@ -82,4 +100,4 @@ if (failures.length > 0) {
 	process.exit(1)
 }
 
-console.log(`Documentation contracts OK (${unpluginExports.length} bundler entry points checked).`)
+console.log(`Documentation contracts OK (${unpluginExports.length} bundler entry points and ${defaultScanPatterns.length} scan patterns checked).`)
