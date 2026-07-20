@@ -18,8 +18,8 @@ category: getting-started
 order: 20
 translation:
   sourceFile: docs/getting-started/setup.md
-  sourceCommit: 36ab046b5f27060274a79d160c9b43606652d780
-  sourceBlob: 0024f424fc7645357b762a940f5151f33ddf71a9
+  sourceCommit: bfd601e09dace2a1856b9d2b220db05afce9b103
+  sourceBlob: 6994edd576f16955303c05897ceb196c35f51611
 ---
 
 # 安裝與設定 {#setup}
@@ -43,6 +43,8 @@ yarn add -D @pikacss/core @pikacss/unplugin-pikacss
 ```
 
 :::
+
+PikaCSS 需要 Node.js 22 以上版本（套件 engine 範圍：`>=22`）。
 
 Vite 進入點只支援 Vite 7 與 8（peer dependency 為 `vite: ^7.0.0 || ^8.0.0`）。
 
