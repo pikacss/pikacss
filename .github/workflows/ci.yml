@@ -34,6 +34,7 @@ jobs:
       # tracked outputs (packages/core/src/generated/*.ts + docs/api/*.md) and fail
       # if the working tree changed. Both generators are idempotent on a clean tree.
       - name: check for uncommitted codegen drift (css-data + api docs)
+        id: codegen-drift
         run: |
           pnpm generate:core:css
           pnpm maintain-docs:gen-api
@@ -43,6 +44,17 @@ jobs:
             git status --porcelain
             exit 1
           fi
+
+      - name: upload regenerated outputs for codegen drift diagnosis
+        if: steps.codegen-drift.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: codegen-drift-${{ github.sha }}
+          path: |
+            docs/api/*.md
+            packages/core/src/generated/*.ts
+          if-no-files-found: error
+          retention-days: 1
 
       - name: check documentation implementation contracts
         run: pnpm maintain-docs:check-contracts
