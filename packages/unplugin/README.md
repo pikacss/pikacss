@@ -2,7 +2,7 @@
 
 Universal bundler plugin for PikaCSS. Supports Vite, Webpack, Rspack, Rollup, Rolldown, and esbuild.
 
-PikaCSS requires Node.js 22 or later. The Vite entry supports Vite 7 and 8 only.
+PikaCSS requires Node.js 22 or later (package engine range: `>=22`). The Vite entry supports Vite 7 and 8 only.
 
 ## Installation
 
