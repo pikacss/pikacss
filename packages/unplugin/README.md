@@ -2,7 +2,7 @@
 
 Universal bundler plugin for PikaCSS. Supports Vite, Webpack, Rspack, Rollup, Rolldown, and esbuild.
 
-The Vite entry supports Vite 7 and 8 only.
+PikaCSS requires Node.js 22 or later. The Vite entry supports Vite 7 and 8 only.
 
 ## Installation
 
@@ -28,11 +28,28 @@ export default defineConfig({
 
 ### Other bundlers
 
+Use the entry point matching your bundler:
+
+| Bundler | Entry point |
+|---|---|
+| Rollup | `@pikacss/unplugin-pikacss/rollup` |
+| Rolldown | `@pikacss/unplugin-pikacss/rolldown` |
+| Webpack | `@pikacss/unplugin-pikacss/webpack` |
+| Rspack | `@pikacss/unplugin-pikacss/rspack` |
+| esbuild | `@pikacss/unplugin-pikacss/esbuild` |
+
+For example:
+
 ```ts
+// rollup.config.ts
 import pikacss from '@pikacss/unplugin-pikacss/rollup'
-import pikacss from '@pikacss/unplugin-pikacss/rspack'
-import pikacss from '@pikacss/unplugin-pikacss/webpack'
+
+export default {
+  plugins: [pikacss()],
+}
 ```
+
+See the integration guide for bundler-specific configuration details.
 
 ## Documentation
 
