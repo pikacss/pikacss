@@ -99,23 +99,6 @@ export default defineConfig({
 
 ## Types
 
-### ScanOptions {#interface-scanoptions}
-
-Glob patterns controlling which source files are scanned for `pika()` calls.
-
-| Property | Type | Description | Default |
-|---|---|---|---|
-| `include?` | `string \| string[]` | File glob patterns to scan. Supports a single string or array of strings. When omitted, the default covers every extension the AST compiler supports: the full JS family plus Vue SFCs. | `['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']` |
-| `exclude?` | `string \| string[]` | File glob patterns to exclude. Supports a single string or array of strings. The default skips dependencies, build outputs, coverage, VCS metadata, and framework build dirs (`.nuxt`/`.output`). | `['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']` |
-
-**Remarks:**
-
-Explicit `include` or `exclude` values replace the corresponding defaults verbatim;
-they are not merged with the default patterns.
-
-<br>
-<br>
-
 ### PluginOptions {#interface-pluginoptions}
 
 User-facing configuration options for the PikaCSS bundler plugin.
@@ -174,6 +157,23 @@ Normalized plugin configuration with all defaults applied and boolean shorthands
 Produced internally by the unplugin factory from `PluginOptions`. Consumers should not
 construct this type directly — it exists so that internal helpers receive fully resolved,
 non-optional values.
+
+<br>
+<br>
+
+### ScanOptions {#interface-scanoptions}
+
+Glob patterns controlling which source files are scanned for `pika()` calls.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `include?` | `string \| string[]` | File glob patterns to scan. Supports a single string or array of strings. When omitted, the default covers every extension the AST compiler supports: the full JS family plus Vue SFCs. | `['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']` |
+| `exclude?` | `string \| string[]` | File glob patterns to exclude. Supports a single string or array of strings. The default skips dependencies, build outputs, coverage, VCS metadata, and framework build dirs (`.nuxt`/`.output`). | `['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']` |
+
+**Remarks:**
+
+Explicit `include` or `exclude` values replace the corresponding defaults verbatim;
+they are not merged with the default patterns.
 
 <br>
 <br>
