@@ -97,7 +97,9 @@ for (const pkg of PACKAGES) {
 
 const distinctNodeRanges = new Set(nodeRanges.values())
 if (distinctNodeRanges.size > 1) {
-	failures.push(`public package Node.js ranges differ: ${[...nodeRanges].map(([name, range]) => `${name}=${range}`).join(', ')}`)
+	failures.push(`public package Node.js ranges differ: ${[...nodeRanges]
+		.map(([name, range]) => `${name}=${range}`)
+		.join(', ')}`)
 }
 
 const unpluginManifest = manifests.get('@pikacss/unplugin-pikacss')
@@ -147,7 +149,7 @@ for (const pattern of defaultScanPatterns) {
 
 expectContains(
 	'packages/integration/README.md',
-	"currentPackageName: '@acme/pikacss-integration'",
+	'currentPackageName: \'@acme/pikacss-integration\'',
 	'demonstrate that custom integrations must identify their own package',
 )
 expectContains(
