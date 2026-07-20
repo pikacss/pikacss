@@ -44,6 +44,9 @@ jobs:
             exit 1
           fi
 
+      - name: check documentation implementation contracts
+        run: pnpm maintain-docs:check-contracts
+
       - name: check publish correctness (publint + are-the-types-wrong)
         run: pnpm publint && pnpm attw
 
