@@ -99,6 +99,23 @@ export default defineConfig({
 
 ## Types
 
+### ScanOptions {#interface-scanoptions}
+
+Glob patterns controlling which source files are scanned for `pika()` calls.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `include?` | `string \| string[]` | File glob patterns to scan. Supports a single string or array of strings. When omitted, the default covers every extension the AST compiler supports: the full JS family plus Vue SFCs. | `['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']` |
+| `exclude?` | `string \| string[]` | File glob patterns to exclude. Supports a single string or array of strings. The default skips dependencies, build outputs, coverage, VCS metadata, and framework build dirs (`.nuxt`/`.output`). | `['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']` |
+
+**Remarks:**
+
+Explicit `include` or `exclude` values replace the corresponding defaults verbatim;
+they are not merged with the default patterns.
+
+<br>
+<br>
+
 ### PluginOptions {#interface-pluginoptions}
 
 User-facing configuration options for the PikaCSS bundler plugin.
@@ -106,7 +123,7 @@ User-facing configuration options for the PikaCSS bundler plugin.
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `cwd?` | `string` | Explicit working directory for resolving config files, codegen output paths, and source scanning globs. When set, overrides the bundler-detected project root. | ``undefined` (use bundler-detected root)` |
-| `scan?` | `{ 		/** 		 * File glob patterns to scan. Supports a single string or array of strings. 		 * When omitted, the default covers every extension the AST compiler 		 * supports: the full JS family plus Vue SFCs. An explicit value wins verbatim. 		 * @default ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'] 		 */ 		include?: string \| string[] 		/** 		 * File glob patterns to exclude. Supports a single string or array of strings. 		 * The default skips dependencies, build outputs, coverage, VCS metadata, and 		 * framework build dirs (`.nuxt`/`.output`). An explicit value wins verbatim. 		 * @default ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'] 		 */ 		exclude?: string \| string[] 	}` | Glob patterns controlling which source files are scanned for `pika()` calls. | ``{ include: ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'], exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'] }`` |
+| `scan?` | `ScanOptions` | Glob patterns controlling which source files are scanned for `pika()` calls. | ``{ include: ['**\/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'], exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'] }`` |
 | `config?` | `EngineConfig \| string` | Engine configuration object or a path to a `pika.config.*` file. When omitted, the plugin auto-discovers a config file in the project root. | ``undefined` (auto-discover)` |
 | `autoCreateConfig?` | `boolean` | When `true`, automatically scaffolds a default `pika.config.js` file if no existing config is found. | ``false`` |
 | `fnName?` | `string` | Base function name to recognize in source code. All variants (`.str`, `.arr`, preview) are derived from this name. | ``'pika'`` |
