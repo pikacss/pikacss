@@ -25,6 +25,9 @@ jobs:
       - name: install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: build packages
+        run: pnpm build
+
       - name: capture diagnostics
         id: diagnostics
         shell: bash
