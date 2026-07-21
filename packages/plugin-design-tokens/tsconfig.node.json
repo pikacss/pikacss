@@ -1,0 +1,10 @@
+{
+	"extends": "@deviltea/tsconfig/node-bundler",
+	"compilerOptions": {
+		"composite": true
+	},
+	"include": [
+		"./src/index.ts",
+		"./src/node.ts"
+	]
+}

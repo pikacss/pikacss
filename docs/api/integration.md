@@ -12,6 +12,7 @@ relatedSources:
   - 'packages/integration/src/ctx.ts'
   - 'packages/integration/src/fnConfig.ts'
   - 'packages/integration/src/index.ts'
+  - 'packages/integration/src/log.ts'
   - 'packages/integration/src/moduleId.ts'
   - 'packages/integration/src/processors/js.ts'
   - 'packages/integration/src/processors/registry.ts'
@@ -30,7 +31,7 @@ order: 30
 
 - Package: `@pikacss/integration`
 - Generated from the exported surface and JSDoc in `packages/integration/src/index.ts`.
-- Source files: `packages/integration/src/compiler/analyze.ts`, `packages/integration/src/compiler/errors.ts`, `packages/integration/src/compiler/evaluate.ts`, `packages/integration/src/compiler/parse.ts`, `packages/integration/src/ctx.ts`, `packages/integration/src/fnConfig.ts`, `packages/integration/src/index.ts`, `packages/integration/src/moduleId.ts`, `packages/integration/src/processors/js.ts`, `packages/integration/src/processors/registry.ts`, `packages/integration/src/processors/types.ts`, `packages/integration/src/types.ts`
+- Source files: `packages/integration/src/compiler/analyze.ts`, `packages/integration/src/compiler/errors.ts`, `packages/integration/src/compiler/evaluate.ts`, `packages/integration/src/compiler/parse.ts`, `packages/integration/src/ctx.ts`, `packages/integration/src/fnConfig.ts`, `packages/integration/src/index.ts`, `packages/integration/src/log.ts`, `packages/integration/src/moduleId.ts`, `packages/integration/src/processors/js.ts`, `packages/integration/src/processors/registry.ts`, `packages/integration/src/processors/types.ts`, `packages/integration/src/types.ts`
 
 </details>
 
@@ -237,6 +238,13 @@ Resolves the concrete output format for a call variant under the given default f
 
 ## Constants
 
+### consoleDiagnosticHandler {#const-consolediagnostichandler}
+
+Default diagnostic adapter used by official Node.js integrations.
+
+<br>
+<br>
+
 ### JS_PROCESSOR_EXTENSIONS {#const-js-processor-extensions}
 
 File extensions handled by the built-in JS/TS processor.
@@ -253,6 +261,13 @@ The built-in JavaScript/TypeScript processor.
 Emitted literals always use single quotes for JS sources (engine invariant:
 the transformed output convention predates the AST compiler and is pinned by
 regression tests).
+
+<br>
+<br>
+
+### log {#const-log}
+
+Console-backed logger used by Node.js build-tool integrations.
 
 <br>
 <br>
@@ -457,6 +472,7 @@ Configuration options for creating an integration context.
 | `tsCodegen` | `false \| string` | Path to the generated TypeScript declaration file (`pika.gen.ts`), or `false` to disable TypeScript codegen entirely. | — |
 | `cssCodegen` | `string` | Path to the generated CSS output file (e.g., `'pika.gen.css'`). | — |
 | `autoCreateConfig` | `boolean` | When `true`, automatically scaffolds a default `pika.config.js` file if no config file is found. | — |
+| `onDiagnostic?` | `DiagnosticHandler` | Receives engine diagnostics. Defaults to the official console adapter. | — |
 
 **Remarks:**
 

@@ -4,7 +4,7 @@
 		"composite": true
 	},
 	"include": [
-		"./src/**/*.test.ts",
+		"./src/**/*.ts",
 		"./vitest.config.ts",
 		"../_shared/vitest.ts"
 	]

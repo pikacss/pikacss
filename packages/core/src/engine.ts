@@ -1,10 +1,12 @@
 import type { EngineStore } from './atomic-style'
+import type { CreateEngineOptions, Diagnostic, DiagnosticHandler } from './diagnostics'
 import type { ExtractFn } from './extractor'
 import type { AtomicStyle, AutocompleteContribution, CSSStyleBlockBody, CSSStyleBlocks, EngineConfig, ExtractedStyleContent, InternalStyleDefinition, InternalStyleItem, Preflight, PreflightContext, PreflightDefinition, PreflightFn, ResolvedEngineConfig, ResolvedPreflight } from './types'
 import { createEngineStore, getAtomicStyleBaseKey, optimizeAtomicStyleContents, resolveAtomicStyle } from './atomic-style'
 import { ATOMIC_STYLE_ID_PLACEHOLDER, DEFAULT_ATOMIC_STYLE_ID_PREFIX, hasAtomicStyleIdPlaceholder, LAYER_SELECTOR_PREFIX, replaceAtomicStyleIdPlaceholder } from './constants'
+import { emitDiagnostic, noopDiagnosticHandler } from './diagnostics'
 import { createExtractFn, normalizeSelectors, normalizeValue } from './extractor'
-import { hooks, resolvePlugins } from './plugin'
+import { createEngineHooks, resolvePlugins } from './plugin'
 import { important } from './plugins/important'
 import { keyframes } from './plugins/keyframes'
 import { selectors } from './plugins/selectors'
@@ -62,6 +64,7 @@ export { getAtomicStyleId, optimizeAtomicStyleContents } from './atomic-style'
  * Creates and initializes a PikaCSS engine with the given configuration.
  *
  * @param config - The engine configuration, including plugins, selectors, shortcuts, variables, keyframes, preflights, and layer settings.
+ * @param options - Runtime-only host capabilities, including the instance-scoped diagnostic handler.
  * @returns A fully initialized `Engine` instance.
  *
  * @remarks Core plugins (`important`, `variables`, `keyframes`, `selectors`, `shortcuts`) are prepended automatically. The function resolves plugins, runs all configuration hooks in sequence, and returns the ready-to-use engine.
@@ -71,7 +74,10 @@ export { getAtomicStyleId, optimizeAtomicStyleContents } from './atomic-style'
  * const engine = await createEngine({ prefix: 'pk-', plugins: [myPlugin()] })
  * ```
  */
-export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
+export async function createEngine(config: EngineConfig = {}, options: CreateEngineOptions = {}): Promise<Engine> {
+	const hostOnDiagnostic = options.onDiagnostic ?? noopDiagnosticHandler
+	const onDiagnostic: DiagnosticHandler = diagnostic => emitDiagnostic(hostOnDiagnostic, diagnostic)
+	const pluginHooks = createEngineHooks({ onDiagnostic })
 	log.debug('Creating engine with config:', config)
 	// `important()` must come after `shortcuts()` so that `!important` is applied
 	// to shortcut-expanded definitions and never to the `__shortcut` reference itself.
@@ -87,12 +93,12 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	config = { ...config, plugins }
 	log.debug(`Total plugins resolved: ${plugins.length}`)
 
-	config = await hooks.configureRawConfig(
+	config = await pluginHooks.configureRawConfig(
 		config.plugins!,
 		config,
 	)
 
-	hooks.rawConfigConfigured(
+	pluginHooks.rawConfigConfigured(
 		resolvePlugins(config.plugins!),
 		config,
 	)
@@ -100,12 +106,12 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	let resolvedConfig = await resolveEngineConfig(config)
 	log.debug('Engine config resolved with prefix:', resolvedConfig.prefix)
 
-	resolvedConfig = await hooks.configureResolvedConfig(
+	resolvedConfig = await pluginHooks.configureResolvedConfig(
 		resolvedConfig.plugins,
 		resolvedConfig,
 	)
 
-	let engine = new Engine(resolvedConfig)
+	let engine = new Engine(resolvedConfig, hostOnDiagnostic, pluginHooks)
 
 	engine.appendAutocomplete({
 		extraProperties: '__layer',
@@ -113,7 +119,7 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 	})
 
 	log.debug('Engine instance created')
-	engine = await hooks.configureEngine(
+	engine = await pluginHooks.configureEngine(
 		engine.config.plugins,
 		engine,
 	)
@@ -137,8 +143,10 @@ export async function createEngine(config: EngineConfig = {}): Promise<Engine> {
 export class Engine {
 	/** The fully resolved engine configuration. */
 	config: ResolvedEngineConfig
-	/** Reference to the plugin hook dispatcher for invoking lifecycle hooks. */
-	pluginHooks = hooks
+	/** Instance-scoped diagnostic handler supplied by the host. */
+	readonly onDiagnostic: DiagnosticHandler
+	/** Reference to the instance-scoped plugin hook dispatcher. */
+	pluginHooks: ReturnType<typeof createEngineHooks>
 
 	/** The extraction function that decomposes style definitions into atomic style contents. */
 	extract: ExtractFn
@@ -165,15 +173,31 @@ export class Engine {
 	 * const engine = new Engine(resolvedConfig)
 	 * ```
 	 */
-	constructor(config: ResolvedEngineConfig) {
+	constructor(
+		config: ResolvedEngineConfig,
+		onDiagnostic: DiagnosticHandler = noopDiagnosticHandler,
+		pluginHooks?: ReturnType<typeof createEngineHooks>,
+	) {
+		const safeOnDiagnostic: DiagnosticHandler = diagnostic => emitDiagnostic(onDiagnostic, diagnostic)
 		this.config = config
+		this.onDiagnostic = safeOnDiagnostic
+		this.pluginHooks = pluginHooks ?? createEngineHooks({ onDiagnostic: safeOnDiagnostic })
 
 		this.extract = createExtractFn({
 			defaultSelector: this.config.defaultSelector,
-			transformSelectors: selectors => hooks.transformSelectors(this.config.plugins, selectors),
-			transformStyleItems: styleItems => hooks.transformStyleItems(this.config.plugins, styleItems),
-			transformStyleDefinitions: styleDefinitions => hooks.transformStyleDefinitions(this.config.plugins, styleDefinitions),
+			transformSelectors: selectors => this.pluginHooks.transformSelectors(this.config.plugins, selectors),
+			transformStyleItems: styleItems => this.pluginHooks.transformStyleItems(this.config.plugins, styleItems),
+			transformStyleDefinitions: styleDefinitions => this.pluginHooks.transformStyleDefinitions(this.config.plugins, styleDefinitions),
 		})
+	}
+
+	/**
+	 * Reports a structured diagnostic to this engine instance's host handler.
+	 *
+	 * @param diagnostic - The structured warning or error to deliver.
+	 */
+	reportDiagnostic(diagnostic: Diagnostic): void {
+		emitDiagnostic(this.onDiagnostic, diagnostic)
 	}
 
 	/**
@@ -234,7 +258,7 @@ export class Engine {
 	 * ```
 	 */
 	notifyPreflightUpdated() {
-		hooks.preflightUpdated(this.config.plugins)
+		this.pluginHooks.preflightUpdated(this.config.plugins)
 	}
 
 	/**
@@ -250,7 +274,7 @@ export class Engine {
 	 * ```
 	 */
 	notifyAtomicStyleAdded(atomicStyle: AtomicStyle) {
-		hooks.atomicStyleAdded(this.config.plugins, atomicStyle)
+		this.pluginHooks.atomicStyleAdded(this.config.plugins, atomicStyle)
 	}
 
 	/**
@@ -265,7 +289,7 @@ export class Engine {
 	 * ```
 	 */
 	notifyAutocompleteConfigUpdated() {
-		hooks.autocompleteConfigUpdated(this.config.plugins)
+		this.pluginHooks.autocompleteConfigUpdated(this.config.plugins)
 	}
 
 	/**
@@ -345,7 +369,7 @@ export class Engine {
 			contents,
 		} = await resolveStyleItemList({
 			itemList,
-			transformStyleItems: styleItems => hooks.transformStyleItems(this.config.plugins, styleItems),
+			transformStyleItems: styleItems => this.pluginHooks.transformStyleItems(this.config.plugins, styleItems),
 			extractStyleDefinition: styleDefinition => this.extract(styleDefinition),
 		})
 		const resolvedIds: string[] = []
@@ -466,6 +490,7 @@ export class Engine {
 			: atomicStyleIds.map(id => this.store.atomicStyles.get(id))
 					.filter(isNotNullish)
 		log.debug(`Rendering ${atomicStyles.length} atomic styles (preview: ${isPreview})`)
+		reportUnknownAtomicStyleLayers(this, atomicStyles)
 		return renderAtomicStyles({
 			atomicStyles,
 			isPreview,
@@ -618,6 +643,22 @@ function prependLayerSelector(selector: string[], layer: string) {
 	return [`${LAYER_SELECTOR_PREFIX}${layer}`, ...selector]
 }
 
+function reportUnknownAtomicStyleLayers(engine: Engine, styles: AtomicStyle[]) {
+	const knownLayers = new Set(Object.keys(engine.config.layers))
+	const reportedLayers = new Set<string>()
+	for (const style of styles) {
+		const { layer } = splitLayerSelector(style.content.selector)
+		if (layer == null || knownLayers.has(layer) || reportedLayers.has(layer))
+			continue
+		reportedLayers.add(layer)
+		engine.reportDiagnostic({
+			level: 'warning',
+			code: 'atomic-style-unknown-layer',
+			message: `Unknown layer "${layer}" encountered in atomic style; falling back to unlayered output.`,
+		})
+	}
+}
+
 function groupAtomicStylesByLayer({
 	styles,
 	layerOrder,
@@ -641,7 +682,6 @@ function groupAtomicStylesByLayer({
 			continue
 		}
 		if (layer != null) {
-			log.warn(`Unknown layer "${layer}" encountered in atomic style; falling back to unlayered output.`)
 			unlayeredStyles.push(style)
 			continue
 		}
@@ -936,7 +976,7 @@ export function renderAtomicStyles(payload: { atomicStyles: AtomicStyle[], isPre
  * @param options.blocks - Optional accumulator map reused during recursive descent.
  * @returns The accumulated `CSSStyleBlocks` map.
  *
- * @remarks Each key in the definition is either a CSS property (when its value is a property value) or a nested selector scope (when its value is an object). Selector keys are expanded through `hooks.transformSelectors`. The resulting blocks map is consumable by `renderCSSStyleBlocks`.
+ * @remarks Each key in the definition is either a CSS property (when its value is a property value) or a nested selector scope (when its value is an object). Selector keys are expanded through the engine-local `pluginHooks.transformSelectors` dispatcher. The resulting blocks map is consumable by `renderCSSStyleBlocks`.
  *
  * @example
  * ```ts
@@ -957,7 +997,7 @@ export async function _renderPreflightDefinition({
 			continue
 
 		const selectors = normalizeSelectors({
-			selectors: await hooks.transformSelectors(engine.config.plugins, [selector]),
+			selectors: await engine.pluginHooks.transformSelectors(engine.config.plugins, [selector]),
 			defaultSelector: '',
 		})
 			.filter(Boolean)

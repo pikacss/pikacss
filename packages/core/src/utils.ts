@@ -6,7 +6,7 @@ import type { Arrayable, AutocompleteConfig, AutocompleteContribution, CSSStyleB
  * @param prefix - Label prepended to every log message (e.g. `'[PikaCSS]'`).
  * @returns A logger object with `debug`, `info`, `warn`, `error` methods and configuration setters.
  *
- * @remarks Debug messages are suppressed by default. Call `log.toggleDebug()` to enable them. Each log level can be replaced with a custom implementation via the `set*Fn` methods, which is useful for redirecting output in non-browser environments.
+ * @remarks All output handlers are no-ops by default, and debug messages are additionally disabled. Hosts may install output functions through the `set*Fn` methods; engine warnings and errors are reported through `createEngine(..., { onDiagnostic })` instead.
  *
  * @example
  * ```ts
@@ -19,12 +19,11 @@ import type { Arrayable, AutocompleteConfig, AutocompleteContribution, CSSStyleB
 export function createLogger(prefix: string) {
 	let currentPrefix = prefix
 	let enabledDebug = false
-	// eslint-disable-next-line no-console
-	let _debug: (prefix: string, ...args: unknown[]) => void = console.log
-	// eslint-disable-next-line no-console
-	let _info: (prefix: string, ...args: unknown[]) => void = console.log
-	let _warn: (prefix: string, ...args: unknown[]) => void = console.warn
-	let _error: (prefix: string, ...args: unknown[]) => void = console.error
+	const noop = (_prefix: string, ..._args: unknown[]) => {}
+	let _debug: (prefix: string, ...args: unknown[]) => void = noop
+	let _info: (prefix: string, ...args: unknown[]) => void = noop
+	let _warn: (prefix: string, ...args: unknown[]) => void = noop
+	let _error: (prefix: string, ...args: unknown[]) => void = noop
 
 	const log: {
 		debug: (...args: unknown[]) => void

@@ -5,6 +5,7 @@ outline: [2, 3]
 relatedPackages:
   - '@pikacss/core'
 relatedSources:
+  - 'packages/core/src/diagnostics.ts'
   - 'packages/core/src/engine.ts'
   - 'packages/core/src/index.ts'
   - 'packages/core/src/plugin.ts'
@@ -34,7 +35,7 @@ order: 20
 
 - Package: `@pikacss/core`
 - Generated from the exported surface and JSDoc in `packages/core/src/index.ts`.
-- Source files: `packages/core/src/engine.ts`, `packages/core/src/index.ts`, `packages/core/src/plugin.ts`, `packages/core/src/plugins/important.ts`, `packages/core/src/plugins/keyframes.ts`, `packages/core/src/plugins/selectors.ts`, `packages/core/src/plugins/shortcuts.ts`, `packages/core/src/plugins/variables.ts`, `packages/core/src/types/autocomplete.ts`, `packages/core/src/types/engine.ts`, `packages/core/src/types/preflight.ts`, `packages/core/src/types/public.ts`, `packages/core/src/types/resolved.ts`, `packages/core/src/types/shared.ts`, `packages/core/src/types/utils.ts`, `packages/core/src/utils.ts`
+- Source files: `packages/core/src/diagnostics.ts`, `packages/core/src/engine.ts`, `packages/core/src/index.ts`, `packages/core/src/plugin.ts`, `packages/core/src/plugins/important.ts`, `packages/core/src/plugins/keyframes.ts`, `packages/core/src/plugins/selectors.ts`, `packages/core/src/plugins/shortcuts.ts`, `packages/core/src/plugins/variables.ts`, `packages/core/src/types/autocomplete.ts`, `packages/core/src/types/engine.ts`, `packages/core/src/types/preflight.ts`, `packages/core/src/types/public.ts`, `packages/core/src/types/resolved.ts`, `packages/core/src/types/shared.ts`, `packages/core/src/types/utils.ts`, `packages/core/src/utils.ts`
 
 </details>
 
@@ -69,13 +70,14 @@ const changed = appendAutocomplete(resolvedConfig, {
 <br>
 <br>
 
-### createEngine(config?) {#function-createengine-config}
+### createEngine(config?, options?) {#function-createengine-config-options}
 
 Creates and initializes a PikaCSS engine with the given configuration.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `config?` | `EngineConfig` | The engine configuration, including plugins, selectors, shortcuts, variables, keyframes, preflights, and layer settings. |
+| `options?` | `CreateEngineOptions` | Runtime-only host capabilities, including the instance-scoped diagnostic handler. |
 
 **Returns:** `Promise<Engine>` - A fully initialized `Engine` instance.
 
@@ -100,7 +102,7 @@ Creates a scoped logger with configurable log-level functions and a toggleable d
 
 **Remarks:**
 
-Debug messages are suppressed by default. Call `log.toggleDebug()` to enable them. Each log level can be replaced with a custom implementation via the `set*Fn` methods, which is useful for redirecting output in non-browser environments.
+All output handlers are no-ops by default, and debug messages are additionally disabled. Hosts may install output functions through the `set*Fn` methods; engine warnings and errors are reported through `createEngine(..., { onDiagnostic })` instead.
 
 ```ts
 const log = createLogger('[MyPlugin]')
@@ -135,24 +137,13 @@ export default defineEngineConfig({ prefix: 'pk-', plugins: [myPlugin()] })
 
 ### defineEnginePlugin(plugin) {#function-defineengineplugin-plugin}
 
-Identity helper that returns the plugin object as-is, providing TypeScript type inference for plugin definitions.
+Identity helper that provides type inference for an engine plugin definition.
 
 | Parameter | Type | Description |
 |---|---|---|
-| `plugin` | `EnginePlugin` | The engine plugin definition. |
+| `plugin` | `EnginePlugin` | The plugin definition to return unchanged. |
 
-**Returns:** `EnginePlugin` - The same plugin object, unchanged.
-
-**Remarks:**
-
-This is a compile-time-only helper; it has no runtime effect. Using it ensures type checking and IDE autocompletion for hook names and payloads.
-
-```ts
-export default defineEnginePlugin({
-  name: 'my-plugin',
-  configureRawConfig: (config) => ({ ...config, important: { default: true } }),
-})
-```
+**Returns:** `EnginePlugin` - The same plugin instance.
 
 <br>
 <br>
@@ -387,6 +378,17 @@ async function run(fn: () => Awaitable<string>) {
 <br>
 <br>
 
+### CreateEngineOptions {#interface-createengineoptions}
+
+Runtime-only options accepted by createEngine.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `onDiagnostic?` | `DiagnosticHandler` | Receives warnings and errors produced by this engine instance. | `A no-op handler.` |
+
+<br>
+<br>
+
 ### CSSProperty {#type-cssproperty}
 
 Union of all valid CSS property name strings, including standard properties, vendor-prefixed properties, and custom properties.
@@ -484,6 +486,43 @@ declare module '@pikacss/core' {
 <br>
 <br>
 
+### Diagnostic {#interface-diagnostic}
+
+Structured diagnostic emitted by the PikaCSS engine or an engine plugin.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `level` | `DiagnosticLevel` | Diagnostic severity. | — |
+| `code` | `string` | Stable machine-readable identifier. | — |
+| `message` | `string` | Human-readable explanation. | — |
+| `cause?` | `unknown` | Original error or value related to the diagnostic. | — |
+| `plugin?` | `string` | Plugin that produced the diagnostic, when applicable. | — |
+| `hook?` | `string` | Plugin hook that produced the diagnostic, when applicable. | — |
+
+**Remarks:**
+
+Diagnostics are data only. The core package never assumes a console,
+logger, browser, or Node.js runtime. Hosts decide how diagnostics are displayed.
+
+<br>
+<br>
+
+### DiagnosticHandler {#type-diagnostichandler}
+
+Callback used by a host to receive structured diagnostics.
+
+<br>
+<br>
+
+### DiagnosticLevel {#type-diagnosticlevel}
+
+Severity of a PikaCSS diagnostic.
+
+**Type:** `"warning" | "error"`
+
+<br>
+<br>
+
 ### Engine {#class-engine}
 
 The PikaCSS engine: manages atomic style resolution, rendering, preflights, and plugin hooks.
@@ -493,12 +532,23 @@ The PikaCSS engine: manages atomic style resolution, rendering, preflights, and 
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `config` | `ResolvedEngineConfig` | The fully resolved engine configuration. | — |
-| `pluginHooks` | `` | Reference to the plugin hook dispatcher for invoking lifecycle hooks. | — |
+| `onDiagnostic` | `DiagnosticHandler` | Instance-scoped diagnostic handler supplied by the host. | — |
+| `pluginHooks` | `ReturnType<typeof createEngineHooks>` | Reference to the instance-scoped plugin hook dispatcher. | — |
 | `extract` | `ExtractFn` | The extraction function that decomposes style definitions into atomic style contents. | — |
 | `store` | `EngineStore` | The engine's runtime store holding registered atomic styles and their ID mappings. | — |
 | `configDependencies` | `Set<string>` | Absolute paths of external files this engine's config depends on (e.g. token files loaded by plugins). | — |
 
 **Methods:**
+
+#### reportDiagnostic(diagnostic)
+
+Reports a structured diagnostic to this engine instance's host handler.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `diagnostic` | `Diagnostic` | The structured warning or error to deliver. |
+
+**Returns:** `void`
 
 #### invokePreflight(fn, isFormatted, ctx?)
 
@@ -644,19 +694,19 @@ Describes an engine plugin that can hook into the PikaCSS engine lifecycle.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `name` | `string` | The unique human-readable name identifying this plugin in logs and diagnostics. | — |
-| `order?` | `'pre' \| 'post'` | Controls plugin execution order relative to other plugins. | `undefined (normal order)` |
+| `name` | `string` | The unique human-readable name identifying this plugin in diagnostics. | — |
+| `order?` | `'pre' \| 'post'` | Controls execution order relative to other plugins. | — |
 
-**Remarks:**
+<br>
+<br>
 
-Plugins implement optional hook methods corresponding to engine lifecycle events. Hooks run in plugin registration order, optionally reordered by the `order` property.
+### EnginePluginContext {#interface-engineplugincontext}
 
-```ts
-const myPlugin: EnginePlugin = {
-  name: 'my-plugin',
-  configureRawConfig: (config) => ({ ...config, important: { default: true } }),
-}
-```
+Context passed to plugin hooks by the engine.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `onDiagnostic` | `DiagnosticHandler` | Instance-scoped diagnostic handler. | — |
 
 <br>
 <br>

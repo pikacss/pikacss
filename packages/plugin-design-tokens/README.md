@@ -12,7 +12,7 @@ pnpm add -D @pikacss/plugin-design-tokens
 
 ```ts
 import { defineEngineConfig } from '@pikacss/core'
-import { designTokens } from '@pikacss/plugin-design-tokens'
+import { designTokens } from '@pikacss/plugin-design-tokens/node'
 
 export default defineEngineConfig({
   plugins: [designTokens()],
@@ -24,6 +24,8 @@ export default defineEngineConfig({
   },
 })
 ```
+
+The package root is platform-neutral and supports inline token objects or a custom `readFile` capability. File-backed JSON and Markdown sources use the `/node` adapter shown above.
 
 ## Documentation
 

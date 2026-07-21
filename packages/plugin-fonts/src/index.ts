@@ -1,4 +1,4 @@
-import type { EnginePlugin } from '@pikacss/core'
+import type { DiagnosticHandler, EnginePlugin } from '@pikacss/core'
 import type {
 	FontsProvider,
 	FontsProviderContext,
@@ -25,6 +25,8 @@ export type {
 	FontsProviderFontEntry,
 	FontsProviderOptions,
 }
+
+const noopDiagnosticHandler: DiagnosticHandler = (_diagnostic) => {}
 
 // Weights accept plain values (400), variable-font ranges (100..900), and comma-separated lists
 const RE_FONT_WITH_WEIGHTS = /^(.*?):(\d+(?:\.\.\d+)?(?:,\d+(?:\.\.\d+)?)*)$/
@@ -294,7 +296,7 @@ export function fonts(): EnginePlugin {
 		},
 		configureEngine: async (engine) => {
 			const resolved = resolveFontsConfig(fontsConfig)
-			const importRules = renderFontsImportRules(resolved)
+			const importRules = renderFontsImportRules(resolved, engine.onDiagnostic ?? noopDiagnosticHandler)
 			const preflightCss = renderFontsPreflightCss(resolved)
 
 			for (const importRule of importRules)
@@ -435,7 +437,7 @@ function renderFontsPreflightCss(config: ResolvedFontsConfig) {
 		.join('\n')
 }
 
-function renderFontsImportRules(config: ResolvedFontsConfig) {
+function renderFontsImportRules(config: ResolvedFontsConfig, onDiagnostic: DiagnosticHandler) {
 	const providerImports = [...config.providerFonts.entries()]
 		.flatMap(([providerName, fonts]) => resolveProviderImportUrls({
 			providerName,
@@ -446,6 +448,7 @@ function renderFontsImportRules(config: ResolvedFontsConfig) {
 				display: config.display,
 				options: config.providerOptions[providerName] ?? {},
 			},
+			onDiagnostic,
 		}))
 
 	const imports = [
@@ -479,15 +482,19 @@ function resolveProviderImportUrls({
 	fonts,
 	providers,
 	context,
+	onDiagnostic,
 }: {
 	providerName: FontsProvider
 	fonts: NormalizedFontEntry[]
 	providers: Record<string, FontsProviderDefinition>
 	context: FontsProviderContext
+	onDiagnostic: DiagnosticHandler
 }) {
 	const provider = providers[providerName]
 	if (provider?.buildImportUrls == null) {
-		log.warn(`Unknown fonts provider "${providerName}". Skipping import generation.`)
+		const message = `Unknown fonts provider "${providerName}". Skipping import generation.`
+		onDiagnostic({ level: 'warning', code: 'fonts-unknown-provider', message, plugin: 'fonts' })
+		log.warn(message)
 		return []
 	}
 

@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { createEngine, renderPreflightDefinition } from '../engine'
-import { log } from '../utils'
 import { extractUsedVarNames, extractUsedVarNamesFromPreflightResult, normalizeVariableName } from './variables'
 
 describe('variables helpers', () => {
@@ -22,8 +21,7 @@ describe('variables helpers', () => {
 
 describe('variables plugin', () => {
 	it('renders transitively used variables, respects autocomplete flags, and warns on invalid config shapes', async () => {
-		const warn = vi.fn()
-		log.setWarnFn((_prefix, ...args) => warn(...args))
+		const diagnostics: { code: string, level: string, message: string }[] = []
 
 		const engine = await createEngine({
 			preflights: [
@@ -40,12 +38,12 @@ describe('variables plugin', () => {
 					'.invalid': 'broken' as any,
 				},
 			},
+		}, {
+			onDiagnostic: diagnostic => diagnostics.push(diagnostic),
 		})
 
 		await engine.use({ color: 'var(--alias)' })
 		const preflights = await engine.renderPreflights(false)
-
-		log.setWarnFn((prefix, ...args) => console.warn(prefix, ...args))
 
 		expect(preflights)
 			.toContain(':root{--color:#fff;--alias:var(--color);}')
@@ -59,9 +57,12 @@ describe('variables plugin', () => {
 			.toContain('var(--alias)')
 		expect(engine.config.autocomplete.extraCssProperties.has('--alias'))
 			.toBe(false)
-		expect(warn.mock.calls.some(call => call.join(' ')
-			.includes('Invalid variables scope for selector ".invalid"')))
-			.toBe(true)
+		expect(diagnostics)
+			.toContainEqual(expect.objectContaining({
+				level: 'warning',
+				code: 'variables-invalid-scope',
+				message: expect.stringContaining('Invalid variables scope for selector ".invalid"'),
+			}))
 	})
 
 	it('merges definitions in order and lets later entries override earlier ones', async () => {

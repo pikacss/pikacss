@@ -18,6 +18,7 @@ describe('@pikacss/unplugin-pikacss public API surface', () => {
 				'PikaTransformError',
 				'analyzeJs',
 				'appendAutocomplete',
+				'consoleDiagnosticHandler',
 				'createCtx',
 				'createDefaultProcessorRegistry',
 				'createEngine',

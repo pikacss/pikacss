@@ -85,12 +85,22 @@ function extractFallbackStringArray(sourceFile: ts.SourceFile, leftExpression: s
 const manifests = new Map(
 	PACKAGES.map(pkg => [pkg.name, readManifest(`packages/${pkg.dir}/package.json`)]),
 )
+const PLATFORM_NEUTRAL_PACKAGES = new Set([
+	'@pikacss/core',
+	'@pikacss/plugin-design-tokens',
+	'@pikacss/plugin-icons',
+])
 const nodeRanges = new Map<string, string>()
 
 for (const pkg of PACKAGES) {
 	const nodeRange = manifests.get(pkg.name)?.engines?.node
+	if (PLATFORM_NEUTRAL_PACKAGES.has(pkg.name)) {
+		if (nodeRange != null)
+			failures.push(`packages/${pkg.dir}/package.json: platform-neutral package must not declare engines.node`)
+		continue
+	}
 	if (nodeRange == null)
-		failures.push(`packages/${pkg.dir}/package.json: engines.node is required for public package contract checks`)
+		failures.push(`packages/${pkg.dir}/package.json: engines.node is required for Node-targeted public package contract checks`)
 	else
 		nodeRanges.set(pkg.name, nodeRange)
 }
@@ -166,4 +176,4 @@ if (failures.length > 0) {
 	process.exit(1)
 }
 
-console.log(`Documentation contracts OK (${nodeRanges.size} package engines, ${unpluginExports.length} bundler entry points, and ${defaultScanPatterns.length} scan patterns checked).`)
+console.log(`Documentation contracts OK (${nodeRanges.size} Node-targeted package engines, ${PLATFORM_NEUTRAL_PACKAGES.size} neutral packages, ${unpluginExports.length} bundler entry points, and ${defaultScanPatterns.length} scan patterns checked).`)

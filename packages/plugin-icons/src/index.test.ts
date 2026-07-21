@@ -1,6 +1,4 @@
 /* eslint-disable no-template-curly-in-string */
-import { log } from '@pikacss/core'
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockEncodeSvgForCss = vi.fn((svg: string) => `encoded:${svg}`)
@@ -38,6 +36,8 @@ function createEngine() {
 		shortcuts: {
 			add: vi.fn(),
 		},
+		onDiagnostic: vi.fn(),
+		reportDiagnostic: vi.fn(),
 		variables: {
 			store,
 			add: vi.fn((definitions: Record<string, unknown>) => {
@@ -55,7 +55,6 @@ beforeEach(() => {
 	vi.clearAllMocks()
 	delete process.env.VSCODE_PID
 	delete process.env.ESLINT
-	log.setWarnFn((_prefix, ...args) => console.warn(...args))
 })
 
 afterEach(() => {
@@ -72,7 +71,7 @@ afterEach(() => {
 
 describe('icons plugin', () => {
 	it('registers autocomplete metadata and resolves custom icons into mask styles', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const plugin = icons()
 
@@ -125,7 +124,7 @@ describe('icons plugin', () => {
 	})
 
 	it('falls back to local node icons in bg mode and passes resolved metadata to the processor', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const processor = vi.fn()
 		const plugin = icons()
@@ -167,7 +166,7 @@ describe('icons plugin', () => {
 	})
 
 	it('dedupes prefixes and forwards loader customizations, units, and used props', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const plugin = icons()
 
@@ -220,7 +219,7 @@ describe('icons plugin', () => {
 	})
 
 	it('preserves width and height produced by a custom icon customizer and forwards non-default loader options', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const plugin = icons()
 
@@ -267,7 +266,7 @@ describe('icons plugin', () => {
 	})
 
 	it('loads icons from the configured CDN when bundled sources are unavailable', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const processor = vi.fn()
 		const plugin = icons()
@@ -307,7 +306,7 @@ describe('icons plugin', () => {
 	})
 
 	it('still runs the local node loader under VS Code (VSCODE_PID is ambient, not an editor-tooling signal)', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 
 		// A dev/build spawned from a VS Code integrated terminal inherits
@@ -335,7 +334,7 @@ describe('icons plugin', () => {
 	})
 
 	it('expands CDN base URLs without placeholders when local sources are unavailable', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 
 		const plugin = icons()
@@ -365,13 +364,11 @@ describe('icons plugin', () => {
 	})
 
 	it('skips the local node loader in ESLint environments and warns when CDN loading fails due to fetch errors', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
-		const warn = vi.fn()
 
 		process.env.ESLINT = '1'
 		const plugin = icons()
-		log.setWarnFn((_prefix, ...args) => warn(...args))
 		mockStringToIcon.mockReturnValue({ prefix: 'mdi', name: 'alert' })
 		mockLoadIcon.mockResolvedValue(null)
 		mockFetch.mockRejectedValue(new Error('network'))
@@ -391,17 +388,19 @@ describe('icons plugin', () => {
 			.not.toHaveBeenCalled()
 		expect(mockFetch)
 			.toHaveBeenCalledWith('https://cdn.example.com/icons/mdi.json')
-		expect(warn)
-			.toHaveBeenCalledWith('failed to load icon "i-mdi:alert"')
+		expect(engine.reportDiagnostic)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				level: 'warning',
+				code: 'icons-load-failed',
+				message: 'failed to load icon "i-mdi:alert"',
+			}))
 	})
 
 	it('warns when CDN payloads cannot be validated into an icon set', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
-		const warn = vi.fn()
 		const plugin = icons()
 
-		log.setWarnFn((_prefix, ...args) => warn(...args))
 		mockStringToIcon.mockReturnValue({ prefix: 'mdi', name: 'alert' })
 		mockLoadIcon.mockResolvedValue(null)
 		mockLoadNodeIcon.mockResolvedValue(null)
@@ -421,17 +420,18 @@ describe('icons plugin', () => {
 			.toBeUndefined()
 		expect(mockFetch)
 			.toHaveBeenCalledWith('https://cdn.example.com/icons/mdi.json')
-		expect(warn)
-			.toHaveBeenCalledWith('failed to load icon "i-mdi:alert"')
+		expect(engine.reportDiagnostic)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				level: 'warning',
+				code: 'icons-load-failed',
+				message: 'failed to load icon "i-mdi:alert"',
+			}))
 	})
 
 	it('warns when icon names are invalid or the icon cannot be loaded from any source', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
-		const warn = vi.fn()
 		const plugin = icons()
-
-		log.setWarnFn((_prefix, ...args) => warn(...args))
 
 		await plugin.configureRawConfig?.({ icons: {} } as any)
 		await plugin.configureEngine?.(engine as any)
@@ -448,20 +448,24 @@ describe('icons plugin', () => {
 		expect(await shortcutEntry.value(['i-mdi:ghost', 'mdi:ghost', 'auto']))
 			.toBeUndefined()
 
-		expect(warn.mock.calls)
+		expect(engine.reportDiagnostic.mock.calls.map(([diagnostic]) => diagnostic))
 			.toEqual(expect.arrayContaining([
-				['invalid icon name "i-invalid"'],
-				['failed to load icon "i-mdi:ghost"'],
+				expect.objectContaining({
+					code: 'icons-invalid-name',
+					message: 'invalid icon name "i-invalid"',
+				}),
+				expect.objectContaining({
+					code: 'icons-load-failed',
+					message: 'failed to load icon "i-mdi:ghost"',
+				}),
 			]))
 	})
 
 	it('reuses cached CDN collections across multiple icon resolutions and falls back when search returns null', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
-		const warn = vi.fn()
 		const plugin = icons()
 
-		log.setWarnFn((_prefix, ...args) => warn(...args))
 		mockLoadIcon.mockResolvedValue(null)
 		mockLoadNodeIcon.mockResolvedValue(null)
 		mockFetch.mockResolvedValue({ prefix: 'mdi' })
@@ -497,12 +501,16 @@ describe('icons plugin', () => {
 		// CDN was fetched only once (cache hit on second call)
 		expect(mockFetch)
 			.toHaveBeenCalledTimes(1)
-		expect(warn)
-			.toHaveBeenCalledWith('failed to load icon "i-mdi:missing"')
+		expect(engine.reportDiagnostic)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				level: 'warning',
+				code: 'icons-load-failed',
+				message: 'failed to load icon "i-mdi:missing"',
+			}))
 	})
 
 	it('generates distinct CSS variable names for icon ids that sanitize to the same string', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const plugin = icons()
 
@@ -528,7 +536,7 @@ describe('icons plugin', () => {
 	})
 
 	it('matches the longest prefix first when prefixes overlap', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const plugin = icons()
 
@@ -548,12 +556,10 @@ describe('icons plugin', () => {
 	})
 
 	it('retries CDN collection loading after a failed fetch instead of caching the failure', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
-		const warn = vi.fn()
 		const plugin = icons()
 
-		log.setWarnFn((_prefix, ...args) => warn(...args))
 		mockStringToIcon.mockReturnValue({ prefix: 'mdi', name: 'bell' })
 		mockLoadIcon.mockResolvedValue(null)
 		mockLoadNodeIcon.mockResolvedValue(null)
@@ -575,8 +581,12 @@ describe('icons plugin', () => {
 		// First call fails to fetch the collection
 		expect(await shortcutEntry.value(['i-mdi:bell', 'mdi:bell', 'auto']))
 			.toBeUndefined()
-		expect(warn)
-			.toHaveBeenCalledWith('failed to load icon "i-mdi:bell"')
+		expect(engine.reportDiagnostic)
+			.toHaveBeenCalledWith(expect.objectContaining({
+				level: 'warning',
+				code: 'icons-load-failed',
+				message: 'failed to load icon "i-mdi:bell"',
+			}))
 
 		// Second call retries the fetch and succeeds
 		const style = await shortcutEntry.value(['i-mdi:bell', 'mdi:bell', 'auto'])
@@ -593,9 +603,8 @@ describe('icons plugin', () => {
 		// resolver cached forever, so a transient load failure permanently blocked
 		// the icon. Uses the real core resolver to prove no cache entry is stored.
 		const { createEngine } = await import('@pikacss/core')
-		const { icons } = await import('./index')
-		const warn = vi.fn()
-		log.setWarnFn((_prefix, ...args) => warn(...args))
+		const { icons } = await import('./node')
+		const diagnostics: { code: string, message: string }[] = []
 
 		mockStringToIcon.mockReturnValue({ prefix: 'custom', name: 'badge' })
 		mockLoadIcon
@@ -606,6 +615,8 @@ describe('icons plugin', () => {
 		const engine = await createEngine({
 			plugins: [icons()],
 			icons: {},
+		}, {
+			onDiagnostic: diagnostic => diagnostics.push(diagnostic),
 		})
 
 		// First resolve: loader fails — unresolved, input returned unchanged, not cached
@@ -613,8 +624,11 @@ describe('icons plugin', () => {
 			.toEqual(['i-custom:badge'])
 		expect(engine.shortcuts.resolver._resolvedResultsMap.has('i-custom:badge'))
 			.toBe(false)
-		expect(warn)
-			.toHaveBeenCalledWith('failed to load icon "i-custom:badge"')
+		expect(diagnostics)
+			.toContainEqual(expect.objectContaining({
+				code: 'icons-load-failed',
+				message: 'failed to load icon "i-custom:badge"',
+			}))
 
 		// Second resolve: loader now succeeds — the rule is re-invoked and produces CSS
 		const resolved = await engine.shortcuts.resolver.resolve('i-custom:badge')
@@ -628,7 +642,7 @@ describe('icons plugin', () => {
 	})
 
 	it('falls back to empty config when icons is not specified in configureRawConfig', async () => {
-		const { icons } = await import('./index')
+		const { icons } = await import('./node')
 		const engine = createEngine()
 		const plugin = icons()
 

@@ -1,29 +1,8 @@
 import type { CustomCollections, IconCustomizations, IconifyLoaderOptions } from '@iconify/utils'
 import type { Engine, EnginePlugin, StyleItem } from '@pikacss/core'
-import process from 'node:process'
 import { encodeSvgForCss, loadIcon, quicklyValidateIconSet, searchForIcon, stringToIcon } from '@iconify/utils'
-import { loadNodeIcon } from '@iconify/utils/lib/loader/node-loader'
-import { defineEnginePlugin, escapeRegExp, log } from '@pikacss/core'
+import { defineEnginePlugin, escapeRegExp } from '@pikacss/core'
 import { $fetch } from 'ofetch'
-
-/**
- * Environment flags helper function to detect the current runtime environment.
- *
- * @remarks
- * `isESLint` is keyed off `process.env.ESLINT`, which `@pikacss/eslint-config`
- * sets explicitly when linting — an autocomplete-only context where loading
- * icon SVGs from the filesystem is unnecessary, so it falls back to the CDN.
- * We deliberately do NOT gate on `process.env.VSCODE_PID`: that variable is
- * ambient and inherited by every process spawned from a VS Code integrated
- * terminal, including a real `vite`/`webpack` dev or build. Gating local icon
- * resolution on it silently broke icon generation for the very common "run the
- * dev server in the VS Code terminal" workflow.
- */
-function getEnvFlags() {
-	const isNode = typeof process !== 'undefined' && typeof process.versions?.node !== 'undefined'
-	const isESLint = isNode && !!process.env.ESLINT
-	return { isNode, isESLint }
-}
 
 interface IconMeta {
 	collection: string
@@ -34,6 +13,17 @@ interface IconMeta {
 }
 
 type IconSource = 'custom' | 'local' | 'cdn'
+
+/** Host capability for loading locally installed icon collections. */
+export type LocalIconLoader = (collection: string, name: string, options: IconifyLoaderOptions) => Promise<string | null | undefined>
+
+/** Runtime capabilities used by the icons plugin. */
+export interface IconsRuntimeOptions {
+	/** Optional loader for locally installed icon collections. */
+	loadLocalIcon?: LocalIconLoader
+	/** Determines whether the local loader should run for the current host context. */
+	shouldLoadLocalIcon?: () => boolean
+}
 type ValidatedIconSet = NonNullable<ReturnType<typeof quicklyValidateIconSet>>
 
 const RE_CAMEL_CASE_ICON_BOUNDARY = /([a-z])([A-Z])/g
@@ -186,8 +176,8 @@ declare module '@pikacss/core' {
  *
  * @returns An engine plugin that registers icon shortcut rules and autocomplete entries.
  *
- * @remarks Resolves icon SVGs from custom collections, locally installed
- * `@iconify-json/*` packages, or a remote CDN. Each matched utility is
+ * @remarks The neutral entry resolves custom collections and remote CDN sources.
+ * Locally installed `@iconify-json/*` packages require the `/node` adapter. Each matched utility is
  * expanded into a CSS style item using either mask or background rendering.
  * Configure behavior through the `icons` key in your engine config.
  *
@@ -331,7 +321,12 @@ async function loadCollectionFromCdn(cdn: string, collection: string, cache: Map
 	return cache.get(collection)!
 }
 
-async function resolveIcon(body: string, config: IconsConfig, flags: ReturnType<typeof getEnvFlags>, cdnCollectionCache: Map<string, Promise<ValidatedIconSet | undefined>>) {
+async function resolveIcon(
+	body: string,
+	config: IconsConfig,
+	runtime: IconsRuntimeOptions,
+	cdnCollectionCache: Map<string, Promise<ValidatedIconSet | undefined>>,
+) {
 	const parsed = stringToIcon(body, true)
 	if (parsed == null || !parsed.prefix)
 		return null
@@ -348,9 +343,9 @@ async function resolveIcon(body: string, config: IconsConfig, flags: ReturnType<
 		}
 	}
 
-	if (flags.isNode && !flags.isESLint) {
+	if (runtime.loadLocalIcon != null && (runtime.shouldLoadLocalIcon?.() ?? true)) {
 		const localProps: Record<string, string> = {}
-		const localSvg = await loadNodeIcon(parsed.prefix, parsed.name, {
+		const localSvg = await runtime.loadLocalIcon(parsed.prefix, parsed.name, {
 			...createLoaderOptions(config, localProps),
 			customCollections: undefined,
 		})
@@ -396,10 +391,15 @@ async function resolveIcon(body: string, config: IconsConfig, flags: ReturnType<
 	}
 }
 
-function createIconsPlugin(): EnginePlugin {
+/**
+ * Creates an icons plugin using host-provided runtime capabilities.
+ *
+ * @param runtime - Optional local icon loading capabilities supplied by the host adapter.
+ * @returns An engine plugin that resolves icon utilities into CSS styles.
+ */
+export function createIconsPlugin(runtime: IconsRuntimeOptions = {}): EnginePlugin {
 	let engine: Engine
 	let iconsConfig: IconsConfig = {}
-	const flags = getEnvFlags()
 	const cdnCollectionCache = new Map<string, Promise<ValidatedIconSet | undefined>>()
 
 	return defineEnginePlugin({
@@ -431,15 +431,17 @@ function createIconsPlugin(): EnginePlugin {
 				shortcut: createShortcutRegExp(prefixes),
 				value: async (match) => {
 					let [full, body, _mode = mode] = match as [string, string, IconsConfig['mode']]
-					const resolved = await resolveIcon(body, iconsConfig, flags, cdnCollectionCache)
+					const resolved = await resolveIcon(body, iconsConfig, runtime, cdnCollectionCache)
 
 					if (resolved == null) {
-						log.warn(`invalid icon name "${full}"`)
+						const message = `invalid icon name "${full}"`
+						engine.reportDiagnostic({ level: 'warning', code: 'icons-invalid-name', message, plugin: 'icons' })
 						return {}
 					}
 
 					if (resolved.svg == null) {
-						log.warn(`failed to load icon "${full}"`)
+						const message = `failed to load icon "${full}"`
+						engine.reportDiagnostic({ level: 'warning', code: 'icons-load-failed', message, plugin: 'icons' })
 						// Retryable-unresolved: returning undefined tells the shortcuts
 						// resolver not to cache this result, so a later resolve retries
 						// the load (e.g. after a transient CDN failure).

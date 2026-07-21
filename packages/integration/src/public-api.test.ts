@@ -19,6 +19,7 @@ describe('@pikacss/integration public API surface', () => {
 				'PikaTransformError',
 				'analyzeJs',
 				'appendAutocomplete',
+				'consoleDiagnosticHandler',
 				'createCtx',
 				'createDefaultProcessorRegistry',
 				'createEngine',
