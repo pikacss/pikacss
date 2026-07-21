@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -25,24 +25,29 @@ jobs:
       - name: install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: capture test output
-        id: test
+      - name: capture diagnostics
+        id: diagnostics
         shell: bash
         run: |
           set +e
+          pnpm typecheck > ci-typecheck.log 2>&1
+          typecheck_status=$?
           pnpm test > ci-test.log 2>&1
-          status=$?
-          echo "status=$status" >> "$GITHUB_OUTPUT"
+          test_status=$?
+          echo "typecheck_status=$typecheck_status" >> "$GITHUB_OUTPUT"
+          echo "test_status=$test_status" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: upload test output
+      - name: upload diagnostics
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: tooling-upgrade-test-log
-          path: ci-test.log
+          name: tooling-upgrade-diagnostics
+          path: |
+            ci-typecheck.log
+            ci-test.log
           if-no-files-found: error
           retention-days: 1
 
-      - name: propagate test failure
-        if: steps.test.outputs.status != '0'
+      - name: propagate failures
+        if: steps.diagnostics.outputs.typecheck_status != '0' || steps.diagnostics.outputs.test_status != '0'
         run: exit 1
