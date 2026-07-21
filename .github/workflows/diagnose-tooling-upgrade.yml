@@ -1,9 +1,9 @@
 name: Diagnose tooling upgrade
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/upgrade-deviltea-configs
+      - main
 
 permissions:
   contents: read
