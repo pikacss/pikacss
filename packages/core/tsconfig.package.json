@@ -1,5 +1,5 @@
 {
-	"extends": "@deviltea/tsconfig/neutral",
+	"extends": "@deviltea/tsconfig/browser",
 	"compilerOptions": {
 		"composite": true,
 		"paths": {
