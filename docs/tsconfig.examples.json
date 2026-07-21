@@ -1,5 +1,5 @@
 {
-	"extends": "@deviltea/tsconfig/node",
+	"extends": "@deviltea/tsconfig/tooling",
 	"compilerOptions": {
 		"composite": true,
 		// `_utils/pika-example.ts` predates this project and indexes `codes[i]`
@@ -7,6 +7,7 @@
 		"noUncheckedIndexedAccess": false
 	},
 	"include": [
+		"./env.d.ts",
 		".examples/**/*"
 	],
 	"exclude": [

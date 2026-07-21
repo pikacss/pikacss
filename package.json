@@ -14,7 +14,7 @@
 		"atomic-css-in-js-engine"
 	],
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"scripts": {
 		"build": "pnpm -r --filter='./packages/*' build",

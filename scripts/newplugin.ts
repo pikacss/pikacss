@@ -181,7 +181,7 @@ describe('${pkgName}', () => {
 	`.trim(),
 	'tsconfig.package.json': `
 {
-	"extends": "@deviltea/tsconfig/base",
+	"extends": "@deviltea/tsconfig/neutral",
 	"compilerOptions": {
 		"composite": true
 	},

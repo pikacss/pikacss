@@ -1,5 +1,5 @@
 {
-	"extends": "@deviltea/tsconfig/base",
+	"extends": "@deviltea/tsconfig/node-bundler",
 	"compilerOptions": {
 		"composite": true
 	},
