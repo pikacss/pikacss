@@ -1,5 +1,7 @@
+import type { EnginePluginContext } from './diagnostics'
 import type { Engine } from './engine'
 import type { AtomicStyle, Awaitable, EngineConfig, ResolvedEngineConfig, ResolvedStyleDefinition, ResolvedStyleItem } from './types'
+import { emitDiagnostic, noopDiagnosticHandler } from './diagnostics'
 import { log } from './utils'
 
 type DefineHooks<Hooks extends Record<string, [type: 'sync' | 'async', payload: unknown, returnValue?: unknown]>> = Hooks
@@ -24,57 +26,90 @@ type GetHooksNames<
 
 type SyncHooksNames = GetHooksNames<'sync'>
 type AsyncHooksNames = GetHooksNames<'async'>
+type EngineHookName = keyof EngineHooksDefinition
 
-function getPluginHook(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) {
+const VOID_HOOKS = new Set<EngineHookName>([
+	'preflightUpdated',
+	'autocompleteConfigUpdated',
+])
+
+const DEFAULT_PLUGIN_CONTEXT: EnginePluginContext = {
+	onDiagnostic: noopDiagnosticHandler,
+}
+
+function getPluginHook(plugin: EnginePlugin, hook: EngineHookName) {
 	const pluginRecord = plugin as unknown as Record<string, unknown>
 	const hookFn = pluginRecord[hook]
 	return typeof hookFn === 'function'
-		? hookFn as (arg: unknown) => unknown
+		? hookFn as (...args: any[]) => unknown
 		: null
+}
+
+function invokePluginHook(
+	hookFn: (...args: any[]) => unknown,
+	hook: EngineHookName,
+	payload: unknown,
+	context: EnginePluginContext,
+) {
+	return VOID_HOOKS.has(hook)
+		? hookFn(context)
+		: hookFn(payload, context)
 }
 
 function applyHookPayload(current: unknown, next: unknown) {
 	return next ?? current
 }
 
-function logHookStart(kind: 'Sync' | 'Async', hook: keyof EngineHooksDefinition) {
+function logHookStart(kind: 'Sync' | 'Async', hook: EngineHookName) {
 	log.debug(`Executing ${kind.toLowerCase()} hook: ${hook}`)
 }
 
-function logHookEnd(kind: 'Sync' | 'Async', hook: keyof EngineHooksDefinition) {
+function logHookEnd(kind: 'Sync' | 'Async', hook: EngineHookName) {
 	log.debug(`${kind} hook "${hook}" completed`)
 }
 
-function logPluginHookStart(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) {
+function logPluginHookStart(plugin: EnginePlugin, hook: EngineHookName) {
 	log.debug(`  - Plugin "${plugin.name}" executing ${hook}`)
 }
 
-function logPluginHookEnd(plugin: EnginePlugin, hook: keyof EngineHooksDefinition) {
+function logPluginHookEnd(plugin: EnginePlugin, hook: EngineHookName) {
 	log.debug(`  - Plugin "${plugin.name}" completed ${hook}`)
 }
 
-function logPluginHookError(plugin: EnginePlugin, hook: keyof EngineHooksDefinition, error: unknown) {
-	log.error(`Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : error}`, error)
+function reportPluginHookError(
+	context: EnginePluginContext,
+	plugin: EnginePlugin,
+	hook: EngineHookName,
+	error: unknown,
+) {
+	const message = `Plugin "${plugin.name}" failed to execute hook "${hook}": ${error instanceof Error ? error.message : String(error)}`
+	if (context.onDiagnostic === noopDiagnosticHandler) {
+		log.error(message, error)
+		return
+	}
+	emitDiagnostic(context.onDiagnostic, {
+		level: 'error',
+		code: 'plugin-hook-error',
+		message,
+		cause: error,
+		plugin: plugin.name,
+		hook,
+	})
 }
 
 /**
- * Executes an async hook across all plugins in order, piping the payload through each plugin's handler.
+ * Executes an async hook across all plugins in order, piping the payload through each handler.
+ *
  * @internal
- *
- * @typeParam P - The payload/return type flowing through the hook pipeline.
- * @param plugins - The ordered list of engine plugins to execute.
- * @param hook - The name of the async hook to invoke.
- * @param payload - The initial payload to pass into the first plugin.
- * @returns The final payload after all plugins have processed it.
- *
- * @remarks Each plugin's hook receives the current payload and may return a replacement. If a plugin's hook throws, the error is logged and the current payload is preserved for subsequent plugins.
- *
- * @example
- * ```ts
- * const config = await execAsyncHook(plugins, 'configureRawConfig', rawConfig)
- * ```
+ * @remarks A thrown plugin error is reported through the supplied diagnostic context and then
+ * rethrown. The engine never converts a failed lifecycle into a silently partial result.
  */
-export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: AsyncHooksNames, payload: P): Promise<P> {
+export async function execAsyncHook<P>(
+	plugins: readonly EnginePlugin[],
+	hook: AsyncHooksNames,
+	payload: P,
+	context: EnginePluginContext = DEFAULT_PLUGIN_CONTEXT,
+): Promise<P> {
 	logHookStart('Async', hook)
 	let current: unknown = payload
 	for (const plugin of plugins) {
@@ -84,11 +119,12 @@ export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: A
 
 		try {
 			logPluginHookStart(plugin, hook)
-			current = applyHookPayload(current, await hookFn(current))
+			current = applyHookPayload(current, await invokePluginHook(hookFn, hook, current, context))
 			logPluginHookEnd(plugin, hook)
 		}
 		catch (error: unknown) {
-			logPluginHookError(plugin, hook, error)
+			reportPluginHookError(context, plugin, hook, error)
+			throw error
 		}
 	}
 	logHookEnd('Async', hook)
@@ -96,23 +132,18 @@ export async function execAsyncHook<P>(plugins: readonly EnginePlugin[], hook: A
 }
 
 /**
- * Executes a synchronous hook across all plugins in order, piping the payload through each plugin's handler.
+ * Executes a synchronous hook across all plugins in order, piping the payload through each handler.
+ *
  * @internal
- *
- * @typeParam P - The payload/return type flowing through the hook pipeline.
- * @param plugins - The ordered list of engine plugins to execute.
- * @param hook - The name of the sync hook to invoke.
- * @param payload - The initial payload to pass into the first plugin.
- * @returns The final payload after all plugins have processed it.
- *
- * @remarks Functions identically to `execAsyncHook` but without awaiting. Used for notification-style hooks like `preflightUpdated` or `atomicStyleAdded`.
- *
- * @example
- * ```ts
- * execSyncHook(plugins, 'atomicStyleAdded', atomicStyle)
- * ```
+ * @remarks A thrown plugin error is reported through the supplied diagnostic context and then
+ * rethrown. Notification hooks therefore cannot fail silently.
  */
-export function execSyncHook<P>(plugins: readonly EnginePlugin[], hook: SyncHooksNames, payload: P): P {
+export function execSyncHook<P>(
+	plugins: readonly EnginePlugin[],
+	hook: SyncHooksNames,
+	payload: P,
+	context: EnginePluginContext = DEFAULT_PLUGIN_CONTEXT,
+): P {
 	logHookStart('Sync', hook)
 	let current: unknown = payload
 	for (const plugin of plugins) {
@@ -122,11 +153,12 @@ export function execSyncHook<P>(plugins: readonly EnginePlugin[], hook: SyncHook
 
 		try {
 			logPluginHookStart(plugin, hook)
-			current = applyHookPayload(current, hookFn(current))
+			current = applyHookPayload(current, invokePluginHook(hookFn, hook, current, context))
 			logPluginHookEnd(plugin, hook)
 		}
 		catch (error: unknown) {
-			logPluginHookError(plugin, hook, error)
+			reportPluginHookError(context, plugin, hook, error)
+			throw error
 		}
 	}
 	logHookEnd('Sync', hook)
@@ -135,6 +167,11 @@ export function execSyncHook<P>(plugins: readonly EnginePlugin[], hook: SyncHook
 
 type HookParams<H extends [type: 'sync' | 'async', payload: any, returnValue?: any]>
 	= H[1] extends void ? [] : [payload: H[1]]
+
+type PluginHookParams<H extends [type: 'sync' | 'async', payload: any, returnValue?: any]>
+	= H[1] extends void
+		? [context?: EnginePluginContext]
+		: [payload: H[1], context?: EnginePluginContext]
 
 type HookReturnType<H extends [type: 'sync' | 'async', payload: any, returnValue?: any]>
 	= H extends [any, any, infer R]
@@ -149,67 +186,53 @@ type EngineHooks = {
 }
 
 /**
- * Pre-built hook dispatcher object mapping each hook name to a function that delegates to `execAsyncHook` or `execSyncHook`.
+ * Creates an engine-local hook dispatcher bound to one diagnostic context.
+ *
  * @internal
- *
- * @remarks Provides a convenient, type-safe interface for calling any engine hook by name without manually selecting between `execAsyncHook` and `execSyncHook`. Used throughout the `Engine` class.
- *
- * @example
- * ```ts
- * const config = await hooks.configureRawConfig(plugins, rawConfig)
- * hooks.preflightUpdated(plugins)
- * ```
  */
-export const hooks: EngineHooks = {
-	configureRawConfig: (plugins: EnginePlugin[], config: EngineConfig) =>
-		execAsyncHook(plugins, 'configureRawConfig', config),
-	rawConfigConfigured: (plugins: EnginePlugin[], config: EngineConfig) =>
-		execSyncHook(plugins, 'rawConfigConfigured', config),
-	configureResolvedConfig: (plugins: EnginePlugin[], resolvedConfig: ResolvedEngineConfig) =>
-		execAsyncHook(plugins, 'configureResolvedConfig', resolvedConfig),
-	configureEngine: (plugins: EnginePlugin[], engine: Engine) =>
-		execAsyncHook(plugins, 'configureEngine', engine),
-	transformSelectors: (plugins: EnginePlugin[], selectors: string[]) =>
-		execAsyncHook(plugins, 'transformSelectors', selectors),
-	transformStyleItems: (plugins: EnginePlugin[], styleItems: ResolvedStyleItem[]) =>
-		execAsyncHook(plugins, 'transformStyleItems', styleItems),
-	transformStyleDefinitions: (plugins: EnginePlugin[], styleDefinitions: ResolvedStyleDefinition[]) =>
-		execAsyncHook(plugins, 'transformStyleDefinitions', styleDefinitions),
-	preflightUpdated: (plugins: EnginePlugin[]) =>
-		execSyncHook(plugins, 'preflightUpdated', void 0),
-	atomicStyleAdded: (plugins: EnginePlugin[], atomicStyle: AtomicStyle) =>
-		execSyncHook(plugins, 'atomicStyleAdded', atomicStyle),
-	autocompleteConfigUpdated: (plugins: EnginePlugin[]) =>
-		execSyncHook(plugins, 'autocompleteConfigUpdated', void 0),
-}
-
-type EnginePluginHooksOptions = {
-	[K in keyof EngineHooksDefinition]?: EngineHooksDefinition[K][0] extends 'async'
-		? (...params: HookParams<EngineHooksDefinition[K]>) => Awaitable<EngineHooksDefinition[K][1] | void>
-		: (...params: HookParams<EngineHooksDefinition[K]>) => EngineHooksDefinition[K][1] | void
+export function createEngineHooks(context: EnginePluginContext): EngineHooks {
+	return {
+		configureRawConfig: (plugins: EnginePlugin[], config: EngineConfig) =>
+			execAsyncHook(plugins, 'configureRawConfig', config, context),
+		rawConfigConfigured: (plugins: EnginePlugin[], config: EngineConfig) =>
+			execSyncHook(plugins, 'rawConfigConfigured', config, context),
+		configureResolvedConfig: (plugins: EnginePlugin[], resolvedConfig: ResolvedEngineConfig) =>
+			execAsyncHook(plugins, 'configureResolvedConfig', resolvedConfig, context),
+		configureEngine: (plugins: EnginePlugin[], engine: Engine) =>
+			execAsyncHook(plugins, 'configureEngine', engine, context),
+		transformSelectors: (plugins: EnginePlugin[], selectors: string[]) =>
+			execAsyncHook(plugins, 'transformSelectors', selectors, context),
+		transformStyleItems: (plugins: EnginePlugin[], styleItems: ResolvedStyleItem[]) =>
+			execAsyncHook(plugins, 'transformStyleItems', styleItems, context),
+		transformStyleDefinitions: (plugins: EnginePlugin[], styleDefinitions: ResolvedStyleDefinition[]) =>
+			execAsyncHook(plugins, 'transformStyleDefinitions', styleDefinitions, context),
+		preflightUpdated: (plugins: EnginePlugin[]) =>
+			execSyncHook(plugins, 'preflightUpdated', void 0, context),
+		atomicStyleAdded: (plugins: EnginePlugin[], atomicStyle: AtomicStyle) =>
+			execSyncHook(plugins, 'atomicStyleAdded', atomicStyle, context),
+		autocompleteConfigUpdated: (plugins: EnginePlugin[]) =>
+			execSyncHook(plugins, 'autocompleteConfigUpdated', void 0, context),
+	}
 }
 
 /**
- * Describes an engine plugin that can hook into the PikaCSS engine lifecycle.
+ * Backward-compatible hook dispatcher using the default no-op diagnostic context.
  *
- * @remarks Plugins implement optional hook methods corresponding to engine lifecycle events. Hooks run in plugin registration order, optionally reordered by the `order` property.
- *
- * @example
- * ```ts
- * const myPlugin: EnginePlugin = {
- *   name: 'my-plugin',
- *   configureRawConfig: (config) => ({ ...config, important: { default: true } }),
- * }
- * ```
+ * @internal
  */
+export const hooks: EngineHooks = createEngineHooks(DEFAULT_PLUGIN_CONTEXT)
+
+type EnginePluginHooksOptions = {
+	[K in keyof EngineHooksDefinition]?: EngineHooksDefinition[K][0] extends 'async'
+		? (...params: PluginHookParams<EngineHooksDefinition[K]>) => Awaitable<EngineHooksDefinition[K][1] | void>
+		: (...params: PluginHookParams<EngineHooksDefinition[K]>) => EngineHooksDefinition[K][1] | void
+}
+
+/** Describes an engine plugin that can hook into the PikaCSS engine lifecycle. */
 export interface EnginePlugin extends EnginePluginHooksOptions {
-	/** The unique human-readable name identifying this plugin in logs and diagnostics. */
+	/** The unique human-readable name identifying this plugin in diagnostics. */
 	name: string
-	/**
-	 * Controls plugin execution order relative to other plugins.
-	 *
-	 * @default undefined (normal order)
-	 */
+	/** Controls execution order relative to other plugins. */
 	order?: 'pre' | 'post'
 }
 
@@ -220,19 +243,9 @@ const orderMap = new Map([
 ])
 
 /**
- * Sorts an array of plugins by their `order` property: `'pre'` first, default in the middle, `'post'` last.
+ * Sorts plugins by `pre`, default, then `post` order without mutating the input.
+ *
  * @internal
- *
- * @param plugins - The unordered array of engine plugins.
- * @returns A new array sorted by execution order.
- *
- * @remarks The original array is not mutated. Plugins with the same order retain their relative insertion order (stable sort).
- *
- * @example
- * ```ts
- * const ordered = resolvePlugins([postPlugin, prePlugin, normalPlugin])
- * // [prePlugin, normalPlugin, postPlugin]
- * ```
  */
 export function resolvePlugins(plugins: EnginePlugin[]): EnginePlugin[] {
 	return [...plugins].sort((a, b) => orderMap.get(a.order)! - orderMap.get(b.order)!)
@@ -241,20 +254,10 @@ export function resolvePlugins(plugins: EnginePlugin[]): EnginePlugin[] {
 // Only for type inference without runtime effect
 /* c8 ignore start */
 /**
- * Identity helper that returns the plugin object as-is, providing TypeScript type inference for plugin definitions.
+ * Identity helper that provides type inference for an engine plugin definition.
  *
- * @param plugin - The engine plugin definition.
- * @returns The same plugin object, unchanged.
- *
- * @remarks This is a compile-time-only helper; it has no runtime effect. Using it ensures type checking and IDE autocompletion for hook names and payloads.
- *
- * @example
- * ```ts
- * export default defineEnginePlugin({
- *   name: 'my-plugin',
- *   configureRawConfig: (config) => ({ ...config, important: { default: true } }),
- * })
- * ```
+ * @param plugin - The plugin definition to return unchanged.
+ * @returns The same plugin instance.
  */
 export function defineEnginePlugin(plugin: EnginePlugin): EnginePlugin {
 	return plugin

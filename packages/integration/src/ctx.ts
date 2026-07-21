@@ -4,7 +4,7 @@ import type { AnalyzedModule } from './processors/types'
 import type { IntegrationContext, IntegrationContextOptions, LoadedConfigResult, UsageRecord } from './types'
 import { statSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { createEngine, defineEnginePlugin, log } from '@pikacss/core'
+import { createEngine, defineEnginePlugin } from '@pikacss/core'
 import { computed, signal } from 'alien-signals'
 import { globbyStream } from 'globby'
 import { klona } from 'klona'
@@ -14,6 +14,7 @@ import picomatch from 'picomatch'
 import { analyzeModule, commitModule, hashSource, prepareModule, rewriteModule } from './ctx.pipeline'
 import { createEventHook } from './eventHook'
 import { createFnConfig } from './fnConfig'
+import { consoleDiagnosticHandler, log } from './log'
 import { parseModuleId } from './moduleId'
 import { createDefaultProcessorRegistry } from './processors/registry'
 import { generateTsCodegenContent } from './tsCodegen'
@@ -516,6 +517,7 @@ function useTransformTarget({
  * pending setup promise.
  */
 export function createCtx(options: IntegrationContextOptions): IntegrationContext {
+	const onDiagnostic = options.onDiagnostic ?? consoleDiagnosticHandler
 	const {
 		cwd,
 		cssCodegenFilepath,
@@ -814,7 +816,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 				config.plugins = config.plugins ?? []
 				config.plugins.unshift(devPlugin)
 				log.debug('Creating engine with loaded/default config')
-				nextEngine = await createEngine(config)
+				nextEngine = await createEngine(config, { onDiagnostic })
 			}
 			catch (error: any) {
 				setupError = error
@@ -841,7 +843,7 @@ export function createCtx(options: IntegrationContextOptions): IntegrationContex
 				return
 			}
 			log.error(`Failed to load config: ${setupError.message}. Falling back to default config.`, setupError)
-			nextEngine = await createEngine({ plugins: [devPlugin] })
+			nextEngine = await createEngine({ plugins: [devPlugin] }, { onDiagnostic })
 		}
 
 		// Drain in-flight transforms before clearing state and swapping the

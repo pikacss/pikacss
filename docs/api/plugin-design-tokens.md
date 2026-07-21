@@ -31,18 +31,22 @@ Use [Design Tokens plugin](/official-plugins/design-tokens) when you need concep
 
 ## Functions
 
-### designTokens() {#function-designtokens}
+### designTokens(runtime?) {#function-designtokens-runtime}
 
 PikaCSS engine plugin that converts design tokens (W3C Design Tokens JSON or `design.md` documents) into CSS variables.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `runtime?` | `DesignTokensRuntimeOptions` | Optional host capabilities for resolving file-backed sources. |
 
 **Returns:** `EnginePlugin` - An `EnginePlugin` that reads `EngineConfig.designTokens`, loads all token sources, and merges the resulting variables into `EngineConfig.variables`.
 
 **Remarks:**
 
-Tokens flow through the core `variables` system, so they inherit unused-pruning, autocomplete integration, and selector scoping. Loaded files are registered as engine config dependencies so integrations reload when a token file changes.
+The neutral entry accepts inline token objects. File-backed sources require the `/node` adapter or a custom runtime capability. Tokens flow through the core `variables` system and loaded files are registered as config dependencies.
 
 ```ts
-import { designTokens } from '@pikacss/plugin-design-tokens'
+import { designTokens } from '@pikacss/plugin-design-tokens/node'
 
 export default defineEngineConfig({
   plugins: [designTokens()],
@@ -56,13 +60,14 @@ export default defineEngineConfig({
 <br>
 <br>
 
-### parseDesignMarkdown(content) {#function-parsedesignmarkdown-content}
+### parseDesignMarkdown(content, onDiagnostic?) {#function-parsedesignmarkdown-content-ondiagnostic}
 
 Extracts design token blocks from a markdown design document.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `content` | `string` | The markdown source (e.g. the content of a `design.md` file). |
+| `onDiagnostic?` | `DiagnosticHandler` | Optional handler for malformed token blocks. |
 
 **Returns:** `{ base: DesignTokenGroup[], themeBlocks: ParsedThemeBlock[] }` - The parsed base token groups and theme-scoped token blocks.
 
@@ -150,7 +155,7 @@ Configuration object for the `designTokens` engine option.
 | `sources?` | `Arrayable<DesignTokensSource>` | Base token sources emitted under `:root`. Later sources override earlier ones when names collide. | — |
 | `themes?` | `Record<string, DesignTokensTheme>` | Theme overrides keyed by theme name. Tokens are emitted under the theme's selector. | — |
 | `prefix?` | `string` | Prefix prepended to every generated CSS variable name (without leading `--`). | `'' (no prefix)` |
-| `root?` | `string` | Base directory used to resolve relative source file paths. | `process.cwd()` |
+| `root?` | `string` | Base directory used to resolve relative source file paths. | `The host runtime's working directory; `'.'` when no capability is provided.` |
 | `pruneUnused?` | `boolean` | Pruning override applied to every generated variable. When unset, the `variables` config default applies. | `undefined` |
 
 ```ts
@@ -159,6 +164,18 @@ const config: DesignTokensConfig = {
   themes: { dark: { sources: ['./design.dark.tokens.json'] } },
 }
 ```
+
+<br>
+<br>
+
+### DesignTokensRuntimeOptions {#interface-designtokensruntimeoptions}
+
+Runtime capabilities used to load optional file-backed token sources.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `readFile?` | `(filepath: string) => Promise<string>` | Reads a UTF-8 token source from an absolute path. | — |
+| `cwd?` | `() => string` | Returns the host working directory used when `DesignTokensConfig.root` is omitted. | — |
 
 <br>
 <br>

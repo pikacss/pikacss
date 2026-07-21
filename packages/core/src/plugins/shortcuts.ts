@@ -91,7 +91,7 @@ export function shortcuts() {
 		configureEngine(_engine) {
 			engine = _engine
 			engine.shortcuts = {
-				resolver: new ShortcutResolver(),
+				resolver: new ShortcutResolver(engine.onDiagnostic),
 				add: (...list) => {
 					list.forEach((config) => {
 						const resolved = resolveShortcutConfig(config)

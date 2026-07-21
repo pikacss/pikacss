@@ -1,4 +1,4 @@
-import type { Engine, EngineConfig, Nullish } from '@pikacss/core'
+import type { DiagnosticHandler, Engine, EngineConfig, Nullish } from '@pikacss/core'
 import type { SourceMap } from 'magic-string'
 import type { createEventHook } from './eventHook'
 
@@ -45,6 +45,8 @@ export interface IntegrationContextOptions {
 	cssCodegen: string
 	/** When `true`, automatically scaffolds a default `pika.config.js` file if no config file is found. */
 	autoCreateConfig: boolean
+	/** Receives engine diagnostics. Defaults to the official console adapter. */
+	onDiagnostic?: DiagnosticHandler
 }
 
 /**

@@ -28,6 +28,12 @@
 				"types": "./dist/index.d.mts",
 				"default": "./dist/index.mjs"
 			}
+		},
+		"./node": {
+			"import": {
+				"types": "./dist/node.d.mts",
+				"default": "./dist/node.mjs"
+			}
 		}
 	},
 	"module": "dist/index.mjs",
@@ -35,14 +41,11 @@
 	"files": [
 		"dist"
 	],
-	"engines": {
-		"node": ">=22"
-	},
 	"scripts": {
 		"build": "tsdown",
 		"build:pack": "pnpm build && pnpm pack",
 		"typecheck": "pnpm typecheck:package && pnpm typecheck:test",
-		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit",
+		"typecheck:package": "tsc --project ./tsconfig.package.json --noEmit && tsc --project ./tsconfig.node.json --noEmit",
 		"typecheck:test": "tsc --project ./tsconfig.tests.json --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest"

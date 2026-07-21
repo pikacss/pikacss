@@ -29,4 +29,24 @@ export default await deviltea(
 		],
 	},
 	pikacss(),
+	// This focused test verifies that diagnostics preserve non-Error thrown values.
+	{
+		files: ['packages/core/src/plugin.test.ts'],
+		linterOptions: {
+			reportUnusedDisableDirectives: 'off',
+		},
+		rules: {
+			'no-throw-literal': 'off',
+		},
+	},
+	// Console access is isolated to the official Node integration host adapter.
+	{
+		files: ['packages/integration/src/log.ts'],
+		linterOptions: {
+			reportUnusedDisableDirectives: 'off',
+		},
+		rules: {
+			'no-console': 'off',
+		},
+	},
 )

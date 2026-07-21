@@ -1,4 +1,6 @@
+import type { DiagnosticHandler } from '../diagnostics'
 import type { Arrayable, InternalPropertyValue, PreflightDefinition, ResolvedCSSProperties, ResolvedSelector, UnionString } from '../types'
+import { emitDiagnostic, noopDiagnosticHandler } from '../diagnostics'
 import { defineEnginePlugin } from '../plugin'
 import { isPlainObjectRecord, log } from '../utils'
 
@@ -168,9 +170,10 @@ export function variables() {
 	return defineEnginePlugin({
 		name: 'core:variables',
 
-		rawConfigConfigured(config) {
+		rawConfigConfigured(config, context) {
 			resolveVariables = createResolveVariablesFn({
 				pruneUnused: config.variables?.pruneUnused,
+				onDiagnostic: context?.onDiagnostic,
 			})
 			rawVariables = normalizeVariablesConfig(config.variables)
 			safeSet = new Set(config.variables?.safeList ?? [])
@@ -332,8 +335,10 @@ function mergeVariablesDefinition(target: VariablesDefinition, source: Variables
 
 function createResolveVariablesFn({
 	pruneUnused: defaultPruneUnused = true,
+	onDiagnostic = noopDiagnosticHandler,
 }: {
 	pruneUnused?: boolean
+	onDiagnostic?: DiagnosticHandler
 } = {}) {
 	function _resolveVariables(variables: VariablesDefinition, levels: string[], result: ResolvedVariable[]): ResolvedVariable[] {
 		for (const [key, value] of Object.entries(variables)) {
@@ -359,7 +364,11 @@ function createResolveVariablesFn({
 			}
 			else {
 				if (!isPlainObjectRecord(value)) {
-					log.warn(`Invalid variables scope for selector "${key}". Expected a nested object, received ${typeof value}. Skipping.`)
+					const message = `Invalid variables scope for selector "${key}". Expected a nested object, received ${typeof value}. Skipping.`
+					if (onDiagnostic === noopDiagnosticHandler)
+						log.warn(message)
+					else
+						emitDiagnostic(onDiagnostic, { level: 'warning', code: 'variables-invalid-scope', message })
 					continue
 				}
 				_resolveVariables(value as VariablesDefinition, [...levels, key], result)

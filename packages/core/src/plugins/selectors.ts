@@ -95,7 +95,7 @@ export function selectors() {
 		configureEngine(_engine) {
 			engine = _engine
 			engine.selectors = {
-				resolver: new SelectorResolver(),
+				resolver: new SelectorResolver(engine.onDiagnostic),
 				add: (...list: Selector[]) => {
 					list.forEach((config) => {
 						const resolved = resolveSelectorConfig(config)

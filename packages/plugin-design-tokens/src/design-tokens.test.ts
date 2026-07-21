@@ -1,10 +1,10 @@
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { createEngine } from '@pikacss/core'
+import { createEngine, log } from '@pikacss/core'
 import { join } from 'pathe'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { designTokens, parseDesignMarkdown, tokenPathToVariableName } from './index'
+import { designTokens, parseDesignMarkdown, tokenPathToVariableName } from './node'
 
 async function renderTokensCss(designTokensConfig: any, extra: Record<string, any> = {}) {
 	const engine = await createEngine({
@@ -445,5 +445,29 @@ describe('designTokens plugin', () => {
 		// after dev-server start triggers a config reload.
 		expect(engine.configDependencies)
 			.toEqual(new Set([join(dir, 'missing.tokens.json')]))
+	})
+
+	it('uses the logger as a fallback for read errors without diagnostic context', async () => {
+		const errorSink = vi.fn()
+		const dir = await mkdtemp(join(tmpdir(), 'pika-design-tokens-'))
+		const plugin = designTokens()
+		log.setErrorFn(errorSink)
+		try {
+			await plugin.configureRawConfig?.({
+				designTokens: {
+					root: dir,
+					sources: ['missing.tokens.json'],
+				},
+			} as any)
+			expect(errorSink)
+				.toHaveBeenCalledWith(
+					expect.any(String),
+					expect.stringContaining('Failed to read token source'),
+					expect.any(Error),
+				)
+		}
+		finally {
+			log.setErrorFn(() => {})
+		}
 	})
 })

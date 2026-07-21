@@ -31,6 +31,19 @@ Use [Icons plugin](/official-plugins/icons) when you need conceptual usage guida
 
 ## Functions
 
+### createIconsPlugin(runtime?) {#function-createiconsplugin-runtime}
+
+Creates an icons plugin using host-provided runtime capabilities.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `runtime?` | `IconsRuntimeOptions` | Optional local icon loading capabilities supplied by the host adapter. |
+
+**Returns:** `EnginePlugin` - An engine plugin that resolves icon utilities into CSS styles.
+
+<br>
+<br>
+
 ### icons() {#function-icons}
 
 Creates the PikaCSS icons engine plugin.
@@ -39,8 +52,8 @@ Creates the PikaCSS icons engine plugin.
 
 **Remarks:**
 
-Resolves icon SVGs from custom collections, locally installed
-`@iconify-json/*` packages, or a remote CDN. Each matched utility is
+The neutral entry resolves custom collections and remote CDN sources.
+Locally installed `@iconify-json/*` packages require the `/node` adapter. Each matched utility is
 expanded into a CSS style item using either mask or background rendering.
 Configure behavior through the `icons` key in your engine config.
 
@@ -97,6 +110,25 @@ export default defineEngineConfig({
   },
 })
 ```
+
+<br>
+<br>
+
+### IconsRuntimeOptions {#interface-iconsruntimeoptions}
+
+Runtime capabilities used by the icons plugin.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `loadLocalIcon?` | `LocalIconLoader` | Optional loader for locally installed icon collections. | — |
+| `shouldLoadLocalIcon?` | `() => boolean` | Determines whether the local loader should run for the current host context. | — |
+
+<br>
+<br>
+
+### LocalIconLoader {#type-localiconloader}
+
+Host capability for loading locally installed icon collections.
 
 <br>
 <br>

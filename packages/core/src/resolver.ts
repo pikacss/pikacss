@@ -1,4 +1,6 @@
+import type { Diagnostic, DiagnosticHandler } from './diagnostics'
 import type { Awaitable, Nullish } from './types'
+import { emitDiagnostic, noopDiagnosticHandler } from './diagnostics'
 import { log } from './utils'
 
 function stripGlobalFlag(re: RegExp): RegExp {
@@ -102,6 +104,21 @@ export abstract class AbstractResolver<T> {
 	/** Callback invoked after a successful resolution, receiving the input string, rule type, and result. */
 	onResolved: (string: string, type: 'static' | 'dynamic', result: ResolvedResult<T>) => void = () => {}
 
+	constructor(readonly onDiagnostic: DiagnosticHandler = noopDiagnosticHandler) {}
+
+	/** Reports through the host handler, falling back to the optional logger only for standalone resolvers. */
+	reportDiagnostic(diagnostic: Diagnostic): void {
+		if (this.onDiagnostic === noopDiagnosticHandler) {
+			const args = diagnostic.cause == null ? [] : [diagnostic.cause]
+			if (diagnostic.level === 'error')
+				log.error(diagnostic.message, ...args)
+			else
+				log.warn(diagnostic.message, ...args)
+			return
+		}
+		emitDiagnostic(this.onDiagnostic, diagnostic)
+	}
+
 	get staticRules() {
 		return [...this.staticRulesMap.values()]
 	}
@@ -160,7 +177,8 @@ export abstract class AbstractResolver<T> {
 	removeStaticRule(key: string) {
 		const rule = this.staticRulesMap.get(key)
 		if (rule == null) {
-			log.warn(`Static rule not found for removal: ${key}`)
+			const message = `Static rule not found for removal: ${key}`
+			this.reportDiagnostic({ level: 'warning', code: 'resolver-static-rule-not-found', message })
 			return this
 		}
 
@@ -227,7 +245,8 @@ export abstract class AbstractResolver<T> {
 	removeDynamicRule(key: string) {
 		const rule = this.dynamicRulesMap.get(key)
 		if (rule == null) {
-			log.warn(`Dynamic rule not found for removal: ${key}`)
+			const message = `Dynamic rule not found for removal: ${key}`
+			this.reportDiagnostic({ level: 'warning', code: 'resolver-dynamic-rule-not-found', message })
 			return this
 		}
 
@@ -363,14 +382,18 @@ export abstract class RecursiveResolver<T> extends AbstractResolver<T[]> {
 	async resolve(string: string, _visited?: Set<string>): Promise<T[]> {
 		const visited = _visited ?? new Set<string>()
 		if (visited.has(string)) {
-			log.warn(`Circular reference detected for "${string}", returning as-is`)
+			const message = `Circular reference detected for "${string}", returning as-is`
+			this.reportDiagnostic({ level: 'warning', code: 'resolver-circular-reference', message })
+			log.warn(message)
 			return [string as unknown as T]
 		}
 		visited.add(string)
 
 		const resolved = await this._resolve(string)
-			.catch((error) => {
-				log.warn(`Failed to resolve "${string}": ${error.message}`, error)
+			.catch((error: unknown) => {
+				const message = `Failed to resolve "${string}": ${error instanceof Error ? error.message : String(error)}`
+				this.reportDiagnostic({ level: 'warning', code: 'resolver-resolution-error', message, cause: error })
+				log.warn(message, error)
 				return void 0
 			})
 		if (resolved == null)
