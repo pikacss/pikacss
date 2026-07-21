@@ -37,7 +37,9 @@ const engine = await createEngine(config, {
 })
 ```
 
-Plugin lifecycle failures are reported and rethrown; warnings are delivered only through the configured handler. Diagnostics and optional tracing are separate host-controlled channels, so configuring both does not duplicate the same runtime event.
+Plugin lifecycle failures are reported and rethrown; warnings are delivered only through the configured handler.
+
+Diagnostics and optional tracing are separate host-controlled channels, so configuring both does not duplicate the same runtime event.
 
 ## Optional tracing
 
