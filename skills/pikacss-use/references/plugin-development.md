@@ -133,7 +133,7 @@ return defineEnginePlugin({
       to: { opacity: '1' },
     }])
     engine.variables.add({ '--my-color': 'rebeccapurple' })
-    engine.appendCssImport('url("https://example.test/fonts.css")')
+    engine.appendCssImport('@import url("https://example.test/fonts.css")')
   },
 })
 ```
@@ -174,7 +174,7 @@ Common methods available in `configureEngine`:
 |---|---|
 | `engine.addPreflight(preflight)` | Add raw, object, function, or wrapped preflight CSS |
 | `engine.appendAutocomplete(contribution)` | Add selector, shortcut, property, CSS-property, value, or pattern completions |
-| `engine.appendCssImport(cssImport)` | Add a CSS `@import` |
+| `engine.appendCssImport(cssImport)` | Add a raw CSS `@import` statement |
 | `engine.selectors.add(...selectors)` | Register static/dynamic selector rules |
 | `engine.shortcuts.add(...shortcuts)` | Register static/dynamic shortcut rules |
 | `engine.keyframes.add(...keyframes)` | Register keyframe definitions |
