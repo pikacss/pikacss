@@ -1,25 +1,36 @@
 # Build Plugin Options
 
-> Read this when the user asks about customizing the build plugin behavior — scan patterns, output format, generated file paths, or function name.
+> Read this when the user asks about build-tool setup, scan patterns, project roots, output formats, generated paths, custom function names, wrapper integrations, HMR, or config reload behavior.
 
-If the project is Nuxt, prefer `@pikacss/nuxt-pikacss` instead of manually wiring `@pikacss/unplugin-pikacss/vite`. The Nuxt module configures the Vite plugin for you and injects a generated Nuxt plugin/template that imports `pika.css`, so manual CSS imports are not needed there.
+## Compatibility
 
-## Unplugin Options
+- PikaCSS packages require Node.js 22 or later.
+- The Vite adapter supports Vite 7 and 8 (`^7.0.0 || ^8.0.0`).
+- Supported unplugin exports: Vite, Rollup, Webpack, esbuild, Rspack, and Rolldown.
+- Nuxt projects should use `@pikacss/nuxt-pikacss`; do not also register the Vite adapter manually.
 
-The `pikacss()` factory function from each bundler subpath export accepts an options object:
+## Basic Configuration
 
 ```ts
 import pikacss from '@pikacss/unplugin-pikacss/vite'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
     pikacss({
-      // All options below are optional — defaults work for most projects
+      // Defaults are sufficient for most projects.
       fnName: 'pika',
       transformedFormat: 'string',
       scan: {
         include: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}'],
-        exclude: ['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**'],
+        exclude: [
+          'node_modules/**',
+          'dist/**',
+          '.git/**',
+          '.nuxt/**',
+          '.output/**',
+          'coverage/**',
+        ],
       },
     }),
   ],
@@ -28,70 +39,117 @@ export default defineConfig({
 
 ## Option Reference
 
-The default generated filenames (`pika.gen.ts` and `pika.gen.css`) are convenience defaults, not required names. When you pass a string to `tsCodegen` or `cssCodegen`, that exact custom path is used.
-
 | Option | Type | Default | Purpose |
 |---|---|---|---|
-| `fnName` | `string` | `'pika'` | Base function name recognized by the transform |
-| `transformedFormat` | `'string' \| 'array'` | `'string'` | Output format of `pika()` calls |
-| `scan.include` | `string[]` | `['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}']` | Glob patterns for files to scan |
-| `scan.exclude` | `string[]` | `['node_modules/**', 'dist/**', '.git/**', '.nuxt/**', '.output/**', 'coverage/**']` | Glob patterns to exclude |
-| `config` | `EngineConfig \| string` | auto-discovery | Engine config object or path to config file |
-| `autoCreateConfig` | `boolean` | `false` | Opt in to scaffolding a default config file when none is found |
-| `tsCodegen` | `boolean \| string` | `true` (`pika.gen.ts`) | TypeScript declaration output path when set to a string; `false` disables codegen |
-| `cssCodegen` | `true \| string` | `true` (`pika.gen.css`) | CSS output file path when set to a string; cannot be disabled |
+| `cwd` | `string` | Bundler root, then `process.cwd()` | Working directory for config discovery, scan globs, and codegen paths |
+| `scan.include` | `string \| string[]` | `**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue}` | Source globs to scan |
+| `scan.exclude` | `string \| string[]` | Dependencies, output, VCS, Nuxt, and coverage globs | Source globs to exclude |
+| `config` | `EngineConfig \| string` | Auto-discovery | Inline engine config or path to a config file |
+| `autoCreateConfig` | `boolean` | `false` | Opt in to scaffolding `pika.config.js` when no config exists |
+| `fnName` | `string` | `'pika'` | Base compile-time function name; preview and `.str`/`.arr` variants derive from it |
+| `transformedFormat` | `'string' \| 'array'` | `'string'` | Default output format for the base function |
+| `tsCodegen` | `boolean \| string` | `true` → `pika.gen.ts` | Redirect or disable TypeScript declaration generation |
+| `cssCodegen` | `true \| string` | `true` → `pika.gen.css` | CSS output path; CSS codegen cannot be disabled |
+| `currentPackageName` | `string` | `'@pikacss/unplugin-pikacss'` | Package identity embedded in generated declarations/config scaffolds; wrapper integrations only |
 
-## Common Scenarios
+### Important override semantics
 
-### Change output format to array
+Explicit `scan.include` and `scan.exclude` values **replace** their corresponding defaults. They are not merged. If a user supplies a custom exclusion list, remind them to retain every exclusion they still need.
+
+`cwd` resolution priority is:
+
+1. Explicit `cwd` option.
+2. Bundler root/context where an adapter exposes one.
+3. `process.cwd()`.
+
+Use `currentPackageName` only when publishing a wrapper integration. It must name the package users actually import; normal applications should leave it untouched.
+
+## Supported Source Files
+
+The built-in AST processors support:
+
+- `js`, `mjs`, `cjs`, `jsx`
+- `ts`, `mts`, `cts`, `tsx`
+- Vue SFCs (`vue`)
+
+Svelte, Astro, and plain HTML are not processed. Narrowing scan globs to an unsupported extension does not add compiler support.
+
+```ts
+pikacss({
+  scan: {
+    include: ['src/**/*.{ts,tsx,vue}', 'shared/**/*.mts'],
+  },
+})
+```
+
+## Generated Files
+
+The default generated paths are convenience defaults rather than required names:
+
+```ts
+pikacss({
+  tsCodegen: './src/generated/pika.gen.ts',
+  cssCodegen: './src/generated/pika.gen.css',
+})
+```
+
+- `import 'pika.css'` remains the public virtual CSS import even when `cssCodegen` changes.
+- `tsCodegen: false` disables declaration generation and therefore removes generated global types and `pikap` hover output.
+- `cssCodegen` accepts only `true` or a string path.
+- `autoCreateConfig` is intentionally opt-in because silent repository writes are unsafe in CI, containers, and read-only workspaces.
+
+## Output Format
 
 ```ts
 pikacss({ transformedFormat: 'array' })
-// pika({ display: 'flex' }) → ['pk-a1b2'] instead of 'pk-a1b2'
+// pika({ display: 'flex' }) → ['pk-a1b2']
 ```
 
-### Custom output paths
+Call-site variants override the default:
 
-These filenames are examples only. Any custom path that fits the project layout is valid; the important part is setting `tsCodegen` and `cssCodegen` to the paths you want generated.
+- `.str()` always produces a string.
+- `.arr()` always produces an array.
+- Preview variants follow the same rule.
 
-```ts
-pikacss({
-  tsCodegen: 'src/generated/pika.d.ts',
-  cssCodegen: 'src/generated/pika.css',
-})
-```
-
-### Customize the scan globs
-
-JS-family sources (`js`, `mjs`, `cjs`, `jsx`, `ts`, `mts`, `cts`, `tsx`) and Vue SFCs (`vue`) are supported by the AST-based transform. The default `scan.include` already covers every supported extension; override it to narrow the scan to specific directories:
-
-```ts
-pikacss({
-  scan: { include: ['src/**/*.{ts,tsx,vue}', 'shared/**/*.mts'] },
-})
-```
-
-Setting `scan.include` explicitly replaces the default glob entirely. Other markup formats (Svelte, Astro, plain HTML) are not processed.
-
-### Disable TypeScript generation
-
-```ts
-pikacss({ tsCodegen: false })
-```
-
-### Custom function name
+## Custom Function Name
 
 ```ts
 pikacss({ fnName: 'css' })
-// Now use css({ display: 'flex' }) instead of pika(...)
 ```
 
-## HMR / Dev Server
+The generated globals become `css`, `css.str`, `css.arr`, `cssp`, `cssp.str`, and `cssp.arr`. Keep `@pikacss/eslint-config`'s `fnName` aligned with this value.
 
-The plugin automatically handles:
-- Hot module replacement for CSS changes during development
-- Config file watching — changes to `pika.config.ts` trigger full engine reinit
-- Source file watching — `pika()` call changes trigger targeted transforms
-- Debounced codegen writes (300ms) to prevent thrashing
+## Config Loading and Error Behavior
 
-No consumer configuration is needed for HMR.
+Config discovery only checks the project root and uses this priority:
+
+1. `pika.config.{ts,mts,cts,js,mjs,cjs}`
+2. `pikacss.config.{ts,mts,cts,js,mjs,cjs}`
+
+When multiple candidates exist, the first is used and the others are logged as ignored with a warning. Recommend keeping at most one config file.
+
+- Production builds throw on invalid config or engine initialization.
+- Development retains the last successfully initialized engine after a transient config error so the server can continue running.
+
+## HMR and Watching
+
+The integrations automatically handle:
+
+- CSS updates after transformed source changes.
+- Config file reloads.
+- External config dependencies registered by plugins through `engine.addConfigDependency(path)`.
+- Debounced generated-file writes.
+
+A plugin that reads an external file must register that path, including a missing path that should trigger reload when later created. Without registration, changing the external file does not recreate the engine.
+
+## Nuxt-Specific Behavior
+
+`@pikacss/nuxt-pikacss`:
+
+- Registers the Vite adapter internally.
+- Uses the unplugin's default JS-family and Vue scan patterns, including `.nuxt` and `.output` exclusions.
+- Resolves config discovery and generated paths from Nuxt's project root instead of Vite's `srcDir` root.
+- Generates a Nuxt plugin/template that imports `pika.css`.
+- Sets its own integration package identity for generated output.
+
+Do not recommend a manual `import 'pika.css'` or a duplicate Vite plugin in Nuxt projects.

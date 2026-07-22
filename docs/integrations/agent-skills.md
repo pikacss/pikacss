@@ -3,7 +3,11 @@ title: Agent Skills
 description: AI-assisted development skill for using and extending PikaCSS.
 relatedPackages:
   - '@pikacss/core'
-relatedSources: []
+  - '@pikacss/unplugin-pikacss'
+  - '@pikacss/plugin-icons'
+  - '@pikacss/plugin-design-tokens'
+relatedSources:
+  - 'skills/pikacss-use/SKILL.md'
 category: integrations
 order: 30
 ---
@@ -25,13 +29,15 @@ npx skills add pikacss/pikacss --skill pikacss-use
 Use this skill when you are working with PikaCSS in any capacity:
 
 - Setting up PikaCSS in a new project
-- Configuring engine options or build plugins
+- Configuring engine options or build integrations
 - Using `pika()` and its variants
-- Consuming official plugins (reset, icons, fonts, typography)
-- Troubleshooting build or runtime issues
+- Consuming official plugins (reset, icons, fonts, typography, and design tokens)
+- Troubleshooting transforms, generated files, TypeScript declarations, or configuration reloads
+- Choosing neutral or Node.js runtime adapters for plugins that load local resources
 - Creating a new engine plugin from scratch
-- Implementing plugin hooks and lifecycle
+- Implementing plugin hooks, structured diagnostics, and lifecycle behavior
 - Extending `EngineConfig` with module augmentation
+- Registering external configuration dependencies for file watching
 - Writing plugin tests
 
 ### How to Trigger
@@ -40,18 +46,22 @@ The skill is automatically activated when your question relates to PikaCSS usage
 
 ### Coverage
 
-- Installation and build tool integration (Vite, Webpack, Nuxt, etc.)
+- Installation and build tool integration (Vite, Webpack, Rollup, esbuild, Rspack, Rolldown, and Nuxt)
+- Node.js, Vite, source-file, and static-analysis compatibility constraints
 - Engine configuration and customization
+- Generated CSS and TypeScript declaration files
 - The `pika()`, `pika.str()`, `pika.arr()`, and `pikap()` functions
 - Official plugin consumption and configuration
+- Neutral and Node.js plugin entry points
 - ESLint integration
 - TypeScript autocomplete support
 - Plugin structure and `defineEnginePlugin`
-- Lifecycle hooks and execution order
+- Lifecycle hooks, hook context, diagnostics, and execution order
 - Config augmentation via TypeScript module augmentation
 - Layer management and preflight injection
-- Selector, shortcut, variable, and keyframe registration
-- Plugin testing patterns
+- Selector, shortcut, variable, keyframe, and design-token registration
+- External config dependency watching
+- Plugin testing patterns using `createEngine`
 
 ## Next
 
