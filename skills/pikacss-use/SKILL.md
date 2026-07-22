@@ -158,7 +158,7 @@ Supported root config names, in discovery priority order:
 - `pika.config.{ts,mts,cts,js,mjs,cjs}`
 - `pikacss.config.{ts,mts,cts,js,mjs,cjs}`
 
-Use one config file only.
+Use at most one config file. A config file is optional when the default engine behavior is sufficient.
 
 ```ts
 // pika.config.ts
@@ -349,7 +349,7 @@ Read `references/plugin-development.md` before implementing a plugin. Current es
 1. Confirm Node.js and bundler versions.
 2. Install `@pikacss/core` plus the correct integration package.
 3. Register the bundler plugin or Nuxt module.
-4. Create one root config file.
+4. Add at most one root config file when customization is needed; zero-config defaults are supported.
 5. Import `pika.css` outside Nuxt.
 6. Ensure `pika.gen.ts` exists and is included by TypeScript.
 7. Use only supported source extensions and statically analyzable arguments.
