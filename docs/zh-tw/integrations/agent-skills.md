@@ -36,7 +36,7 @@ npx skills add pikacss/pikacss --skill pikacss-use
 - 設定引擎選項或建置工具整合
 - 使用 `pika()` 及其變體
 - 使用官方外掛（reset、icons、fonts、typography 與 design tokens）
-- 排查轉換、產生檔案、TypeScript 宣告或設定重新載入問題
+- 排解轉換、產生檔案、TypeScript 宣告或設定重新載入問題
 - 為會載入本機資源的外掛選擇中立或 Node.js 執行階段 adapter
 - 從頭建立新的引擎外掛
 - 實作外掛 hook、結構化 diagnostic 與生命週期行為
