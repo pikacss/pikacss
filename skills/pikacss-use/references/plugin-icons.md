@@ -121,14 +121,14 @@ export default defineEngineConfig({
       // meta.source: 'custom' | 'local' | 'cdn'
       // meta.mode: final 'mask' or 'bg' mode
 
-      if (meta.source === 'cdn')
-        styleItem.opacity = '0.95'
+      if (meta.source === 'cdn' && typeof styleItem !== 'string')
+        Object.assign(styleItem, { opacity: '0.95' })
     },
   },
 })
 ```
 
-The callback mutates `styleItem` in place before the shortcut result is returned.
+The callback mutates `styleItem` in place before the shortcut result is returned. Although generated icon styles are objects at runtime, the public callback type is `StyleItem`, so examples should narrow away the string case before property mutation.
 
 ## Custom Collections and Reloading
 
