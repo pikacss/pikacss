@@ -126,7 +126,7 @@ Config discovery only checks the project root and uses this priority:
 1. `pika.config.{ts,mts,cts,js,mjs,cjs}`
 2. `pikacss.config.{ts,mts,cts,js,mjs,cjs}`
 
-When multiple candidates exist, the first is used and the others are ignored with a diagnostic. Recommend keeping one config file.
+When multiple candidates exist, the first is used and the others are logged as ignored with a warning. Recommend keeping at most one config file.
 
 - Production builds throw on invalid config or engine initialization.
 - Development retains the last successfully initialized engine after a transient config error so the server can continue running.
