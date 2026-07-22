@@ -348,11 +348,11 @@ pika({
 })
 ```
 
-PikaCSS emits fallback declarations first, then the primary declaration:
+PikaCSS emits fallback declarations in the supplied array order, then the primary declaration:
 
 ```css
-color: blue;
 color: rgb(0 120 255);
+color: blue;
 color: oklch(0.7 0.15 220);
 ```
 
