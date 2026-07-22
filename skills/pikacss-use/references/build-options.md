@@ -147,7 +147,8 @@ A plugin that reads an external file must register that path, including a missin
 `@pikacss/nuxt-pikacss`:
 
 - Registers the Vite adapter internally.
-- Applies Nuxt-aware default scan exclusions.
+- Uses the unplugin's default JS-family and Vue scan patterns, including `.nuxt` and `.output` exclusions.
+- Resolves config discovery and generated paths from Nuxt's project root instead of Vite's `srcDir` root.
 - Generates a Nuxt plugin/template that imports `pika.css`.
 - Sets its own integration package identity for generated output.
 
