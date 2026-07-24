@@ -195,5 +195,7 @@ describe('strict-type codegen: end-to-end compilation', () => {
 		// failed to reject an invalid value.
 		expect(messages)
 			.toEqual([])
-	})
+		// Spawns a real TypeScript program; the default 5s timeout is too tight on
+		// slower CI runners (Linux/Windows), so give the compile ample headroom.
+	}, 60_000)
 })
