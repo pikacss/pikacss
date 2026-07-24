@@ -6,6 +6,10 @@ export interface ScenarioParams {
 	autocompleteSize: number
 	nestingDepth: number
 	fileSpread: FileSpread
+	/** Number of design tokens registered via @pikacss/plugin-design-tokens (0 = plugin not registered). */
+	designTokens: number
+	/** Number of design tokens registered with `strict.types` enabled (0 = plugin not registered). */
+	designTokensStrict: number
 }
 
 export interface TscDiagnostics {
