@@ -66,6 +66,7 @@
 	"devDependencies": {
 		"@types/babel__traverse": "catalog:",
 		"@types/picomatch": "catalog:",
-		"@vue/compiler-core": "catalog:"
+		"@vue/compiler-core": "catalog:",
+		"typescript": "catalog:"
 	}
 }

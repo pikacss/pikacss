@@ -127,6 +127,24 @@ export interface PluginOptions {
 	 * @default `'@pikacss/unplugin-pikacss'`
 	 */
 	currentPackageName?: string
+
+	/**
+	 * Emit a design-token usage report at the end of a production build. Requires
+	 * `@pikacss/plugin-design-tokens` to be registered; a no-op otherwise.
+	 *
+	 * @remarks
+	 * `true` logs a concise summary (total tokens, used/unused counts, deprecated
+	 * tokens in use, and strict-violation counts) once per build. Passing
+	 * `{ output }` additionally writes the full report as JSON to that path,
+	 * resolved against the project root. The report is emitted only in build mode,
+	 * so a dev server never spams it per HMR update.
+	 *
+	 * @default `false` (no report)
+	 */
+	report?: boolean | {
+		/** File path (resolved against the project root) to write the full report JSON to. */
+		output?: string
+	}
 }
 
 /**
