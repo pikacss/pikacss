@@ -1,0 +1,26 @@
+{
+	"surface": {
+		"z0": {
+			"$type": "color",
+			"$value": "var(--guideline-semantic-surface-z0)",
+			"$extensions": {
+				"com.pikacss.design-tokens": {
+					"external": true,
+					"var": "--guideline-semantic-surface-z0"
+				}
+			}
+		}
+	},
+	"text": {
+		"primary": {
+			"$type": "color",
+			"$value": "var(--guideline-semantic-text-primary)",
+			"$extensions": {
+				"com.pikacss.design-tokens": {
+					"external": true,
+					"var": "--guideline-semantic-text-primary"
+				}
+			}
+		}
+	}
+}

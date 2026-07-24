@@ -1,0 +1,9 @@
+{
+	"color": {
+		"grey": {
+			"100": { "$value": "#ffffff", "$type": "color" },
+			"200": { "$value": "#f7f7f7", "$type": "color" },
+			"1400": { "$value": "#292929", "$type": "color" }
+		}
+	}
+}

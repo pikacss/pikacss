@@ -1,0 +1,5 @@
+{
+	"surface": {
+		"z0": { "$value": "var(--guideline-semantic-surface-z0)", "$type": "color" }
+	}
+}

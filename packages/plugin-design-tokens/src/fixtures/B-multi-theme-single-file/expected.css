@@ -1,0 +1,53 @@
+/* TARGET — requires `themes.<name>.from` (pick a subtree of a shared source)
+ * and `themes.<name>.media` (media-query-scoped variable sets). Bottleneck B.
+ *
+ * Proposed config:
+ *   designTokens: {
+ *     sources: [],
+ *     themes: {
+ *       light:    { from: 'light-mode',
+ *                   selector: ':root, :root.light',
+ *                   media: '(prefers-color-scheme: light)',
+ *                   sources: ['./theme.tokens.json'] },
+ *       dark:     { from: 'dark-mode',
+ *                   selector: ':root.dark',
+ *                   media: '(prefers-color-scheme: dark)',
+ *                   sources: ['./theme.tokens.json'] },
+ *       'light-hc': { from: 'light-mode-high-contrast',
+ *                     selector: ':root.light.high-contrast',
+ *                     media: '(prefers-color-scheme: light) and (prefers-contrast: more)',
+ *                     sources: ['./theme.tokens.json'] },
+ *     },
+ *   }
+ *
+ * Note the theme partition key (`light-mode`) is stripped from the token path,
+ * so the emitted names are theme-agnostic (`--surface-z0`, not
+ * `--light-mode-surface-z0`).
+ *
+ * CURRENT (0.0.58): `from`/`media` do not exist. A single `selector` string
+ * cannot express `@media` fallbacks, and the top-level theme keys would leak
+ * into the emitted variable names.
+ */
+:root, :root.light {
+  --surface-z0: #f7f7f7;
+  --text-primary: #292929;
+}
+@media (prefers-color-scheme: light) {
+  :root { --surface-z0: #f7f7f7; --text-primary: #292929; }
+}
+
+:root.dark {
+  --surface-z0: #1c1c1c;
+  --text-primary: #f7f7f7;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --surface-z0: #1c1c1c; --text-primary: #f7f7f7; }
+}
+
+:root.light.high-contrast {
+  --surface-z0: #ffffff;
+  --text-primary: #000000;
+}
+@media (prefers-color-scheme: light) and (prefers-contrast: more) {
+  :root { --surface-z0: #ffffff; --text-primary: #000000; }
+}

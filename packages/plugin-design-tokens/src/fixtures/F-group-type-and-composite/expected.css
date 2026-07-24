@@ -1,0 +1,26 @@
+/* TARGET — bottleneck F: group-level $type inheritance, composite type
+ * serialization, and $deprecated handling.
+ *
+ * Config:
+ *   designTokens: { sources: ['./composite.tokens.json'] }
+ *
+ * Expectations:
+ *   - `space.sm` / `space.md` / `space.lg` inherit `$type: dimension` from the
+ *     group (they have no own `$type`).
+ *   - `elevation.card` is a composite `shadow`: its object `$value` must be
+ *     serialized to a CSS box-shadow string, with the aliased member
+ *     `{color.shadow}` resolved to `var(--color-shadow)`.
+ *   - `$deprecated: true` should still emit (unless configured otherwise) but be
+ *     recorded so tooling can warn. `$description` / `$deprecated` are reserved
+ *     keys, never treated as child tokens.
+ *
+ * CURRENT (0.0.58): group `$type` inheritance and composite `$value`
+ * serialization are unsupported; an object `$value` has no defined CSS mapping.
+ */
+:root {
+  --space-sm: 4px;
+  --space-md: 8px;
+  --space-lg: 16px; /* deprecated */
+  --color-shadow: rgba(0, 0, 0, 0.12);
+  --elevation-card: 0 2px 8px 0 var(--color-shadow);
+}
