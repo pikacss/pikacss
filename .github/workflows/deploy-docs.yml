@@ -6,6 +6,10 @@ on:
 
   workflow_dispatch:
 
+  # Called by the Release workflow so the docs/playground redeploy with the
+  # just-published package versions once publishing has finished.
+  workflow_call:
+
 permissions:
   contents: read
 

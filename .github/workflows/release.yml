@@ -72,3 +72,12 @@ jobs:
     uses: ./.github/workflows/repopack.yml
     with:
       ref: ${{ needs.release.outputs.tag }}
+
+  deploy-docs:
+    name: Deploy docs
+    # Redeploy the docs site + playground so they pick up the just-published
+    # versions. The bumpp commit is pushed with GITHUB_TOKEN, which does not
+    # trigger deploy-docs on its own, so chain it explicitly here.
+    needs: release
+    uses: ./.github/workflows/deploy-docs.yml
+    secrets: inherit
