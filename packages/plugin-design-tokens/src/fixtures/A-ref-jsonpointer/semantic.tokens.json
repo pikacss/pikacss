@@ -1,0 +1,13 @@
+{
+	"$resolutionOrder": [{ "$ref": "local:./" }],
+	"$extensions": {
+		"example-ds": { "type": "semantic", "themes": ["light"] }
+	},
+	"surface": {
+		"z0": { "$ref": "primitive.tokens.json#/color/grey/200", "$type": "color" },
+		"z1": { "$ref": "primitive.tokens.json#/color/grey/100", "$type": "color" }
+	},
+	"text": {
+		"primary": { "$ref": "primitive.tokens.json#/color/grey/1400", "$type": "color" }
+	}
+}

@@ -114,6 +114,7 @@ User-facing configuration options for the PikaCSS bundler plugin.
 | `tsCodegen?` | `boolean \| string` | Controls TypeScript declaration codegen. `true` writes to `'pika.gen.ts'`, a string sets a custom output path, and `false` disables codegen entirely. | ``true`` |
 | `cssCodegen?` | `true \| string` | Controls CSS output file generation. `true` writes to `'pika.gen.css'`; a string sets a custom output path. | ``true`` |
 | `currentPackageName?` | `string` | npm package name of the plugin consumer, embedded in generated file headers and import paths. Override when wrapping the unplugin in a framework-specific package (e.g., `@pikacss/nuxt-pikacss`). | ``'@pikacss/unplugin-pikacss'`` |
+| `report?` | `boolean \| { 		/** File path (resolved against the project root) to write the full report JSON to. */ 		output?: string 	}` | Emit a design-token usage report at the end of a production build. Requires `@pikacss/plugin-design-tokens` to be registered; a no-op otherwise. | ``false` (no report)` |
 
 **Remarks:**
 

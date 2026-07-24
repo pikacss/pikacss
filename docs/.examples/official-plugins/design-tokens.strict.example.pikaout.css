@@ -1,0 +1,15 @@
+@layer preflights {
+  :root {
+    --color-primary: #3b82f6;
+    --color-surface: #f8fafc;
+  }
+}
+
+@layer utilities {
+  .pk-a {
+    color: var(--color-primary);
+  }
+  .pk-b {
+    background-color: var(--color-surface);
+  }
+}

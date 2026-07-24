@@ -1,0 +1,439 @@
+{
+	"timestamp": "2026-07-24T07:46:46.747Z",
+	"tsVersion": "6.0.3",
+	"runs": 2,
+	"results": [
+		{
+			"name": "designTokens=100",
+			"dimension": "designTokens",
+			"dimensionValue": 100,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single",
+				"designTokens": 100,
+				"designTokensStrict": 0
+			},
+			"tsc": {
+				"types": 44177,
+				"instantiations": 141829,
+				"memoryUsed": 351669760,
+				"checkTime": 2.4000000000000004
+			},
+			"tsserver": {
+				"operations": [
+					{
+						"probeKind": "property-value",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 9.350542000000132,
+						"p50": 9.350542000000132,
+						"p95": 9.371804499999962
+					},
+					{
+						"probeKind": "property-value",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 0.44331249999959255,
+						"p50": 0.44331249999959255,
+						"p95": 0.4542056500005856
+					},
+					{
+						"probeKind": "property-value",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 0.22927100000015344,
+						"p50": 0.22927100000015344,
+						"p95": 0.24980180000111432
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.8777079999999842,
+						"p50": 0.8777079999999842,
+						"p95": 0.958557699999983
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.17870849999962957,
+						"p50": 0.17870849999962957,
+						"p95": 0.1809589500002403
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.13847900000018853,
+						"p50": 0.13847900000018853,
+						"p95": 0.1501231999992342
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 34.994895499999984,
+						"p50": 34.994895499999984,
+						"p95": 35.41866454999945
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 19.10810400000082,
+						"p50": 19.10810400000082,
+						"p95": 19.524485400000778
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 1.7979584999993676,
+						"p50": 1.7979584999993676,
+						"p95": 1.8377461499989294
+					},
+					{
+						"probeKind": "hover",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 13.193958499999098,
+						"p50": 13.193958499999098,
+						"p95": 13.35802084999932
+					},
+					{
+						"probeKind": "hover",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 6.129603999999745,
+						"p50": 6.129603999999745,
+						"p95": 6.228922600000078
+					},
+					{
+						"probeKind": "hover",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-wA48ks/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 0.1499789999998029,
+						"p50": 0.1499789999998029,
+						"p95": 0.15153509999945527
+					}
+				]
+			}
+		},
+		{
+			"name": "designTokens=500",
+			"dimension": "designTokens",
+			"dimensionValue": 500,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single",
+				"designTokens": 500,
+				"designTokensStrict": 0
+			},
+			"tsc": {
+				"types": 46177,
+				"instantiations": 159429,
+				"memoryUsed": 380482560,
+				"checkTime": 3.3
+			},
+			"tsserver": {
+				"operations": [
+					{
+						"probeKind": "property-value",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 10.704396000000997,
+						"p50": 10.704396000000997,
+						"p95": 11.152689599999576
+					},
+					{
+						"probeKind": "property-value",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 0.4776869999986957,
+						"p50": 0.4776869999986957,
+						"p95": 0.4961558999973931
+					},
+					{
+						"probeKind": "property-value",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 0.19720849999976053,
+						"p50": 0.19720849999976053,
+						"p95": 0.2048580500011667
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.8377294999972946,
+						"p50": 0.8377294999972946,
+						"p95": 0.9632610499969814
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.1688750000012078,
+						"p50": 0.1688750000012078,
+						"p95": 0.19167470000083994
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.14097900000160735,
+						"p50": 0.14097900000160735,
+						"p95": 0.1430229000010513
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 37.93639600000097,
+						"p50": 37.93639600000097,
+						"p95": 38.17937710000151
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 19.608166499998333,
+						"p50": 19.608166499998333,
+						"p95": 19.624441649997607
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 0.2021454999994603,
+						"p50": 0.2021454999994603,
+						"p95": 0.2360264499999175
+					},
+					{
+						"probeKind": "hover",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 14.048937499999738,
+						"p50": 14.048937499999738,
+						"p95": 15.259381249998114
+					},
+					{
+						"probeKind": "hover",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 6.248874500000966,
+						"p50": 6.248874500000966,
+						"p95": 6.411024350002845
+					},
+					{
+						"probeKind": "hover",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-Ogj18y/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 0.8432709999997314,
+						"p50": 0.8432709999997314,
+						"p95": 1.4627527000002374
+					}
+				]
+			}
+		},
+		{
+			"name": "designTokens=1000",
+			"dimension": "designTokens",
+			"dimensionValue": 1000,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single",
+				"designTokens": 1000,
+				"designTokensStrict": 0
+			},
+			"tsc": {
+				"types": 48677,
+				"instantiations": 181429,
+				"memoryUsed": 348069376,
+				"checkTime": 4.515000000000001
+			},
+			"tsserver": {
+				"operations": [
+					{
+						"probeKind": "property-value",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 10.704312500001834,
+						"p50": 10.704312500001834,
+						"p95": 11.001593750000392
+					},
+					{
+						"probeKind": "property-value",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 0.479437499998312,
+						"p50": 0.479437499998312,
+						"p95": 0.5028559499995027
+					},
+					{
+						"probeKind": "property-value",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 3,
+						"character": 34,
+						"latencyMs": 0.221916999998939,
+						"p50": 0.221916999998939,
+						"p95": 0.2283672999987175
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.9616874999992433,
+						"p50": 0.9616874999992433,
+						"p95": 0.9733312500022293
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.14368699999613455,
+						"p50": 0.14368699999613455,
+						"p95": 0.15424309999434627
+					},
+					{
+						"probeKind": "shortcut-string",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 4,
+						"character": 25,
+						"latencyMs": 0.12791650000144728,
+						"p50": 0.12791650000144728,
+						"p95": 0.12926605000320707
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 42.70702100000199,
+						"p50": 42.70702100000199,
+						"p95": 42.774502099999516
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 18.847916499998973,
+						"p50": 18.847916499998973,
+						"p95": 18.870379150000737
+					},
+					{
+						"probeKind": "selector-key",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 5,
+						"character": 28,
+						"latencyMs": 0.9158539999953064,
+						"p50": 0.9158539999953064,
+						"p95": 1.590647899994292
+					},
+					{
+						"probeKind": "hover",
+						"operation": "completionInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 12.564313000002585,
+						"p50": 12.564313000002585,
+						"p95": 12.861406600003102
+					},
+					{
+						"probeKind": "hover",
+						"operation": "quickInfo",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 6.0981879999962985,
+						"p50": 6.0981879999962985,
+						"p95": 6.183144399996673
+					},
+					{
+						"probeKind": "hover",
+						"operation": "semanticDiagnosticsSync",
+						"file": "/var/folders/1y/z2kc69qs5_zcrnp2dz0sf3lc0000gn/T/pikacss-type-bench-ALD4Ll/src/main.ts",
+						"line": 6,
+						"character": 22,
+						"latencyMs": 0.140332999999373,
+						"p50": 0.140332999999373,
+						"p95": 0.146520499995313
+					}
+				]
+			}
+		}
+	]
+}

@@ -12,6 +12,8 @@ export interface BenchConfig {
 		autocompleteSize: DimensionScale<number>
 		nestingDepth: DimensionScale<number>
 		fileSpread: DimensionScale<FileSpread>
+		designTokens: DimensionScale<number>
+		designTokensStrict: DimensionScale<number>
 	}
 	runs: number
 }
@@ -38,6 +40,21 @@ export const defaultConfig: BenchConfig = {
 			values: ['single', '10files', '50files'],
 			baseline: 'single',
 		},
+		// Number of design tokens registered via @pikacss/plugin-design-tokens.
+		// Baseline is 0 so the plugin is not registered in other dimensions' scenarios,
+		// keeping their type cost unchanged.
+		designTokens: {
+			values: [100, 500, 1000],
+			baseline: 0,
+		},
+		// Same fixtures as `designTokens`, but with `strict.types` enabled so the
+		// generated pika.gen.ts carries the per-property exclusive value unions and
+		// the intersected item type. Isolates the type cost of strict-type narrowing.
+		// Baseline 0 keeps the plugin unregistered in other dimensions' scenarios.
+		designTokensStrict: {
+			values: [100, 500, 1000],
+			baseline: 0,
+		},
 	},
 	runs: 5,
 }
@@ -49,6 +66,8 @@ export function getBaselineParams(config: BenchConfig): ScenarioParams {
 		autocompleteSize: config.dimensions.autocompleteSize.baseline,
 		nestingDepth: config.dimensions.nestingDepth.baseline,
 		fileSpread: config.dimensions.fileSpread.baseline as FileSpread,
+		designTokens: config.dimensions.designTokens.baseline,
+		designTokensStrict: config.dimensions.designTokensStrict.baseline,
 	}
 }
 

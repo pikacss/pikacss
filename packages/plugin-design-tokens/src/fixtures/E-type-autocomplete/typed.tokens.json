@@ -1,0 +1,18 @@
+{
+	"color": {
+		"primary": { "$value": "#3b82f6", "$type": "color" }
+	},
+	"space": {
+		"md": { "$value": "8px", "$type": "dimension" }
+	},
+	"motion": {
+		"fast": { "$value": "120ms", "$type": "duration" }
+	},
+	"font": {
+		"family": { "sans": { "$value": "Inter, sans-serif", "$type": "fontFamily" } },
+		"weight": { "bold": { "$value": 700, "$type": "fontWeight" } }
+	},
+	"z": {
+		"modal": { "$value": 1000, "$type": "number" }
+	}
+}

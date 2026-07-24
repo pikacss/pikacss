@@ -1,5 +1,6 @@
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
+import { fileURLToPath } from 'node:url'
 import { createEngine, log } from '@pikacss/core'
 import { join } from 'pathe'
 import { describe, expect, it, vi } from 'vitest'
@@ -469,5 +470,88 @@ describe('designTokens plugin', () => {
 		finally {
 			log.setErrorFn(() => {})
 		}
+	})
+})
+
+describe('baseline design.md fixture', () => {
+	// Wires the committed `fixtures/baseline-design.md` document through the full
+	// load -> normalize -> resolve -> emit pipeline and asserts the emitted CSS
+	// matches the fixture's `expected.css` semantics (base :root vars, inline
+	// `{alias}` -> var(), and the theme block under its fence `selector=.dark`).
+	const fixturesRoot = fileURLToPath(new URL('./fixtures', import.meta.url))
+
+	it('emits the expected base and theme variables', async () => {
+		const { css } = await renderTokensCss({
+			pruneUnused: false,
+			root: fixturesRoot,
+			sources: ['baseline-design.md'],
+		})
+
+		expect(css)
+			.toContain(':root{--color-primary:#3b82f6;--color-accent:var(--color-primary);}')
+		expect(css)
+			.toContain('.dark{--color-primary:#60a5fa;}')
+	})
+})
+
+describe('b-multi-theme-single-file fixture (theme from / media scoping)', () => {
+	// Three themes share one source file, each picking its own top-level partition
+	// via `from`; the partition key is stripped so the emitted var names are
+	// theme-agnostic. Each theme also carries a `media` query, so its variables are
+	// emitted both under the class selector and additionally under an `@media` /
+	// `:root` block. Config mirrors the fixture's `expected.css` header.
+	const fixturesRoot = fileURLToPath(new URL('./fixtures', import.meta.url))
+
+	it('emits class-scoped and @media-scoped variable sets with partition keys stripped', async () => {
+		const source = 'B-multi-theme-single-file/theme.tokens.json'
+		const { css } = await renderTokensCss({
+			pruneUnused: false,
+			root: fixturesRoot,
+			sources: [],
+			themes: {
+				'light': {
+					from: 'light-mode',
+					selector: ':root, :root.light',
+					media: '(prefers-color-scheme: light)',
+					sources: [source],
+				},
+				'dark': {
+					from: 'dark-mode',
+					selector: ':root.dark',
+					media: '(prefers-color-scheme: dark)',
+					sources: [source],
+				},
+				'light-hc': {
+					from: 'light-mode-high-contrast',
+					selector: ':root.light.high-contrast',
+					media: '(prefers-color-scheme: light) and (prefers-contrast: more)',
+					sources: [source],
+				},
+			},
+		})
+
+		// Class-scoped emissions (one block per theme selector).
+		expect(css)
+			.toContain(':root,:root.light{--surface-z0:#f7f7f7;--text-primary:#292929;}')
+		expect(css)
+			.toContain(':root.dark{--surface-z0:#1c1c1c;--text-primary:#f7f7f7;}')
+		expect(css)
+			.toContain(':root.light.high-contrast{--surface-z0:#ffffff;--text-primary:#000000;}')
+
+		// @media-scoped emissions (same variables, wrapped in @media { :root { ... } }).
+		expect(css)
+			.toContain('@media (prefers-color-scheme: light){:root{--surface-z0:#f7f7f7;--text-primary:#292929;}}')
+		expect(css)
+			.toContain('@media (prefers-color-scheme: dark){:root{--surface-z0:#1c1c1c;--text-primary:#f7f7f7;}}')
+		expect(css)
+			.toContain('@media (prefers-color-scheme: light) and (prefers-contrast: more){:root{--surface-z0:#ffffff;--text-primary:#000000;}}')
+
+		// Partition keys never leak into the emitted variable names.
+		expect(css)
+			.not
+			.toContain('--light-mode')
+		expect(css)
+			.not
+			.toContain('--dark-mode')
 	})
 })

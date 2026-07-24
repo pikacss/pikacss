@@ -1,0 +1,15 @@
+@layer preflights {
+  :root {
+    --syno-surface-z0: var(--guideline-semantic-surface-z0);
+    --syno-text-primary: var(--guideline-semantic-text-primary);
+  }
+}
+
+@layer utilities {
+  .pk-a {
+    background-color: var(--syno-surface-z0);
+  }
+  .pk-b {
+    color: var(--syno-text-primary);
+  }
+}

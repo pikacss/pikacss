@@ -1,0 +1,349 @@
+{
+	"timestamp": "2026-07-24T06:33:27.629Z",
+	"tsVersion": "6.0.3",
+	"runs": 3,
+	"results": [
+		{
+			"name": "callCount=10",
+			"dimension": "callCount",
+			"dimensionValue": 10,
+			"params": {
+				"callCount": 10,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 42926,
+				"instantiations": 122118,
+				"memoryUsed": 383618048,
+				"checkTime": 2.13
+			}
+		},
+		{
+			"name": "callCount=50",
+			"dimension": "callCount",
+			"dimensionValue": 50,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 346379264,
+				"checkTime": 2.17
+			}
+		},
+		{
+			"name": "callCount=200",
+			"dimension": "callCount",
+			"dimensionValue": 200,
+			"params": {
+				"callCount": 200,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43831,
+				"instantiations": 122118,
+				"memoryUsed": 348481536,
+				"checkTime": 2.28
+			}
+		},
+		{
+			"name": "callCount=500",
+			"dimension": "callCount",
+			"dimensionValue": 500,
+			"params": {
+				"callCount": 500,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 45075,
+				"instantiations": 122118,
+				"memoryUsed": 354029568,
+				"checkTime": 2.48
+			}
+		},
+		{
+			"name": "callCount=1000",
+			"dimension": "callCount",
+			"dimensionValue": 1000,
+			"params": {
+				"callCount": 1000,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 47011,
+				"instantiations": 122118,
+				"memoryUsed": 353937408,
+				"checkTime": 2.94
+			}
+		},
+		{
+			"name": "pluginCount=0",
+			"dimension": "pluginCount",
+			"dimensionValue": 0,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 0,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43132,
+				"instantiations": 122088,
+				"memoryUsed": 402449408,
+				"checkTime": 2.19
+			}
+		},
+		{
+			"name": "pluginCount=1",
+			"dimension": "pluginCount",
+			"dimensionValue": 1,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 346980352,
+				"checkTime": 2.17
+			}
+		},
+		{
+			"name": "pluginCount=3",
+			"dimension": "pluginCount",
+			"dimensionValue": 3,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 3,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43197,
+				"instantiations": 122178,
+				"memoryUsed": 349252608,
+				"checkTime": 2.2
+			}
+		},
+		{
+			"name": "pluginCount=5",
+			"dimension": "pluginCount",
+			"dimensionValue": 5,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 5,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43237,
+				"instantiations": 122238,
+				"memoryUsed": 352218112,
+				"checkTime": 2.21
+			}
+		},
+		{
+			"name": "autocompleteSize=10",
+			"dimension": "autocompleteSize",
+			"dimensionValue": 10,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 10,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 347303936,
+				"checkTime": 2.18
+			}
+		},
+		{
+			"name": "autocompleteSize=50",
+			"dimension": "autocompleteSize",
+			"dimensionValue": 50,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 347184128,
+				"checkTime": 2.19
+			}
+		},
+		{
+			"name": "autocompleteSize=200",
+			"dimension": "autocompleteSize",
+			"dimensionValue": 200,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 200,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 345900032,
+				"checkTime": 2.19
+			}
+		},
+		{
+			"name": "nestingDepth=1",
+			"dimension": "nestingDepth",
+			"dimensionValue": 1,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 347132928,
+				"checkTime": 2.19
+			}
+		},
+		{
+			"name": "nestingDepth=2",
+			"dimension": "nestingDepth",
+			"dimensionValue": 2,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 2,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43040,
+				"instantiations": 122118,
+				"memoryUsed": 403153920,
+				"checkTime": 2.16
+			}
+		},
+		{
+			"name": "nestingDepth=3",
+			"dimension": "nestingDepth",
+			"dimensionValue": 3,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 3,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43141,
+				"instantiations": 122118,
+				"memoryUsed": 358537216,
+				"checkTime": 2.19
+			}
+		},
+		{
+			"name": "nestingDepth=4",
+			"dimension": "nestingDepth",
+			"dimensionValue": 4,
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 4,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43241,
+				"instantiations": 122118,
+				"memoryUsed": 366351360,
+				"checkTime": 2.21
+			}
+		},
+		{
+			"name": "fileSpread=single",
+			"dimension": "fileSpread",
+			"dimensionValue": "single",
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "single"
+			},
+			"tsc": {
+				"types": 43157,
+				"instantiations": 122118,
+				"memoryUsed": 346850304,
+				"checkTime": 2.2
+			}
+		},
+		{
+			"name": "fileSpread=10files",
+			"dimension": "fileSpread",
+			"dimensionValue": "10files",
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "10files"
+			},
+			"tsc": {
+				"types": 42978,
+				"instantiations": 122118,
+				"memoryUsed": 339927040,
+				"checkTime": 2.16
+			}
+		},
+		{
+			"name": "fileSpread=50files",
+			"dimension": "fileSpread",
+			"dimensionValue": "50files",
+			"params": {
+				"callCount": 50,
+				"pluginCount": 1,
+				"autocompleteSize": 50,
+				"nestingDepth": 1,
+				"fileSpread": "50files"
+			},
+			"tsc": {
+				"types": 42941,
+				"instantiations": 122118,
+				"memoryUsed": 393739264,
+				"checkTime": 2.2
+			}
+		}
+	]
+}

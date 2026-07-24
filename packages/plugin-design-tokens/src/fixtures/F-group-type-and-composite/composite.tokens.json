@@ -1,0 +1,24 @@
+{
+	"space": {
+		"$type": "dimension",
+		"$description": "Group-level $type is inherited by children that omit their own.",
+		"sm": { "$value": "4px" },
+		"md": { "$value": "8px" },
+		"lg": { "$value": "16px", "$deprecated": true }
+	},
+	"color": {
+		"shadow": { "$value": "rgba(0, 0, 0, 0.12)", "$type": "color" }
+	},
+	"elevation": {
+		"card": {
+			"$type": "shadow",
+			"$value": {
+				"offsetX": "0",
+				"offsetY": "2px",
+				"blur": "8px",
+				"spread": "0",
+				"color": "{color.shadow}"
+			}
+		}
+	}
+}

@@ -1,0 +1,25 @@
+/* Bottleneck C — aliasing externally-owned runtime vars.
+ *
+ * The values live in another system (e.g. SVC injects --guideline-* on :root and
+ * swaps them per theme). PikaCSS must NOT own the value or the theming; it only
+ * registers a name, aliases to the external var, and drives autocomplete by $type.
+ *
+ * Config:
+ *   designTokens: { prefix: 'syno', sources: ['./external.tokens.json'] }
+ *
+ * CURRENT (0.0.58): the literal `$value: "var(--guideline-…)"` is emitted
+ * verbatim, so the CSS below already happens to be produced. But the plugin
+ * treats it as an ordinary value: no `$type`-driven autocomplete, no validation
+ * that it is an external reference, and it is subject to the same pruning/theming
+ * assumptions as an owned value.
+ *
+ * TARGET: recognise `$extensions."com.pikacss.design-tokens".external` (or a
+ * sentinel value form) as a typed external alias — identical CSS, but:
+ *   - no theme emission (external runtime owns it),
+ *   - autocomplete asValueOf derived from `$type: color`,
+ *   - validated as an external `--var` reference.
+ */
+:root {
+  --syno-surface-z0: var(--guideline-semantic-surface-z0);
+  --syno-text-primary: var(--guideline-semantic-text-primary);
+}

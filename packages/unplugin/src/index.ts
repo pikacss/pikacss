@@ -1,9 +1,11 @@
+import type { Diagnostic } from '@pikacss/integration'
 import type { RspackCompiler, UnpluginFactory } from 'unplugin'
 import type { ViteDevServer } from 'vite'
 import type { PluginOptions, ResolvedPluginOptions } from './types'
 import { readFileSync } from 'node:fs'
+import { writeFile } from 'node:fs/promises'
 import process from 'node:process'
-import { createCtx, log } from '@pikacss/integration'
+import { consoleDiagnosticHandler, createCtx, log } from '@pikacss/integration'
 import { resolve } from 'pathe'
 import { debounce } from 'perfect-debounce'
 import { createUnplugin } from 'unplugin'
@@ -14,6 +16,23 @@ export * from '@pikacss/integration'
 const RE_VIRTUAL_PIKA_CSS_ID = /^pika\.css$/
 
 const PLUGIN_NAME = 'unplugin-pikacss'
+
+/**
+ * Structural shape of the design-token usage report produced by
+ * `@pikacss/plugin-design-tokens`'s `engine.designTokens.report()`.
+ * @internal
+ *
+ * @remarks
+ * limit: duck-typed to avoid a dependency on the design-tokens plugin. Keep in
+ * sync with that package's `DesignTokensReport`.
+ */
+interface DesignTokensReportShape {
+	totalTokens: number
+	used: string[]
+	unused: string[]
+	deprecatedInUse: string[]
+	strictViolations: { warning: number, error: number }
+}
 
 /**
  * Factory function that produces the bundler-agnostic PikaCSS plugin hooks.
@@ -49,7 +68,11 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 		fnName = 'pika',
 		transformedFormat = 'string',
 		autoCreateConfig = false,
+		report = false,
 	} = options ?? {}
+
+	const reportEnabled = report === true || (typeof report === 'object' && report != null)
+	const reportOutputPath = (typeof report === 'object' && report != null) ? report.output : undefined
 
 	log.debug('Creating unplugin factory with options:', options)
 
@@ -77,10 +100,56 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 	const viteServers = [] as ViteDevServer[]
 	const rspackCompilers = [] as RspackCompiler[]
 
+	// Error-level diagnostics accumulated across the whole build. The engine never
+	// throws these itself (core `emitDiagnostic` swallows handler throws), so the
+	// build is failed once at `buildEnd` by throwing an aggregated Error.
+	// limit: this loses per-module dev-overlay timing — a strict error surfaces at
+	// buildEnd, not inline on the producing module. Warn-level still logs live.
+	const collectedErrors: { diagnostic: Diagnostic, moduleId: string | null }[] = []
+
+	// Best-effort file attribution: the engine's diagnostic handler carries no
+	// module context, so the transform wrapper stamps the id it is currently
+	// processing and this handler reads it.
+	// limit: unattributed (or misattributed) under concurrent transforms, since a
+	// single mutable id cannot track overlapping transform calls.
+	let currentModuleId: string | null = null
+
+	// Neutral diagnostic handler threaded into the engine via the integration's
+	// `onDiagnostic` seam: log every diagnostic live (warnings surface immediately
+	// in dev) and collect error-level ones for the aggregated build-end failure.
+	const onDiagnostic = (diagnostic: Diagnostic) => {
+		consoleDiagnosticHandler(diagnostic)
+		if (diagnostic.level === 'error')
+			collectedErrors.push({ diagnostic, moduleId: currentModuleId })
+	}
+
 	const ctx = createCtx({
 		cwd: resolve(userCwd ?? process.cwd()),
 		...resolvedOptions,
+		onDiagnostic,
 	})
+
+	// Logs a design-token usage summary (and optionally writes the full JSON) at
+	// build end. Duck-typed access to the engine augmentation avoids depending on
+	// the design-tokens plugin; when it is not registered, this is a no-op.
+	async function emitTokenReport(): Promise<void> {
+		const producer = ctx.engine as unknown as {
+			designTokens?: { report?: () => DesignTokensReportShape }
+		}
+		const reportFn = producer.designTokens?.report
+		if (typeof reportFn !== 'function') {
+			log.debug('Design-token report requested, but no design-tokens plugin surface is present.')
+			return
+		}
+		const result = reportFn()
+		log.info(`[design-tokens] ${result.totalTokens} tokens, ${result.used.length} used, ${result.unused.length} unused`)
+		log.info(`[design-tokens] ${result.deprecatedInUse.length} deprecated in use, ${result.strictViolations.error} strict error(s), ${result.strictViolations.warning} strict warning(s)`)
+		if (reportOutputPath != null) {
+			const outPath = resolve(ctx.cwd, reportOutputPath)
+			await writeFile(outPath, `${JSON.stringify(result, null, 2)}\n`, 'utf-8')
+			log.info(`[design-tokens] report written to ${outPath}`)
+		}
+	}
 
 	type RuntimeMode = 'build' | 'serve'
 
@@ -364,10 +433,15 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 					this.addWatchFile(ctx.resolvedConfigPath)
 					log.debug(`Added watch file: ${ctx.resolvedConfigPath}`)
 				}
+				// Stamp the module id so diagnostics reported while the engine
+				// processes this module can be attributed to it (best-effort;
+				// see the `currentModuleId` limit note).
+				currentModuleId = id
 				try {
 					return await ctx.transform(code, id)
 				}
 				finally {
+					currentModuleId = null
 					// The context already counted this transform as settled here, so
 					// isIdle answers whether any OTHER transform is still in flight.
 					// Only the last finisher flushes; this may be a second flush call
@@ -388,6 +462,26 @@ export const unpluginFactory: UnpluginFactory<PluginOptions | undefined> = (opti
 			// but that the bundler never reached: dead files or missing imports.
 			for (const file of ctx.getScannedButNotTransformedFiles()) {
 				log.warn(`Styles from ${file} were included in the generated CSS but the file was never reached by the bundler — dead file or missing import?`)
+			}
+
+			// Emitted once here (build mode only), so a dev server never repeats it
+			// per HMR update.
+			if (reportEnabled)
+				await emitTokenReport()
+
+			// Fail the build once, after every module has been transformed, by
+			// aggregating every error-level diagnostic collected during the build.
+			// limit: not per-module dev-overlay timing — errors surface here, not
+			// inline on the producing module.
+			if (collectedErrors.length > 0) {
+				const details = collectedErrors
+					.map(({ diagnostic, moduleId }) => {
+						const where = moduleId != null ? ` (${moduleId})` : ''
+						const source = diagnostic.plugin != null ? `[${diagnostic.plugin}] ` : ''
+						return `  - ${source}${diagnostic.code}${where}: ${diagnostic.message}`
+					})
+					.join('\n')
+				throw new Error(`PikaCSS reported ${collectedErrors.length} error diagnostic(s):\n${details}`)
 			}
 		},
 

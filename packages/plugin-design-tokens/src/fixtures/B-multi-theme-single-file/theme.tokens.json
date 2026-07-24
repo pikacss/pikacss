@@ -1,0 +1,17 @@
+{
+	"$extensions": {
+		"example-ds": { "themes": ["light", "dark", "light-hc"] }
+	},
+	"light-mode": {
+		"surface": { "z0": { "$value": "#f7f7f7", "$type": "color" } },
+		"text": { "primary": { "$value": "#292929", "$type": "color" } }
+	},
+	"dark-mode": {
+		"surface": { "z0": { "$value": "#1c1c1c", "$type": "color" } },
+		"text": { "primary": { "$value": "#f7f7f7", "$type": "color" } }
+	},
+	"light-mode-high-contrast": {
+		"surface": { "z0": { "$value": "#ffffff", "$type": "color" } },
+		"text": { "primary": { "$value": "#000000", "$type": "color" } }
+	}
+}

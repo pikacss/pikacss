@@ -1,0 +1,20 @@
+/* TARGET — bottleneck G: per-source prefix/namespace.
+ *
+ * Proposed config (source entries may be objects with their own prefix):
+ *   designTokens: {
+ *     sources: [
+ *       { source: './vendor.tokens.json', prefix: 'syno' },
+ *       './app.tokens.json'
+ *     ],
+ *   }
+ *
+ * The vendor set is namespaced `syno-*`; app tokens stay under the global prefix
+ * (none here). This keeps mirrored vendor names from colliding with app names.
+ *
+ * CURRENT (0.0.58): `prefix` is global only; both sources would share it, so
+ * per-source namespacing is not possible.
+ */
+:root {
+  --syno-surface-z0: var(--guideline-semantic-surface-z0);
+  --brand-primary: #3b82f6;
+}

@@ -510,6 +510,9 @@ importers:
       '@vue/compiler-core':
         specifier: 'catalog:'
         version: 3.5.39
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/nuxt:
     dependencies:

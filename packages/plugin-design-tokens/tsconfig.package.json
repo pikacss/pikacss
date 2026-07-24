@@ -4,6 +4,10 @@
 		"composite": true
 	},
 	"include": [
-		"./src/index.ts"
+		"./src/**/*.ts"
+	],
+	"exclude": [
+		"./src/**/*.test.ts",
+		"./src/node.ts"
 	]
 }

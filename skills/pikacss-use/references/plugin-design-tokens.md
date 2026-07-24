@@ -191,6 +191,97 @@ pika({
 
 Set `designTokens.pruneUnused: false` when all generated token variables must remain even when PikaCSS cannot observe a reference.
 
+## Strict Mode (value governance)
+
+Opt in via `designTokens.strict`. Defaults to off — a near-zero-cost early return in the transform hook. A CSS property is **governed** when it appears in the merged `typeAutocomplete` map for a `$type` that has at least one registered token. Authored values on governed properties are validated against the governing `$type`; violations become **diagnostics** (never thrown by the engine).
+
+```ts
+designTokens: {
+  strict: {
+    level: 'error',                                        // baseline for every governed property
+    overrides: { 'background-color': 'warn', dimension: 'off' },
+    allowedValues: ['0', /^var\(--legacy-/],               // extra accepted literals
+    semanticOnly: true,                                    // forbid primitive-layer tokens in styles
+    types: true,                                           // narrow pika.gen.ts value types
+  },
+}
+```
+
+- **`level`** (`'off' | 'warn' | 'error'`, default `'off'`) — baseline severity. `warn` → `'warning'` diagnostic; `error` → `'error'` diagnostic.
+- **`overrides`** — per-key severity. Key is a CSS property (`'background-color'`) or a `$type` (`'color'`). Precedence: **property-key > `$type`-key > `level`**.
+- **`allowedValues`** — extra literals accepted on any governed property, on top of the built-in per-`$type` allowlist. String = exact match on the trimmed value; `RegExp` = tested against the trimmed value.
+- **`semanticOnly`** — when `true` (and `level` ≠ `'off'`), using a `primitive`-layer token in an authored style is a violation; primitive-layer tokens are also hidden from autocomplete at emit time. Requires sources tagged with `layer` (use the `{ source, layer }` entry form).
+- **`types`** — when `true`, narrows the accepted TS value type of every governed property in the generated `pika.gen.ts` to an exclusive union (invalid literals red-squiggle in the IDE before any build). The union admits: a `var(--token)` reference (plus a `var(--token, fallback)` form) per token of the governing `$type`, CSS-wide keywords, the built-in per-`$type` allowlist + string `allowedValues`, and template-literal escape hatches (`calc()`, `color-mix()`, `min()`, `max()`, `clamp()`, `light-dark()`). Independent of `level` (compile-time surface vs build-time diagnostics). **If any `RegExp` `allowedValues` entry is present, type narrowing is disabled entirely** (a RegExp can't be a faithful literal union). When `false`/absent, generated types are byte-identical to a no-strict-types project.
+
+### How strict violations surface (unplugin / nuxt)
+
+A violation is reported as a core `Diagnostic` (`{ level, code, message, plugin: 'design-tokens' }`) through the engine's `onDiagnostic` handler while styles are transformed — it is never thrown. The bundler integration wires that handler itself; there is **no `onDiagnostic` plugin option** to set.
+
+- Every diagnostic is logged live, so a `'warning'` surfaces immediately (including in dev).
+- `'error'`-level diagnostics are collected and re-thrown as one aggregated `Error` at `buildEnd`, so an error-severity violation **fails a production build**. (Trade-off: the error surfaces after the full build, not inline on the producing module.)
+- Do **not** throw from a custom diagnostic handler: core `emitDiagnostic` swallows handler throws, so throwing cannot fail the build. Customization of the handler is only possible through the integration's `createCtx({ onDiagnostic })` seam, not through the unplugin.
+
+## Custom Loaders and Normalizers
+
+For source formats beyond `.md`/JSON (e.g. YAML) or a vendor dialect, add `loaders` (turn a file id into a raw value) and/or `normalizers` (convert a raw value into a `DesignTokenGroup`).
+
+- **Loaders** are tried before built-in handling. For each string source, the first loader whose `match(id)` returns `true` wins; if none match, built-in `.md`/JSON handling applies. Inline object sources bypass loaders. Register the path with `ctx.addDependency(id)` (before reading, so a missing file is still watched). `ctx.readFile` is the host capability the plugin was constructed with, so loaders read files only under the `/node` entry (or a custom runtime).
+- **Normalizers** run as an ordered chain over each loaded raw source before flattening — after the built-in DTCG normalizer — each receiving the previous one's output. With none configured, raw values pass through unchanged.
+
+```ts
+import { parse as parseYaml } from 'yaml'
+
+designTokens: {
+  loaders: [{
+    name: 'yaml',
+    match: id => id.endsWith('.yaml') || id.endsWith('.yml'),
+    load: async (id, ctx) => { ctx.addDependency(id); return parseYaml(await ctx.readFile(id)) },
+  }],
+}
+```
+
+Use a normalizer when a design tool exports a shape that is not W3C Design Tokens (a flat list rather than a nested tree). The built-in DTCG normalizer passes shapes it does not recognize through untouched, so a custom normalizer still receives the raw vendor data, and conversion happens before flattening (no "invalid token node" warnings):
+
+```ts
+import type { DesignTokenGroup } from '@pikacss/plugin-design-tokens'
+
+// Vendor exports: { "tokens": [{ "path": "color.brand", "value": "#3b82f6", "type": "color" }, …] }
+interface VendorToken { path: string, value: string, type: string }
+
+designTokens: {
+  normalizers: [{
+    name: 'vendor-flat-list',
+    normalize: (raw) => {
+      const group: DesignTokenGroup = {}
+      const { tokens = [] } = raw as { tokens?: VendorToken[] }
+      for (const { path, value, type } of tokens) {
+        const segments = path.split('.')
+        let node = group as Record<string, any>
+        for (const segment of segments.slice(0, -1))
+          node = (node[segment] ??= {})
+        node[segments[segments.length - 1]!] = { $value: value, $type: type }
+      }
+      return group
+    },
+  }],
+}
+```
+
+`LoaderCtx`: `readFile`, `cwd`, `root`, `addDependency`. `NormalizeCtx`: `id` (resolved path, or `'inline'`), `root`, `sourceIds` (all ids this pass, base first then theme, for cross-source refs). Package a loader/normalizer pair as its own module to reuse a vendor adapter across projects.
+
+## Usage Report
+
+When the plugin is registered, `engine.designTokens` exposes `report()` and `strictTypes()`. `report()` returns a `DesignTokensReport`: `totalTokens`, `used[]`, `unused[]` (referenced directly or via a transitive `var()`-in-`var()` chain), `deprecatedInUse[]`, and cumulative `strictViolations { warning, error }` — computed from the current atomic-style store. There is no diagnostics queue to drain; strict violations are delivered live through `onDiagnostic`.
+
+Surface it through the build plugin's `report` option (build mode only; a no-op without the design-tokens plugin). `true` logs a concise summary once per build; `{ output }` additionally writes the full report as JSON to that path (resolved against the project root):
+
+```ts
+pika({ report: true })
+pika({ report: { output: './design-tokens-report.json' } })
+```
+
+Nuxt mirrors the unplugin options (`ModuleOptions = Omit<PluginOptions, 'currentPackageName'>`), so `report` works the same way under the `pikacss` key in `nuxt.config.ts`.
+
 ## Runtime Capabilities for Custom Hosts
 
 The neutral factory accepts optional runtime capabilities:

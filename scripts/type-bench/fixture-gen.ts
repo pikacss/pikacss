@@ -8,7 +8,7 @@ export async function generateFixture(params: ScenarioParams, repoRoot: string):
 	const dir = await mkdtemp(join(tmpdir(), 'pikacss-type-bench-'))
 
 	await writeTsConfig(dir, repoRoot)
-	const engineConfig = buildEngineConfig(params)
+	const engineConfig = await buildEngineConfig(params, repoRoot)
 	await generatePikaGenTs(dir, engineConfig, repoRoot)
 	const probePositions = await generateSourceFiles(dir, params)
 
@@ -36,8 +36,26 @@ async function writeTsConfig(dir: string, repoRoot: string): Promise<void> {
 	await writeFile(join(dir, 'tsconfig.json'), JSON.stringify(tsconfig, null, '\t'))
 }
 
-function buildEngineConfig(params: ScenarioParams): EngineConfig {
+async function buildEngineConfig(params: ScenarioParams, repoRoot: string): Promise<EngineConfig> {
 	const plugins: EngineConfig['plugins'] = []
+
+	// designTokens dimension: register the real @pikacss/plugin-design-tokens through the
+	// same createCtx() codegen pipeline the other dimensions use. The generated DTCG tokens
+	// are passed as an inline source, so their CSS variables flow into pika.gen.ts and grow
+	// the autocomplete type surface exactly as a real project's tokens would.
+	let designTokensConfig: unknown
+	// `designTokens` and `designTokensStrict` are mutually exclusive dimensions
+	// (each other's baseline is 0). The strict variant enables `strict.types` so the
+	// generated pika.gen.ts carries the exclusive value unions.
+	const tokenCount = params.designTokensStrict > 0 ? params.designTokensStrict : params.designTokens
+	if (tokenCount > 0) {
+		const { designTokens } = await import(join(repoRoot, 'packages/plugin-design-tokens/src/index.ts'))
+		plugins.push(designTokens())
+		designTokensConfig = {
+			sources: generateDesignTokens(tokenCount),
+			...(params.designTokensStrict > 0 ? { strict: { types: true } } : {}),
+		}
+	}
 
 	// The type complexity comes from the generated pika.gen.ts, not from plugin runtime.
 	// For pluginCount > 0 we add dummy plugins that register autocomplete entries,
@@ -83,7 +101,110 @@ function buildEngineConfig(params: ScenarioParams): EngineConfig {
 		selectors: { selectors },
 		shortcuts: { shortcuts },
 		variables: { variables },
+		...(designTokensConfig != null ? { designTokens: designTokensConfig } : {}),
 	} as EngineConfig
+}
+
+type DesignTokenGroup = Record<string, unknown>
+
+/**
+ * Generate a realistically-shaped W3C Design Tokens (DTCG) group containing exactly
+ * `count` leaf tokens. Tokens use nested paths (e.g. `color.grey.100`) and a mix of
+ * `$type` values (color, dimension, duration, fontFamily, fontWeight, number),
+ * round-robined across producers so the distribution stays even at every scale.
+ */
+function generateDesignTokens(count: number): DesignTokenGroup {
+	const root: DesignTokenGroup = {}
+
+	const setPath = (path: string[], node: unknown): void => {
+		let cursor = root
+		for (let i = 0; i < path.length - 1; i++) {
+			const key = path[i]!
+			cursor[key] ??= {}
+			cursor = cursor[key] as DesignTokenGroup
+		}
+		cursor[path[path.length - 1]!] = node
+	}
+
+	const colorFamilies = ['grey', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'indigo', 'purple', 'pink']
+	const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]
+	const dimensionGroups = ['spacing', 'size', 'radius']
+	const fontFamilyStacks = [
+		['Inter', 'system-ui', 'sans-serif'],
+		['Georgia', 'Cambria', 'serif'],
+		['SFMono-Regular', 'Menlo', 'monospace'],
+	]
+	const fontWeightNames: Array<[string, number]> = [
+		['thin', 100],
+		['light', 300],
+		['regular', 400],
+		['medium', 500],
+		['semibold', 600],
+		['bold', 700],
+		['black', 900],
+	]
+	const numberGroups = ['opacity', 'z-index', 'scale']
+
+	let ci = 0
+	let di = 0
+	let dui = 0
+	let ffi = 0
+	let fwi = 0
+	let ni = 0
+
+	const producers: Array<() => void> = [
+		// color: color.<family>.<shade> (e.g. color.grey.100)
+		() => {
+			const family = colorFamilies[ci % colorFamilies.length]!
+			const shade = shades[Math.floor(ci / colorFamilies.length) % shades.length]!
+			const wrap = Math.floor(ci / (colorFamilies.length * shades.length))
+			const path = wrap === 0
+				? ['color', family, String(shade)]
+				: ['color', `palette-${wrap}`, family, String(shade)]
+			const hex = `#${(((ci * 2654435761) >>> 8) & 0xFFFFFF).toString(16)
+				.padStart(6, '0')}`
+			setPath(path, { $value: hex, $type: 'color' })
+			ci++
+		},
+		// dimension: <group>.<index> (e.g. spacing.4)
+		() => {
+			const group = dimensionGroups[di % dimensionGroups.length]!
+			const idx = Math.floor(di / dimensionGroups.length)
+			setPath([group, String(idx)], { $value: `${idx * 4}px`, $type: 'dimension' })
+			di++
+		},
+		// duration: duration.step-<index>
+		() => {
+			setPath(['duration', `step-${dui}`], { $value: `${(dui + 1) * 50}ms`, $type: 'duration' })
+			dui++
+		},
+		// fontFamily: font.family.<index> (array value)
+		() => {
+			const stack = fontFamilyStacks[ffi % fontFamilyStacks.length]!
+			setPath(['font', 'family', String(ffi)], { $value: [...stack], $type: 'fontFamily' })
+			ffi++
+		},
+		// fontWeight: font.weight.<name> (numeric value)
+		() => {
+			const [name, weight] = fontWeightNames[fwi % fontWeightNames.length]!
+			const wrap = Math.floor(fwi / fontWeightNames.length)
+			const key = wrap === 0 ? name : `${name}-${wrap}`
+			setPath(['font', 'weight', key], { $value: weight, $type: 'fontWeight' })
+			fwi++
+		},
+		// number: <group>.<index> (unitless numeric value)
+		() => {
+			const group = numberGroups[ni % numberGroups.length]!
+			const idx = Math.floor(ni / numberGroups.length)
+			setPath([group, String(idx)], { $value: idx, $type: 'number' })
+			ni++
+		},
+	]
+
+	for (let i = 0; i < count; i++)
+		producers[i % producers.length]!()
+
+	return root
 }
 
 async function generatePikaGenTs(dir: string, engineConfig: EngineConfig, repoRoot: string): Promise<void> {
@@ -114,6 +235,9 @@ async function generateSourceFiles(dir: string, params: ScenarioParams): Promise
 	const fileCount = getFileCount(params.fileSpread)
 	const callsPerFile = Math.ceil(params.callCount / fileCount)
 	const allProbes: ProbePosition[] = []
+	// In the strict-types dimension, call sites use governed properties with values
+	// the exclusive union accepts, so they exercise the narrowed types cleanly.
+	const strict = params.designTokensStrict > 0
 
 	for (let f = 0; f < fileCount; f++) {
 		const filename = fileCount === 1 ? 'main.ts' : `file-${f}.ts`
@@ -121,7 +245,7 @@ async function generateSourceFiles(dir: string, params: ScenarioParams): Promise
 			? params.callCount - callsPerFile * (fileCount - 1) // last file gets remainder
 			: callsPerFile
 
-		const { content, probes } = generateFileContent(calls, params.nestingDepth, f, join(srcDir, filename))
+		const { content, probes } = generateFileContent(calls, params.nestingDepth, f, join(srcDir, filename), strict)
 		await writeFile(join(srcDir, filename), content)
 		allProbes.push(...probes)
 	}
@@ -144,7 +268,7 @@ function getFileCount(spread: FileSpread): number {
 	}
 }
 
-function generateFileContent(callCount: number, nestingDepth: number, fileIndex: number, filePath: string): { content: string, probes: ProbePosition[] } {
+function generateFileContent(callCount: number, nestingDepth: number, fileIndex: number, filePath: string, strict = false): { content: string, probes: ProbePosition[] } {
 	const lines: string[] = [
 		`/// <reference path="../pika.gen.ts" />`,
 		``,
@@ -181,7 +305,7 @@ function generateFileContent(callCount: number, nestingDepth: number, fileIndex:
 
 	for (let i = 0; i < callCount; i++) {
 		const varName = `cls_${fileIndex}_${i}`
-		const callCode = generatePikaCall(i, nestingDepth)
+		const callCode = strict ? generateStrictPikaCall(i) : generatePikaCall(i, nestingDepth)
 		lines.push(`const ${varName} = ${callCode}`)
 	}
 
@@ -230,6 +354,43 @@ function generatePikaCall(index: number, nestingDepth: number): string {
 
 	// Nested call with selectors
 	return `pika(${generateNestedStyleDef(nestingDepth, 0, index)})`
+}
+
+/**
+ * Generate a flat `pika()` call on governed CSS properties using only values the
+ * strict-type exclusive union accepts: `var(--token)` references to the
+ * deterministic first color/dimension tokens, CSS-wide keywords, the built-in
+ * allowlist, and functional escape hatches. Exercises the narrowed property types
+ * without producing type errors.
+ */
+function generateStrictPikaCall(index: number): string {
+	// Deterministic first tokens produced by generateDesignTokens (color.grey.50
+	// and spacing.0), always present at every strict scale (>= 100 tokens).
+	const colorValues = [
+		`'var(--color-grey-50)'`,
+		`'inherit'`,
+		`'transparent'`,
+		`'currentColor'`,
+		`'color-mix(in srgb, red, blue)'`,
+	]
+	const dimensionValues = [
+		`'var(--spacing-0)'`,
+		`'0'`,
+		`'auto'`,
+		`'calc(100% - 8px)'`,
+		`'inherit'`,
+	]
+	const colorProps = ['color', 'backgroundColor', 'borderColor']
+	const dimensionProps = ['padding', 'margin', 'width', 'height', 'fontSize', 'borderRadius']
+
+	const props: string[] = []
+	const colorProp = colorProps[index % colorProps.length]!
+	props.push(`${colorProp}: ${colorValues[index % colorValues.length]!}`)
+	for (let k = 0; k < 3; k++) {
+		const dimProp = dimensionProps[(index + k) % dimensionProps.length]!
+		props.push(`${dimProp}: ${dimensionValues[(index + k) % dimensionValues.length]!}`)
+	}
+	return `pika({ ${props.join(', ')} })`
 }
 
 function generateNestedStyleDef(maxDepth: number, currentDepth: number, seed: number): string {

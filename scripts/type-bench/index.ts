@@ -34,7 +34,7 @@ if (args.help) {
 Usage: pnpm type-bench [options]
 
 Options:
-  -d, --dimension <name>   Only run a specific dimension (callCount, pluginCount, autocompleteSize, nestingDepth, fileSpread)
+  -d, --dimension <name>   Only run a specific dimension (callCount, pluginCount, autocompleteSize, nestingDepth, fileSpread, designTokens, designTokensStrict)
   -r, --runs <n>           Number of runs per scenario (default: 5)
   -o, --output <path>      Write JSON report to file
   -t, --trace              Run --generateTrace analysis (slower)

@@ -1,0 +1,20 @@
+/* TARGET — requires cross-file $ref resolution (bottleneck A).
+ *
+ * Config:
+ *   designTokens: { sources: ['./primitive.tokens.json', './semantic.tokens.json'] }
+ *
+ * The $ref pointer's TARGET PATH drives the alias var name:
+ *   primitive.tokens.json#/color/grey/200  ->  path color.grey.200  ->  var(--color-grey-200)
+ *
+ * CURRENT (0.0.58): `$ref` is not understood. `$resolutionOrder` / `$extensions`
+ * are reserved keys and must be skipped (see bottleneck F); the `surface.*`
+ * nodes have no `$value`, so nothing meaningful is emitted for them.
+ */
+:root {
+  --color-grey-100: #ffffff;
+  --color-grey-200: #f7f7f7;
+  --color-grey-1400: #292929;
+  --surface-z0: var(--color-grey-200);
+  --surface-z1: var(--color-grey-100);
+  --text-primary: var(--color-grey-1400);
+}
