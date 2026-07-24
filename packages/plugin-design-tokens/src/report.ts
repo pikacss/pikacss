@@ -9,7 +9,8 @@ import type { Engine } from '@pikacss/core'
  * aliases) partitioned by whether they are referenced — directly or through a
  * transitive `var()`-in-`var()` chain — by any atomic style. `strictViolations`
  * are cumulative counters of strict-mode diagnostics produced so far,
- * independent of `diagnostics.drain()`.
+ * accumulated as diagnostics are reported through the engine's `onDiagnostic`
+ * handler.
  */
 export interface DesignTokensReport {
 	/** Total number of registered design-token variable names (all kinds). */

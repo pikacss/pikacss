@@ -5,7 +5,13 @@ outline: [2, 3]
 relatedPackages:
   - '@pikacss/plugin-design-tokens'
 relatedSources:
+  - 'packages/plugin-design-tokens/src/autocomplete.ts'
   - 'packages/plugin-design-tokens/src/index.ts'
+  - 'packages/plugin-design-tokens/src/load.ts'
+  - 'packages/plugin-design-tokens/src/naming.ts'
+  - 'packages/plugin-design-tokens/src/report.ts'
+  - 'packages/plugin-design-tokens/src/strict-types.ts'
+  - 'packages/plugin-design-tokens/src/types.ts'
 category: api
 order: 95
 ---
@@ -19,7 +25,7 @@ order: 95
 
 - Package: `@pikacss/plugin-design-tokens`
 - Generated from the exported surface and JSDoc in `packages/plugin-design-tokens/src/index.ts`.
-- Source files: `packages/plugin-design-tokens/src/index.ts`
+- Source files: `packages/plugin-design-tokens/src/autocomplete.ts`, `packages/plugin-design-tokens/src/index.ts`, `packages/plugin-design-tokens/src/load.ts`, `packages/plugin-design-tokens/src/naming.ts`, `packages/plugin-design-tokens/src/report.ts`, `packages/plugin-design-tokens/src/strict-types.ts`, `packages/plugin-design-tokens/src/types.ts`
 
 </details>
 
@@ -43,7 +49,7 @@ PikaCSS engine plugin that converts design tokens (W3C Design Tokens JSON or `de
 
 **Remarks:**
 
-The neutral entry accepts inline token objects. File-backed sources require the `/node` adapter or a custom runtime capability. Tokens flow through the core `variables` system and loaded files are registered as config dependencies.
+The neutral entry accepts inline token objects. File-backed sources require the `/node` adapter or a custom runtime capability. Tokens flow through the core `variables` system, so they inherit unused-pruning, autocomplete integration, and selector scoping. Loaded files are registered as config dependencies. Strict-mode violations are reported through the engine's `onDiagnostic` handler; bundler integrations collect error-level diagnostics to fail the build.
 
 ```ts
 import { designTokens } from '@pikacss/plugin-design-tokens/node'
@@ -60,14 +66,13 @@ export default defineEngineConfig({
 <br>
 <br>
 
-### parseDesignMarkdown(content, onDiagnostic?) {#function-parsedesignmarkdown-content-ondiagnostic}
+### parseDesignMarkdown(content) {#function-parsedesignmarkdown-content}
 
 Extracts design token blocks from a markdown design document.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `content` | `string` | The markdown source (e.g. the content of a `design.md` file). |
-| `onDiagnostic?` | `DiagnosticHandler` | Optional handler for malformed token blocks. |
 
 **Returns:** `{ base: DesignTokenGroup[], themeBlocks: ParsedThemeBlock[] }` - The parsed base token groups and theme-scoped token blocks.
 
@@ -107,6 +112,24 @@ tokenPathToVariableName(['font', 'size'], 'app')       // '--app-font-size'
 <br>
 <br>
 
+## Constants
+
+### DEFAULT_TYPE_AUTOCOMPLETE {#const-default-type-autocomplete}
+
+Built-in `$type` → CSS-property autocomplete map. A token carrying one of these
+`$type`s emits `VariableObject.autocomplete.asValueOf` with the matching
+property list, so the variable is suggested as a `var()` value for exactly
+those CSS properties.
+
+**Remarks:**
+
+User entries from import ('./types').DesignTokensConfig.typeAutocompleteare merged over this map (replacing the entry for a `$type`, or suppressing it
+with `false`). `$type`s absent from the merged map produce no `autocomplete`
+field, so the core `variables` system falls back to its default (`'*'`).
+
+<br>
+<br>
+
 ## Types
 
 ### DesignToken {#interface-designtoken}
@@ -116,8 +139,10 @@ A design token node: an object carrying a `$value` plus optional metadata.
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `$value` | `DesignTokenValue` | The token value. Strings may reference other tokens via `{path.to.token}`. | — |
-| `$type?` | `string` | Optional token type (e.g. `'color'`, `'dimension'`, `'shadow'`, `'fontFamily'`). | — |
+| `$type?` | `string` | Optional token type (e.g. `'color'`, `'dimension'`, `'shadow'`, `'fontFamily'`). A token without its own `$type` inherits the nearest ancestor group's `$type`. | — |
 | `$description?` | `string` | Optional human-readable description. | — |
+| `$deprecated?` | `boolean` | Marks the token as deprecated. Deprecated tokens still emit CSS variables, but their variable names are recorded in an internal registry so tooling can warn on usage. A group-level `$deprecated` applies to every descendant token unless the token sets its own value (token wins). | — |
+| `$extensions?` | `Record<string, unknown>` | Arbitrary DTCG `$extensions` metadata, carried through onto the normalized token for later batches to read. | — |
 
 ```ts
 const token: DesignToken = { $value: '#3b82f6', $type: 'color', $description: 'Primary brand color' }
@@ -152,11 +177,15 @@ Configuration object for the `designTokens` engine option.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `sources?` | `Arrayable<DesignTokensSource>` | Base token sources emitted under `:root`. Later sources override earlier ones when names collide. | — |
+| `sources?` | `Arrayable<DesignTokensSource \| DesignTokensSourceEntry>` | Base token sources emitted under `:root`. Later sources override earlier ones when names collide. Entries may be bare DesignTokensSources or DesignTokensSourceEntry objects carrying a per-source `prefix` / `layer`. | — |
+| `loaders?` | `DesignTokensLoader[]` | Custom source loaders, tried before the built-in `.md`/JSON handling. For each string source, the first loader whose `match` returns `true` for the resolved id wins; if none match, the built-in behavior applies. | `undefined` |
+| `normalizers?` | `DesignTokensNormalizer[]` | Normalizers run as an ordered chain over each loaded raw source before it enters the flatten stage. With no normalizers configured, raw values pass through unchanged. | `undefined` |
 | `themes?` | `Record<string, DesignTokensTheme>` | Theme overrides keyed by theme name. Tokens are emitted under the theme's selector. | — |
+| `typeAutocomplete?` | `Record<string, Arrayable<string> \| false>` | Per-`$type` autocomplete override map, merged over the built-in import ('./autocomplete').DEFAULT_TYPE_AUTOCOMPLETE map. A token whose `$type` is present in the merged map emits `VariableObject.autocomplete.asValueOf` with that property list, so the variable is suggested as a `var()` value for exactly those CSS properties. | `undefined (the built-in default map applies as-is)` |
 | `prefix?` | `string` | Prefix prepended to every generated CSS variable name (without leading `--`). | `'' (no prefix)` |
 | `root?` | `string` | Base directory used to resolve relative source file paths. | `The host runtime's working directory; `'.'` when no capability is provided.` |
 | `pruneUnused?` | `boolean` | Pruning override applied to every generated variable. When unset, the `variables` config default applies. | `undefined` |
+| `strict?` | `DesignTokensStrictConfig` | Strict-mode governance of authored style values. See DesignTokensStrictConfig. | `undefined (strict mode off)` |
 
 ```ts
 const config: DesignTokensConfig = {
@@ -168,6 +197,81 @@ const config: DesignTokensConfig = {
 <br>
 <br>
 
+### DesignTokensLoader {#interface-designtokensloader}
+
+A custom source loader. Loaders turn a source id (a file path) into a raw value
+that the DesignTokensNormalizer chain then converts into a DesignTokenGroup.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `name` | `string` | Loader name, used in diagnostics. | — |
+| `match` | `(id: string) => boolean` | Returns `true` when this loader should handle the given resolved source id. | — |
+| `load` | `(id: string, ctx: LoaderCtx) => Awaitable<unknown>` | Loads the raw value for `id`; the returned value is fed through the normalizer chain. | — |
+
+**Remarks:**
+
+For each string source, the first loader whose `match` returns `true` for the resolved id wins;
+if none match, the built-in behavior applies (a `.md` path is parsed as a design document, any other path
+is parsed as W3C Design Tokens JSON). Inline object sources bypass loaders entirely (passthrough).
+
+```ts
+const yamlLoader: DesignTokensLoader = {
+  name: 'yaml',
+  match: id => id.endsWith('.yaml') || id.endsWith('.yml'),
+  load: async (id, ctx) => {
+    ctx.addDependency(id)
+    return parseYaml(await ctx.readFile(id))
+  },
+}
+```
+
+<br>
+<br>
+
+### DesignTokensNormalizer {#interface-designtokensnormalizer}
+
+A normalizer converts a raw loaded value into a canonical DesignTokenGroup.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `name` | `string` | Normalizer name, used in diagnostics. | — |
+| `normalize` | `(raw: unknown, ctx: NormalizeCtx) => Awaitable<DesignTokenGroup>` | Converts the raw value (or the previous normalizer's output) into a DesignTokenGroup. | — |
+
+**Remarks:**
+
+Normalizers run as an ordered chain over each loaded raw source before it enters the flatten
+stage; each normalizer receives the previous normalizer's output. With no normalizers configured, the raw
+value passes through unchanged, so built-in `.md`/JSON/inline behavior is preserved byte-for-byte.
+
+<br>
+<br>
+
+### DesignTokensReport {#interface-designtokensreport}
+
+A snapshot of design-token usage computed on demand from an engine's current
+atomic-style store.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `totalTokens` | `number` | Total number of registered design-token variable names (all kinds). | — |
+| `used` | `string[]` | Registered token variable names referenced by at least one atomic style, sorted. | — |
+| `unused` | `string[]` | Registered token variable names referenced by no atomic style, sorted. | — |
+| `deprecatedInUse` | `string[]` | Deprecated token variable names that are in use, sorted. | — |
+| `strictViolations` | `{ warning: number, error: number }` | Cumulative counts of strict-mode diagnostics produced, by severity. | — |
+
+**Remarks:**
+
+Returned by `engine.designTokens.report()`. `used`/`unused` are the
+registered design-token variable names (every kind, including external
+aliases) partitioned by whether they are referenced — directly or through a
+transitive `var()`-in-`var()` chain — by any atomic style. `strictViolations`
+are cumulative counters of strict-mode diagnostics produced so far,
+accumulated as diagnostics are reported through the engine's `onDiagnostic`
+handler.
+
+<br>
+<br>
+
 ### DesignTokensRuntimeOptions {#interface-designtokensruntimeoptions}
 
 Runtime capabilities used to load optional file-backed token sources.
@@ -175,7 +279,14 @@ Runtime capabilities used to load optional file-backed token sources.
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `readFile?` | `(filepath: string) => Promise<string>` | Reads a UTF-8 token source from an absolute path. | — |
-| `cwd?` | `() => string` | Returns the host working directory used when `DesignTokensConfig.root` is omitted. | — |
+| `cwd?` | `() => string` | Returns the host working directory used when DesignTokensConfig.root is omitted. | — |
+
+**Remarks:**
+
+The platform-neutral entry accepts inline token objects only; file
+sources require a `readFile` capability. Import `designTokens` from
+`@pikacss/plugin-design-tokens/node` to inject `node:fs` + `process.cwd()`, or
+pass a custom capability to the neutral entry.
 
 <br>
 <br>
@@ -191,6 +302,67 @@ File paths ending in `.md` are parsed as design documents (tokens are read from 
 <br>
 <br>
 
+### DesignTokensSourceEntry {#interface-designtokenssourceentry}
+
+A source paired with per-source overrides. Use the object form in place of a
+bare DesignTokensSource to give one source its own prefix or layer.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `source` | `DesignTokensSource` | The underlying token source (inline group or file path). | — |
+| `prefix?` | `string` | Prefix for this source's emitted variable names and its own `{a.b.c}` alias resolution, overriding DesignTokensConfig.prefix for this source only. A cross-source `$ref` into this source uses this prefix for the emitted name. | — |
+| `layer?` | `TokenLayer` | The architectural layer this source's tokens belong to. | — |
+
+**Remarks:**
+
+An object is treated as a source entry when it has a `source` own
+property. To use an inline DesignTokenGroup whose top level literally
+contains a token or group named `source`, wrap it in an entry
+(`{ source: <group> }`).
+
+```ts
+const entry: DesignTokensSourceEntry = { source: './vendor.tokens.json', prefix: 'syno', layer: 'semantic' }
+```
+
+<br>
+<br>
+
+### DesignTokensStrictConfig {#interface-designtokensstrictconfig}
+
+Strict-mode configuration: governs which literal values are allowed on
+design-token-governed CSS properties and surfaces violations as diagnostics.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `level?` | `StrictLevel` | Baseline severity applied to every governed property. | `'off'` |
+| `overrides?` | `Record<string, StrictLevel>` | Per-key severity overrides. A key is a CSS property name (e.g. `'background-color'`) or a DTCG `$type` (e.g. `'color'`). A property-key override wins over a `$type`-key override, which wins over DesignTokensStrictConfig.level. | `undefined` |
+| `allowedValues?` | `(string \| RegExp)[]` | Extra literal values accepted on any governed property, on top of the built-in per-`$type` allowlist. A string entry is matched exactly against the trimmed value; a `RegExp` entry is tested against the trimmed value. | `undefined` |
+| `semanticOnly?` | `boolean` | When `true` (and DesignTokensStrictConfig.level is not `'off'`), a value referencing a `primitive`-layer token is a violation: only `semantic`-layer tokens may be used in authored styles. Additionally, `primitive`-layer tokens are hidden from autocomplete at emit time (`asValueOf: '-'`, `asProperty: false`). | `false` |
+| `types?` | `boolean` | When `true`, the generated `pika.gen.ts` narrows the accepted TypeScript value type of every governed CSS property to an exclusive union, so invalid literals red-squiggle in the IDE before any build runs. The union admits, and only admits: a `var(--token)` reference (with an optional `var(--token, fallback)` form) for each token of the governing `$type`, the CSS-wide keywords, the built-in per-`$type` allowlist and any string DesignTokensStrictConfig.allowedValues, and template-literal escape hatches for the functional forms (`calc()`, `color-mix()`, `min()`, `max()`, `clamp()`, `light-dark()`). | `false` |
+
+**Remarks:**
+
+Strict mode is opt-in and defaults to `'off'`, which adds no
+diagnostics and takes a near-zero-cost early-return path in the transform hook.
+A property is *governed* when it appears in the merged
+DesignTokensConfig.typeAutocomplete map for a `$type` that has at least
+one registered token. Values on governed properties are validated against the
+governing `$type`; violations are reported at the effective level for that
+property (property-key override beats `$type`-key override beats
+DesignTokensStrictConfig.level).
+
+```ts
+const strict: DesignTokensStrictConfig = {
+  level: 'error',
+  overrides: { 'background-color': 'warn', dimension: 'off' },
+  allowedValues: ['0', /^var\(--legacy-/],
+  semanticOnly: true,
+}
+```
+
+<br>
+<br>
+
 ### DesignTokensTheme {#interface-designtokenstheme}
 
 Per-theme design token configuration.
@@ -198,7 +370,9 @@ Per-theme design token configuration.
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `selector?` | `string` | The CSS selector scoping this theme's variables. | ``.${themeName}`` |
-| `sources?` | `Arrayable<DesignTokensSource>` | Token sources providing this theme's overrides. | — |
+| `media?` | `string` | A media query this theme's variables are ADDITIONALLY emitted under, on top of the DesignTokensTheme.selector block. When set, the same variables are also emitted inside `@media <media>` wrapping `:root`, so a theme can activate both via an explicit class/attribute selector and automatically via a user preference (e.g. `'(prefers-color-scheme: dark)'`). | `undefined (no media-scoped emission)` |
+| `from?` | `string \| string[]` | Top-level partition subtree key(s) to pick out of this theme's sources. When a single shared source file holds several theme partitions at its top level (e.g. `light-mode`, `dark-mode`), each theme selects its own partition here. The partition key is STRIPPED from token paths, so the emitted variable names are theme-agnostic (`--surface-z0`, not `--light-mode-surface-z0`). Passing an array merges the selected subtrees (later keys override earlier ones on collision). | `undefined (the whole source is used)` |
+| `sources?` | `Arrayable<DesignTokensSource \| DesignTokensSourceEntry>` | Token sources providing this theme's overrides. Entries may be bare DesignTokensSources or DesignTokensSourceEntry objects carrying a per-source `prefix` / `layer`. | — |
 
 ```ts
 const dark: DesignTokensTheme = {
@@ -221,7 +395,91 @@ Strings may contain alias references in the form `{path.to.token}`, which are re
 <br>
 <br>
 
+### LoaderCtx {#interface-loaderctx}
+
+Context passed to a DesignTokensLoader's `load` method.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `readFile` | `(path: string) => Promise<string>` | Reads a file's UTF-8 text content. | — |
+| `cwd` | `string` | The current working directory (`process.cwd()`). | — |
+| `root` | `string` | The configured DesignTokensConfig.root used to resolve relative source paths. | — |
+| `addDependency` | `(path: string) => void` | Registers `path` as an engine config dependency so integrations reload when the file changes. | — |
+
+<br>
+<br>
+
+### NormalizeCtx {#interface-normalizectx}
+
+Context passed to a DesignTokensNormalizer's `normalize` method.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `id` | `string` | The source being normalized: a resolved file path, or `'inline'` for inline object sources. | — |
+| `root` | `string` | The configured DesignTokensConfig.root. | — |
+| `sourceIds` | `readonly string[]` | All source ids loaded in this pass, in load order (base sources first, then theme sources). | — |
+
+<br>
+<br>
+
+### StrictLevel {#type-strictlevel}
+
+Severity of a strict-mode governance check.
+
+**Type:** `"error" | "off" | "warn"`
+
+**Remarks:**
+
+`'off'` suppresses the check entirely, `'warn'` reports it as a
+`'warning'` diagnostic, and `'error'` reports it as an `'error'` diagnostic.
+Diagnostics are reported through the engine's `onDiagnostic` handler during
+`transformStyleDefinitions` — they are never thrown.
+
+<br>
+<br>
+
+### StrictTypeEntry {#interface-stricttypeentry}
+
+The exclusive TypeScript value type of one governed CSS property, ready for the
+integration codegen to render into `pika.gen.ts`.
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `property` | `string` | The governed CSS property name, in kebab-case (e.g. `'background-color'`). | — |
+| `union` | `string[]` | The members of the exclusive value union, each already a valid TypeScript type expression: string literals are double-quoted (e.g. `"var(--x)"`, `"inherit"`) and template-literal members are backtick strings (e.g. `` `calc(${string})` ``). The consumer joins them with ` \| `. | — |
+
+**Remarks:**
+
+The integration package consumes this through the duck-typed
+`engine.designTokens.strictTypes()` surface; it never imports this package.
+
+<br>
+<br>
+
+### TokenLayer {#type-tokenlayer}
+
+The architectural layer a token source belongs to.
+
+**Type:** `"primitive" | "semantic"`
+
+**Remarks:**
+
+`primitive` tokens are raw values (a palette, a spacing scale);
+`semantic` tokens map those primitives to intent (e.g. `surface`, `text`).
+The layer is captured onto the generated variables' internal registry for a
+later strict-mode batch to enforce layering rules. It does not affect the
+emitted CSS.
+
+<br>
+<br>
+
 ## Module augmentations
+
+### Engine (@pikacss/core) {#augmentation-engine-pikacss-core}
+
+| Property | Type | Description | Default |
+|---|---|---|---|
+| `designTokens?` | `{ 			/** 			 * Computes a token-usage report from the engine's current atomic-style 			 * store: total registered tokens, used/unused token variable names, 			 * deprecated tokens in use, and cumulative strict-violation counts. 			 */ 			report: () => DesignTokensReport 			/** 			 * Returns the per-property exclusive value unions used by bundler 			 * integrations to narrow governed CSS property types in the generated 			 * `pika.gen.ts`. Empty unless `designTokens.strict.types` is enabled; 			 * consumed duck-typed by the integration, which never imports this package. 			 */ 			strictTypes: () => StrictTypeEntry[] 		}` | Design-token surface, present when the `designTokens` plugin is registered. Strict-mode diagnostics are delivered through the engine's `onDiagnostic` handler during `transformStyleDefinitions`, so there is no queue to drain. | — |
 
 ### EngineConfig (@pikacss/core) {#augmentation-engineconfig-pikacss-core}
 

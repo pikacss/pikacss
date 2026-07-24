@@ -1,0 +1,31 @@
+@layer preflights {
+  :root,:root.light {
+    --surface-z0: #f7f7f7;
+    --text-primary: #292929;
+  }
+  :root.dark {
+    --surface-z0: #1c1c1c;
+    --text-primary: #f7f7f7;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --surface-z0: #f7f7f7;
+      --text-primary: #292929;
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-z0: #1c1c1c;
+      --text-primary: #f7f7f7;
+    }
+  }
+}
+
+@layer utilities {
+  .pk-a {
+    background-color: var(--surface-z0);
+  }
+  .pk-b {
+    color: var(--text-primary);
+  }
+}

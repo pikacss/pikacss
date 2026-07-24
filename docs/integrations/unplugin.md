@@ -59,8 +59,35 @@ The Vite entry registers with `enforce: 'pre'`. PikaCSS still runs before framew
 | transformedFormat | Output shape of transformed `pika()` calls: `'string'` or `'array'`. |
 | tsCodegen | Controls TypeScript type-definition code generation. |
 | cssCodegen | Controls CSS code-generation output. CSS codegen cannot be fully disabled. |
+| report | Emit a design-token usage report at the end of a production build. `true` logs a summary; `{ output }` also writes the full report as JSON. |
 
 > See [API Reference — Unplugin](/api/unplugin) for full type signatures and defaults.
+
+## Diagnostics and Reporting
+
+Engine plugins can report diagnostics during transforms (for example, [`@pikacss/plugin-design-tokens`](/official-plugins/design-tokens#strict-mode) strict mode). The engine never throws them — it hands each `Diagnostic` (`{ level, code, message, plugin?, … }`) to a handler. The unplugin installs that handler for you; there is no `onDiagnostic` plugin option to set.
+
+### How diagnostics surface
+
+The built-in handler logs **every** diagnostic live, so a `'warning'` appears immediately during dev and build. It also collects the `'error'`-level diagnostics and, once every module has been transformed, throws a single aggregated `Error` at `buildEnd` listing them all — so an error-severity diagnostic **fails a production build**.
+
+::: info Why the build fails at `buildEnd`, not inline
+Core delivers diagnostics through a handler whose throws are swallowed, so a handler cannot abort a single module's transform. Errors are therefore aggregated and thrown once at `buildEnd`. The trade-off: an error surfaces after the full build rather than inline on the producing module (with Vite's dev overlay). Warnings still log live on the module that produced them.
+:::
+
+### `report`
+
+`report` emits a design-token usage report at the end of a production build. It requires `@pikacss/plugin-design-tokens` to be registered and is a no-op otherwise. `true` logs a concise summary (total tokens, used/unused counts, deprecated tokens in use, and strict-violation counts) once per build. Passing `{ output }` additionally writes the full report as JSON to that path, resolved against the project root. The report is emitted only in build mode, so a dev server never spams it per HMR update:
+
+```ts
+PikaCSS({
+  report: { output: './design-tokens.report.json' },
+})
+```
+
+:::tip Nuxt
+The Nuxt module mirrors the unplugin options, so `report` works the same way in a Nuxt project. See [Nuxt](/integrations/nuxt).
+:::
 
 ## TypeScript and `import 'pika.css'`
 

@@ -1,0 +1,16 @@
+@layer preflights {
+  :root {
+    --color-primary: #3b82f6;
+    --color-brand: var(--color-primary);
+    --color-legacy: #dc2626;
+  }
+}
+
+@layer utilities {
+  .pk-a {
+    color: var(--color-brand);
+  }
+  .pk-b {
+    background-color: var(--color-legacy);
+  }
+}

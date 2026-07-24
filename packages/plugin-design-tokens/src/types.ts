@@ -244,8 +244,8 @@ export interface DesignTokensNormalizer {
  *
  * @remarks `'off'` suppresses the check entirely, `'warn'` reports it as a
  * `'warning'` diagnostic, and `'error'` reports it as an `'error'` diagnostic.
- * Diagnostics are always collected and drained through
- * `engine.designTokens.diagnostics.drain()` — they are never thrown.
+ * Diagnostics are reported through the engine's `onDiagnostic` handler during
+ * `transformStyleDefinitions` — they are never thrown.
  */
 export type StrictLevel = 'off' | 'warn' | 'error'
 
