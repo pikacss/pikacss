@@ -1,8 +1,16 @@
 import { readFileSync } from 'node:fs'
 import ts from 'typescript'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { PACKAGES } from '../_skill-shared'
 import { createApiProgram, extractPackageAPI, getPublicAPIEntries, normalizeGeneratedDocContent, renderDefaultValue, renderPackagePage } from './gen-api-docs'
+
+let program: ts.Program
+let checker: ts.TypeChecker
+
+beforeAll(() => {
+	program = createApiProgram()
+	checker = program.getTypeChecker()
+})
 
 describe('generated API content normalization', () => {
 	it('treats CRLF and CR line endings as LF for drift checks', () => {
@@ -13,9 +21,6 @@ describe('generated API content normalization', () => {
 
 describe('api entry discovery', () => {
 	it('discovers public subpaths and renders entry-specific exports even when names shadow root exports', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
-
 		const iconsPkg = PACKAGES.find(({ name }) => name === '@pikacss/plugin-icons')!
 		const iconEntries = getPublicAPIEntries(iconsPkg)
 		expect(iconEntries.map(entry => entry.subpath))
@@ -46,8 +51,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('keeps nested object parameters out of callable headings while rendering their rows', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/core')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const page = renderPackagePage(info, [info])
@@ -62,8 +65,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('does not expose internal built-in plugin helpers through the core type surface', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/core')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const names = new Set(info.exports.map(exp => exp.name))
@@ -95,8 +96,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('renders typography variable overrides through a public named type', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/plugin-typography')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const page = renderPackagePage(info, [info])
@@ -111,8 +110,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('does not render constructors for type-only classes', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/core')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const engine = info.exports.find(exp => exp.name === 'Engine')!
@@ -133,8 +130,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('renders public documented getters as read-only class members', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/core')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const engine = info.exports.find(exp => exp.name === 'Engine')!
@@ -155,8 +150,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('renders complete inferred return types without broken inline Markdown', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/core')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const logger = info.exports.find(exp => exp.name === 'createLogger')!
@@ -179,8 +172,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('renders literal unions in deterministic lexical order', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/plugin-reset')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const page = renderPackagePage(info, [info])
@@ -190,8 +181,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('renders authored RHS text for composite type aliases across packages', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const cases = [
 			['@pikacss/core', '.', 'Arrayable', 'T | T[]'],
 			['@pikacss/config', '.', 'ReportConfig', 'boolean | Readonly<{ output: string; }>'],
@@ -222,9 +211,6 @@ describe('api entry discovery', () => {
 	})
 
 	it('covers every public manifest subpath with deterministic unique anchors', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
-
 		for (const pkg of PACKAGES) {
 			const manifest = JSON.parse(readFileSync(new URL(`../../packages/${pkg.dir}/package.json`, import.meta.url), 'utf8')) as { exports?: Record<string, unknown> }
 			const expectedSubpaths = Object.keys(manifest.exports ?? {})
@@ -258,8 +244,6 @@ describe('callable subpath defaults', () => {
 	})
 
 	it('renders callable signatures for bundler adapter default exports with unique subpath anchors', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/unplugin-pikacss')!
 		const info = extractPackageAPI(pkg, program, checker)
 		const subpaths = ['rolldown', 'rollup', 'rspack', 'vite', 'webpack']
@@ -302,9 +286,6 @@ describe('callable subpath defaults', () => {
 	})
 
 	it('uses inferred return types for Node adapter factories', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
-
 		for (const [packageName, expectedType, expectedDescription] of [
 			['@pikacss/plugin-icons', 'EnginePlugin<any>', 'An icons plugin configured with the Iconify Node.js loader.'],
 			['@pikacss/plugin-design-tokens', 'EnginePlugin<any>', 'A design-tokens plugin configured with `node:fs` and `process.cwd()` capabilities.'],
@@ -326,8 +307,6 @@ describe('callable subpath defaults', () => {
 
 	it('represents the Nuxt default as a module type and records its re-export surface', () => {
 		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/nuxt-pikacss')!
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const info = extractPackageAPI(pkg, program, checker)
 		const defaultExport = info.exports.find(candidate => candidate.name === 'default')!
 
@@ -351,9 +330,6 @@ describe('callable subpath defaults', () => {
 	})
 
 	it('documents public constructor signatures and parameter defaults', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
-
 		const configPkg = PACKAGES.find(({ name }) => name === '@pikacss/config')!
 		const configInfo = extractPackageAPI(configPkg, program, checker)
 		const configHostError = configInfo.entries
@@ -397,8 +373,6 @@ describe('callable subpath defaults', () => {
 	})
 
 	it('renders defaults as authored Markdown without double-wrapping', () => {
-		const program = createApiProgram()
-		const checker = program.getTypeChecker()
 		const configPkg = PACKAGES.find(({ name }) => name === '@pikacss/config')!
 		const configInfo = extractPackageAPI(configPkg, program, checker)
 		const configPage = renderPackagePage(configInfo, [configInfo])
