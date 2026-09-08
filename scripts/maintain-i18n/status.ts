@@ -14,6 +14,7 @@ import {
 	englishToZhRel,
 	extractHeadings,
 	hashObject,
+	hasStrictTranslationStatusFailure,
 	headCommit,
 	isSourceDirty,
 	lcsRatio,
@@ -380,8 +381,9 @@ async function main(): Promise<void> {
 		printHuman(report)
 	}
 
-	// Exit 0 unless --strict (CI visibility mode, non-blocking per Decision D4).
-	if (strict && (report.siteFreshness < 100 || report.fixtureViolations.length > 0))
+	// --strict is binary correctness: every discovered page must be fresh and fixtures clean.
+	// Whether CI treats this as blocking remains the separate Decision D4 policy.
+	if (strict && hasStrictTranslationStatusFailure(report.pages.map(page => page.state), report.fixtureViolations.length))
 		process.exit(1)
 }
 

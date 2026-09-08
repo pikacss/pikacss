@@ -33,6 +33,11 @@ export async function resetTasksOutputRoot(root = tasksOutputRoot): Promise<void
 export type PageState = 'missing' | 'fresh' | 'stale' | 'untracked' | 'orphaned'
 export type FallbackVerdict = 'incremental' | 'full-retranslate' | 'move' | 'delete'
 
+/** Whether strict translation status should fail for the discovered page states / fixtures. */
+export function hasStrictTranslationStatusFailure(states: Iterable<PageState>, fixtureViolationCount: number): boolean {
+	return [...states].some(state => state !== 'fresh') || fixtureViolationCount > 0
+}
+
 export interface TranslationBlock {
 	sourceFile: string
 	sourceCommit?: string
