@@ -18,6 +18,29 @@ What the engine does between a `pika()` call and an entry's generated stylesheet
 
 ## The Pipeline
 
+The two build outputs come from the same resolved Engine state: class-name data replaces the source call, while the accumulated atomic store renders the CSS artifact.
+
+```dot
+digraph PikaPipeline {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}", fontcolor="${#374151|#d1d5db}", fontname="sans-serif"]
+
+  source [label="pika() source"]
+  evaluate [label="Scan + bounded-static evaluation"]
+  engine [label="Engine resolution + dedup"]
+  ids [label="Atomic class IDs"]
+  replace [label="Source replacement"]
+  css [label="Runtime CSS artifact"]
+  module [label="Logical cssModule"]
+
+  source -> evaluate -> engine -> ids -> replace
+  engine -> css -> module
+}
+```
+
+
 1. The build plugin scans included files and finds `pika()` calls.
 2. Each call's arguments are evaluated at build time and passed to the engine.
 3. The engine extracts every `[selector, property, value]` triple into an atomic style with a short class ID (`pk-a`, `pk-b`, ...).
@@ -84,7 +107,7 @@ The generated stylesheet is deterministic:
 
 - Every atomic style gets a **rendering weight**: `0` when it uses only the default selector (a plain class rule), otherwise the number of nested selector segments (a rule inside `@media` inside a pseudo-selector weighs more than a plain rule). Styles are sorted by weight ascending, so simpler rules always come first.
 - Within the same weight, styles keep their **registration order** (the sort is stable).
-- **Shorthand/longhand conflicts** are order-protected: when a property overlaps the effect of an earlier one in the same call (e.g. `padding` then `paddingTop`), the engine marks the later one order-sensitive and only reuses an existing class if it already sits after the classes it must override — otherwise it mints a new class. This is why `paddingTop` reliably beats `padding` regardless of how classes got reused elsewhere.
+- **Shorthand/longhand conflicts** are order-protected: when a property overlaps the effect of an earlier one in the same call (e.g. `padding` then `paddingTop`), the engine marks the later one order-sensitive and only reuses an existing class if it already sits after the classes it must override — otherwise it mints a new class. In that authored order `paddingTop` reliably beats `padding`; if you write the shorthand later, the shorthand is the declaration whose order is protected instead.
 
 A practical consequence: when two *independent* atomic classes on the same element set the same property, the stylesheet position — not the order in your `class` attribute — decides the winner. Prefer single-call composition (last-wins) over stacking conflicting classes.
 

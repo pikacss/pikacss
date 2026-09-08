@@ -6,8 +6,8 @@ import type { Arrayable } from '@pikacss/core'
  * property list, so the variable is suggested as a `var()` value for exactly
  * those CSS properties.
  *
- * @remarks User entries from {@link import('./types').DesignTokensConfig.typeAutocomplete}
- * are merged over this map (replacing the entry for a `$type`, or suppressing it
+ * @remarks User entries from the `DesignTokensConfig.typeAutocomplete` option are
+ * merged over this map (replacing the entry for a `$type`, or suppressing it
  * with `false`). `$type`s absent from the merged map produce no `suggest.asValueOf` field, so the Core Variables default remains `false`.
  */
 export const DEFAULT_TYPE_AUTOCOMPLETE: Record<string, string[]> = {

@@ -12,8 +12,7 @@ category: getting-started
 order: 15
 translation:
   sourceFile: docs/getting-started/comparison.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: d7cd9f42c5135ad50689bc8a2a32006115a82c6b
+  sourceBlob: 72d099d6b9ee93b1894366656ce464456612576e
 ---
 
 # 比較 {#comparison}
@@ -61,7 +60,7 @@ PikaCSS 則是在建置時期解決它：引擎會追蹤重疊的屬性效果，
 
 ### 取捨：只能用靜態引數 {#the-trade-off-static-only-arguments}
 
-由於呼叫是在建置時期求值，引數必須是自足的常值：不能有變數、條件式，或對外層值的 spread。這與 Tailwind「不要動態組合 class 名稱」的規則屬於同一類限制，只是表現在函式呼叫的層級上。[動態樣式](/zh-tw/getting-started/dynamic-styles) 涵蓋了支援的各種模式。
+由於呼叫是在建置時期求值，每個引數都必須落在 PikaCSS 的 bounded static grammar 內。靜態常值、遞迴靜態的物件／陣列、受支援的 operator 與條件式、computed key、template literal，以及對靜態已知物件／陣列的 spread 都有效；一般 runtime binding、function call 結果與 dynamic spread 則無效。這與 Tailwind「不要動態組合 class 名稱」的規則屬於同一類限制，只是表現在函式呼叫的層級上。[動態樣式](/zh-tw/getting-started/dynamic-styles) 涵蓋 runtime-driven patterns。
 
 ## 何時不該使用 PikaCSS {#when-not-to-use-pikacss}
 

@@ -9,8 +9,7 @@ category: customizations
 order: 20
 translation:
   sourceFile: docs/customizations/important.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 867c3460991a40e22bf24a43fe521da6c74a5731
+  sourceBlob: 4c04adba42d069fe448d7e0493f4ab32a81e778d
 ---
 
 # Important {#important}
@@ -26,7 +25,7 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  important: { default: true },
+    important: { default: true },
   },
 })
 ```

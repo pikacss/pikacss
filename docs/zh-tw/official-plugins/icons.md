@@ -11,11 +11,35 @@ category: official-plugins
 order: 30
 translation:
   sourceFile: docs/official-plugins/icons.md
-  sourceCommit: 5ff8a61e355c9a70b088ccfae9acbf6425675cd7
-  sourceBlob: 45ec0241b783db86c9d7a8c9946018bc705dd46c
+  sourceBlob: 8e4e432d86a0b3cdb4e275894fbda8d3b2e98249
 ---
 
 # 圖示 {#icons}
+
+Resolution 與 watch dependency 是彼此相關、但分開處理的兩條路徑：
+
+```dot
+digraph IconResolution {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}", fontcolor="${#374151|#d1d5db}", fontname="sans-serif"]
+
+  shortcut [label="i-prefix:name shortcut"]
+  custom [label="Custom collection"]
+  local [label="Local loader capability"]
+  cdn [label="Optional CDN fallback"]
+  data [label="Resolved icon data"]
+  mode [label="mask / background mode"]
+  styles [label="Atomic style declarations"]
+  deps [label="Registered collection dependencies"]
+  watch [label="Host watch -> generation reload"]
+
+  shortcut -> custom -> local -> cdn -> data -> mode -> styles
+  custom -> deps -> watch
+  local -> deps
+}
+```
 
 透過 Iconify 整合，把圖示 shortcut class 解析成 CSS。
 

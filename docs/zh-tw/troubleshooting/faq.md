@@ -10,21 +10,20 @@ relatedSources:
   - packages/core/src/engine.ts
   - packages/core/src/types/engine.ts
   - packages/core/src/plugins/selectors.ts
+  - packages/core/src/plugins/layers.ts
   - packages/integration/src/ctx.ts
   - packages/integration/src/ctx.pipeline.ts
+  - packages/integration/src/compiler/evaluate.ts
   - packages/integration/src/generatedState.ts
   - packages/unplugin/src/index.ts
   - packages/unplugin/src/types.ts
   - packages/nuxt/src/index.ts
   - packages/eslint-config/src/rules/static-usage.ts
-  - packages/plugin-typography/src/index.ts
-  - packages/plugin-typography/package.json
 category: troubleshooting
 order: 10
 translation:
   sourceFile: docs/troubleshooting/faq.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 3beb42834d78c882bbe34daf48b594595f692d42
+  sourceBlob: 0a535fff23b3b28600a22d785bf55c2e23032572
 ---
 
 # FAQ {#faq}
@@ -85,12 +84,12 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  layers: {
-    reset: -1,
-    preflights: 1,
-    components: 5,
-    utilities: 10,
-  },
+    layers: {
+      reset: -1,
+      preflights: 1,
+      components: 5,
+      utilities: 10,
+    },
   },
 })
 ```
@@ -114,12 +113,12 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  selectors: {
-    definitions: [
-      { name: '@dark', value: 'html.dark $' },
-      { name: '@sm', value: '@media (min-width: 640px)' },
-    ],
-  },
+    selectors: {
+      definitions: [
+        { name: '@dark', value: 'html.dark $' },
+        { name: '@sm', value: '@media (min-width: 640px)' },
+      ],
+    },
   },
 })
 ```

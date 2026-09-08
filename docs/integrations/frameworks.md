@@ -5,9 +5,9 @@ relatedPackages:
   - '@pikacss/unplugin-pikacss'
   - '@pikacss/integration'
 relatedSources:
-  - 'playground/src/templates/vue-ts/vite.config.ts'
-  - 'playground/src/templates/react-ts/vite.config.ts'
-  - 'playground/src/templates/solid-ts/vite.config.ts'
+  - 'packages/unplugin/src/vite.ts'
+  - 'packages/integration/src/processors/vue.ts'
+  - 'packages/integration/src/processors/registry.ts'
   - 'packages/integration/src/operations.ts'
   - 'packages/integration/src/ctx.pipeline.ts'
 category: integrations
@@ -16,7 +16,7 @@ order: 22
 
 # Frameworks
 
-PikaCSS is framework-agnostic: the configured base `pika()` call is replaced with class-name data at build time. The default output is a string; an entry can opt into a string array with `transformedFormat: 'array'`. The snippets below use the default string form and mirror the [Playground](https://pikacss.github.io/playground/) templates.
+PikaCSS is framework-agnostic: the configured base `pika()` call is replaced with class-name data at build time. The default output is a string; an entry can opt into a string array with `transformedFormat: 'array'`. The snippets below use the default string form and are simplified, self-contained examples based on the [Playground](https://pikacss.github.io/playground/) setup.
 
 Two rules apply everywhere:
 
@@ -148,17 +148,23 @@ export default defineConfig({
 })
 ```
 
-Solid uses `class`. Shortcut references compose with inline definitions in the same call:
+Solid uses `class` just as React uses `className`:
 
 ```tsx
 // App.tsx
 function App() {
 	return (
-		<section class={pika('card', { maxWidth: '28rem', textAlign: 'center' })}>
-			<button type="button" class={pika('btn')}>
-				Click me
-			</button>
-		</section>
+		<button
+			type="button"
+			class={pika({
+				'padding': '0.625rem 1.25rem',
+				'borderRadius': '0.75rem',
+				'cursor': 'pointer',
+				'$:hover': { filter: 'brightness(1.1)' },
+			})}
+		>
+			Click me
+		</button>
 	)
 }
 

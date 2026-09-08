@@ -5,19 +5,19 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - packages/core/src/engine.ts
+  - packages/core/src/plugins/layers.ts
 category: customizations
 order: 10
 translation:
   sourceFile: docs/customizations/layers.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 9773044780af6408b9871daae76f6441bdacb945
+  sourceBlob: ebe119332bc4a55839355dbf911fb8945c143ee1
 ---
 
 # Layers {#layers}
 
 PikaCSS 使用 CSS `@layer` 來建立 preflight 樣式與 utility class 之間的層疊順序。
 
-CSS layer 讓你能明確控制層疊順序。PikaCSS 會在 CSS 輸出的最上方產生一段 `@layer` 宣告，讓 preflight 一定排在 utility 之前，而自訂 layer 可以插入在任何優先層級。
+CSS layer 讓你能明確控制層疊順序。PikaCSS 會在 CSS 輸出的最上方產生一段 `@layer` 宣告。使用預設 priority 時，preflight 會排在 utility 之前；自訂 priority 可以重新排列這兩個預設 layer，也可以把其他 layer 插入任意位置。
 
 預設情況下，PikaCSS 會建立兩個 layer：`preflights`（優先度 1）與 `utilities`（優先度 10）。數字越小，在 layer 順序中就越早輸出。
 
@@ -30,12 +30,12 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  layers: {
-    reset: -1, // 在 preflights 之前
-    preflights: 1, // 預設
-    components: 5, // 介於 preflights 與 utilities 之間
-    utilities: 10, // 預設
-  },
+    layers: {
+      reset: -1, // 在 preflights 之前
+      preflights: 1, // 預設
+      components: 5, // 介於 preflights 與 utilities 之間
+      utilities: 10, // 預設
+    },
   },
 })
 ```

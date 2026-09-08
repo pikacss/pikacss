@@ -17,11 +17,33 @@ category: official-plugins
 order: 50
 translation:
   sourceFile: docs/official-plugins/design-tokens.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 4134d0f133c59ef3e27af9f20d5cfa4650414326
+  sourceBlob: 203bdb05de68960cc9be9826a711471cad78b507
 ---
 
 # Design Tokens {#design-tokens}
+
+主要的資料流如下：
+
+```dot
+digraph DesignTokens {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}"]
+
+  sources [label="Inline / JSON / Markdown sources"]
+  loader [label="Loader"]
+  normalize [label="DTCG + custom normalizers"]
+  flatten [label="Flatten + alias resolution"]
+  variables [label="Core variables config"]
+  typegen [label="Typegen / autocomplete"]
+  css [label="Pruned CSS variables / themes"]
+
+  sources -> loader -> normalize -> flatten -> variables
+  variables -> typegen
+  variables -> css
+}
+```
 
 透過引擎的 `variables` 系統，將 design token 轉換成 CSS 變數。
 
@@ -249,7 +271,7 @@ export default defineConfig({
 | `shadow` | `box-shadow` |
 | `cubicBezier` | `transition-timing-function`、`animation-timing-function` |
 
-`typeAutocomplete` 會以 `$type` 為單位合併覆蓋這張對應表。每個項目都會取代該 `$type` 的預設清單；設為 `false` 則會完全停用作為值的建議。沒有 `$type`，或 `$type` 不在合併後對應表中的 token，會退回核心 `variables` 的預設行為（在所有地方都會被建議）：
+`typeAutocomplete` 會以 `$type` 為單位合併覆蓋這張對應表。每個項目都會取代該 `$type` 的預設清單；設為 `false` 則會完全停用作為值的建議。沒有 `$type`，或 `$type` 不在合併後對應表中的 token，不會輸出 `asValueOf` metadata，因此會沿用核心 `variables` 的預設行為：除非另外設定 mapping，否則不會被建議為 CSS property 的 `var()` 值。
 
 ```ts
 designTokens: {

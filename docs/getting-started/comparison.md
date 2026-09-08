@@ -57,7 +57,7 @@ PikaCSS resolves it at build time: the engine tracks overlapping property effect
 
 ### The trade-off: static-only arguments
 
-Because calls are evaluated at build time, arguments must be self-contained literals — no variables, conditionals, or spreads of outer values. This is the same class of constraint as Tailwind's "don't construct class names dynamically" rule, expressed at the function-call level. [Dynamic Styles](/getting-started/dynamic-styles) covers the supported patterns.
+Because calls are evaluated at build time, every argument must stay inside PikaCSS's bounded static grammar. Static literals, recursively static objects/arrays, supported operators and conditionals, computed keys, template literals, and spreads of statically known arrays/objects are valid; ordinary runtime bindings, function-call results, and dynamic spreads are not. This is the same class of constraint as Tailwind's "don't construct class names dynamically" rule, expressed at the function-call level. [Dynamic Styles](/getting-started/dynamic-styles) covers runtime-driven patterns.
 
 ## When Not to Use PikaCSS
 

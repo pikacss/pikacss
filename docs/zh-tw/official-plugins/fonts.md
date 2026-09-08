@@ -6,13 +6,13 @@ relatedPackages:
 relatedSources:
   - packages/plugin-fonts/src/index.ts
   - packages/plugin-fonts/src/providers.ts
+  - packages/plugin-fonts/src/provider-options.ts
   - packages/plugin-fonts/src/unifont-resolver.ts
 category: official-plugins
 order: 40
 translation:
   sourceFile: docs/official-plugins/fonts.md
-  sourceCommit: 6a7623b43aef2e9c236a551807034294e9ba6529
-  sourceBlob: 0788bb1f23020f40a769aac96bdead6da381c63f
+  sourceBlob: 6f0cbe421f831abe7b8a667165067ca85383ce1d
 ---
 
 # 字型 {#fonts}
@@ -47,16 +47,16 @@ import { fonts } from '@pikacss/plugin-fonts'
 
 export default defineConfig({
   engine: {
-  plugins: [fonts()],
-  fonts: {
-    provider: 'google',
+    plugins: [fonts()],
     fonts: {
-      // 簡寫字串：'Name' 或 'Name:weight1,weight2'
-      sans: 'Inter:400,500,600,700',
-      // 物件形式，用於斜體或針對個別字型覆寫 provider
-      mono: { name: 'Fira Code', weights: [400, 500], provider: 'bunny' },
+      provider: 'google',
+      fonts: {
+        // 簡寫字串：'Name' 或 'Name:weight1,weight2'
+        sans: 'Inter:400,500,600,700',
+        // 物件形式，用於斜體或針對個別字型覆寫 provider
+        mono: { name: 'Fira Code', weights: [400, 500], provider: 'bunny' },
+      },
     },
-  },
   },
 })
 ```

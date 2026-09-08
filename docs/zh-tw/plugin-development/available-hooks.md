@@ -11,11 +11,32 @@ category: plugin-development
 order: 20
 translation:
   sourceFile: docs/plugin-development/available-hooks.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: a5a3a57a6e48d48924e9d9da31159f9241516148
+  sourceBlob: cccb78486d85117c7a48a3fe49fda127a6044840
 ---
 
 # 可用的 Hook {#available-hooks}
+
+整個 lifecycle 可分成設定階段 hooks、Engine construction，以及後續 source/style transforms 與 store notifications：
+
+```dot
+digraph PluginLifecycle {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}"]
+
+  raw [label="configureRawConfig"]
+  rawDone [label="rawConfigConfigured"]
+  resolve [label="Resolve EngineConfig"]
+  resolved [label="configureResolvedConfig"]
+  engine [label="Construct Engine"]
+  configured [label="configureEngine"]
+  transforms [label="Transform hooks"]
+  events [label="Store / preflight events"]
+
+  raw -> rawDone -> resolve -> resolved -> engine -> configured -> transforms -> events
+}
+```
 
 PikaCSS 外掛可以實作在引擎生命週期特定時機執行的 hook。
 
@@ -133,6 +154,8 @@ defineEnginePlugin({
   },
 })
 ```
+
+預設 layers 是 `preflights`（weight `1`）與 `utilities`（weight `10`）；把 `base` 註冊為 weight `0` 會讓它排在兩者之前。
 
 ## transformSelectors {#transformselectors}
 

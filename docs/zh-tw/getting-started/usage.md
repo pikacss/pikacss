@@ -12,8 +12,7 @@ category: getting-started
 order: 30
 translation:
   sourceFile: docs/getting-started/usage.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 764803995820e234eb2a74b1d3d6be932e397c40
+  sourceBlob: ec57dac2f283c0e9eea2d8a98288ef8bee4d45ab
 ---
 
 # 使用方式 {#usage}
@@ -22,16 +21,22 @@ translation:
 
 ## 第一個元件 {#your-first-styled-component}
 
-預設 single-entry project的 callable 是 global `pika`，不要 import：
+預設 single-entry project 的 callable 是 global `pika`，不要 import：
 
-```vue
+::: code-group
+
+```vue [Vue]
 <script setup lang="ts">
 const buttonClass = pika({
   padding: '0.5rem 1rem',
+  border: 'none',
   borderRadius: '8px',
   backgroundColor: '#3b82f6',
   color: 'white',
-  '$:hover': { backgroundColor: '#2563eb' },
+  cursor: 'pointer',
+  '$:hover': {
+    backgroundColor: '#2563eb',
+  },
 })
 </script>
 
@@ -39,6 +44,26 @@ const buttonClass = pika({
   <button :class="buttonClass">Click me</button>
 </template>
 ```
+
+```tsx [React]
+const buttonClass = pika({
+  padding: '0.5rem 1rem',
+  border: 'none',
+  borderRadius: '8px',
+  backgroundColor: '#3b82f6',
+  color: 'white',
+  cursor: 'pointer',
+  '$:hover': {
+    backgroundColor: '#2563eb',
+  },
+})
+
+export function Button() {
+  return <button className={buttonClass}>Click me</button>
+}
+```
+
+:::
 
 每個 declaration會變成 logical CSS module中的 atomic rule：
 
@@ -69,6 +94,10 @@ Plugin可提供 `pika.sc`、`pika.var`、`pika.kf`、`pika.tk` 等 static author
 ## 常見寫法 {#common-patterns}
 
 ### 基本 CSS property {#basic-css-properties}
+
+::: info CSS 數值
+建議使用 CSS 字串，例如 `opacity: '0.5'` 或 `zIndex: '10'`。在 unitless zero 語意明確的地方，數值 `0` 仍然有效。
+:::
 
 ::: code-group
 
@@ -138,6 +167,6 @@ Shortcut definition內也能用 `StyleItem[]` 組合其他 shortcut；不再使�
 
 ## 下一步 {#next}
 
-- [Engine Config](/zh-tw/getting-started/engine-config)
-- [Selectors](/zh-tw/customizations/selectors)
-- [Shortcuts](/zh-tw/customizations/shortcuts)
+- [動態樣式](/zh-tw/getting-started/dynamic-styles)：用靜態 authoring pattern 處理由 runtime 驅動的 UI state。
+- [Engine Config](/zh-tw/getting-started/engine-config)：設定 project 與 Engine semantics。
+- [Selectors](/zh-tw/customizations/selectors)：定義 static 與 dynamic selector。

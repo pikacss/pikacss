@@ -39,7 +39,7 @@ order: 30
 
 ## Package summary
 
-Build-tool integration context Re-exports the public surface of [`@pikacss/core`](/api/core).
+Build-tool integration context. Re-exports the public surface of [`@pikacss/core`](/api/core).
 
 Use [Unplugin integration](/integrations/unplugin) when you need conceptual usage guidance instead of exact symbol lookup.
 

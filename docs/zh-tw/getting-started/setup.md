@@ -12,7 +12,7 @@ category: getting-started
 order: 20
 translation:
   sourceFile: docs/getting-started/setup.md
-  sourceCommit: 3a4fcb62f4086da366f8eb87db50f9e3a99b912d
+  sourceCommit: 5726fd62d94b4a0622e9ec3814423bf0d5690743
   sourceBlob: da021eeecb9d307f4333fb0b9839f731ec7d5962
 ---
 
@@ -134,7 +134,7 @@ pikacss prepare --config ./config/pika.config.ts
 
 `prepare` 會使用與 bundler 相同的 canonical config derivation，產生 Typegen 與 preview state，但不掃描 application usages，也不產生 production report。
 
-Nuxt 等 framework integration可自行接管這段 type preparation wiring。
+Framework integration 可以自行接管這段 wiring。特別是 Nuxt module 會把 PikaCSS generation 與 Nuxt 的 type-preparation lifecycle 組合在一起。
 
 ## Generated state 要不要 commit？ {#commit-or-ignore-generated-state}
 

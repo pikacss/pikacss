@@ -13,8 +13,7 @@ category: integrations
 order: 30
 translation:
   sourceFile: docs/integrations/agent-skills.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 4e8077473619e119cae553c377ca2c1d2b525c00
+  sourceBlob: bb825fbeb4635e8a653c2dc0226777d999acc1d1
 ---
 
 # Agent Skills {#agent-skills}
@@ -89,5 +88,6 @@ npx skills add pikacss/pikacss --skill pikacss-use
 
 ## 下一步 {#next}
 
-- [安裝與設定](/zh-tw/getting-started/setup)：在你的專案中安裝 PikaCSS。
-- [外掛開發](/zh-tw/plugin-development/create-a-plugin)：建立自己的外掛。
+- [Unplugin](/zh-tw/integrations/unplugin)：查看 skill 使用的正式支援 bundler adapters。
+- [框架](/zh-tw/integrations/frameworks)：在 Vue、React 或 Solid 中套用整合。
+- [外掛開發](/zh-tw/plugin-development/create-a-plugin)：當任務從使用 PikaCSS 轉為 authoring 時建立自己的外掛。

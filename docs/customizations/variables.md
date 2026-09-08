@@ -20,20 +20,20 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  variables: {
-    definitions: {
-      '--color-primary': { value: '#3b82f6' },
-      '--spacing-md': { value: '1rem' },
-      '--brand-color': {
-        value: '#2563eb',
-        description: 'Primary brand color',
-        suggest: {
-          asProperty: true,
-          asValueOf: ['color', 'backgroundColor'],
+    variables: {
+      definitions: {
+        '--color-primary': { value: '#3b82f6' },
+        '--spacing-md': { value: '1rem' },
+        '--brand-color': {
+          value: '#2563eb',
+          description: 'Primary brand color',
+          suggest: {
+            asProperty: true,
+            asValueOf: ['color', 'backgroundColor'],
+          },
         },
       },
     },
-  },
   },
 })
 ```

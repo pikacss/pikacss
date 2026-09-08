@@ -40,6 +40,31 @@ The result passes through your bundler's normal CSS pipeline (minification, hash
 
 ## What Triggers a Reload in Dev
 
+Source edits and generation-input edits intentionally take different paths:
+
+```dot
+digraph DevReload {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}", fontcolor="${#374151|#d1d5db}", fontname="sans-serif"]
+
+  source [label="Source edit"]
+  usages [label="Update affected usages"]
+  css [label="Rewrite CSS only if styles changed"]
+  config [label="Config edit"]
+  dependency [label="Config dependency edit"]
+  rederive [label="Re-derive project generation"]
+  fresh [label="Fresh Engine + generated state"]
+  reload [label="Full page reload"]
+
+  source -> usages -> css
+  config -> rederive
+  dependency -> rederive
+  rederive -> fresh -> reload
+}
+```
+
 The dev server re-derives and atomically replaces the project generation when:
 
 - **The config file changes.** The resolved `pika.config.*` file is watched. Only a *content* change counts — saving without editing anything, or a change that leaves the bytes identical, is ignored.

@@ -5,12 +5,12 @@ relatedPackages:
   - '@pikacss/nuxt-pikacss'
 relatedSources:
   - packages/nuxt/src/index.ts
+  - packages/nuxt/src/cli.ts
 category: integrations
 order: 20
 translation:
   sourceFile: docs/integrations/nuxt.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: ff61183ee5472ba69de11b70010451f70268daa9
+  sourceBlob: 8f598a79788c2a0208c53fe085055cd8dabd9a7f
 ---
 
 # Nuxt {#nuxt}

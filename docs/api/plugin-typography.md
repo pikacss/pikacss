@@ -6,6 +6,7 @@ relatedPackages:
   - '@pikacss/plugin-typography'
 relatedSources:
   - 'packages/plugin-typography/src/index.ts'
+  - 'packages/plugin-typography/src/styles.ts'
 category: api
 order: 90
 ---
@@ -19,13 +20,13 @@ order: 90
 
 - Package: `@pikacss/plugin-typography`
 - Generated from the exported surface and JSDoc in `packages/plugin-typography/src/index.ts`.
-- Source files: `packages/plugin-typography/src/index.ts`
+- Source files: `packages/plugin-typography/src/index.ts`, `packages/plugin-typography/src/styles.ts`
 
 </details>
 
 ## Package summary
 
-Prose typography shortcuts
+Prose typography shortcuts.
 
 Use [Typography plugin](/official-plugins/typography) when you need conceptual usage guidance instead of exact symbol lookup.
 
@@ -70,7 +71,7 @@ Configuration options for the typography plugin.
 
 | Property | Type | Description | Default |
 |---|---|---|---|
-| `variables?` | `Partial<typeof typographyVariables>` | Partial overrides for the default prose CSS custom properties. | `{}` |
+| `variables?` | `Partial<TypographyVariables>` | Partial overrides for the default prose CSS custom properties. | `{}` |
 
 **Remarks:**
 
@@ -84,6 +85,15 @@ const config = {
   },
 }
 ```
+
+<br>
+<br>
+
+### TypographyVariables {#type-typographyvariables}
+
+CSS custom-property values accepted by the typography plugin.
+
+**Type:** `Record<'--pk-prose-color-body' | '--pk-prose-color-headings' | '--pk-prose-color-lead' | '--pk-prose-color-links' | '--pk-prose-color-bold' | '--pk-prose-color-counters' | '--pk-prose-color-bullets' | '--pk-prose-color-hr' | '--pk-prose-color-quotes' | '--pk-prose-color-quote-borders' | '--pk-prose-color-captions' | '--pk-prose-color-code' | '--pk-prose-color-pre-code' | '--pk-prose-color-pre-bg' | '--pk-prose-color-th-borders' | '--pk-prose-color-td-borders' | '--pk-prose-color-kbd' | '--pk-prose-kbd-shadows', string>`
 
 <br>
 <br>

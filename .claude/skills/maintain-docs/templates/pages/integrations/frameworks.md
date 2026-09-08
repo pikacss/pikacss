@@ -2,7 +2,7 @@
 
 <!-- Section: Integrations | Category: integrations -->
 
-<!-- Brief intro: PikaCSS is framework-agnostic; the configured base pika() becomes class-name data at build time. State that examples use the default string output and mention transformedFormat: 'array' as the entry-level alternative. Snippets mirror the Playground templates. -->
+<!-- Brief intro: PikaCSS is framework-agnostic; the configured base pika() becomes class-name data at build time. State that examples use the default string output and mention transformedFormat: 'array' as the entry-level alternative. Snippets are simplified, self-contained examples based on the Playground templates. -->
 
 <!-- State the two universal rules: the configured pika root is a compile-time global provided by the build plugin (no import), and applications import the owning entry's logical cssModule where its styles are needed (`pika.css` is the single-entry default). -->
 
@@ -20,7 +20,7 @@
 
 ## Solid
 
-<!-- vite.config.ts setup; class usage; shortcut references composing with inline definitions; entry-file import of the default logical pika.css module -->
+<!-- vite.config.ts setup; self-contained class usage; entry-file import of the default logical pika.css module -->
 
 ## Nuxt
 

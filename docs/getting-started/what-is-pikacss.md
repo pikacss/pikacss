@@ -29,7 +29,7 @@ Write styles using familiar CSS property names in JavaScript objects. PikaCSS tr
 
 ### Cascade Ordering Conflict Resolved
 
-Traditional atomic CSS has a known problem: when shorthand and longhand properties are used together (e.g. `padding` and `paddingTop`), the output order determines which wins — leading to unpredictable results. PikaCSS resolves this automatically by ensuring longhand properties always override their corresponding shorthands, regardless of declaration order. See [Cascade Ordering Conflict](#cascade-ordering-conflict) for details.
+Traditional atomic CSS has a known problem: when shorthand and longhand properties are used together (e.g. `padding` and `paddingTop`), stylesheet order can make the winner differ from the order you authored. PikaCSS resolves this automatically by preserving the order of overlapping declarations from the same `pika()` call: the later declaration wins whether it is a shorthand or a longhand. See [Cascade Ordering Conflict](#cascade-ordering-conflict) for details.
 
 ### Powerful Plugin System
 
@@ -65,10 +65,10 @@ Each unique CSS declaration (`color: red`, `font-size: 16px`) gets its own atomi
 
 ### Statically Analyzable
 
-All arguments to `pika()` must be statically analyzable at build time. This means you cannot use dynamic values, computed expressions, or runtime variables as arguments. PikaCSS needs to extract the styles during the build step without executing your code.
+All arguments to `pika()` must be statically analyzable at build time. PikaCSS supports a bounded static expression grammar — including recursively static objects and arrays, supported operators and conditionals, computed object keys, template literals with static primitive interpolations, and spreads whose source is itself statically known. Values that depend on ordinary runtime bindings or function calls remain invalid.
 
 ::: warning
-Dynamic values, computed expressions, and runtime variables cannot be used as `pika()` arguments. Use the [ESLint plugin](/getting-started/eslint-config) to catch violations early. For the patterns that cover runtime-driven styling — variant maps, CSS variables, shortcuts — see [Dynamic Styles](/getting-started/dynamic-styles).
+Runtime-dependent values cannot be used as `pika()` arguments. Use the [ESLint plugin](/getting-started/eslint-config) to catch expressions outside the compiler's bounded static subset early. For the patterns that cover runtime-driven styling — variant maps, CSS variables, shortcuts — see [Dynamic Styles](/getting-started/dynamic-styles).
 :::
 
 ```ts
@@ -82,10 +82,13 @@ pika('flex-center')
 const color = getColor()
 pika({ color })
 
-// ❌ Invalid — computed expression
-pika({ color: isDark ? 'white' : 'black' })
+// ✅ Valid — the whole expression is statically known
+pika({ color: true ? 'white' : 'black' })
 
-// ❌ Invalid — spread operator
+// ✅ Valid — spread source is statically known
+pika({ ...{ color: 'red' }, padding: `${2 * 4}px` })
+
+// ❌ Invalid — spread source is a runtime binding
 pika({ ...baseStyles })
 ```
 
@@ -121,11 +124,11 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  selectors: {
-    definitions: [
-      { name: '@dark', value: 'html.dark $' },
-    ],
-  },
+    selectors: {
+      definitions: [
+        { name: '@dark', value: 'html.dark $' },
+      ],
+    },
   },
 })
 ```
@@ -142,7 +145,7 @@ export default defineConfig({
 
 In traditional atomic CSS, the order of generated classes in the stylesheet determines which property wins when shorthand and longhand properties conflict. For example, if `padding: 10px` and `padding-top: 20px` are both present, the last one in the stylesheet wins — which may not match the author's intent.
 
-PikaCSS solves this by ensuring that longhand properties are always rendered after their corresponding shorthands, so `paddingTop: '20px'` always takes effect over `padding: '10px'`, regardless of the order you wrote them.
+PikaCSS solves this by protecting the order of overlapping declarations from the same `pika()` call. If you write `padding: '10px'` and then `paddingTop: '20px'`, the generated `padding-top` rule is kept after the `padding` rule so the later declaration wins. Reverse the authored order and the shorthand is the later declaration, so it wins instead.
 
 ::: code-group
 

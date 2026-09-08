@@ -19,7 +19,7 @@ category: api
 order: 0
 translation:
   sourceFile: docs/api/index.md
-  sourceBlob: 190d5e185c61d8c2ae637ed2e67e32d4ac144c1d
+  sourceBlob: 3e27b9d28783b68a5e867910110cbd30922e2124
 ---
 
 # API 參考 {#api-reference}
@@ -82,6 +82,7 @@ digraph PikaCSS {
     fonts [label="@pikacss/plugin-fonts"]
     typography [label="@pikacss/plugin-typography"]
     designTokens [label="@pikacss/plugin-design-tokens"]
+    eslintConfig [label="@pikacss/eslint-config"]
 
     config -> core
     integration -> config
@@ -92,6 +93,7 @@ digraph PikaCSS {
     fonts -> core
     typography -> core
     designTokens -> core
+    eslintConfig -> config
 }
 ```
 

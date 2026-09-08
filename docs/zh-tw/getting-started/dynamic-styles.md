@@ -6,14 +6,14 @@ relatedPackages:
   - '@pikacss/integration'
 relatedSources:
   - packages/integration/src/ctx.ts
+  - packages/integration/src/compiler/evaluate.ts
   - packages/core/src/plugins/shortcuts.ts
   - packages/eslint-config/src/rules/static-usage.ts
 category: getting-started
 order: 35
 translation:
   sourceFile: docs/getting-started/dynamic-styles.md
-  sourceCommit: 090f4a5727c3f28687fa1d8658163f91a4f37ae3
-  sourceBlob: 4a276945c01be3c8ddb1b1aecb9244bd8327d13b
+  sourceBlob: 19d8b6b78eb6964718deb6e86b3f0d73fcf377c0
 ---
 
 # 動態樣式 {#dynamic-styles}

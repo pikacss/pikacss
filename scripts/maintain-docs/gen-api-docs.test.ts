@@ -61,6 +61,55 @@ describe('api entry discovery', () => {
 			.toContain('| `options.usedAtomicStyleIds?` | `Iterable<string>` |')
 	})
 
+	it('does not expose internal built-in plugin helpers through the core type surface', () => {
+		const program = createApiProgram()
+		const checker = program.getTypeChecker()
+		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/core')!
+		const info = extractPackageAPI(pkg, program, checker)
+		const names = new Set(info.exports.map(exp => exp.name))
+
+		for (const helper of [
+			'important',
+			'keyframes',
+			'selectors',
+			'shortcuts',
+			'variables',
+			'extractUsedVarNames',
+			'extractUsedVarNamesFromPreflightResult',
+			'normalizeVariableName',
+			'resolveSelectorConfig',
+			'resolveShortcutConfig',
+		]) {
+			expect(names.has(helper), helper)
+				.toBe(false)
+		}
+
+		expect(names.has('KeyframesConfig'))
+			.toBe(true)
+		expect(names.has('SelectorsConfig'))
+			.toBe(true)
+		expect(names.has('ShortcutsConfig'))
+			.toBe(true)
+		expect(names.has('VariablesConfig'))
+			.toBe(true)
+	})
+
+	it('renders typography variable overrides through a public named type', () => {
+		const program = createApiProgram()
+		const checker = program.getTypeChecker()
+		const pkg = PACKAGES.find(({ name }) => name === '@pikacss/plugin-typography')!
+		const info = extractPackageAPI(pkg, program, checker)
+		const page = renderPackagePage(info, [info])
+
+		expect(page)
+			.toContain('### TypographyVariables')
+		expect(page)
+			.toContain('| `variables?` | `Partial<TypographyVariables>` |')
+		expect(page)
+			.not
+			.toContain('Partial<typeof typographyVariables>')
+	})
+
 	it('does not render constructors for type-only classes', () => {
 		const program = createApiProgram()
 		const checker = program.getTypeChecker()
@@ -293,7 +342,7 @@ describe('callable subpath defaults', () => {
 
 		const page = renderPackagePage(info, [info])
 		expect(page)
-			.toContain('Nuxt module for PikaCSS Re-exports the public surface of [`@pikacss/unplugin-pikacss`](/api/unplugin).')
+			.toContain('Nuxt module for PikaCSS. Re-exports the public surface of [`@pikacss/unplugin-pikacss`](/api/unplugin).')
 		expect(page)
 			.toContain('**Type:** `NuxtModule<ModuleOptions>`')
 		expect(page)

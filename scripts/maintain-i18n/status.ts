@@ -1,6 +1,6 @@
 import type { FallbackVerdict, PageState, TaskFile } from './shared'
 import { existsSync, readFileSync } from 'node:fs'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { resolve } from 'pathe'
 import {
@@ -21,8 +21,10 @@ import {
 	numstatAgainst,
 	pageSlug,
 	parseTranslationBlock,
+	resetTasksOutputRoot,
 	stagedBlob,
 	tasksOutputRoot,
+	translationStructureSignature,
 	writeTranslationBlock,
 	zhLocaleDir,
 } from './shared'
@@ -277,6 +279,19 @@ async function markSynced(zhArgs: string[]): Promise<number> {
 			failures++
 			continue
 		}
+
+		const englishStructure = translationStructureSignature(readFileSync(englishAbs, 'utf8'))
+		const zhContent = readFileSync(zhAbs, 'utf8')
+		const zhStructure = translationStructureSignature(zhContent)
+		const structureMatches = englishStructure.length === zhStructure.length
+			&& englishStructure.every((token, index) => token === zhStructure[index])
+		if (!structureMatches) {
+			console.error(`Refusing to mark-synced: translation structure differs from English: docs/${zhRel}`)
+			console.error('  Run pnpm maintain-i18n:lint and restore the missing/extra fences, containers, snippets, tables, or list structure first.')
+			failures++
+			continue
+		}
+
 		const sourceDirty = isSourceDirty(englishRel)
 		const workingBlob = hashObject(englishRel)
 		let sourceBlob = workingBlob
@@ -291,7 +306,6 @@ async function markSynced(zhArgs: string[]): Promise<number> {
 			sourceBlob = indexBlob
 		}
 
-		const zhContent = readFileSync(zhAbs, 'utf8')
 		const updated = writeTranslationBlock(zhContent, {
 			sourceFile: `docs/${englishRel}`,
 			...(sourceDirty ? {} : { sourceCommit: commit }),
@@ -327,7 +341,7 @@ async function main(): Promise<void> {
 	const englishRels = await discoverEnglishPages()
 	const englishSet = new Set(englishRels)
 
-	await mkdir(tasksOutputRoot, { recursive: true })
+	await resetTasksOutputRoot()
 
 	const pages: PageResult[] = []
 	for (const rel of englishRels) {

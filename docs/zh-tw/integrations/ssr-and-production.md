@@ -13,8 +13,7 @@ category: integrations
 order: 24
 translation:
   sourceFile: docs/integrations/ssr-and-production.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 741241de5f7bf791f79bd8e66396d4c1b06f787e
+  sourceBlob: 18858a38523fc207886fdbb37bb8f42fdc076af3
 ---
 
 # SSR 與正式環境 {#ssr-production}
@@ -43,6 +42,31 @@ PikaCSS 的輸出是一個在建置時期產生的靜態 CSS 檔案。光是這�
 結果會經過你打包工具正常的 CSS 流程（壓縮、雜湊，以及程式碼分割），PikaCSS 不會對它做任何更動。
 
 ## 開發時什麼會觸發重新載入 {#what-triggers-a-reload-in-dev}
+
+Source edit 與 generation-input edit 會刻意走不同路徑：
+
+```dot
+digraph DevReload {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}", fontcolor="${#374151|#d1d5db}", fontname="sans-serif"]
+
+  source [label="Source edit"]
+  usages [label="Update affected usages"]
+  css [label="Rewrite CSS only if styles changed"]
+  config [label="Config edit"]
+  dependency [label="Config dependency edit"]
+  rederive [label="Re-derive project generation"]
+  fresh [label="Fresh Engine + generated state"]
+  reload [label="Full page reload"]
+
+  source -> usages -> css
+  config -> rederive
+  dependency -> rederive
+  rederive -> fresh -> reload
+}
+```
 
 開發伺服器會在以下情況重新 derive 並原子替換 project generation：
 

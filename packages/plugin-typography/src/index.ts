@@ -1,5 +1,7 @@
 import type { EnginePlugin } from '@pikacss/core'
+import type { TypographyVariables } from './styles'
 import { defineEnginePlugin } from '@pikacss/core'
+
 import {
 	proseBaseStyle,
 	proseCodeStyle,
@@ -15,6 +17,8 @@ import {
 	proseTablesStyle,
 	typographyVariables,
 } from './styles'
+
+export type { TypographyVariables } from './styles'
 
 /**
  * Configuration options for the typography plugin.
@@ -37,7 +41,7 @@ export interface TypographyPluginOptions {
 	 *
 	 * @default `{}`
 	 */
-	variables?: Partial<typeof typographyVariables>
+	variables?: Partial<TypographyVariables>
 }
 
 const proseShortcutModules = [

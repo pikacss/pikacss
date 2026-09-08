@@ -28,7 +28,7 @@ order: 70
 
 ## Package summary
 
-Icon shortcuts via Iconify
+Icon shortcuts via Iconify.
 
 Use [Icons plugin](/official-plugins/icons) when you need conceptual usage guidance instead of exact symbol lookup.
 

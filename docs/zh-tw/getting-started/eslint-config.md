@@ -7,23 +7,39 @@ relatedSources:
   - packages/eslint-config/src/index.ts
   - packages/eslint-config/src/lint-project.ts
   - packages/eslint-config/src/rules/static-usage.ts
+  - packages/integration/src/compiler/evaluate.ts
 category: getting-started
 order: 50
 translation:
   sourceFile: docs/getting-started/eslint-config.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 4296c881f7ae72d7ca943448fbf55148d5319832
+  sourceBlob: baa716ebb2c128fb77c877753b9cd7848645501e
 ---
 
 # ESLint 設定 {#eslint-config}
 
-PikaCSS 提供 async ESLint flat-config factory，會載入 canonical project config，檢查每個 configured root 的 static usage。
+PikaCSS 提供已設定好的 ESLint flat config，會依 canonical project configuration 宣告的 roots 檢查 static usage。
 
 ## Setup {#setup}
 
-```sh
+安裝 package：
+
+::: code-group
+
+```sh [pnpm]
 pnpm add -D @pikacss/eslint-config
 ```
+
+```sh [npm]
+npm install -D @pikacss/eslint-config
+```
+
+```sh [yarn]
+yarn add -D @pikacss/eslint-config
+```
+
+:::
+
+在 `eslint.config.mjs` 加入 async factory：
 
 ```ts
 // eslint.config.mjs
@@ -34,15 +50,17 @@ export default [
 ]
 ```
 
-自訂 config path時只需要提供 locator：
+Factory 會從專案中探索 canonical PikaCSS config。需要明確指定路徑時，傳入 `config`：
 
 ```ts
+import pikacss from '@pikacss/eslint-config'
+
 export default [
   await pikacss({ config: './pika.config.mts' }),
 ]
 ```
 
-`fnName`、readonly globals、scan ownership等都來自 canonical PikaCSS config；不要另外手動註冊 plugin或 rule semantics。
+Factory 會從同一份 config 推導 configured roots、readonly ESLint globals、scan ownership 與 private rule model。不要另外手動註冊 plugin 或各自設定 rule semantics。
 
 ## Rules {#rules}
 
@@ -50,36 +68,60 @@ export default [
 
 #### 說明 {#description}
 
-此 rule驗證：
-
-- configured root的 base `pika(...)` call只能使用 bounded-static expressions；
-- static-extension chain語法必須合法；
-- root只能出現在 owning entry的 scan scope；
-- 一個 entry不能依賴另一個 entry的 Pika root；
-- lexical-shadowed root仍是普通 application binding。
+`pikacss/static-usage` 會檢查 configured PikaCSS root 的直接呼叫。它會回報超出 compiler bounded-static subset 的 argument、非法的 compile-time root usage、出現在 owning scan scope 外的 root，以及跨 entry 的 root dependency。
 
 #### 什麼算是靜態 {#what-counts-as-static}
 
-Evaluator有三種結果：known、engine-dependent、invalid。合法 static extension terminal可延後到 compiler Prepare用 initialized Engine求值；普通 runtime variable/function call仍會被拒絕。
+Rule 使用三種 evaluator state：
+
+- **Known**：值可由 source 與 lexical scope 完整決定。
+- **Engine-dependent**：合法的 static-extension chain 需要 configured engine；compiler 會在 Prepare 階段檢查 terminal value。
+- **Invalid**：expression 超出 bounded-static subset，ESLint 會直接回報。
+
+Known value 包含：
+
+- literal、遞迴靜態的 object／array，以及受支援的 operator；
+- interpolation 都是 static primitive 的 template literal；
+- global constants `undefined`、`NaN`、`Infinity`，但若被 local declaration shadow 則不算。
+
+Static-extension chain 支援 dot access，以及可靜態求值成 string 或 number 的 computed key。若 key 本身來自另一個 extension，狀態會是 engine-dependent，因此 terminal value 與 type 仍以 compiler Prepare 為準。
+
+以下情況屬於 **invalid**：
+
+- 用一般 runtime variable 當作 computed extension key；
+- 已知的 computed extension key 不是 string 或 number；
+- function call、unsupported member usage 或 dynamic spread；
+- template literal interpolation 是 dynamic 或 non-primitive value。
 
 #### 範例 {#examples}
 
 ```ts
-// ✅ valid
+// ✅ Valid
 pika({ color: 'red' })
-pika({ color: pika.theme.colors.primary })
+pika({ 'color': 'red', '$:hover': { color: 'blue' } })
+pika('flex-center')
+pika({ color: pika['theme'].colors.primary })
+pika({ color: pika[pika.keys.theme].colors.primary }) // compiler Prepare 會檢查 extension terminal
+pika(true ? { color: 'white' } : { color: 'black' }) // static conditional
 
-// ❌ runtime-dynamic
+// ❌ Invalid — dynamic variable
 const color = getColor()
 pika({ color })
+
+// ❌ Invalid — runtime binding used by a conditional
+pika(isDark ? { color: 'white' } : { color: 'black' })
+
+// ❌ Invalid — dynamic spread source
+pika({ ...baseStyles })
 ```
 
 ## Migration {#migration}
 
-舊 `pikacss/no-dynamic-args` 與 `.str/.arr` 特例已移除。現在只有 `pikacss/static-usage`，而 ESLint factory唯一的公開 option是 optional `config` locator。
-
+- `pikacss/no-dynamic-args` 已移除；目前 factory 會啟用 `pikacss/static-usage`。
+- 手動 `{ fnName }` factory option 已移除。Configured root name 來自 canonical PikaCSS project config；`config` 是唯一的 factory option。
+- 舊 `.str`／`.arr` rule behavior 已移除；它們不是 `pikacss/static-usage` 的 variant。
 
 ## 下一步 {#next}
 
-- [Integrations](/zh-tw/integrations/unplugin)
-- [使用方式](/zh-tw/getting-started/usage)
+- [Integrations](/zh-tw/integrations/unplugin)：設定 PikaCSS build-tool integration。
+- [使用方式](/zh-tw/getting-started/usage)：查看常見樣式寫法。

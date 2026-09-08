@@ -6,6 +6,7 @@ relatedPackages:
 relatedSources:
   - 'packages/unplugin/src/index.ts'
   - 'packages/unplugin/src/types.ts'
+  - 'packages/unplugin/src/cli.ts'
 category: integrations
 order: 10
 ---

@@ -9,8 +9,7 @@ category: official-plugins
 order: 10
 translation:
   sourceFile: docs/official-plugins/reset.md
-  sourceCommit: 36ab046b5f27060274a79d160c9b43606652d780
-  sourceBlob: c132fb7b30fcf523666c47d3ac97ed7ba525bb98
+  sourceBlob: 7b7bf6137b6d3624c7a06bea70e3e6bc1ce9268e
 ---
 
 # Reset {#reset}
@@ -37,7 +36,7 @@ yarn add -D @pikacss/plugin-reset
 
 <<< @/zh-tw/.examples/official-plugins/reset.setup.example.ts
 
-`reset()` 不接受任何引數。請用引擎設定中最上層的 `reset` 選項來選擇 preset，而不是把選項傳進外掛的呼叫。只有在你的設定尚未定義 `layers.reset` 時，外掛才會把它設成 `-1`，因此注入的 preflight 預設會排在預設的 `preflights` 與 `utilities` layer 之前；你可以用自己的 `layers: { reset: ... }` 項目覆寫這個位置。
+`reset()` 不接受任何引數；preset 選擇與 layer 位置都屬於 Engine config。
 
 :::tip 快速規則
 - 呼叫 `reset()` 時不要傳任何引數。

@@ -6,12 +6,12 @@ relatedPackages:
 relatedSources:
   - packages/unplugin/src/index.ts
   - packages/unplugin/src/types.ts
+  - packages/unplugin/src/cli.ts
 category: integrations
 order: 10
 translation:
   sourceFile: docs/integrations/unplugin.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 1a734fcda27f0061392aae1fbfb950bf8870f3fa
+  sourceBlob: e15706f0d14f6b757ed79e0a70299c08ee0e980b
 ---
 
 # Unplugin {#unplugin}

@@ -31,7 +31,7 @@ order: 25
 
 ## Package summary
 
-Canonical project configuration and defineConfig authoring surface Re-exports the public surface of [`@pikacss/core`](/api/core).
+Canonical project configuration and defineConfig authoring surface. Re-exports the public surface of [`@pikacss/core`](/api/core).
 
 Use [Engine configuration](/getting-started/engine-config) when you need conceptual usage guidance instead of exact symbol lookup.
 

@@ -11,8 +11,7 @@ category: customizations
 order: 70
 translation:
   sourceFile: docs/customizations/shortcuts.md
-  sourceCommit: f54e8ced70d2febf6f32014b93f6076d0e319fc8
-  sourceBlob: 29f6eacd6f8d2a54ef1e7c41db68cf509ef3bbc2
+  sourceBlob: 7c39ac59e3c694ffd182374458ef6373063a5f94
 ---
 
 # Shortcuts {#shortcuts}
@@ -26,30 +25,30 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  shortcuts: {
-    definitions: [
-      {
-        name: 'flex-center',
-        value: {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+    shortcuts: {
+      definitions: [
+        {
+          name: 'flex-center',
+          value: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
         },
-      },
-      {
-        name: 'btn',
-        value: {
-          'padding': '0.5rem 1rem',
-          'borderRadius': '0.25rem',
-          '$:hover': { opacity: '0.8' },
+        {
+          name: 'btn',
+          value: {
+            'padding': '0.5rem 1rem',
+            'borderRadius': '0.25rem',
+            '$:hover': { opacity: '0.8' },
+          },
         },
-      },
-      {
-        name: 'btn-primary',
-        value: ['btn', { backgroundColor: 'royalblue', color: 'white' }],
-      },
-    ],
-  },
+        {
+          name: 'btn-primary',
+          value: ['btn', { backgroundColor: 'royalblue', color: 'white' }],
+        },
+      ],
+    },
   },
 })
 ```
@@ -66,16 +65,16 @@ pika('btn-primary', { marginTop: '1rem' })
 ```ts
 export default defineConfig({
   engine: {
-  shortcuts: {
-    definitions: [
-      {
-        pattern: /^size-(.+)$/,
-        inputType: '`size-${string}`',
-        resolve: ([, size]) => ({ width: size, height: size }),
-        autocomplete: ['size-1rem', 'size-2rem'],
-      },
-    ],
-  },
+    shortcuts: {
+      definitions: [
+        {
+          pattern: /^size-(.+)$/,
+          inputType: '`size-${string}`',
+          resolve: ([, size]) => ({ width: size, height: size }),
+          autocomplete: ['size-1rem', 'size-2rem'],
+        },
+      ],
+    },
   },
 })
 ```
