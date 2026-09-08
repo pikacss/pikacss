@@ -2,7 +2,7 @@ import { mkdtemp, readdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { resolve } from 'pathe'
 import { describe, expect, it } from 'vitest'
-import { checkAllFixtures, checkFixtureCompleteness, checkFixtureContents, parseTranslationBlock, resetTasksOutputRoot, translationStructureSignature, writeTranslationBlock } from './shared'
+import { checkAllFixtures, checkFixtureCompleteness, checkFixtureContents, hasStrictTranslationStatusFailure, parseTranslationBlock, resetTasksOutputRoot, translationStructureSignature, writeTranslationBlock } from './shared'
 
 describe('docs example fixture completeness', () => {
 	it('reports an English fixture that has no zh-TW mirror', () => {
@@ -64,6 +64,21 @@ describe('translation provenance', () => {
 				sourceFile: 'docs/example.md',
 				sourceBlob: '0123456789abcdef',
 			})
+	})
+})
+
+describe('strict translation status', () => {
+	it('fails for every non-fresh page state and for fixture violations', () => {
+		expect(hasStrictTranslationStatusFailure(['fresh', 'fresh'], 0))
+			.toBe(false)
+
+		for (const state of ['missing', 'stale', 'untracked', 'orphaned'] as const) {
+			expect(hasStrictTranslationStatusFailure(['fresh', state], 0), state)
+				.toBe(true)
+		}
+
+		expect(hasStrictTranslationStatusFailure(['fresh'], 1))
+			.toBe(true)
 	})
 })
 
