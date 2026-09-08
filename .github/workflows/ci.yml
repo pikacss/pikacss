@@ -123,8 +123,9 @@ jobs:
         env:
           BASE_REF: origin/${{ github.base_ref || github.ref_name }}
 
-      # Non-blocking visibility: source-to-doc impact and translation freshness
-      # are review signals, not defects by themselves.
+      # Non-blocking visibility: source-to-doc impact and the detailed freshness
+      # report remain review signals. Translation freshness correctness itself is
+      # blocking through pnpm docs:check -> maintain-i18n:check.
       - name: documentation status (impact + zh-tw freshness)
         run: pnpm docs:status
         env:

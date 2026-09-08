@@ -166,7 +166,7 @@ function computeReport(pages: PageResult[], fixtureViolations: Report['fixtureVi
 	return { pages, fixtureViolations, siteFreshness, counts, syncRecommended }
 }
 
-function printHuman(report: Report): void {
+function printHuman(report: Report, tasksWritten: boolean): void {
 	const { counts, siteFreshness, pages } = report
 	console.log('\n=== zh-TW Translation Status ===\n')
 	console.log(`Total English pages: ${pages.length}`)
@@ -209,7 +209,9 @@ function printHuman(report: Report): void {
 	console.log(report.syncRecommended
 		? 'Sync pass recommended.'
 		: 'No sync pass needed.')
-	console.log(`Task files written to: .maintain-i18n/tasks/`)
+	console.log(tasksWritten
+		? 'Task files written to: .maintain-i18n/tasks/'
+		: 'Task files not written (--no-tasks).')
 }
 
 // ---------------------------------------------------------------------------
@@ -338,24 +340,27 @@ async function main(): Promise<void> {
 
 	const asJson = argv.includes('--json')
 	const strict = argv.includes('--strict')
+	const writeTasks = !argv.includes('--no-tasks')
 
 	const englishRels = await discoverEnglishPages()
 	const englishSet = new Set(englishRels)
 
-	await resetTasksOutputRoot()
+	if (writeTasks)
+		await resetTasksOutputRoot()
 
 	const pages: PageResult[] = []
 	for (const rel of englishRels) {
 		const result = analyzeEnglishPage(rel)
 		pages.push(result)
-		if (result.state !== 'fresh')
+		if (writeTasks && result.state !== 'fresh')
 			await writeTaskFile(result)
 	}
 
 	const orphans = await detectOrphans(englishSet)
 	for (const o of orphans) {
 		pages.push(o)
-		await writeTaskFile(o)
+		if (writeTasks)
+			await writeTaskFile(o)
 	}
 
 	const fixtureViolations = await checkAllFixtures()
@@ -378,11 +383,11 @@ async function main(): Promise<void> {
 		}, null, '\t'))
 	}
 	else {
-		printHuman(report)
+		printHuman(report, writeTasks)
 	}
 
 	// --strict is binary correctness: every discovered page must be fresh and fixtures clean.
-	// Whether CI treats this as blocking remains the separate Decision D4 policy.
+	// The canonical docs gate invokes this with --no-tasks so blocking validation is non-mutating.
 	if (strict && hasStrictTranslationStatusFailure(report.pages.map(page => page.state), report.fixtureViolations.length))
 		process.exit(1)
 }

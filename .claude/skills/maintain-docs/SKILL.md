@@ -51,8 +51,8 @@ All commands use monorepo-level `pnpm` scripts:
 | `pnpm maintain-docs:gen-api` | Generate API reference pages from exported surfaces and JSDoc. Reports JSDoc coverage gaps to stdout. |
 | `pnpm docs:lint` | ESLint only the docs workspace and documentation-maintenance scripts. |
 | `pnpm docs:maintenance:typecheck` | Typecheck docs/i18n/JSDoc maintenance scripts, their shared metadata helpers, and the page registry without unrelated root-script baseline errors. |
-| `pnpm docs:status` | Non-blocking visibility bundle: source-to-doc impact plus zh-TW translation freshness. |
-| `pnpm docs:check` | Canonical non-mutating final docs gate: structure, generated API freshness, README/routes, contracts, JSDoc integrity, docs-scoped lint, maintenance-tool typecheck, examples, docs typecheck, zh-TW lint, and VitePress build. |
+| `pnpm docs:status` | Non-blocking visibility bundle: source-to-doc impact plus a detailed zh-TW freshness report. Freshness correctness is enforced separately by `docs:check`. |
+| `pnpm docs:check` | Canonical non-mutating final docs gate: structure, generated API freshness, README/routes, contracts, JSDoc integrity, docs-scoped lint, maintenance-tool typecheck, examples, docs typecheck, zh-TW structural/terminology lint, **100% translation provenance freshness**, and VitePress build. |
 
 Scripts live under `scripts/maintain-docs/` and use workspace-level devDependencies.
 

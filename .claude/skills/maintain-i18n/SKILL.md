@@ -23,6 +23,7 @@ Maintains `docs/zh-tw/**` as a strictly aligned translation of the English docs.
 ```bash
 pnpm maintain-i18n:status                 # page states + freshness table; writes task files to .maintain-i18n/tasks/
 pnpm maintain-i18n:status --json          # machine-readable report
+pnpm maintain-i18n:check                  # non-mutating strict gate; every page must be fresh and fixtures clean
 pnpm maintain-i18n:status --mark-synced <docs/zh-tw/page.md ...>   # assert translation matches the current English blob
 pnpm maintain-i18n:lint                   # forbidden-PRC-term scan, anchor conformity, fixture comment-only invariant
 pnpm --filter @pikacss/docs test          # example tests (includes zh-tw fixtures)
@@ -39,7 +40,7 @@ pnpm docs:build                           # dead-link + twoslash gate
    - `orphaned`: the English source was deleted or renamed. For renames (task file proposes the target) `git mv` the zh page, then treat as `stale`. For deletions, delete the zh page and fix inbound links.
    - Fixtures: if the diff touches files under `docs/.examples/`, update the mirrored `docs/zh-tw/.examples/` copies — comments translated, everything else byte-identical.
 3. **Mark synced.** `pnpm maintain-i18n:status --mark-synced <pages...>`. This is an explicit assertion that the translation matches the **current English working-tree content**. The command refuses pages whose structural signature (fences, VitePress containers, snippet includes, tables, and list nesting) differs from English; fix `maintain-i18n:lint` errors first. Clean English sources record both `sourceBlob` and `sourceCommit`. English + zh-TW may land in the same commit, but a dirty English source must be staged first and the staged blob must exactly match the working-tree content. In that case `sourceBlob` records the staged object and `sourceCommit` is omitted because no commit identifies that content yet. If English changes after staging, stage it again before marking synced.
-4. **Validate.** Use `pnpm docs:check` before handoff. During translation iteration, the narrower sequence `pnpm maintain-i18n:lint` → `pnpm --filter @pikacss/docs test` → `pnpm docs:build` remains useful.
+4. **Validate.** Use `pnpm docs:check` before handoff. It includes the non-mutating `pnpm maintain-i18n:check`, so any missing, stale, untracked, or orphaned translation blocks the canonical gate. During translation iteration, the narrower sequence `pnpm maintain-i18n:lint` → `pnpm maintain-i18n:check` → `pnpm --filter @pikacss/docs test` → `pnpm docs:build` remains useful.
 
 ## Hard Rules
 
@@ -51,6 +52,7 @@ pnpm docs:build                           # dead-link + twoslash gate
 - Never invent content absent from the English source; zh-TW is a mirror, not an editorial fork.
 - A translated body does not mean a synced page. `--mark-synced` is the explicit assertion that the zh-TW body matches the current English blob; never run it merely to silence freshness output. For same-commit English + zh-TW changes, stage the final English content first. The command refuses dirty English whose index blob differs from the working tree, preventing provenance from pointing at a local dangling object that clones cannot retrieve. `sourceCommit` is intentionally omitted until that staged blob is committed.
 - If a body was updated but `--mark-synced` was skipped, freshness remains stale even when the prose happens to be current. This has happened before (`available-hooks.md` and `create-a-plugin.md` during #116), so always verify the provenance block as a separate step.
+- Translation freshness is a blocking repository invariant. `pnpm maintain-i18n:check` runs `status --strict --no-tasks`, requiring every discovered page to be `fresh` without mutating `.maintain-i18n/tasks/`. There is no generic stale-translation waiver: if an English-only edit does not require zh-TW prose changes, review the translation and use `--mark-synced` to record that assertion.
 
 ## Fallback Rules (full-retranslate instead of hunk-level sync)
 

@@ -19,6 +19,18 @@ import {
 	packagesMissingTestChanges,
 } from './gates'
 
+describe('documentation translation gate policy', () => {
+	it('keeps strict zh-TW freshness in the canonical non-mutating docs gate', () => {
+		const manifest = JSON.parse(readFileSync(join(workspaceRoot, 'package.json'), 'utf8')) as { scripts?: Record<string, string> }
+		const scripts = manifest.scripts ?? {}
+
+		expect(scripts['maintain-i18n:check'])
+			.toBe('tsx ./scripts/maintain-i18n/status.ts --strict --no-tasks')
+		expect(scripts['docs:check'])
+			.toContain('pnpm maintain-i18n:lint && pnpm maintain-i18n:check')
+	})
+})
+
 describe('findForbiddenPaths', () => {
 	it('flags ephemeral pika.gen outputs that must never be committed', () => {
 		const findings = findForbiddenPaths(['playground/src/pika.gen.ts', 'demo/src/pika.gen.css'])
