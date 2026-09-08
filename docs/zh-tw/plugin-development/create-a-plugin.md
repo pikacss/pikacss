@@ -12,8 +12,7 @@ category: plugin-development
 order: 10
 translation:
   sourceFile: docs/plugin-development/create-a-plugin.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: e3a60981dee6eddbcc28aa82a323b546f89c676a
+  sourceBlob: ada05ed2e0e6c78c38df53971a2a0999410f5f68
 ---
 
 # 建立外掛 {#create-a-plugin}
@@ -46,7 +45,7 @@ PikaCSS 外掛是一個回傳 `EnginePlugin` 物件的函式。建議的寫法�
 | *（省略）* | 預設順序，依註冊順序執行 |
 | `'post'` | 在預設順序的外掛之後執行 |
 
-在同一個順序群組內，外掛會依照它們在 `plugins` 陣列中出現的順序執行。核心外掛（`variables`、`keyframes`、`selectors`、`shortcuts`、`important`）會自動加到最前面並使用預設順序，因此預設順序的使用者外掛一定會在它們之後執行。
+在同一個順序群組內，外掛會依照它們在 `plugins` 陣列中出現的順序執行。核心外掛（`variables`、`keyframes`、`layers`、`selectors`、`shortcuts`、`important`）會自動加到最前面並使用預設順序，因此預設順序的使用者外掛一定會在它們之後執行。
 
 ## 每引擎狀態 {#per-engine-state}
 

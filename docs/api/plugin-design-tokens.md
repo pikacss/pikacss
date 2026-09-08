@@ -33,7 +33,7 @@ order: 95
 
 ## Package summary
 
-W3C design tokens to CSS variables
+W3C design tokens to CSS variables.
 
 Use [Design Tokens plugin](/official-plugins/design-tokens) when you need conceptual usage guidance instead of exact symbol lookup.
 
@@ -128,7 +128,8 @@ those CSS properties.
 
 **Remarks:**
 
-User entries from import ('./types').DesignTokensConfig.typeAutocompleteare merged over this map (replacing the entry for a `$type`, or suppressing it
+User entries from the `DesignTokensConfig.typeAutocomplete` option are
+merged over this map (replacing the entry for a `$type`, or suppressing it
 with `false`). `$type`s absent from the merged map produce no `suggest.asValueOf` field, so the Core Variables default remains `false`.
 
 <br>
@@ -185,7 +186,7 @@ Configuration object for the `designTokens` engine option.
 | `loaders?` | `DesignTokensLoader[]` | Custom source loaders, tried before the built-in `.md`/JSON handling. For each string source, the first loader whose `match` returns `true` for the resolved id wins; if none match, the built-in behavior applies. | `undefined` |
 | `normalizers?` | `DesignTokensNormalizer[]` | Normalizers run as an ordered chain over each loaded raw source before it enters the flatten stage. With no normalizers configured, raw values pass through unchanged. | `undefined` |
 | `themes?` | `Record<string, DesignTokensTheme>` | Theme overrides keyed by theme name. Tokens are emitted under the theme's selector. | — |
-| `typeAutocomplete?` | `Record<string, Arrayable<string> \| false>` | Per-`$type` variable-suggestion override map, merged over the built-in import ('./autocomplete').DEFAULT_TYPE_AUTOCOMPLETE map. A token whose `$type` is present in the merged map emits `VariableSuggest.asValueOf` with that property list, so the variable is suggested as a `var()` value for exactly those CSS properties. | undefined (the built-in default map applies as-is) |
+| `typeAutocomplete?` | `Record<string, Arrayable<string> \| false>` | Per-`$type` variable-suggestion override map, merged over the built-in `DEFAULT_TYPE_AUTOCOMPLETE` map. A token whose `$type` is present in the merged map emits `VariableSuggest.asValueOf` with that property list, so the variable is suggested as a `var()` value for exactly those CSS properties. | undefined (the built-in default map applies as-is) |
 | `prefix?` | `string` | Prefix prepended to every generated CSS variable name (without leading `--`). | '' (no prefix) |
 | `root?` | `string` | Base directory used to resolve relative source file paths. | The engine host's project root; standalone use falls back to the runtime's working directory, then `'.'` when no capability is provided. |
 | `pruneUnused?` | `boolean` | Pruning override applied to every generated variable. When unset, the `variables` config default applies. | `undefined` |

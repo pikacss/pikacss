@@ -5,13 +5,12 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - packages/core/src/engine.ts
-  - packages/core/src/types/public.ts
+  - packages/core/src/types/preflight.ts
 category: customizations
 order: 30
 translation:
   sourceFile: docs/customizations/preflights.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 5d49550170472a04e745b3cb24f2999a022b00b2
+  sourceBlob: 91450847bdd873a1b3a2f2937927cb1b18cc5628
 ---
 
 # Preflights {#preflights}
@@ -33,32 +32,32 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  // 下面 `layer: 'base'` 的 preflight 需要這個
-  layers: { base: 0 },
+    // 下面 `layer: 'base'` 的 preflight 需要這個
+    layers: { base: 0 },
 
-  preflights: [
-    // 原始的 CSS 字串
-    '*, *::before, *::after { box-sizing: border-box; }',
+    preflights: [
+      // 原始的 CSS 字串
+      '*, *::before, *::after { box-sizing: border-box; }',
 
-    // 結構化的定義
-    {
-      body: {
-        margin: '0',
-        fontFamily: 'system-ui, sans-serif',
+      // 結構化的定義
+      {
+        body: {
+          margin: '0',
+          fontFamily: 'system-ui, sans-serif',
+        },
       },
-    },
 
-    // 指定 layer
-    {
-      layer: 'base',
-      preflight: 'html { line-height: 1.5; }',
-    },
+      // 指定 layer
+      {
+        layer: 'base',
+        preflight: 'html { line-height: 1.5; }',
+      },
 
-    // 非同步工廠函式
-    async (engine, isFormatted, ctx) => {
-      return '/* dynamic preflight */'
-    },
-  ],
+      // 非同步工廠函式
+      async (engine, isFormatted, ctx) => {
+        return '/* dynamic preflight */'
+      },
+    ],
   },
 })
 ```

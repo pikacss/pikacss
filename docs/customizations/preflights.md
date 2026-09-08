@@ -5,7 +5,7 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - 'packages/core/src/engine.ts'
-  - 'packages/core/src/types/public.ts'
+  - 'packages/core/src/types/preflight.ts'
 category: customizations
 order: 30
 ---
@@ -29,32 +29,32 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  // Required for the `layer: 'base'` preflight below
-  layers: { base: 0 },
+    // Required for the `layer: 'base'` preflight below
+    layers: { base: 0 },
 
-  preflights: [
-    // Raw CSS string
-    '*, *::before, *::after { box-sizing: border-box; }',
+    preflights: [
+      // Raw CSS string
+      '*, *::before, *::after { box-sizing: border-box; }',
 
-    // Structured definition
-    {
-      body: {
-        margin: '0',
-        fontFamily: 'system-ui, sans-serif',
+      // Structured definition
+      {
+        body: {
+          margin: '0',
+          fontFamily: 'system-ui, sans-serif',
+        },
       },
-    },
 
-    // With layer assignment
-    {
-      layer: 'base',
-      preflight: 'html { line-height: 1.5; }',
-    },
+      // With layer assignment
+      {
+        layer: 'base',
+        preflight: 'html { line-height: 1.5; }',
+      },
 
-    // Async factory function
-    async (engine, isFormatted, ctx) => {
-      return '/* dynamic preflight */'
-    },
-  ],
+      // Async factory function
+      async (engine, isFormatted, ctx) => {
+        return '/* dynamic preflight */'
+      },
+    ],
   },
 })
 ```

@@ -23,12 +23,32 @@ export {
 	type EngineConfigurator,
 	type EnginePlugin,
 } from './plugin'
-export type * from './plugins/important'
-
-export type * from './plugins/keyframes'
-export type * from './plugins/selectors'
-export type * from './plugins/shortcuts'
-export type * from './plugins/variables'
+export type { ImportantConfig } from './plugins/important'
+export type {
+	ExternalKeyframesDefinition,
+	Keyframes,
+	KeyframesConfig,
+	KeyframesProgress,
+	LocalKeyframesDefinition,
+} from './plugins/keyframes'
+export type { DynamicSelector, Selector, SelectorsConfig, StaticSelector } from './plugins/selectors'
+export type {
+	DynamicShortcut,
+	Shortcut,
+	ShortcutPreviewCollector,
+	ShortcutPreviewImage,
+	ShortcutResolutionContext,
+	ShortcutsConfig,
+	StaticShortcut,
+} from './plugins/shortcuts'
+export type {
+	ExternalVariable,
+	LocalVariable,
+	Variable,
+	VariablesConfig,
+	VariablesDefinition,
+	VariableSuggest,
+} from './plugins/variables'
 export { renderTypegenJSDoc, type TypegenJSDocRenderBindings } from './typegen/jsdoc'
 export type { TypegenManager, TypegenRegistrationCapability } from './typegen/registry'
 export { renderTypegenDocument, type TransformedFormat, type TypegenRenderUnit } from './typegen/render'

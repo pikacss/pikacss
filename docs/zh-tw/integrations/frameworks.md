@@ -5,22 +5,21 @@ relatedPackages:
   - '@pikacss/unplugin-pikacss'
   - '@pikacss/integration'
 relatedSources:
-  - playground/src/templates/vue-ts/vite.config.ts
-  - playground/src/templates/react-ts/vite.config.ts
-  - playground/src/templates/solid-ts/vite.config.ts
+  - packages/unplugin/src/vite.ts
+  - packages/integration/src/processors/vue.ts
+  - packages/integration/src/processors/registry.ts
   - packages/integration/src/operations.ts
   - packages/integration/src/ctx.pipeline.ts
 category: integrations
 order: 22
 translation:
   sourceFile: docs/integrations/frameworks.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 6274d6da65abd8107ca05789658d3f0bb444c788
+  sourceBlob: 8f7aa7f711ee6b98981e73ed66e3911bd251fc5e
 ---
 
 # 框架 {#frameworks}
 
-PikaCSS 與框架無關：configured base `pika()` 會在 build time 被替換成 class-name 資料。預設輸出是字串；project entry 也能用 `transformedFormat: 'array'` 改成字串陣列。以下範例使用預設字串形式，並對應 [Playground](https://pikacss.github.io/playground/) 的可執行範本。
+PikaCSS 與框架無關：configured base `pika()` 會在 build time 被替換成 class-name 資料。預設輸出是字串；project entry 也能用 `transformedFormat: 'array'` 改成字串陣列。以下範例使用預設字串形式，是依照 [Playground](https://pikacss.github.io/playground/) setup 簡化而成、可獨立理解的範例。
 
 以下兩條規則適用於所有情況：
 
@@ -152,17 +151,23 @@ export default defineConfig({
 })
 ```
 
-Solid 使用 `class`。shortcut 參考可以在同一次呼叫中與行內定義組合：
+Solid 使用 `class`，對應 React 的 `className`：
 
 ```tsx
 // App.tsx
 function App() {
 	return (
-		<section class={pika('card', { maxWidth: '28rem', textAlign: 'center' })}>
-			<button type="button" class={pika('btn')}>
-				Click me
-			</button>
-		</section>
+		<button
+			type="button"
+			class={pika({
+				'padding': '0.625rem 1.25rem',
+				'borderRadius': '0.75rem',
+				'cursor': 'pointer',
+				'$:hover': { filter: 'brightness(1.1)' },
+			})}
+		>
+			Click me
+		</button>
 	)
 }
 

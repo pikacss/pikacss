@@ -25,7 +25,7 @@ order: 60
 
 ## Package summary
 
-CSS reset preflight plugin
+CSS reset preflight plugin.
 
 Use [Reset plugin](/official-plugins/reset) when you need conceptual usage guidance instead of exact symbol lookup.
 

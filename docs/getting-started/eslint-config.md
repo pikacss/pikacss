@@ -7,6 +7,7 @@ relatedSources:
   - 'packages/eslint-config/src/index.ts'
   - 'packages/eslint-config/src/lint-project.ts'
   - 'packages/eslint-config/src/rules/static-usage.ts'
+  - 'packages/integration/src/compiler/evaluate.ts'
 category: getting-started
 order: 50
 ---
@@ -111,15 +112,16 @@ pika({ 'color': 'red', '$:hover': { color: 'blue' } })
 pika('flex-center')
 pika({ color: pika['theme'].colors.primary })
 pika({ color: pika[pika.keys.theme].colors.primary }) // compiler Prepare checks the extension terminal
+pika(true ? { color: 'white' } : { color: 'black' }) // static conditional
 
 // ❌ Invalid — dynamic variable
 const color = getColor()
 pika({ color })
 
-// ❌ Invalid — conditional
+// ❌ Invalid — runtime binding used by a conditional
 pika(isDark ? { color: 'white' } : { color: 'black' })
 
-// ❌ Invalid — spread
+// ❌ Invalid — dynamic spread source
 pika({ ...baseStyles })
 ```
 

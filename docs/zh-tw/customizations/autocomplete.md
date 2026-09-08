@@ -19,11 +19,32 @@ category: customizations
 order: 80
 translation:
   sourceFile: docs/customizations/autocomplete.md
-  sourceCommit: f54e8ced70d2febf6f32014b93f6076d0e319fc8
-  sourceBlob: d070b62f3577650bf26201938bffd995ca5dfda1
+  sourceBlob: 835ec5b76ef7b03627ac6bedcb786656a8ffdc0c
 ---
 
 # Autocomplete {#autocomplete}
+
+Autocomplete 來自已設定的 semantic domains，而不是從 runtime source usage 學習：
+
+```dot
+digraph Typegen {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}"]
+
+  config [label="Project + plugin semantic config"]
+  domains [label="Selectors / shortcuts / variables / plugin Typegen"]
+  prepare [label="pikacss prepare / generation"]
+  types [label="pika.gen.ts"]
+  previews [label="PikaCSS Preview docs"]
+  ide [label="TypeScript / IDE"]
+
+  config -> domains -> prepare
+  prepare -> types -> ide
+  prepare -> previews -> ide
+}
+```
 
 PikaCSS現在沒有 global `autocomplete` config，也沒有 runtime `appendAutocomplete()` pool。每個 semantic subsystem自行擁有它能正確描述的 Typegen資料。
 
@@ -44,7 +65,7 @@ selectors: {
     {
       pattern: /^state-(.+)$/,
       inputType: '`state-${string}`',
-      resolve: match => `&[data-state="${match[1]}"]`,
+      resolve: match => `$[data-state="${match[1]}"]`,
       autocomplete: ['state-open', 'state-closed'],
     },
   ],

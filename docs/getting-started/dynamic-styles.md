@@ -6,6 +6,7 @@ relatedPackages:
   - '@pikacss/integration'
 relatedSources:
   - 'packages/integration/src/ctx.ts'
+  - 'packages/integration/src/compiler/evaluate.ts'
   - 'packages/core/src/plugins/shortcuts.ts'
   - 'packages/eslint-config/src/rules/static-usage.ts'
 category: getting-started

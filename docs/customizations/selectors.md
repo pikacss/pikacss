@@ -22,13 +22,13 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  selectors: {
-    definitions: [
-      { name: '@dark', value: 'html.dark $' },
-      { name: '@light', value: 'html:not(.dark) $' },
-      { name: '@sm', value: '@media (min-width: 640px)' },
-    ],
-  },
+    selectors: {
+      definitions: [
+        { name: '@dark', value: 'html.dark $' },
+        { name: '@light', value: 'html:not(.dark) $' },
+        { name: '@sm', value: '@media (min-width: 640px)' },
+      ],
+    },
   },
 })
 ```
@@ -42,17 +42,17 @@ Dynamic definitions require both a runtime pattern and an explicit raw TypeScrip
 ```ts
 export default defineConfig({
   engine: {
-  selectors: {
-    definitions: [
-      {
-        pattern: /^@container-(.+)$/,
-        inputType: '`@container-${string}`',
-        resolve: ([, name]) => `@container ${name}`,
-        autocomplete: ['@container-card', '@container-sidebar'],
-        description: 'Named container query',
-      },
-    ],
-  },
+    selectors: {
+      definitions: [
+        {
+          pattern: /^@container-(.+)$/,
+          inputType: '`@container-${string}`',
+          resolve: ([, name]) => `@container ${name}`,
+          autocomplete: ['@container-card', '@container-sidebar'],
+          description: 'Named container query',
+        },
+      ],
+    },
   },
 })
 ```

@@ -45,7 +45,7 @@ order: 20
 
 ## Package summary
 
-Core engine, define helpers for config and plugin authoring, and built-in plugin system
+Core engine, define helpers for config and plugin authoring, and built-in plugin system.
 
 Use [Usage guide](/getting-started/usage) when you need conceptual usage guidance instead of exact symbol lookup.
 
@@ -858,44 +858,6 @@ External CSS variable leaf known to authoring but not emitted by PikaCSS.
 <br>
 <br>
 
-### extractUsedVarNames(input) {#function-extractusedvarnames-input}
-
-Extracts all CSS variable names referenced via `var(--*)` calls in a string.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `input` | `string` | The CSS value string to scan. |
-
-**Returns:** `string[]` - An array of variable names (including the `--` prefix) found in `var()` expressions.
-
-**Remarks:**
-
-Uses a global regex to find all `var(--name)` occurrences. Nested `var()` calls are matched independently.
-
-<br>
-<br>
-
-### extractUsedVarNamesFromPreflightResult(result) {#function-extractusedvarnamesfrompreflightresult-result}
-
-Recursively extracts all CSS variable names referenced in a preflight result.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `result` | `string \| PreflightDefinition` | A preflight output: either a raw CSS string or a nested `PreflightDefinition` object. |
-
-**Returns:** `string[]` - A flat array of normalized variable names found in the result.
-
-**Remarks:**
-
-For string results, scans for `var(--*)` references. For object results, recursively traverses selector scopes and string/number values. All returned names are normalized with the `--` prefix.
-
-<br>
-<br>
-
 ### FromKebab {#type-fromkebab}
 
 Converts a kebab-case string literal type to camelCase at the type level.
@@ -928,21 +890,6 @@ Wrapping `Obj` in a tuple prevents distributive collapse when `Obj` is `never`.
 type V = GetValue<{ a: number }, 'a'> // number
 type N = GetValue<{ a: number }, 'b'> // never
 ```
-
-<br>
-<br>
-
-### important() {#function-important}
-
-Built-in engine plugin that appends `!important` to generated CSS declarations.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-**Returns:** `EnginePlugin<{ defaultValue: boolean; }>` - An `EnginePlugin` that intercepts `transformStyleDefinitions` to conditionally append `!important` to every property value.
-
-**Remarks:**
-
-When `EngineConfig.important.default` is `true`, all property values receive `!important` unless the style definition explicitly sets `__important: false`. Individual style definitions can also opt-in with `__important: true` regardless of the default. An explicit `__important` flag is propagated into nested selector blocks (which may override it with their own explicit flag).
 
 <br>
 <br>
@@ -994,17 +941,6 @@ Wrapping `T` in a tuple prevents distributive conditional behavior that would ot
 type A = IsNever<never>  // true
 type B = IsNever<string> // false
 ```
-
-<br>
-<br>
-
-### keyframes() {#function-keyframes}
-
-Built-in keyframes subsystem with config-only semantic ingress.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-**Returns:** `EnginePlugin<KeyframesState>`
 
 <br>
 <br>
@@ -1069,25 +1005,6 @@ Local CSS variable leaf emitted and optionally pruned by PikaCSS.
 | `description?` | `string` | Documentation rendered for the generated Typegen variable member. | `undefined` |
 | `pruneUnused?` | `boolean` | Whether this variable is removed when no generated style uses it. | `VariablesConfig.pruneUnused` |
 | `external?` | `never` | Discriminator reserved for external variable definitions. | `undefined` |
-
-<br>
-<br>
-
-### normalizeVariableName(name) {#function-normalizevariablename-name}
-
-Ensures a variable name has the `--` prefix.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `name` | `string` | The variable name, with or without the `--` prefix. |
-
-**Returns:** `string` - The name with a guaranteed `--` prefix.
-
-**Remarks:**
-
-A no-op when the name already starts with `--`.
 
 <br>
 <br>
@@ -1286,17 +1203,6 @@ User-facing selector definition. Tuple/string shorthand forms are intentionally 
 <br>
 <br>
 
-### selectors() {#function-selectors}
-
-Built-in selector subsystem. Effective raw config is its only semantic ingress.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-**Returns:** `EnginePlugin<SelectorsState>`
-
-<br>
-<br>
-
 ### SelectorsConfig {#interface-selectorsconfig}
 
 Configuration for the built-in selector subsystem.
@@ -1348,17 +1254,6 @@ Optional resolution context. Runtime resolution omits it; Typegen preview suppli
 | Property | Type | Description | Default |
 |---|---|---|---|
 | `preview?` | `ShortcutPreviewCollector` | Preview-only collector; absent during ordinary runtime resolution. | `undefined` |
-
-<br>
-<br>
-
-### shortcuts() {#function-shortcuts}
-
-Built-in shortcut subsystem. Effective raw config is its only semantic ingress.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-**Returns:** `EnginePlugin<ShortcutsState>`
 
 <br>
 <br>
@@ -3557,17 +3452,6 @@ type I = UnionToIntersection<U> // { a: 1 } & { b: 2 }
 Canonical object-only variable leaf.
 
 **Type:** `LocalVariable | ExternalVariable`
-
-<br>
-<br>
-
-### variables() {#function-variables}
-
-Built-in CSS variable subsystem with config-only semantic ingress.
-
-**Type-only export.** This symbol is exported with `export type` and is not a runtime export of `@pikacss/core` — importing it as a value will fail. It is documented here for its type signature only.
-
-**Returns:** `EnginePlugin<VariablesState>`
 
 <br>
 <br>

@@ -9,8 +9,7 @@ category: customizations
 order: 40
 translation:
   sourceFile: docs/customizations/variables.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 2d14136d865c6be5513ba6dfafbdb2dbd25506a2
+  sourceBlob: e0611bdc30cb9320d6b54e184335753a6b5277a4
 ---
 
 # Variables {#variables}
@@ -24,18 +23,20 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  variables: {
-    definitions: {
-      '--color-primary': { value: '#3b82f6' },
-      '--brand-color': {
-        value: '#2563eb',
-        suggest: {
-          asProperty: true,
-          asValueOf: ['color', 'backgroundColor'],
+    variables: {
+      definitions: {
+        '--color-primary': { value: '#3b82f6' },
+        '--spacing-md': { value: '1rem' },
+        '--brand-color': {
+          value: '#2563eb',
+          description: 'Primary brand color',
+          suggest: {
+            asProperty: true,
+            asValueOf: ['color', 'backgroundColor'],
+          },
         },
       },
     },
-  },
   },
 })
 ```
@@ -44,24 +45,54 @@ export default defineConfig({
 
 ## External variables {#external-variables}
 
-外部 stylesheet/runtime提供的變數可用：
+使用 `external: true` 表示變數由其他 stylesheet/runtime 提供。它會參與 authoring suggestions，但 PikaCSS 不會輸出它的 value：
 
 ```ts
-'--host-theme-color': {
-  external: true,
-  suggest: { asValueOf: 'color' },
+variables: {
+  definitions: {
+    '--host-theme-color': {
+      external: true,
+      suggest: { asValueOf: ['color', 'backgroundColor'] },
+    },
+  },
 }
 ```
 
-它會參與 authoring suggestions，但 PikaCSS不輸出 value。
-
 ## Selector scopes {#selector-scopes}
 
-Non-variable keys可形成 selector scopes。
+Non-variable key 會形成巢狀 selector scope：
+
+```ts
+variables: {
+  definitions: {
+    ':root': {
+      '--color-bg': { value: '#ffffff' },
+    },
+    '.dark': {
+      '--color-bg': { value: '#1a1a1a' },
+    },
+  },
+}
+```
 
 ## Pruning {#pruning}
 
-Local variable預設依目前 live CSS usage做 pruning；必要時可用 leaf `pruneUnused: false`、`safeList` 或 config-level `pruneUnused: false` 保留。
+Local variable 預設會被 pruning，除非目前輸出的 CSS／preflight 直接或間接引用到它。當外部 CSS 無論目前 Pika usage 為何都需要某個由 PikaCSS 管理的變數時，可用 leaf-level `pruneUnused: false`、`safeList` 或 config-level `pruneUnused: false` 保留。
+
+```ts
+variables: {
+  definitions: {
+    '--always': { value: '1rem', pruneUnused: false },
+  },
+  safeList: ['--always'],
+}
+```
+
+一般使用方式不變：
+
+```ts
+pika({ color: 'var(--color-primary)' })
+```
 
 ## 範例 {#examples}
 

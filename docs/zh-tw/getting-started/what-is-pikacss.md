@@ -9,8 +9,7 @@ category: getting-started
 order: 10
 translation:
   sourceFile: docs/getting-started/what-is-pikacss.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 1a93695ff6c0b6965faf7ef7eea14c5cce11a798
+  sourceBlob: aa49bb59d14a3519bb5bf69acd199cea2d4ad8f2
 ---
 
 # 什麼是 PikaCSS {#what-is-pikacss}
@@ -33,7 +32,7 @@ PikaCSS 內建合理的預設值，開箱即用。安裝套件、加入建置外
 
 ### 解決層疊順序衝突 {#cascade-ordering-conflict-resolved}
 
-傳統的 atomic CSS 有一個已知問題：當簡寫屬性與個別屬性（longhand）同時使用時（例如 `padding` 與 `paddingTop`），輸出順序會決定誰勝出，導致結果難以預測。PikaCSS 會自動解決這個問題，確保個別屬性一定會覆寫對應的簡寫屬性，無論你的宣告順序為何。詳情請見 [層疊順序衝突](#cascade-ordering-conflict)。
+傳統的 atomic CSS 有一個已知問題：當簡寫屬性與個別屬性（longhand）同時使用時（例如 `padding` 與 `paddingTop`），stylesheet 順序可能讓實際勝出者與你撰寫的宣告順序不同。PikaCSS 會保留同一次 `pika()` 呼叫中彼此效果重疊的宣告順序：較晚撰寫的宣告會勝出，不論它是簡寫屬性或個別屬性。詳情請見 [層疊順序衝突](#cascade-ordering-conflict)。
 
 ### 強大的外掛系統 {#powerful-plugin-system}
 
@@ -69,10 +68,10 @@ const className = 'pk-a pk-b'
 
 ### 可靜態分析 {#statically-analyzable}
 
-傳給 `pika()` 的所有引數，在建置時期都必須是可靜態分析的。這表示你不能用動態值、計算後的運算式，或執行階段的變數當作引數。PikaCSS 需要在建置步驟中擷取樣式，過程中不會執行你的程式碼。
+傳給 `pika()` 的所有引數，在建置時期都必須能落在 PikaCSS 的 bounded static grammar 內。可用的形式包含遞迴靜態的物件與陣列、受支援的 operator 與條件式、computed object key、只插入靜態 primitive 的 template literal，以及來源本身可靜態求值的 spread。依賴一般 runtime binding 或 function call 結果的值仍然無效。
 
 ::: warning 警告
-動態值、計算後的運算式，以及執行階段的變數都不能當作 `pika()` 的引數。請使用 [ESLint 外掛](/zh-tw/getting-started/eslint-config) 及早抓出違規。若需要由執行階段狀態驅動樣式，請見 [動態樣式](/zh-tw/getting-started/dynamic-styles) 中的相關模式：variant map、CSS 變數與 shortcut。
+依賴 runtime 的值不能當作 `pika()` 的引數。請使用 [ESLint 外掛](/zh-tw/getting-started/eslint-config) 及早抓出超出 compiler bounded static subset 的運算式。若需要由執行階段狀態驅動樣式，請見 [動態樣式](/zh-tw/getting-started/dynamic-styles) 中的相關模式：variant map、CSS 變數與 shortcut。
 :::
 
 ```ts
@@ -86,10 +85,13 @@ pika('flex-center')
 const color = getColor()
 pika({ color })
 
-// ❌ 無效：計算後的運算式
-pika({ color: isDark ? 'white' : 'black' })
+// ✅ 有效：整個運算式都可靜態求值
+pika({ color: true ? 'white' : 'black' })
 
-// ❌ 無效：spread 運算子
+// ✅ 有效：spread 來源可靜態求值
+pika({ ...{ color: 'red' }, padding: `${2 * 4}px` })
+
+// ❌ 無效：spread 來源是 runtime binding
 pika({ ...baseStyles })
 ```
 
@@ -125,11 +127,11 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  selectors: {
-    definitions: [
-      { name: '@dark', value: 'html.dark $' },
-    ],
-  },
+    selectors: {
+      definitions: [
+        { name: '@dark', value: 'html.dark $' },
+      ],
+    },
   },
 })
 ```
@@ -146,7 +148,7 @@ export default defineConfig({
 
 在傳統的 atomic CSS 中，當簡寫屬性與個別屬性衝突時，class 在樣式表裡產生的順序會決定哪個屬性勝出。舉例來說，如果 `padding: 10px` 與 `padding-top: 20px` 同時存在，樣式表裡最後出現的那個會勝出，但這不一定符合作者的意圖。
 
-PikaCSS 解決的方式是確保個別屬性一定會在對應的簡寫屬性之後才輸出，因此 `paddingTop: '20px'` 一定會蓋過 `padding: '10px'`，無論你當初寫的順序為何。
+PikaCSS 會保護同一次 `pika()` 呼叫裡彼此效果重疊的宣告順序。如果你先寫 `padding: '10px'`，再寫 `paddingTop: '20px'`，產生的 `padding-top` 規則會維持在 `padding` 之後，因此較晚的宣告勝出。若把撰寫順序反過來，較晚的簡寫屬性就會勝出。
 
 ::: code-group
 

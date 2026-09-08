@@ -6,7 +6,8 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - 'packages/config/src/types.ts'
-  - 'packages/core/src/types/public.ts'
+  - 'packages/core/src/types/engine.ts'
+  - 'packages/config/src/host-load.ts'
 category: getting-started
 order: 40
 ---
@@ -92,7 +93,7 @@ Official plugins augment `EngineConfig` through `@pikacss/core`; install the plu
 
 ## Examples
 
-<<< @/.examples/customizations/selectors.example.ts
+<<< @/.examples/getting-started/engine-config.example.ts
 
 ## Next
 

@@ -1548,7 +1548,9 @@ export function renderPackagePage(info: PackageAPIInfo, packages: PackageAPIInfo
 
 	lines.push(`## ${localeData.packageSummary}`)
 	lines.push('')
-	let summary = info.pkg.description
+	let summary = info.pkg.description.trim()
+	if (summary && !/[.!?]$/.test(summary))
+		summary += '.'
 	if (reExportTarget)
 		summary += ` ${localeData.reExports} [\`${reExportTarget.name}\`](${packageRoute(reExportTarget)}).`
 	else if (info.pkg.reExports)

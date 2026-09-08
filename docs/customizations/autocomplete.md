@@ -21,6 +21,28 @@ order: 80
 
 # Autocomplete
 
+Autocomplete is derived from configured semantic domains rather than learned from runtime source usage:
+
+```dot
+digraph Typegen {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}"]
+
+  config [label="Project + plugin semantic config"]
+  domains [label="Selectors / shortcuts / variables / plugin Typegen"]
+  prepare [label="pikacss prepare / generation"]
+  types [label="pika.gen.ts"]
+  previews [label="PikaCSS Preview docs"]
+  ide [label="TypeScript / IDE"]
+
+  config -> domains -> prepare
+  prepare -> types -> ide
+  prepare -> previews -> ide
+}
+```
+
 PikaCSS no longer has a global `autocomplete` configuration or runtime `appendAutocomplete()` pool. Each semantic subsystem owns the Typegen information it can describe correctly.
 
 Generated authoring state is always published as `<stateDir>/pika.gen.ts`. Run `pikacss prepare` before standalone editor/typecheck/ESLint workflows and include that declaration in your TypeScript project.
@@ -40,7 +62,7 @@ selectors: {
     {
       pattern: /^state-(.+)$/,
       inputType: '`state-${string}`',
-      resolve: match => `&[data-state="${match[1]}"]`,
+      resolve: match => `$[data-state="${match[1]}"]`,
       autocomplete: ['state-open', 'state-closed'],
     },
   ],

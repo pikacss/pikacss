@@ -19,6 +19,29 @@ order: 50
 
 # Design Tokens
 
+The main data path is:
+
+```dot
+digraph DesignTokens {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}"]
+
+  sources [label="Inline / JSON / Markdown sources"]
+  loader [label="Loader"]
+  normalize [label="DTCG + custom normalizers"]
+  flatten [label="Flatten + alias resolution"]
+  variables [label="Core variables config"]
+  typegen [label="Typegen / autocomplete"]
+  css [label="Pruned CSS variables / themes"]
+
+  sources -> loader -> normalize -> flatten -> variables
+  variables -> typegen
+  variables -> css
+}
+```
+
 Convert design tokens into CSS variables through the engine's `variables` system.
 
 The design tokens plugin reads token sources — inline objects, W3C Design Tokens (DTCG) JSON files, or markdown design documents — flattens them into CSS variables, and merges them into the engine's `variables` config. Because tokens flow through the core `variables` system, they inherit unused-pruning, IDE autocomplete, and selector scoping. Token source file paths are registered as engine config dependencies — even when the file is missing — so build-tool integrations reload when a token file changes or is created later.
@@ -245,7 +268,7 @@ A token whose `$type` is mapped to CSS properties emits `asValueOf` autocomplete
 | `shadow` | `box-shadow` |
 | `cubicBezier` | `transition-timing-function`, `animation-timing-function` |
 
-`typeAutocomplete` merges over this map per `$type`. Each entry replaces the default list for that `$type`; `false` suppresses value-of suggestions entirely. Tokens without a `$type`, or with a `$type` absent from the merged map, fall back to the core `variables` default (suggested everywhere):
+`typeAutocomplete` merges over this map per `$type`. Each entry replaces the default list for that `$type`; `false` suppresses value-of suggestions entirely. Tokens without a `$type`, or with a `$type` absent from the merged map, emit no `asValueOf` metadata and therefore follow the core `variables` default: they are not suggested as `var()` values for CSS properties unless you configure a mapping.
 
 ```ts
 designTokens: {

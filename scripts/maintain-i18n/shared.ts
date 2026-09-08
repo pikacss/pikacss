@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { execFileSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { globby } from 'globby'
 import matter from 'gray-matter'
@@ -18,6 +19,12 @@ export const zhRoot = resolve(docsRoot, zhLocaleDir)
 export const skillRoot = resolve(workspaceRoot, '.claude/skills/maintain-i18n')
 export const tasksOutputRoot = resolve(workspaceRoot, '.maintain-i18n/tasks')
 export const forbiddenTermsPath = resolve(workspaceRoot, 'scripts/maintain-i18n/forbidden-terms.json')
+
+/** Reset the ephemeral status-task directory so each status run reflects only the current analysis. */
+export async function resetTasksOutputRoot(root = tasksOutputRoot): Promise<void> {
+	await rm(root, { recursive: true, force: true })
+	await mkdir(root, { recursive: true })
+}
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -308,6 +315,73 @@ export function anchorSequence(headings: Heading[]): string[] {
 /** For zh pages: the ordered explicit `{#id}` sequence (missing ids surface as empty strings). */
 export function explicitAnchorSequence(headings: Heading[]): (string | null)[] {
 	return headings.map(h => h.explicitId)
+}
+
+// ---------------------------------------------------------------------------
+// Markdown structure parity
+// ---------------------------------------------------------------------------
+
+const RE_TABLE_SEPARATOR = /^\|\s*:?-{3,}/
+const RE_BULLET_ITEM = /^[-*+]\s+/
+const RE_NUMBERED_ITEM = /^\d+[.)]\s+/
+const RE_SNIPPET_LABEL = /\s+\[[^\]]*\]\s*$/
+
+/**
+ * Extract a translation-safe structural signature from a hand-authored page.
+ *
+ * The signature intentionally ignores prose and fenced-code contents. It keeps
+ * only structures that the zh-TW policy requires to stay 1:1 with English:
+ * code-fence openings, VitePress container kinds, snippet include targets,
+ * table column counts, and list-item nesting. Localized fixture include paths
+ * are normalized back to their English counterpart before comparison.
+ */
+export function translationStructureSignature(content: string): string[] {
+	const lines = matter(content).content.split('\n')
+	const signature: string[] = []
+	let inFence = false
+
+	for (const raw of lines) {
+		const trimmed = raw.trim()
+
+		if (trimmed.startsWith('```')) {
+			if (!inFence)
+				signature.push(`fence:${trimmed}`)
+			inFence = !inFence
+			continue
+		}
+		if (inFence)
+			continue
+
+		if (trimmed.startsWith(':::') && trimmed !== ':::') {
+			const container = trimmed.slice(3)
+				.trim()
+				.split(/\s+/)[0] ?? ''
+			signature.push(`container:${container}`)
+		}
+
+		if (trimmed.startsWith('<<< ')) {
+			const target = trimmed.slice(4)
+				.trim()
+				.replace(RE_SNIPPET_LABEL, '')
+				.replace('@/zh-tw/.examples/', '@/.examples/')
+			signature.push(`snippet:${target}`)
+		}
+
+		if (RE_TABLE_SEPARATOR.test(trimmed)) {
+			const columns = trimmed.startsWith('|') && trimmed.endsWith('|')
+				? trimmed.split('|').length - 2
+				: trimmed.split('|').length
+			signature.push(`table:${columns}`)
+		}
+
+		const indent = raw.length - raw.trimStart().length
+		if (RE_BULLET_ITEM.test(trimmed))
+			signature.push(`bullet:${indent}`)
+		else if (RE_NUMBERED_ITEM.test(trimmed))
+			signature.push(`number:${indent}`)
+	}
+
+	return signature
 }
 
 // ---------------------------------------------------------------------------

@@ -25,7 +25,7 @@ order: 50
 
 ## Package summary
 
-Nuxt module for PikaCSS Re-exports the public surface of [`@pikacss/unplugin-pikacss`](/api/unplugin).
+Nuxt module for PikaCSS. Re-exports the public surface of [`@pikacss/unplugin-pikacss`](/api/unplugin).
 
 Use [Nuxt integration](/integrations/nuxt) when you need conceptual usage guidance instead of exact symbol lookup.
 

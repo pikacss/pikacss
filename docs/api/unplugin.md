@@ -32,7 +32,7 @@ order: 40
 
 ## Package summary
 
-Bundler adapters for the Rollup and Webpack families Re-exports the public surface of [`@pikacss/integration`](/api/integration).
+Bundler adapters for the Rollup and Webpack families. Re-exports the public surface of [`@pikacss/integration`](/api/integration).
 
 Use [Unplugin integration](/integrations/unplugin) when you need conceptual usage guidance instead of exact symbol lookup.
 

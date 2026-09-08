@@ -27,7 +27,7 @@ order: 80
 
 ## Package summary
 
-Web font integration
+Web font integration.
 
 Use [Fonts plugin](/official-plugins/fonts) when you need conceptual usage guidance instead of exact symbol lookup.
 

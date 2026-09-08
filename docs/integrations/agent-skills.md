@@ -85,5 +85,6 @@ Installed as a Claude Code plugin, the skill is namespaced: invoke it with `/pik
 
 ## Next
 
-- [Setup](/getting-started/setup) — install PikaCSS in your project.
-- [Plugin Development](/plugin-development/create-a-plugin) — create your own plugins.
+- [Unplugin](/integrations/unplugin) — see the supported bundler adapters used by the skill.
+- [Frameworks](/integrations/frameworks) — apply the integration in Vue, React, or Solid.
+- [Plugin Development](/plugin-development/create-a-plugin) — create your own plugins when the task moves from usage into authoring.

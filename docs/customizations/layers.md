@@ -5,6 +5,7 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - 'packages/core/src/engine.ts'
+  - 'packages/core/src/plugins/layers.ts'
 category: customizations
 order: 10
 ---
@@ -13,7 +14,7 @@ order: 10
 
 PikaCSS uses CSS `@layer` to establish cascade ordering between preflight styles and utility classes.
 
-CSS layers provide explicit control over the cascade order. PikaCSS generates a `@layer` declaration at the top of the CSS output so that preflights always come before utilities, and custom layers can be inserted at any priority level.
+CSS layers provide explicit control over the cascade order. PikaCSS generates a `@layer` declaration at the top of the CSS output. With the default priorities, preflights come before utilities; custom priorities can reorder those defaults or insert additional layers anywhere in the order.
 
 By default, PikaCSS creates two layers: `preflights` (priority 1) and `utilities` (priority 10). Lower numbers render earlier in the layer order.
 
@@ -26,12 +27,12 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  layers: {
-    reset: -1, // before preflights
-    preflights: 1, // default
-    components: 5, // between preflights and utilities
-    utilities: 10, // default
-  },
+    layers: {
+      reset: -1, // before preflights
+      preflights: 1, // default
+      components: 5, // between preflights and utilities
+      utilities: 10, // default
+    },
   },
 })
 ```

@@ -45,9 +45,14 @@ const buttonClass = pika({
 ```tsx [React]
 const buttonClass = pika({
   padding: '0.5rem 1rem',
+  border: 'none',
   borderRadius: '8px',
   backgroundColor: '#3b82f6',
   color: 'white',
+  cursor: 'pointer',
+  '$:hover': {
+    backgroundColor: '#2563eb',
+  },
 })
 
 export function Button() {
@@ -159,6 +164,6 @@ Shortcut definitions may themselves compose other shortcuts through `StyleItem[]
 
 ## Next
 
+- [Dynamic Styles](/getting-started/dynamic-styles) — handle runtime-driven UI state with static authoring patterns.
 - [Engine Config](/getting-started/engine-config) — project and Engine settings.
 - [Selectors](/customizations/selectors) — static and dynamic selector definitions.
-- [Shortcuts](/customizations/shortcuts) — reusable style-item composition.

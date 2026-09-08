@@ -5,6 +5,7 @@ relatedPackages:
   - '@pikacss/nuxt-pikacss'
 relatedSources:
   - 'packages/nuxt/src/index.ts'
+  - 'packages/nuxt/src/cli.ts'
 category: integrations
 order: 20
 ---

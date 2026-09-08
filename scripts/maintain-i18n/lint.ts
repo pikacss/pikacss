@@ -9,6 +9,7 @@ import {
 	docsRoot,
 	extractHeadings,
 	forbiddenTermsPath,
+	translationStructureSignature,
 	zhLocaleDir,
 } from './shared'
 
@@ -220,6 +221,36 @@ function lintAnchors(zhRel: string, content: string): Finding[] {
 }
 
 // ---------------------------------------------------------------------------
+// Structural parity
+// ---------------------------------------------------------------------------
+
+function lintStructure(zhRel: string, content: string): Finding[] {
+	const englishRel = zhRel.replace(new RegExp(`^${zhLocaleDir}/`), '')
+	const englishAbs = resolve(docsRoot, englishRel)
+	if (!existsSync(englishAbs))
+		return []
+
+	const englishSignature = translationStructureSignature(readFileSync(englishAbs, 'utf8'))
+	const zhSignature = translationStructureSignature(content)
+	const equal = englishSignature.length === zhSignature.length
+		&& englishSignature.every((token, index) => token === zhSignature[index])
+	if (equal)
+		return []
+
+	const max = Math.max(englishSignature.length, zhSignature.length)
+	let firstMismatch = 0
+	while (firstMismatch < max && englishSignature[firstMismatch] === zhSignature[firstMismatch])
+		firstMismatch++
+
+	return [{
+		file: `docs/${zhRel}`,
+		line: 1,
+		severity: 'error',
+		message: `translation structure does not match the English page at token ${firstMismatch + 1}; english=${englishSignature[firstMismatch] ?? '<end>'}, zh=${zhSignature[firstMismatch] ?? '<end>'} (length ${englishSignature.length} vs ${zhSignature.length})`,
+	}]
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -237,6 +268,7 @@ async function main(): Promise<void> {
 		const body = matter(content).content
 		findings.push(...lintTerms(zhRel, body, terms))
 		findings.push(...lintAnchors(zhRel, content))
+		findings.push(...lintStructure(zhRel, content))
 		// frontmatter title/description are translated prose — scan them too
 		const fm = matter(content).data as Record<string, unknown>
 		const proseFm = [fm.title, fm.description].filter((v): v is string => typeof v === 'string')

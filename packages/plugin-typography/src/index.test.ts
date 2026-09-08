@@ -1,5 +1,6 @@
+import type { TypographyPluginOptions, TypographyVariables } from './index'
 import { createEngine } from '@pikacss/core'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 
 import { typography } from './index'
 import { proseHrStyle, proseListsStyle, typographyVariables } from './styles'
@@ -13,6 +14,18 @@ function shortcutContribution(engine: Awaited<ReturnType<typeof createEngine>>) 
 }
 
 describe('typography plugin', () => {
+	it('exposes variable overrides through the public TypographyVariables type', () => {
+		expectTypeOf<TypographyPluginOptions['variables']>()
+			.toEqualTypeOf<Partial<TypographyVariables> | undefined>()
+
+		const valid: Partial<TypographyVariables> = { '--pk-prose-color-body': '#123456' }
+		expect(valid['--pk-prose-color-body'])
+			.toBe('#123456')
+
+		// @ts-expect-error Unknown typography variables must not silently join the public override surface.
+		const invalid: Partial<TypographyVariables> = { '--pk-prose-unknown': '#123456' }
+		void invalid
+	})
 	it('lowers default variables and prose shortcuts through Core semantic config', async () => {
 		const engine = await createEngine({ plugins: [typography()] })
 

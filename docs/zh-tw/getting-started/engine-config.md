@@ -6,13 +6,13 @@ relatedPackages:
   - '@pikacss/core'
 relatedSources:
   - packages/config/src/types.ts
-  - packages/core/src/types/public.ts
+  - packages/core/src/types/engine.ts
+  - packages/config/src/host-load.ts
 category: getting-started
 order: 40
 translation:
   sourceFile: docs/getting-started/engine-config.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 2a4222c1b2bc260b883f0e7a31f4904bef517f63
+  sourceBlob: a03429287462416b3b4b9672cc1b55b4789f0d7e
 ---
 
 # Engine Config {#engine-config}
@@ -42,7 +42,7 @@ export default defineConfig({
 | `report` | Optional production report。 |
 | `stateDir` | Single form的 whole-project generated-state root；預設 `.pikacss`。 |
 
-設定檔內相對 filesystem values以該設定檔目錄為基準。
+設定檔內的相對 filesystem values 會以該設定檔目錄為基準。自動探索允許零個或剛好一個 canonical root config；若同時找到多個候選設定檔會直接報錯。
 
 ## Multi-entry projects {#multi-entry-projects}
 
@@ -62,7 +62,7 @@ export default defineConfig([
 })
 ```
 
-Multi form中 `fnName` 與 `cssModule` 必須在整份 config內唯一。每個 entry的 runtime/Engine partition彼此隔離，但共用 project generated-state root。
+Multi form 中 `fnName` 與 `cssModule` 必須在整份 config 內唯一。每個 entry 的 runtime/Engine partition 彼此隔離，但共用 project generated-state root。請在需要該 entry 樣式表的位置匯入各自的 logical CSS module。
 
 ## Engine fields {#engine-fields}
 
@@ -82,11 +82,13 @@ Multi form中 `fnName` 與 `cssModule` 必須在整份 config內唯一。每個 
 | `variables` | Object-only local/external variables。 |
 | `keyframes` | Object-only keyframe definitions。 |
 
-現在沒有 project-wide `autocomplete` bucket。Editor suggestions由能正確解釋語義的 domain各自擁有：selector/shortcut definitions提供 concrete autocomplete members，variables使用 `suggest`，plugins則透過所屬 subsystem或 Typegen capability貢獻 authoring metadata。
+現在沒有 project-wide `autocomplete` bucket。Editor suggestions 由能正確解釋語義的 domain 各自擁有：selector/shortcut definitions 提供 concrete autocomplete members，variables 使用 `suggest`，plugins 則透過所屬 subsystem 或 Typegen capability 貢獻 authoring metadata。
+
+官方外掛會透過 `@pikacss/core` 擴充 `EngineConfig`；安裝對應的外掛 package 後，把它專屬的設定放在 `engine` 下。
 
 ## 範例 {#examples}
 
-<<< @/.examples/customizations/selectors.example.ts
+<<< @/zh-tw/.examples/getting-started/engine-config.example.ts
 
 
 ## 下一步 {#next}

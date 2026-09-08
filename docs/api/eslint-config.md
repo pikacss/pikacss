@@ -25,7 +25,7 @@ order: 100
 
 ## Package summary
 
-ESLint flat config for PikaCSS
+ESLint flat config for PikaCSS.
 
 Use [ESLint setup](/getting-started/eslint-config) when you need conceptual usage guidance instead of exact symbol lookup.
 

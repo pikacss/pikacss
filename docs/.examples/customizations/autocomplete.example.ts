@@ -6,7 +6,7 @@ export const autocompleteConfig = defineEngineConfig({
 			{
 				pattern: /^state-(.+)$/,
 				inputType: '`state-${string}`',
-				resolve: match => `&[data-state=\"${match[1]}\"]`,
+				resolve: match => `$[data-state=\"${match[1]}\"]`,
 				autocomplete: ['state-open', 'state-closed'],
 			},
 		],

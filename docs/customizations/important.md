@@ -22,7 +22,7 @@ import { defineConfig } from '@pikacss/unplugin-pikacss'
 
 export default defineConfig({
   engine: {
-  important: { default: true },
+    important: { default: true },
   },
 })
 ```

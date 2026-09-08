@@ -12,8 +12,7 @@ category: getting-started
 order: 60
 translation:
   sourceFile: docs/getting-started/how-pikacss-generates-css.md
-  sourceCommit: 33431c15728d378cc7bd9c37fd5c3b3e86e51318
-  sourceBlob: 6aa9738a5c6616c93159e60196ec3a9619c4f4e4
+  sourceBlob: 53b1a37296f4d15d8749310137820c8b4ccdb4d9
 ---
 
 # PikaCSS 如何產生 CSS {#how-pikacss-generates-css}
@@ -21,6 +20,28 @@ translation:
 從一次 `pika()` 呼叫到某個 entry 的 generated stylesheet 之間，引擎做了哪些事。了解這些規則，就能解釋該 entry 的 logical `cssModule`（single-entry 預設為 `pika.css`）背後的 CSS artifact。
 
 ## 管線 {#the-pipeline}
+
+同一份 resolved Engine state 會產生兩種 build output：class-name data 取代 source call，而累積的 atomic store 會渲染 CSS artifact。
+
+```dot
+digraph PikaPipeline {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}", fontcolor="${#374151|#d1d5db}", fontname="sans-serif"]
+
+  source [label="pika() source"]
+  evaluate [label="Scan + bounded-static evaluation"]
+  engine [label="Engine resolution + dedup"]
+  ids [label="Atomic class IDs"]
+  replace [label="Source replacement"]
+  css [label="Runtime CSS artifact"]
+  module [label="Logical cssModule"]
+
+  source -> evaluate -> engine -> ids -> replace
+  engine -> css -> module
+}
+```
 
 1. 建置外掛會掃描納入的檔案，找出 `pika()` 呼叫。
 2. 每一次呼叫的引數都會在建置時期求值，並傳給引擎。
@@ -88,7 +109,7 @@ translation:
 
 - 每一筆原子樣式都會得到一個**渲染權重**：當它只用到預設選擇器（也就是單純的 class 規則）時為 `0`，否則就是巢狀選擇器區段的數量（一條包在 `@media` 裡、又包在偽選擇器裡的規則，權重會比單純規則高）。樣式會依權重由小到大排序，因此較簡單的規則一定排在前面。
 - 在相同權重下，樣式會保持它們的**註冊順序**（排序是穩定的）。
-- **簡寫屬性／個別屬性（longhand）的衝突**受到順序保護：當同一次呼叫裡某個屬性與較早的屬性效果重疊時（例如先 `padding` 再 `paddingTop`），引擎會把較後面的那個標記為順序敏感，並且只有在既有 class 已經排在它必須覆寫的那些 class 後面時，才會重複使用該 class；否則就會建立一個新的 class。這就是為什麼無論 class 在別處如何重複使用，`paddingTop` 都能可靠地勝過 `padding`。
+- **簡寫屬性／個別屬性（longhand）的衝突**受到順序保護：當同一次呼叫裡某個屬性與較早的屬性效果重疊時（例如先 `padding` 再 `paddingTop`），引擎會把較後面的那個標記為順序敏感，並且只有在既有 class 已經排在它必須覆寫的那些 class 後面時，才會重複使用該 class；否則就會建立一個新的 class。在這個撰寫順序裡，`paddingTop` 會可靠地勝過 `padding`；若改成較晚才寫簡寫屬性，受到順序保護並勝出的就會是那個簡寫屬性。
 
 一個實際的結果是：當同一個元素上有兩個*獨立*的原子 class 設定了同一個屬性時，決定勝負的是樣式表裡的位置，而不是你 `class` 屬性裡的順序。請優先使用單次呼叫的組合（最後者勝出），而不要把互相衝突的 class 疊在一起。
 

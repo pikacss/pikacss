@@ -33,7 +33,7 @@ yarn add -D @pikacss/plugin-reset
 
 <<< @/.examples/official-plugins/reset.setup.example.ts
 
-`reset()` takes no arguments. Choose the preset with the top-level `reset` engine config option rather than by passing options to the plugin call. The plugin sets `layers.reset` to `-1` only when your config has not already defined it, so the injected preflight stays ahead of the default `preflights` and `utilities` layers by default — override the position with your own `layers: { reset: ... }` entry.
+`reset()` takes no arguments; preset selection and layer placement are Engine configuration concerns.
 
 :::tip Quick rules
 - Call `reset()` with no arguments.

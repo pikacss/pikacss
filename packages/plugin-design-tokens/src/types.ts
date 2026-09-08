@@ -381,7 +381,7 @@ export interface DesignTokensConfig {
 
 	/**
 	 * Per-`$type` variable-suggestion override map, merged over the built-in
-	 * {@link import('./autocomplete').DEFAULT_TYPE_AUTOCOMPLETE} map. A token whose
+	 * `DEFAULT_TYPE_AUTOCOMPLETE` map. A token whose
 	 * `$type` is present in the merged map emits `VariableSuggest.asValueOf`
 	 * with that property list, so the variable is suggested as a `var()` value for
 	 * exactly those CSS properties.

@@ -79,6 +79,7 @@ digraph PikaCSS {
     fonts [label="@pikacss/plugin-fonts"]
     typography [label="@pikacss/plugin-typography"]
     designTokens [label="@pikacss/plugin-design-tokens"]
+    eslintConfig [label="@pikacss/eslint-config"]
 
     config -> core
     integration -> config
@@ -89,6 +90,7 @@ digraph PikaCSS {
     fonts -> core
     typography -> core
     designTokens -> core
+    eslintConfig -> config
 }
 ```
 

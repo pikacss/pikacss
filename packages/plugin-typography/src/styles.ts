@@ -1,5 +1,28 @@
 import type { StyleDefinition } from '@pikacss/core'
 
+/** CSS custom-property values accepted by the typography plugin. */
+export type TypographyVariables = Record<
+	| '--pk-prose-color-body'
+	| '--pk-prose-color-headings'
+	| '--pk-prose-color-lead'
+	| '--pk-prose-color-links'
+	| '--pk-prose-color-bold'
+	| '--pk-prose-color-counters'
+	| '--pk-prose-color-bullets'
+	| '--pk-prose-color-hr'
+	| '--pk-prose-color-quotes'
+	| '--pk-prose-color-quote-borders'
+	| '--pk-prose-color-captions'
+	| '--pk-prose-color-code'
+	| '--pk-prose-color-pre-code'
+	| '--pk-prose-color-pre-bg'
+	| '--pk-prose-color-th-borders'
+	| '--pk-prose-color-td-borders'
+	| '--pk-prose-color-kbd'
+	| '--pk-prose-kbd-shadows',
+	string
+>
+
 /**
  * Default CSS custom property values for prose typography colors and accents.
  * @internal
@@ -38,7 +61,7 @@ const typographyVariableDefaults = {
 	'--pk-prose-kbd-shadows': 'currentColor',
 } as const
 
-export const typographyVariables: { [K in keyof typeof typographyVariableDefaults]: string } = typographyVariableDefaults
+export const typographyVariables: TypographyVariables = typographyVariableDefaults
 
 // Base prose styles
 /**

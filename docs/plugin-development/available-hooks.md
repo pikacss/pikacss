@@ -13,6 +13,28 @@ order: 20
 
 # Available Hooks
 
+The lifecycle is split into configuration-time hooks, Engine construction, then source/style transforms and store notifications:
+
+```dot
+digraph PluginLifecycle {
+  rankdir=LR
+  bgcolor="transparent"
+  node [shape=box, style="rounded,filled", color="${#d1d5db|#4b5563}", fillcolor="${#f9fafb|#1f2937}", fontcolor="${#111827|#f3f4f6}", fontname="sans-serif"]
+  edge [color="${#6b7280|#9ca3af}"]
+
+  raw [label="configureRawConfig"]
+  rawDone [label="rawConfigConfigured"]
+  resolve [label="Resolve EngineConfig"]
+  resolved [label="configureResolvedConfig"]
+  engine [label="Construct Engine"]
+  configured [label="configureEngine"]
+  transforms [label="Transform hooks"]
+  events [label="Store / preflight events"]
+
+  raw -> rawDone -> resolve -> resolved -> engine -> configured -> transforms -> events
+}
+```
+
 PikaCSS plugins can implement hooks that run at specific points in the engine lifecycle.
 
 Every hook additionally receives a context object as its last parameter (omitted from the signatures below for brevity): `{ onDiagnostic, state, host }`, where `state` is the plugin's engine-local state declared via `createState` — see [Per-engine state](/plugin-development/create-a-plugin#per-engine-state) — and `host` carries host semantic metadata such as `host.projectRoot`, the engine's effective project root supplied by the bundler integration. Plugins that load project-relative resources should resolve them against `host.projectRoot` instead of `process.cwd()`.

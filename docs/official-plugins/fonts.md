@@ -6,6 +6,7 @@ relatedPackages:
 relatedSources:
   - 'packages/plugin-fonts/src/index.ts'
   - 'packages/plugin-fonts/src/providers.ts'
+  - 'packages/plugin-fonts/src/provider-options.ts'
   - 'packages/plugin-fonts/src/unifont-resolver.ts'
 category: official-plugins
 order: 40
@@ -43,16 +44,16 @@ import { fonts } from '@pikacss/plugin-fonts'
 
 export default defineConfig({
   engine: {
-  plugins: [fonts()],
-  fonts: {
-    provider: 'google',
+    plugins: [fonts()],
     fonts: {
-      // Shorthand string: 'Name' or 'Name:weight1,weight2'
-      sans: 'Inter:400,500,600,700',
-      // Object form for italic or per-font provider overrides
-      mono: { name: 'Fira Code', weights: [400, 500], provider: 'bunny' },
+      provider: 'google',
+      fonts: {
+        // Shorthand string: 'Name' or 'Name:weight1,weight2'
+        sans: 'Inter:400,500,600,700',
+        // Object form for italic or per-font provider overrides
+        mono: { name: 'Fira Code', weights: [400, 500], provider: 'bunny' },
+      },
     },
-  },
   },
 })
 ```

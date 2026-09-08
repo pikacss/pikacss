@@ -42,7 +42,7 @@ Plugin execution order determines when a plugin's hooks run relative to other pl
 | *(omitted)* | Default order — runs in registration order |
 | `'post'` | Runs after default-order plugins |
 
-Within the same order group, plugins run in the order they appear in the `plugins` array. The core plugins (`variables`, `keyframes`, `selectors`, `shortcuts`, `important`) are prepended automatically and use the default order, so default-order user plugins always run after them.
+Within the same order group, plugins run in the order they appear in the `plugins` array. The core plugins (`variables`, `keyframes`, `layers`, `selectors`, `shortcuts`, `important`) are prepended automatically and use the default order, so default-order user plugins always run after them.
 
 ## Per-engine state {#per-engine-state}
 

@@ -152,8 +152,8 @@ Plugin Development
 == Per-engine state
 == Lifecycle & Gotchas
 === Hook errors are reported, then rethrown
-=== `order: 'pre'` runs before core services attach
-=== Register loaded files with `addConfigDependency`
+=== Lower semantic definitions before Engine construction
+=== Register configuration inputs during initialization
 == Testing a Plugin
 = Available Hooks
 == configureRawConfig
@@ -199,7 +199,10 @@ Plugin Development
 = Type Augmentation
 == EngineConfig
 == Engine
-== PikaAugment
+== Generated authoring types
+=== Prefer an existing semantic subsystem
+=== Register plugin-owned Typegen during `configureEngine`
+== Direct `createEngine()` tests
 = Define Helpers
 == defineEnginePlugin
 == defineEngineConfig
