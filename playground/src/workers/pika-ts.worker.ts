@@ -17,7 +17,7 @@
 //
 // Imports target tsWorker.js/editor.worker.js directly (NOT ts.worker.js,
 // which installs its own `self.onmessage` at module eval). Export-map paths
-// verified against monaco-editor@0.56.0 — a version bump that moves them
+// verified against monaco-editor@0.57.0 — a version bump that moves them
 // fails loudly at build time.
 import { initialize } from 'monaco-editor/editor/editor.worker.js'
 import { TypeScriptWorker } from 'monaco-editor/languages/features/typescript/tsWorker.js'

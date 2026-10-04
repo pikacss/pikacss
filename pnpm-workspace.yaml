@@ -29,22 +29,23 @@ overrides:
   # changelogithub -> changelogen@0.5.7 -> c12@1 -> giget@1 is still tied to
   # tar@6, which has no patched release. Keep this scoped until upstream moves.
   giget@1>tar: '>=7.5.21 <8'
-  # monaco-editor pins DOMPurify exactly below the patched floor. Keep this
-  # scoped until Monaco updates its dependency.
-  monaco-editor>dompurify: '>=3.4.13 <4'
+
+  # Monaco 0.57.0 pins DOMPurify 3.4.15, which is affected by
+  # GHSA-p98j-92pf-mc4p. Keep this scoped until Monaco moves to >=3.4.16.
+  monaco-editor>dompurify: '>=3.4.16 <4'
 
 catalog:
   '@arethetypeswrong/cli': ^0.18.5
-  '@babel/parser': ^8.0.4
-  '@babel/traverse': ^8.0.4
-  '@babel/types': ^8.0.4
-  '@clack/prompts': ^1.7.0
+  '@babel/parser': ^8.0.6
+  '@babel/traverse': ^8.0.6
+  '@babel/types': ^8.0.6
+  '@clack/prompts': ^1.8.1
   '@deviltea/eslint-config': ^9.0.0
   '@deviltea/tsconfig': ^1.0.0
   '@iconify-json/line-md': ^1.2.16
-  '@iconify-json/vscode-icons': ^1.2.76
-  '@iconify/utils': ^3.1.4
-  '@mdn/browser-compat-data': ^8.1.0
+  '@iconify-json/vscode-icons': ^1.2.83
+  '@iconify/utils': ^3.1.7
+  '@mdn/browser-compat-data': ^8.1.4
   '@nuxt/kit': ^4.5.2
   '@nuxt/schema': ^4.5.2
   '@shikijs/core': ^4.4.3
@@ -54,14 +55,14 @@ catalog:
   '@shikijs/themes': ^4.4.3
   '@shikijs/vitepress-twoslash': ^4.4.3
   '@types/babel__traverse': ^7.28.0
-  '@types/node': ^24.13.2
+  '@types/node': ^24.19.0
   '@types/picomatch': ^4.0.3
-  '@typescript-eslint/parser': 8.69.0
-  '@vitejs/plugin-vue': ^6.0.8
-  '@vitest/coverage-v8': ^4.1.11
+  '@typescript-eslint/parser': 8.71.0
+  '@vitejs/plugin-vue': ^6.0.9
+  '@vitest/coverage-v8': ^5.0.3
   '@volar/monaco': ^2.4.28
-  '@vue/compiler-core': ^3.5.42
-  '@vue/compiler-sfc': ^3.5.42
+  '@vue/compiler-core': ^3.5.43
+  '@vue/compiler-sfc': ^3.5.43
   # @vue/language-* pinned exactly and kept in lockstep: language-service pins
   # language-core to an exact version, and a split would create two package
   # instances (`instanceof VueVirtualCode` breaks across them).
@@ -69,59 +70,59 @@ catalog:
   '@vue/language-service': 3.3.11
   '@vue/tsconfig': ^0.9.1
   '@vue/typescript-plugin': 3.3.11
-  '@vueuse/core': ^14.4.0
-  '@webcontainer/api': ^1.6.1
-  '@webref/css': ^8.7.4
+  '@vueuse/core': ^15.0.0
+  '@webcontainer/api': ^1.6.4
+  '@webref/css': ^8.7.5
   '@xterm/addon-fit': ^0.11.0
   '@xterm/xterm': ^6.0.0
   alien-signals: ^3.2.1
-  bumpp: ^12.2.2
+  bumpp: ^12.3.0
   changelogithub: ^15.0.5
-  dockview-core: ^8.2.0
-  dockview-vue: ^8.2.0
-  eslint: ^10.9.1
-  globby: ^16.2.0
+  dockview-core: ^8.3.1
+  dockview-vue: ^8.3.1
+  eslint: ^10.11.0
+  globby: ^16.2.4
   gray-matter: ^4.0.3
-  happy-dom: ^20.12.2
-  ignore: ^7.0.8
+  happy-dom: ^20.14.5
+  ignore: ^7.0.10
   is-binary-path: ^3.0.0
   jiti: ^2.7.0
   json5: ^2.2.3
   klona: ^2.0.6
-  lint-staged: ^17.4.1
+  lint-staged: ^17.6.0
   local-pkg: ^1.2.1
   lz-string: ^1.5.0
-  magic-string: ^1.2.3
-  mdn-data: ^2.35.0
-  monaco-editor: ^0.56.0
+  magic-string: ^1.4.2
+  mdn-data: ^2.37.1
+  monaco-editor: ^0.57.0
   ofetch: ^1.5.1
   pathe: ^2.0.3
-  picomatch: ^4.0.5
+  picomatch: ^4.0.7
   pkg-pr-new: ^0.0.88
-  playwright: ^1.62.1
+  playwright: ^1.63.0
   publint: ^0.3.24
-  repomix: ^1.18.0
+  repomix: ^1.18.1
   simple-git-hooks: ^2.14.0
-  tsdown: 0.22.14
-  tsx: ^4.23.13
+  tsdown: 0.23.0
+  tsx: ^4.23.15
   typescript: ^6.0.3
-  unifont: ^0.8.3
-  unplugin: ^3.3.0
-  vite: ^8.2.2
+  unifont: ^1.0.2
+  unplugin: ^3.4.0
+  vite: ^8.3.1
   vite-plugin-vue-devtools: ^8.2.1
   vitepress: 2.0.0-alpha.19
   vitepress-plugin-graphviz: ^0.1.0
   vitepress-plugin-group-icons: ^1.7.6
-  vitepress-plugin-llms: ^1.13.5
-  vitest: ^4.1.11
+  vitepress-plugin-llms: ^1.14.0
+  vitest: ^5.0.3
   # volar-service-typescript version must match @vue/language-service's own
   # dependency (deep imports of its semantic/directiveComment plugins).
   volar-service-typescript: 0.0.71
   vscode-uri: ^3.2.0
-  vue: ^3.5.42
+  vue: ^3.5.43
   vue-router: ^5.3.1
   vue-tsc: ^3.3.11
-  web-features: ^3.37.0
+  web-features: ^3.40.1
   zx: ^8.8.5
 ignoredBuiltDependencies:
   - esbuild
