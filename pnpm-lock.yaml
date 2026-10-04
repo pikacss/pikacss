@@ -265,7 +265,7 @@ overrides:
 
 patchedDependencies:
   braces@3.0.3:
-    hash: 1a667786d9a4ad03ee2ad17c4081483fc6888f70b899231a9c9d931a073345b1
+    hash: e07abe26dbd330daea0e448ca1382327322dd5eccc08c5dd1a9b9f7bf5a6d699
     path: patches/braces@3.0.3.patch
   monaco-editor@0.57.0:
     hash: 5e2d204def002f0a3421f9729418800f4719b7007285e684fa5e43edf3d36ff9
@@ -7088,7 +7088,7 @@ snapshots:
     dependencies:
       balanced-match: 4.0.4
 
-  braces@3.0.3(patch_hash=1a667786d9a4ad03ee2ad17c4081483fc6888f70b899231a9c9d931a073345b1):
+  braces@3.0.3(patch_hash=e07abe26dbd330daea0e448ca1382327322dd5eccc08c5dd1a9b9f7bf5a6d699):
     dependencies:
       fill-range: 7.1.1
 
@@ -8723,7 +8723,7 @@ snapshots:
 
   micromatch@4.0.8:
     dependencies:
-      braces: 3.0.3(patch_hash=1a667786d9a4ad03ee2ad17c4081483fc6888f70b899231a9c9d931a073345b1)
+      braces: 3.0.3(patch_hash=e07abe26dbd330daea0e448ca1382327322dd5eccc08c5dd1a9b9f7bf5a6d699)
       picomatch: 2.3.2
 
   millify@6.1.0:
