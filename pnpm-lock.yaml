@@ -263,6 +263,11 @@ overrides:
   giget@1>tar: '>=7.5.21 <8'
   monaco-editor>dompurify: '>=3.4.16 <4'
 
+patchedDependencies:
+  monaco-editor@0.57.0:
+    hash: 5e2d204def002f0a3421f9729418800f4719b7007285e684fa5e43edf3d36ff9
+    path: patches/monaco-editor@0.57.0.patch
+
 importers:
 
   .:
@@ -326,7 +331,7 @@ importers:
         version: 2.37.1
       monaco-editor:
         specifier: 'catalog:'
-        version: 0.57.0
+        version: 0.57.0(patch_hash=5e2d204def002f0a3421f9729418800f4719b7007285e684fa5e43edf3d36ff9)
       pathe:
         specifier: 'catalog:'
         version: 2.0.3
@@ -670,7 +675,7 @@ importers:
         version: 1.5.0
       monaco-editor:
         specifier: 'catalog:'
-        version: 0.57.0
+        version: 0.57.0(patch_hash=5e2d204def002f0a3421f9729418800f4719b7007285e684fa5e43edf3d36ff9)
       volar-service-typescript:
         specifier: 'catalog:'
         version: 0.0.71(@volar/language-service@2.4.28)
@@ -8873,7 +8878,7 @@ snapshots:
 
   module-replacements@3.4.0: {}
 
-  monaco-editor@0.57.0:
+  monaco-editor@0.57.0(patch_hash=5e2d204def002f0a3421f9729418800f4719b7007285e684fa5e43edf3d36ff9):
     dependencies:
       dompurify: 3.4.16
       marked: 14.0.0

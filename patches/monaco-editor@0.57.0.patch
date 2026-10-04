@@ -1,0 +1,7 @@
+diff --git a/esm/vs/base/browser/domSanitize.js b/esm/vs/base/browser/domSanitize.js
+index 20c502413be001528668111286986258b7ad84a8..3459b8044975c6eb98beb89025aec085cd0d3a5a 100644
+--- a/esm/vs/base/browser/domSanitize.js
++++ b/esm/vs/base/browser/domSanitize.js
+@@ -4 +4 @@
+-import purify from './dompurify/dompurify.js';
++import purify from 'dompurify';

@@ -30,10 +30,12 @@ overrides:
   # tar@6, which has no patched release. Keep this scoped until upstream moves.
   giget@1>tar: '>=7.5.21 <8'
 
-  # Monaco 0.57.0 pins DOMPurify 3.4.15, which is affected by
-  # GHSA-p98j-92pf-mc4p. Keep this scoped until Monaco moves to >=3.4.16.
+  # Monaco 0.57.0 pins and vendors DOMPurify 3.4.15, which is affected by
+  # GHSA-p98j-92pf-mc4p. The pnpm patch redirects Monaco's runtime sanitizer
+  # import to this dependency so the patched version is the code that executes.
   monaco-editor>dompurify: '>=3.4.16 <4'
-
+patchedDependencies:
+  monaco-editor@0.57.0: patches/monaco-editor@0.57.0.patch
 catalog:
   '@arethetypeswrong/cli': ^0.18.5
   '@babel/parser': ^8.0.6
