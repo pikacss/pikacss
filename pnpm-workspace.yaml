@@ -1,5 +1,10 @@
 blockExoticSubdeps: true
-
+# braces@3.0.3 is locally backported from upstream PR #72 at 28d440b5 for
+# GHSA-vfj7-8cjw-p6xm / CVE-2026-93687. pnpm audit only sees the published
+# version, so ignore this GHSA only while the verified local patch is applied.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   - '@webref/css'
@@ -26,15 +31,17 @@ packages:
 # ship in published @pikacss/* packages). Ranges use `>=` so the release-age
 # policy above still picks the newest allowed patched version.
 overrides:
-  # changelogithub -> changelogen@0.5.7 -> c12@1 -> giget@1 is still tied to
-  # tar@6, which has no patched release. Keep this scoped until upstream moves.
-  giget@1>tar: '>=7.5.21 <8'
+  # changelogithub 15.0.5 pins changelogen 0.5.7, whose c12@1/chokidar@3 chain
+  # retains vulnerable braces@3.0.3. changelogen 0.6.2 keeps parseGitCommit
+  # compatibility while moving to c12@3/chokidar@5.
+  changelogithub>changelogen: 0.6.2
 
   # Monaco 0.57.0 pins and vendors DOMPurify 3.4.15, which is affected by
   # GHSA-p98j-92pf-mc4p. The pnpm patch redirects Monaco's runtime sanitizer
   # import to this dependency so the patched version is the code that executes.
   monaco-editor>dompurify: '>=3.4.16 <4'
 patchedDependencies:
+  braces@3.0.3: patches/braces@3.0.3.patch
   monaco-editor@0.57.0: patches/monaco-editor@0.57.0.patch
 catalog:
   '@arethetypeswrong/cli': ^0.18.5

@@ -1,0 +1,125 @@
+diff --git a/lib/compile.js b/lib/compile.js
+index dce69be..945a78b 100644
+--- a/lib/compile.js
++++ b/lib/compile.js
+@@ -4,0 +5 @@ const utils = require('./utils');
++const { MAX_DEPTH } = require('./constants');
+@@ -7 +8,6 @@ const compile = (ast, options = {}) => {
+-  const walk = (node, parent = {}) => {
++  const maxDepth = Number.isFinite(options.maxDepth) ? Math.min(MAX_DEPTH, options.maxDepth) : MAX_DEPTH;
++
++  const walk = (node, parent = {}, depth = 0) => {
++    if (node.nodes && depth > maxDepth) {
++      throw new RangeError(`AST depth (${depth}), exceeds max depth (${maxDepth})`);
++    }
+@@ -50 +56 @@ const compile = (ast, options = {}) => {
+-        output += walk(child, node);
++        output += walk(child, node, child.nodes ? depth + 1 : depth);
+@@ -57 +63 @@ const compile = (ast, options = {}) => {
+-  return walk(ast);
++  return walk(ast, {}, ast.type === 'root' ? 0 : 1);
+diff --git a/lib/constants.js b/lib/constants.js
+index 2bb3b88..c237099 100644
+--- a/lib/constants.js
++++ b/lib/constants.js
+@@ -3,0 +4 @@ module.exports = {
++  MAX_DEPTH: 100,
+diff --git a/lib/expand.js b/lib/expand.js
+index 35b2c41..8211c5b 100644
+--- a/lib/expand.js
++++ b/lib/expand.js
+@@ -5,0 +6 @@ const utils = require('./utils');
++const { MAX_DEPTH } = require('./constants');
+@@ -32,0 +34,14 @@ const append = (queue = '', stash = '', enclose = false) => {
++const queueOwner = node => {
++  if (node.type === 'brace' || node.type === 'root' || !node.parent) return node;
++
++  const seen = new Set();
++  while (node.type !== 'brace' && node.type !== 'root' && node.parent) {
++    if (seen.has(node)) {
++      throw new RangeError('AST parent chain contains a cycle');
++    }
++    seen.add(node);
++    node = node.parent;
++  }
++  return node;
++};
++
+@@ -34,0 +50 @@ const expand = (ast, options = {}) => {
++  const maxDepth = Number.isFinite(options.maxDepth) ? Math.min(MAX_DEPTH, options.maxDepth) : MAX_DEPTH;
+@@ -36 +52,4 @@ const expand = (ast, options = {}) => {
+-  const walk = (node, parent = {}) => {
++  const walk = (node, parent = {}, depth = 0) => {
++    if (node.nodes && depth > maxDepth) {
++      throw new RangeError(`AST depth (${depth}), exceeds max depth (${maxDepth})`);
++    }
+@@ -39,7 +58 @@ const expand = (ast, options = {}) => {
+-    let p = parent;
+-    let q = parent.queue;
+-
+-    while (p.type !== 'brace' && p.type !== 'root' && p.parent) {
+-      p = p.parent;
+-      q = p.queue;
+-    }
++    const q = queueOwner(parent).queue;
+@@ -75,7 +88 @@ const expand = (ast, options = {}) => {
+-    let queue = node.queue;
+-    let block = node;
+-
+-    while (block.type !== 'brace' && block.type !== 'root' && block.parent) {
+-      block = block.parent;
+-      queue = block.queue;
+-    }
++    const queue = queueOwner(node).queue;
+@@ -103 +110 @@ const expand = (ast, options = {}) => {
+-        walk(child, node);
++        walk(child, node, child.nodes ? depth + 1 : depth);
+@@ -110 +117 @@ const expand = (ast, options = {}) => {
+-  return utils.flatten(walk(ast));
++  return utils.flatten(walk(ast, {}, ast.type === 'root' ? 0 : 1));
+diff --git a/lib/parse.js b/lib/parse.js
+index 3a6988e..d4c2c72 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -9,0 +10 @@ const {
++  MAX_DEPTH,
+@@ -37,0 +39 @@ const parse = (input, options = {}) => {
++  const maxDepth = Number.isFinite(opts.maxDepth) ? Math.min(MAX_DEPTH, opts.maxDepth) : MAX_DEPTH;
+@@ -49,0 +52 @@ const parse = (input, options = {}) => {
++  let nesting = 0;
+@@ -145,0 +149,4 @@ const parse = (input, options = {}) => {
++      if (nesting + 1 > maxDepth) {
++        throw new SyntaxError(`Input depth (${nesting + 1}), exceeds max depth (${maxDepth})`);
++      }
++      nesting++;
+@@ -158,0 +166 @@ const parse = (input, options = {}) => {
++      nesting--;
+@@ -197,0 +206,4 @@ const parse = (input, options = {}) => {
++      if (nesting + 1 > maxDepth) {
++        throw new SyntaxError(`Input depth (${nesting + 1}), exceeds max depth (${maxDepth})`);
++      }
++      nesting++;
+@@ -233,0 +246 @@ const parse = (input, options = {}) => {
++      nesting--;
+diff --git a/lib/stringify.js b/lib/stringify.js
+index 8bcf872..651849c 100644
+--- a/lib/stringify.js
++++ b/lib/stringify.js
+@@ -3,0 +4 @@ const utils = require('./utils');
++const { MAX_DEPTH } = require('./constants');
+@@ -6 +7,6 @@ module.exports = (ast, options = {}) => {
+-  const stringify = (node, parent = {}) => {
++  const maxDepth = Number.isFinite(options.maxDepth) ? Math.min(MAX_DEPTH, options.maxDepth) : MAX_DEPTH;
++
++  const stringify = (node, parent = {}, depth = 0) => {
++    if (node.nodes && depth > maxDepth) {
++      throw new RangeError(`AST depth (${depth}), exceeds max depth (${maxDepth})`);
++    }
+@@ -24 +30 @@ module.exports = (ast, options = {}) => {
+-        output += stringify(child);
++        output += stringify(child, undefined, child.nodes ? depth + 1 : depth);
+@@ -30 +36 @@ module.exports = (ast, options = {}) => {
+-  return stringify(ast);
++  return stringify(ast, {}, ast.type === 'root' ? 0 : 1);
+@@ -32 +37,0 @@ module.exports = (ast, options = {}) => {
+-
