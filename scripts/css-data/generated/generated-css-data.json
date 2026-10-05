@@ -30,7 +30,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/appearance",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/appearance",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -280,7 +280,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-moz-float-edge",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-moz-float-edge",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -340,7 +340,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-moz-force-broken-image-icon",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-moz-force-broken-image-icon",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -400,7 +400,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-moz-orient",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-moz-orient",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -705,7 +705,7 @@
 			"sourcePresence": {
 				"webref": false,
 				"mdnData": true,
-				"bcd": true,
+				"bcd": false,
 				"webFeatures": false
 			},
 			"syntax": "ignore | normal | select-after | select-before | select-menu | select-same | select-all | none",
@@ -730,7 +730,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-moz-user-focus",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-moz-user-focus",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -739,26 +739,6 @@
 			"statusSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
-			},
-			"compatibility": {
-				"experimental": false,
-				"deprecated": true,
-				"experimentalSource": {
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				},
-				"deprecatedSource": {
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				},
-				"baseline": {
-					"level": null,
-					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
-					}
-				}
 			}
 		},
 		"-moz-user-input": {
@@ -790,7 +770,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-moz-user-input",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-moz-user-input",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -850,7 +830,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/user-modify",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/user-modify",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3147,7 +3127,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/appearance",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/appearance",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -3478,7 +3458,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-border-before",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-border-before",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -4162,7 +4142,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-box-reflect",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-box-reflect",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -4619,7 +4599,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-line-clamp",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-line-clamp",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -4684,7 +4664,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5015,7 +4995,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-clip",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-clip",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5055,7 +5035,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-mask-composite",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-mask-composite",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5115,7 +5095,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-image",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-image",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5155,7 +5135,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-origin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-origin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5195,7 +5175,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5235,7 +5215,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-mask-position-x",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-mask-position-x",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5295,7 +5275,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-mask-position-y",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-mask-position-y",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5355,7 +5335,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-repeat",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-repeat",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5370,7 +5350,7 @@
 			"sourcePresence": {
 				"webref": false,
 				"mdnData": true,
-				"bcd": true,
+				"bcd": false,
 				"webFeatures": false
 			},
 			"syntax": "repeat | no-repeat | space | round",
@@ -5395,7 +5375,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-mask-repeat-x",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-mask-repeat-x",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5404,33 +5384,13 @@
 			"statusSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
-			},
-			"compatibility": {
-				"experimental": false,
-				"deprecated": false,
-				"experimentalSource": {
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				},
-				"deprecatedSource": {
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				},
-				"baseline": {
-					"level": null,
-					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
-					}
-				}
 			}
 		},
 		"-webkit-mask-repeat-y": {
 			"sourcePresence": {
 				"webref": false,
 				"mdnData": true,
-				"bcd": true,
+				"bcd": false,
 				"webFeatures": false
 			},
 			"syntax": "repeat | no-repeat | space | round",
@@ -5455,7 +5415,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-mask-repeat-y",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-mask-repeat-y",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5464,26 +5424,6 @@
 			"statusSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
-			},
-			"compatibility": {
-				"experimental": false,
-				"deprecated": false,
-				"experimentalSource": {
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				},
-				"deprecatedSource": {
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				},
-				"baseline": {
-					"level": null,
-					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
-					}
-				}
 			}
 		},
 		"-webkit-mask-size": {
@@ -5515,7 +5455,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5683,7 +5623,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-tap-highlight-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-tap-highlight-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5743,7 +5683,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-text-fill-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-text-fill-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5841,7 +5781,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-text-stroke",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-text-stroke",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5922,7 +5862,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-text-stroke-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-text-stroke-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -5986,7 +5926,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-text-stroke-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-text-stroke-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6050,7 +5990,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/-webkit-touch-callout",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/-webkit-touch-callout",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6413,7 +6353,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/user-select",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/user-select",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6453,7 +6393,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/accent-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/accent-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6516,7 +6456,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/align-content",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/align-content",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6581,7 +6521,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/align-items",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/align-items",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6646,7 +6586,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/align-self",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/align-self",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6748,7 +6688,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/alignment-baseline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/alignment-baseline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6811,7 +6751,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/all",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/all",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -6875,7 +6815,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/anchor-name",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/anchor-name",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7011,7 +6951,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7101,7 +7041,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-composition",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-composition",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7165,7 +7105,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-delay",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-delay",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7304,7 +7244,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-direction",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-direction",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7368,7 +7308,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-duration",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-duration",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7432,7 +7372,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-fill-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-fill-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7496,7 +7436,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-iteration-count",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-iteration-count",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7560,7 +7500,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-name",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-name",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7624,7 +7564,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-play-state",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-play-state",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7691,7 +7631,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-range",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-range",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7799,7 +7739,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-range-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-range-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7861,7 +7801,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-range-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-range-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7923,7 +7863,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-timeline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-timeline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -7985,7 +7925,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/animation-timing-function",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/animation-timing-function",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8109,7 +8049,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/appearance",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/appearance",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8173,7 +8113,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/aspect-ratio",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/aspect-ratio",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8237,7 +8177,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/backdrop-filter",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/backdrop-filter",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8300,7 +8240,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/backface-visibility",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/backface-visibility",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8373,7 +8313,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8461,7 +8401,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-attachment",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-attachment",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8525,7 +8465,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-blend-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-blend-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8589,7 +8529,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-clip",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-clip",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8653,7 +8593,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8717,7 +8657,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-image",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-image",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8781,7 +8721,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-origin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-origin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8845,7 +8785,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -8985,7 +8925,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-position-x",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-position-x",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -9049,7 +8989,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-position-y",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-position-y",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -9113,7 +9053,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-repeat",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-repeat",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -9343,7 +9283,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/background-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/background-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -9502,7 +9442,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/baseline-source",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/baseline-source",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -9613,7 +9553,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/block-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/block-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -9932,7 +9872,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10019,7 +9959,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10150,7 +10090,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10236,7 +10176,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10348,7 +10288,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-end-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-end-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10458,7 +10398,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-end-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-end-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10522,7 +10462,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-end-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-end-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10590,7 +10530,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10702,7 +10642,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-start-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-start-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10812,7 +10752,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-start-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-start-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10876,7 +10816,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-start-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-start-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -10943,7 +10883,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11028,7 +10968,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-block-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-block-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11114,7 +11054,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-bottom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-bottom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11225,7 +11165,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-bottom-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-bottom-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11289,7 +11229,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-bottom-left-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-bottom-left-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11399,7 +11339,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-bottom-right-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-bottom-right-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11463,7 +11403,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-bottom-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-bottom-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11527,7 +11467,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-bottom-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-bottom-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11669,7 +11609,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-collapse",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-collapse",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11738,7 +11678,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11821,7 +11761,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-end-end-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-end-end-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11885,7 +11825,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-end-start-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-end-start-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -11955,7 +11895,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-image",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-image",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12039,7 +11979,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-image-outset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-image-outset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12103,7 +12043,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-image-repeat",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-image-repeat",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12167,7 +12107,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-image-slice",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-image-slice",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12231,7 +12171,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-image-source",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-image-source",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12295,7 +12235,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-image-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-image-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12363,7 +12303,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12494,7 +12434,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12580,7 +12520,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12692,7 +12632,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-end-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-end-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12802,7 +12742,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-end-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-end-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12866,7 +12806,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-end-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-end-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -12934,7 +12874,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13046,7 +12986,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-start-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-start-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13156,7 +13096,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-start-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-start-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13220,7 +13160,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-start-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-start-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13287,7 +13227,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13372,7 +13312,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-inline-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-inline-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13458,7 +13398,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-left",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-left",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13569,7 +13509,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-left-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-left-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13679,7 +13619,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-left-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-left-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13743,7 +13683,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-left-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-left-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13841,7 +13781,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -13928,7 +13868,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-right",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-right",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14039,7 +13979,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-right-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-right-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14149,7 +14089,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-right-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-right-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14213,7 +14153,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-right-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-right-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14277,7 +14217,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14339,7 +14279,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-spacing",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-spacing",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14403,7 +14343,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-start-end-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-start-end-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14467,7 +14407,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-start-start-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-start-start-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14536,7 +14476,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14623,7 +14563,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-top",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-top",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14734,7 +14674,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-top-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-top-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14798,7 +14738,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-top-left-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-top-left-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14908,7 +14848,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-top-right-radius",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-top-right-radius",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -14972,7 +14912,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-top-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-top-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15036,7 +14976,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-top-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-top-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15105,7 +15045,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/border-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/border-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15189,7 +15129,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/bottom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/bottom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15254,7 +15194,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-align",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-align",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15314,7 +15254,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-decoration-break",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-decoration-break",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15377,7 +15317,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-direction",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-direction",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15438,7 +15378,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-flex",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-flex",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15499,7 +15439,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-flex-group",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-flex-group",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15560,7 +15500,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-lines",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-lines",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15621,7 +15561,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-ordinal-group",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-ordinal-group",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15682,7 +15622,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-orient",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-orient",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15743,7 +15683,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-pack",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-pack",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -15803,7 +15743,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-shadow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-shadow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16032,7 +15972,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/box-sizing",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/box-sizing",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16125,7 +16065,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/break-after",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/break-after",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16189,7 +16129,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/break-before",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/break-before",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16253,7 +16193,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/break-inside",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/break-inside",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16317,7 +16257,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/caption-side",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/caption-side",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16438,7 +16378,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/caret-animation",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/caret-animation",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16498,7 +16438,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/caret-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/caret-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16624,7 +16564,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/clear",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/clear",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16688,7 +16628,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/clip",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/clip",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16750,7 +16690,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/clip-path",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/clip-path",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16817,7 +16757,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/clip-rule",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/clip-rule",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -16881,7 +16821,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17074,7 +17014,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/color-interpolation-filters",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/color-interpolation-filters",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17190,7 +17130,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/color-scheme",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/color-scheme",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17254,7 +17194,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-count",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-count",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17318,7 +17258,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-fill",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-fill",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17383,7 +17323,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-gap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-gap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17448,7 +17388,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-height",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-height",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17512,7 +17452,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-rule",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17650,7 +17590,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-rule-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -17785,6 +17725,11 @@
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
 			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-inset-cap",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
+			},
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
@@ -17853,6 +17798,11 @@
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
 			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-inset-cap-end",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
+			},
 			"compatibility": {
 				"experimental": true,
 				"deprecated": false,
@@ -17903,6 +17853,11 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-inset-cap-start",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -18093,6 +18048,11 @@
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
 			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-inset-junction-end",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
+			},
 			"compatibility": {
 				"experimental": true,
 				"deprecated": false,
@@ -18265,7 +18225,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-rule-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18385,7 +18345,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-rule-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-rule-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18449,7 +18409,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-span",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-span",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18514,7 +18474,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18579,7 +18539,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-wrap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-wrap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18643,7 +18603,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/columns",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/columns",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18725,7 +18685,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/contain",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/contain",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18789,7 +18749,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-block-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/contain-intrinsic-block-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18853,7 +18813,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-height",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/contain-intrinsic-height",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18917,7 +18877,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-inline-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/contain-intrinsic-inline-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -18984,7 +18944,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/contain-intrinsic-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19065,7 +19025,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/contain-intrinsic-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/contain-intrinsic-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19132,7 +19092,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/container",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/container",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19213,7 +19173,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/container-name",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/container-name",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19277,7 +19237,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/container-type",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/container-type",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19341,7 +19301,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/content",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/content",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19405,7 +19365,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/content-visibility",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/content-visibility",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19641,7 +19601,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-block-end-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-block-end-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19769,7 +19729,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-block-start-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-block-start-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -19940,7 +19900,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-bottom-left-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-bottom-left-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20048,7 +20008,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-bottom-right-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-bottom-right-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20113,7 +20073,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-bottom-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-bottom-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20238,7 +20198,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-end-end-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-end-end-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20346,7 +20306,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-end-start-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-end-start-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20457,7 +20417,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-inline-end-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-inline-end-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20585,7 +20545,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-inline-start-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-inline-start-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20713,7 +20673,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-left-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-left-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20841,7 +20801,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-right-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-right-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -20925,7 +20885,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21052,7 +21012,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-start-end-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-start-end-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21160,7 +21120,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-start-start-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-start-start-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21314,7 +21274,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-top-left-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-top-left-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21422,7 +21382,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-top-right-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-top-right-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21487,7 +21447,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/corner-top-shape",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/corner-top-shape",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21566,7 +21526,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/counter-increment",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/counter-increment",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21630,7 +21590,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/counter-reset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/counter-reset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21694,7 +21654,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/counter-set",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/counter-set",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21862,7 +21822,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/cursor",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/cursor",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21926,7 +21886,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/cx",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/cx",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -21990,7 +21950,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/cy",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/cy",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22054,7 +22014,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/d",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/d",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22116,7 +22076,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/direction",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/direction",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22180,7 +22140,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/display",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/display",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22248,7 +22208,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/dominant-baseline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/dominant-baseline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22312,7 +22272,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/dynamic-range-limit",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/dynamic-range-limit",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22374,7 +22334,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/empty-cells",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/empty-cells",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22525,7 +22485,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/field-sizing",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/field-sizing",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22591,7 +22551,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/fill",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/fill",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22746,7 +22706,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/fill-opacity",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/fill-opacity",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22900,7 +22860,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/fill-rule",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/fill-rule",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -22993,7 +22953,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/filter",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/filter",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23061,7 +23021,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23143,7 +23103,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-basis",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-basis",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23207,7 +23167,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-direction",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-direction",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23274,7 +23234,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-flow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-flow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23355,7 +23315,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-grow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-grow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23419,7 +23379,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-line-count",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-line-count",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23479,7 +23439,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-shrink",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-shrink",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23543,7 +23503,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flex-wrap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flex-wrap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23607,7 +23567,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/float",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/float",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23761,7 +23721,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flood-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flood-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23828,7 +23788,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/flood-opacity",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/flood-opacity",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -23926,7 +23886,7 @@
 				"webref": true,
 				"mdnData": false,
 				"bcd": true,
-				"webFeatures": false
+				"webFeatures": true
 			},
 			"syntax": "normal | <length-percentage [0,∞]> | infinite",
 			"syntaxSource": {
@@ -23961,11 +23921,13 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": null,
+					"level": false,
+					"featureId": "grid-lanes",
 					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
+						"kind": "derived",
+						"source": "web-features",
+						"via": "@mdn/browser-compat-data",
+						"note": "Resolved baseline from web-features feature grid-lanes."
 					}
 				}
 			}
@@ -24007,7 +23969,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24099,7 +24061,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-family",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-family",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24163,7 +24125,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-feature-settings",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-feature-settings",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24227,7 +24189,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-kerning",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-kerning",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24291,7 +24253,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-language-override",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-language-override",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24353,7 +24315,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-optical-sizing",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-optical-sizing",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24417,7 +24379,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-palette",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-palette",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24481,7 +24443,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24545,7 +24507,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-size-adjust",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-size-adjust",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24608,7 +24570,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-smooth",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-smooth",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24668,7 +24630,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-stretch",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-stretch",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24732,7 +24694,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24796,7 +24758,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-synthesis",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-synthesis",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24880,7 +24842,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-synthesis-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-synthesis-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -24942,7 +24904,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-synthesis-small-caps",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-synthesis-small-caps",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25006,7 +24968,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-synthesis-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-synthesis-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25070,7 +25032,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-synthesis-weight",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-synthesis-weight",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25134,7 +25096,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25221,7 +25183,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-alternates",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-alternates",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25285,7 +25247,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-caps",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-caps",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25349,7 +25311,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-east-asian",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-east-asian",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25413,7 +25375,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-emoji",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-emoji",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25475,7 +25437,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-ligatures",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-ligatures",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25539,7 +25501,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-numeric",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-numeric",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25603,7 +25565,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variant-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variant-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25667,7 +25629,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-variation-settings",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-variation-settings",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25731,7 +25693,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/font-weight",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/font-weight",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -25915,7 +25877,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/forced-color-adjust",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/forced-color-adjust",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26042,7 +26004,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/gap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/gap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26188,7 +26150,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26278,7 +26240,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-area",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-area",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26361,7 +26323,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-auto-columns",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-auto-columns",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26425,7 +26387,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-auto-flow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-auto-flow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26489,7 +26451,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-auto-rows",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-auto-rows",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26556,7 +26518,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-column",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-column",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26637,7 +26599,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-column-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-column-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26701,7 +26663,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/column-gap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/column-gap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26741,7 +26703,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-column-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-column-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26808,7 +26770,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/gap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/gap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26868,7 +26830,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-row",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-row",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -26949,7 +26911,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-row-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-row-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27013,7 +26975,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/row-gap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/row-gap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27053,7 +27015,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-row-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-row-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27121,7 +27083,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-template",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-template",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27203,7 +27165,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-template-areas",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-template-areas",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27267,7 +27229,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-template-columns",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-template-columns",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27331,7 +27293,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-template-rows",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-template-rows",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27395,7 +27357,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/hanging-punctuation",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/hanging-punctuation",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27457,7 +27419,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/height",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/height",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27521,7 +27483,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/hyphenate-character",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/hyphenate-character",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27585,7 +27547,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/hyphenate-limit-chars",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/hyphenate-limit-chars",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27651,7 +27613,7 @@
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
-				"bcd": false,
+				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "no-limit | <integer [0,∞]>",
@@ -27674,6 +27636,26 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
+			},
+			"compatibility": {
+				"experimental": true,
+				"deprecated": false,
+				"experimentalSource": {
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				},
+				"deprecatedSource": {
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				},
+				"baseline": {
+					"level": null,
+					"source": {
+						"kind": "default",
+						"source": "generated-fallback",
+						"note": "No web-features tag found in browser-compat-data."
+					}
+				}
 			}
 		},
 		"hyphenate-limit-zone": {
@@ -27734,7 +27716,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/hyphens",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/hyphens",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27827,7 +27809,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/image-orientation",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/image-orientation",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27891,7 +27873,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/image-rendering",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/image-rendering",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -27955,7 +27937,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/image-resolution",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/image-resolution",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28052,7 +28034,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/initial-letter",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/initial-letter",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28178,7 +28160,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inline-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inline-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28306,7 +28288,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28393,7 +28375,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28475,7 +28457,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset-block-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset-block-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28540,7 +28522,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset-block-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset-block-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28608,7 +28590,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28690,7 +28672,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset-inline-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset-inline-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28755,7 +28737,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/inset-inline-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/inset-inline-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28819,7 +28801,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/interactivity",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/interactivity",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28884,7 +28866,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/interest-delay-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/interest-delay-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -28961,7 +28943,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/interest-delay-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/interest-delay-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29021,7 +29003,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/interest-delay-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/interest-delay-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29081,7 +29063,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/interpolate-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/interpolate-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29143,7 +29125,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/isolation",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/isolation",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29208,7 +29190,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/justify-content",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/justify-content",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29272,7 +29254,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/justify-items",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/justify-items",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29336,7 +29318,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/justify-self",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/justify-self",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29436,7 +29418,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/left",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/left",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29500,7 +29482,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/letter-spacing",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/letter-spacing",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29567,7 +29549,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/lighting-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/lighting-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29631,7 +29613,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/line-break",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/line-break",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29695,7 +29677,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/line-clamp",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/line-clamp",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29833,7 +29815,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/line-height",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/line-height",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29897,7 +29879,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/line-height-step",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/line-height-step",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -29971,7 +29953,7 @@
 				"webref": true,
 				"mdnData": true,
 				"bcd": true,
-				"webFeatures": false
+				"webFeatures": true
 			},
 			"syntax": "none | <param()>#",
 			"syntaxSource": {
@@ -29995,7 +29977,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/link-parameters",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/link-parameters",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30017,11 +29999,13 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": null,
+					"level": false,
+					"featureId": "link-parameters",
 					"source": {
-						"kind": "default",
-						"source": "generated-fallback",
-						"note": "No web-features tag found in browser-compat-data."
+						"kind": "derived",
+						"source": "web-features",
+						"via": "@mdn/browser-compat-data",
+						"note": "Resolved baseline from web-features feature link-parameters."
 					}
 				}
 			}
@@ -30059,7 +30043,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/list-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/list-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30141,7 +30125,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/list-style-image",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/list-style-image",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30205,7 +30189,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/list-style-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/list-style-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30269,7 +30253,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/list-style-type",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/list-style-type",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30338,7 +30322,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30424,7 +30408,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30505,7 +30489,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-block-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-block-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30569,7 +30553,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-block-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-block-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30634,7 +30618,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-bottom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-bottom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30730,7 +30714,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30811,7 +30795,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-inline-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-inline-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30875,7 +30859,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-inline-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-inline-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -30940,7 +30924,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-left",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-left",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31005,7 +30989,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-right",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-right",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31070,7 +31054,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-top",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-top",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31134,7 +31118,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/margin-trim",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/margin-trim",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31145,7 +31129,7 @@
 				"source": "mdn-data"
 			},
 			"compatibility": {
-				"experimental": true,
+				"experimental": false,
 				"deprecated": false,
 				"experimentalSource": {
 					"kind": "extracted",
@@ -31199,7 +31183,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/marker",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/marker",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31284,7 +31268,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/marker-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/marker-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31351,7 +31335,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/marker-mid",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/marker-mid",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31447,7 +31431,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/marker-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/marker-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31520,7 +31504,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31615,7 +31599,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31698,7 +31682,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31738,7 +31722,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border-outset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border-outset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31800,7 +31784,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border-repeat",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border-repeat",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31862,7 +31846,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border-slice",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border-slice",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31924,7 +31908,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border-source",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border-source",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -31986,7 +31970,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-border-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-border-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32048,7 +32032,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-clip",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-clip",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32112,7 +32096,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-composite",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-composite",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32176,7 +32160,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-image",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-image",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32240,7 +32224,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32302,7 +32286,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-origin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-origin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32366,7 +32350,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32430,7 +32414,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-repeat",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-repeat",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32494,7 +32478,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32558,7 +32542,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mask-type",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mask-type",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32622,7 +32606,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/grid-auto-flow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/grid-auto-flow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32662,7 +32646,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/math-depth",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/math-depth",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32725,7 +32709,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/math-shift",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/math-shift",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32788,7 +32772,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/math-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/math-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32852,7 +32836,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/max-block-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/max-block-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32916,7 +32900,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/max-height",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/max-height",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -32980,7 +32964,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/max-inline-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/max-inline-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33146,7 +33130,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/max-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/max-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33210,7 +33194,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/min-block-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/min-block-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33274,7 +33258,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/min-height",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/min-height",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33338,7 +33322,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/min-inline-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/min-inline-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33478,7 +33462,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/min-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/min-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33542,7 +33526,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/mix-blend-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/mix-blend-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33722,7 +33706,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/object-fit",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/object-fit",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33786,7 +33770,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/object-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/object-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -33918,7 +33902,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/offset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/offset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34002,7 +33986,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/offset-anchor",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/offset-anchor",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34066,7 +34050,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/offset-distance",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/offset-distance",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34130,7 +34114,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/offset-path",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/offset-path",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34194,7 +34178,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/offset-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/offset-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34258,7 +34242,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/offset-rotate",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/offset-rotate",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34322,7 +34306,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/opacity",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/opacity",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34386,7 +34370,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/order",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/order",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34450,7 +34434,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/orphans",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/orphans",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34516,7 +34500,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/outline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/outline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34598,7 +34582,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/outline-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/outline-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34662,7 +34646,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/outline-offset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/outline-offset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34726,7 +34710,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/outline-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/outline-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34790,7 +34774,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/outline-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/outline-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34854,7 +34838,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34936,7 +34920,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-anchor",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-anchor",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -34958,14 +34942,15 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": false,
+					"level": "low",
 					"featureId": "overflow-anchor",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature overflow-anchor."
-					}
+					},
+					"baselineLowDate": "2026-09-14"
 				}
 			}
 		},
@@ -34998,7 +34983,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35096,7 +35081,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-clip-margin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-clip-margin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35501,7 +35486,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35564,7 +35549,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-wrap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-wrap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35628,7 +35613,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-x",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-x",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35692,7 +35677,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-y",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-y",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35756,7 +35741,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overlay",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overlay",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35818,7 +35803,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overscroll-behavior",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overscroll-behavior",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35898,7 +35883,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overscroll-behavior-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overscroll-behavior-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -35960,7 +35945,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overscroll-behavior-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overscroll-behavior-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36022,7 +36007,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overscroll-behavior-x",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overscroll-behavior-x",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36084,7 +36069,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overscroll-behavior-y",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overscroll-behavior-y",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36151,7 +36136,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36237,7 +36222,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36318,7 +36303,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-block-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-block-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36382,7 +36367,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-block-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-block-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36446,7 +36431,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-bottom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-bottom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36513,7 +36498,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36594,7 +36579,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-inline-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-inline-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36658,7 +36643,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-inline-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-inline-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36722,7 +36707,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-left",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-left",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36786,7 +36771,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-right",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-right",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36850,7 +36835,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/padding-top",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/padding-top",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36914,7 +36899,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/page",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/page",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -36978,7 +36963,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/page-break-after",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/page-break-after",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37040,7 +37025,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/page-break-before",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/page-break-before",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37102,7 +37087,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/page-break-inside",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/page-break-inside",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37164,7 +37149,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/paint-order",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/paint-order",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37186,7 +37171,7 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "low",
+					"level": "high",
 					"featureId": "paint-order",
 					"source": {
 						"kind": "derived",
@@ -37194,7 +37179,8 @@
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature paint-order."
 					},
-					"baselineLowDate": "2024-03-22"
+					"baselineLowDate": "2024-03-22",
+					"baselineHighDate": "2026-09-22"
 				}
 			}
 		},
@@ -37227,7 +37213,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/path-length",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/path-length",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37395,7 +37381,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/perspective",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/perspective",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37459,7 +37445,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/perspective-origin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/perspective-origin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37526,7 +37512,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/place-content",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/place-content",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37610,7 +37596,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/place-items",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/place-items",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37694,7 +37680,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/place-self",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/place-self",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37775,7 +37761,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/pointer-events",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/pointer-events",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -37944,7 +37930,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38008,7 +37994,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position-anchor",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position-anchor",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38030,14 +38016,15 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": false,
+					"level": "low",
 					"featureId": "anchor-positioning",
 					"source": {
 						"kind": "derived",
 						"source": "web-features",
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature anchor-positioning."
-					}
+					},
+					"baselineLowDate": "2026-09-14"
 				}
 			}
 		},
@@ -38070,7 +38057,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position-area",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position-area",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38136,7 +38123,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position-try",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position-try",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38216,7 +38203,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position-try-fallbacks",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position-try-fallbacks",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38279,7 +38266,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position-try-order",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position-try-order",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38342,7 +38329,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/position-visibility",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/position-visibility",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38405,7 +38392,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/print-color-adjust",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/print-color-adjust",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38468,7 +38455,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/quotes",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/quotes",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38532,7 +38519,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/r",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/r",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38596,7 +38583,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/reading-flow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/reading-flow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38658,7 +38645,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/reading-order",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/reading-order",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38749,7 +38736,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/resize",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/resize",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38916,7 +38903,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/right",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/right",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -38980,7 +38967,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/rotate",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/rotate",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -39044,7 +39031,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/row-gap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/row-gap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -39366,6 +39353,11 @@
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
 			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/row-rule-inset-cap",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
+			},
 			"shorthand": {
 				"mode": "shorthand",
 				"longhands": [
@@ -39434,6 +39426,11 @@
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
 			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/row-rule-inset-cap-end",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
+			},
 			"compatibility": {
 				"experimental": true,
 				"deprecated": false,
@@ -39484,6 +39481,11 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/row-rule-inset-cap-start",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -40014,7 +40016,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/ruby-align",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/ruby-align",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -40174,7 +40176,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/ruby-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/ruby-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -40525,6 +40527,11 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/rule-inset-cap",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "@mdn/browser-compat-data"
 			},
 			"shorthand": {
 				"mode": "shorthand",
@@ -41070,7 +41077,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/rx",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/rx",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41092,7 +41099,7 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "low",
+					"level": "high",
 					"featureId": "svg",
 					"source": {
 						"kind": "derived",
@@ -41100,7 +41107,8 @@
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature svg."
 					},
-					"baselineLowDate": "2024-03-05"
+					"baselineLowDate": "2024-03-05",
+					"baselineHighDate": "2026-09-05"
 				}
 			}
 		},
@@ -41133,7 +41141,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/ry",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/ry",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41155,7 +41163,7 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "low",
+					"level": "high",
 					"featureId": "svg",
 					"source": {
 						"kind": "derived",
@@ -41163,7 +41171,8 @@
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature svg."
 					},
-					"baselineLowDate": "2024-03-05"
+					"baselineLowDate": "2024-03-05",
+					"baselineHighDate": "2026-09-05"
 				}
 			}
 		},
@@ -41196,7 +41205,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scale",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scale",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41234,30 +41243,41 @@
 		"scroll-axis-lock": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "auto | none",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"initial": "auto",
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": false,
 			"inheritedSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Overflow"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-axis-lock",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -41309,7 +41329,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-behavior",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-behavior",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41440,7 +41460,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41526,7 +41546,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41607,7 +41627,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-block-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41671,7 +41691,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-block-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-block-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41735,7 +41755,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-bottom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-bottom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41802,7 +41822,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41883,7 +41903,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-inline-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -41947,7 +41967,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-inline-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-inline-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42011,7 +42031,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-left",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-left",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42075,7 +42095,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-right",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-right",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42139,7 +42159,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-margin-top",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-margin-top",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42203,7 +42223,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-marker-group",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-marker-group",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42270,7 +42290,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42356,7 +42376,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-block",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42437,7 +42457,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-block-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42501,7 +42521,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-block-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-block-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42565,7 +42585,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-bottom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-bottom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42632,7 +42652,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-inline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42713,7 +42733,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline-end",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-inline-end",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42777,7 +42797,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-inline-start",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-inline-start",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42841,7 +42861,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-left",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-left",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42905,7 +42925,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-right",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-right",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -42969,7 +42989,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-padding-top",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-padding-top",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43033,7 +43053,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-snap-align",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-snap-align",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43237,7 +43257,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-snap-stop",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-snap-stop",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43301,7 +43321,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-snap-type",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-snap-type",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43435,7 +43455,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-target-group",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-target-group",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43500,7 +43520,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-timeline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-timeline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43579,7 +43599,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-timeline-axis",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-timeline-axis",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43641,7 +43661,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scroll-timeline-name",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scroll-timeline-name",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43703,7 +43723,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scrollbar-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scrollbar-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43766,7 +43786,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scrollbar-gutter",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scrollbar-gutter",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43829,7 +43849,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/scrollbar-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/scrollbar-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43892,7 +43912,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/shape-image-threshold",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/shape-image-threshold",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -43985,7 +44005,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/shape-margin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/shape-margin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -44049,7 +44069,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/shape-outside",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/shape-outside",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -44145,7 +44165,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/shape-rendering",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/shape-rendering",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -44184,7 +44204,7 @@
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
-				"bcd": false,
+				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "<'width'> <'height'>?",
@@ -44224,6 +44244,26 @@
 					"kind": "default",
 					"source": "generated-fallback",
 					"note": "No resetLonghands available for size."
+				}
+			},
+			"compatibility": {
+				"experimental": true,
+				"deprecated": false,
+				"experimentalSource": {
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				},
+				"deprecatedSource": {
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				},
+				"baseline": {
+					"level": null,
+					"source": {
+						"kind": "default",
+						"source": "generated-fallback",
+						"note": "No web-features tag found in browser-compat-data."
+					}
 				}
 			}
 		},
@@ -44488,7 +44528,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stop-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stop-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -44555,7 +44595,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stop-opacity",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stop-opacity",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -44651,7 +44691,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -44973,7 +45013,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-dasharray",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-dasharray",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45069,7 +45109,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-dashoffset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-dashoffset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45165,7 +45205,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-linecap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-linecap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45232,7 +45272,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-linejoin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-linejoin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45299,7 +45339,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-miterlimit",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-miterlimit",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45366,7 +45406,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-opacity",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-opacity",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45549,7 +45589,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/stroke-width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/stroke-width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45613,7 +45653,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/tab-size",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/tab-size",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45677,7 +45717,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/table-layout",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/table-layout",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45741,7 +45781,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-align",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-align",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45851,7 +45891,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-align-last",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-align-last",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45918,7 +45958,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-anchor",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-anchor",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -45982,7 +46022,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-autospace",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-autospace",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46252,7 +46292,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-combine-upright",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-combine-upright",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46320,7 +46360,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46404,7 +46444,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46468,7 +46508,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-inset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-inset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46532,7 +46572,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-line",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-line",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46596,7 +46636,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-skip",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-skip",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46708,7 +46748,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-skip-ink",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-skip-ink",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46776,7 +46816,7 @@
 			"sourcePresence": {
 				"webref": true,
 				"mdnData": false,
-				"bcd": false,
+				"bcd": true,
 				"webFeatures": false
 			},
 			"syntax": "none | all | [ start || end ]",
@@ -46799,6 +46839,26 @@
 				"kind": "default",
 				"source": "generated-fallback",
 				"note": "No groups available in mdn-data."
+			},
+			"compatibility": {
+				"experimental": true,
+				"deprecated": false,
+				"experimentalSource": {
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				},
+				"deprecatedSource": {
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				},
+				"baseline": {
+					"level": null,
+					"source": {
+						"kind": "default",
+						"source": "generated-fallback",
+						"note": "No web-features tag found in browser-compat-data."
+					}
+				}
 			}
 		},
 		"text-decoration-style": {
@@ -46830,7 +46890,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46894,7 +46954,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-decoration-thickness",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-decoration-thickness",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -46961,7 +47021,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-emphasis",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-emphasis",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47042,7 +47102,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-emphasis-color",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-emphasis-color",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47106,7 +47166,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-emphasis-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-emphasis-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47199,7 +47259,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-emphasis-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-emphasis-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47263,7 +47323,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-fit",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-fit",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47354,7 +47414,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-indent",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-indent",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47418,7 +47478,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-justify",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-justify",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47480,7 +47540,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-orientation",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-orientation",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47544,7 +47604,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-overflow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-overflow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47608,7 +47668,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-rendering",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-rendering",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47672,7 +47732,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-shadow",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-shadow",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47736,7 +47796,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-size-adjust",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-size-adjust",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47844,7 +47904,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-spacing-trim",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-spacing-trim",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47907,7 +47967,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-transform",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-transform",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -47971,7 +48031,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-underline-offset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-underline-offset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -48035,7 +48095,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-underline-position",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-underline-position",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -48099,7 +48159,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-wrap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-wrap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -48139,7 +48199,7 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "low",
+					"level": "high",
 					"featureId": "text-wrap",
 					"source": {
 						"kind": "derived",
@@ -48147,7 +48207,8 @@
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature text-wrap."
 					},
-					"baselineLowDate": "2024-03-05"
+					"baselineLowDate": "2024-03-05",
+					"baselineHighDate": "2026-09-05"
 				}
 			}
 		},
@@ -48180,7 +48241,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-wrap-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-wrap-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -48243,7 +48304,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/text-wrap-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/text-wrap-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -48306,7 +48367,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/timeline-scope",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/timeline-scope",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -48973,7 +49034,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/top",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/top",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49037,7 +49098,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/touch-action",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/touch-action",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49101,7 +49162,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transform",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transform",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49165,7 +49226,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transform-box",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transform-box",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49229,7 +49290,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transform-origin",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transform-origin",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49293,7 +49354,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transform-style",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transform-style",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49363,7 +49424,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transition",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transition",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49447,7 +49508,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transition-behavior",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transition-behavior",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49510,7 +49571,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transition-delay",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transition-delay",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49574,7 +49635,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transition-duration",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transition-duration",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49638,7 +49699,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transition-property",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transition-property",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49702,7 +49763,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/transition-timing-function",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/transition-timing-function",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49766,7 +49827,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/translate",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/translate",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49890,7 +49951,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/unicode-bidi",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/unicode-bidi",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -49954,7 +50015,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/user-select",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/user-select",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50019,7 +50080,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/vector-effect",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/vector-effect",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50083,7 +50144,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/vertical-align",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/vertical-align",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50168,7 +50229,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/view-timeline",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-timeline",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50247,7 +50308,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/view-timeline-axis",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-timeline-axis",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50309,7 +50370,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/view-timeline-inset",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-timeline-inset",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50371,7 +50432,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/view-timeline-name",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-timeline-name",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50545,7 +50606,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/view-transition-name",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-transition-name",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50608,7 +50669,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/view-transition-scope",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/view-transition-scope",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50671,7 +50732,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/visibility",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/visibility",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -50967,7 +51028,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/white-space",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/white-space",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51049,7 +51110,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/white-space-collapse",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/white-space-collapse",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51071,7 +51132,7 @@
 					"source": "@mdn/browser-compat-data"
 				},
 				"baseline": {
-					"level": "low",
+					"level": "high",
 					"featureId": "white-space-collapse",
 					"source": {
 						"kind": "derived",
@@ -51079,7 +51140,8 @@
 						"via": "@mdn/browser-compat-data",
 						"note": "Resolved baseline from web-features feature white-space-collapse."
 					},
-					"baselineLowDate": "2024-03-19"
+					"baselineLowDate": "2024-03-19",
+					"baselineHighDate": "2026-09-19"
 				}
 			}
 		},
@@ -51161,7 +51223,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/widows",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/widows",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51223,7 +51285,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/width",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/width",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51287,7 +51349,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/will-change",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/will-change",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51325,30 +51387,41 @@
 		"window-drag": {
 			"sourcePresence": {
 				"webref": true,
-				"mdnData": false,
+				"mdnData": true,
 				"bcd": true,
 				"webFeatures": true
 			},
 			"syntax": "none | move",
 			"syntaxSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"initial": "none",
 			"initialSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
 			"inherited": true,
 			"inheritedSource": {
 				"kind": "extracted",
-				"source": "@webref/css"
+				"source": "mdn-data"
 			},
-			"groups": [],
+			"groups": [
+				"CSS Basic User Interface"
+			],
 			"groupsSource": {
-				"kind": "default",
-				"source": "generated-fallback",
-				"note": "No groups available in mdn-data."
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/window-drag",
+			"mdnUrlSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
+			},
+			"status": "standard",
+			"statusSource": {
+				"kind": "extracted",
+				"source": "mdn-data"
 			},
 			"compatibility": {
 				"experimental": true,
@@ -51402,7 +51475,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/word-break",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/word-break",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51495,7 +51568,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/word-spacing",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/word-spacing",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51559,7 +51632,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/overflow-wrap",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/overflow-wrap",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51764,7 +51837,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/writing-mode",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/writing-mode",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51828,7 +51901,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/x",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/x",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51892,7 +51965,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/y",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/y",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -51956,7 +52029,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/z-index",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/z-index",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -52020,7 +52093,7 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			},
-			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/zoom",
+			"mdnUrl": "https://developer.mozilla.org/docs/Web/CSS/Reference/Properties/zoom",
 			"mdnUrlSource": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -52092,7 +52165,7 @@
 			}
 		},
 		"an+b": {
-			"syntax": "odd | even | <integer> | <n-dimension> | '+'?† n | -n | <ndashdigit-dimension> | '+'?† <ndashdigit-ident> | <dashndashdigit-ident> | <n-dimension> <signed-integer> | '+'?† n <signed-integer> | -n <signed-integer> | <ndash-dimension> <signless-integer> | '+'?† n- <signless-integer> | -n- <signless-integer> | <n-dimension> ['+' | '-'] <signless-integer> | '+'?† n ['+' | '-'] <signless-integer> | -n ['+' | '-'] <signless-integer>",
+			"syntax": "odd | even | <integer> | <n-dimension> | '+'? n | -n | <ndashdigit-dimension> | '+'? <ndashdigit-ident> | <dashndashdigit-ident> | <n-dimension> <signed-integer> | '+'? n <signed-integer> | -n <signed-integer> | <ndash-dimension> <signless-integer> | '+'? n- <signless-integer> | -n- <signless-integer> | <n-dimension> ['+' | '-'] <signless-integer> | '+'? n ['+' | '-'] <signless-integer> | -n ['+' | '-'] <signless-integer>",
 			"source": {
 				"kind": "extracted",
 				"source": "mdn-data"
@@ -52464,7 +52537,7 @@
 			}
 		},
 		"box-size": {
-			"syntax": "<length-percentage> | stretch | contain | min-content | max-content | fit-content | fit-content() | calc-size()",
+			"syntax": "<length-percentage [0,∞]> | stretch | contain | min-content | max-content | fit-content | fit-content(<length-percentage [0,∞]>) | <calc-size()>",
 			"source": {
 				"kind": "extracted",
 				"source": "@webref/css"
@@ -54695,6 +54768,13 @@
 				"source": "mdn-data"
 			}
 		},
+		"param-spec": {
+			"syntax": "color | accent-color | [ <dashed-ident> <css-type>? ]",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
+			}
+		},
 		"path()": {
 			"syntax": "path( <'fill-rule'>? , <string> )",
 			"source": {
@@ -55716,6 +55796,13 @@
 			"source": {
 				"kind": "extracted",
 				"source": "mdn-data"
+			}
+		},
+		"symbolic-counter-style": {
+			"syntax": "disc | circle | square | disclosure-open | disclosure-closed",
+			"source": {
+				"kind": "extracted",
+				"source": "@webref/css"
 			}
 		},
 		"symbols-type": {
@@ -56768,14 +56855,6 @@
 		}
 	},
 	"selectors": {
-		"-moz-broken": {
-			"presenceSources": [
-				{
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				}
-			]
-		},
 		"-moz-color-swatch": {
 			"presenceSources": [
 				{
@@ -56849,14 +56928,6 @@
 			]
 		},
 		"-moz-range-track": {
-			"presenceSources": [
-				{
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				}
-			]
-		},
-		"-moz-submit-invalid": {
 			"presenceSources": [
 				{
 					"kind": "extracted",
@@ -59944,14 +60015,6 @@
 				"source": "mdn-data"
 			}
 		},
-		"closed": {
-			"presenceSources": [
-				{
-					"kind": "extracted",
-					"source": "@mdn/browser-compat-data"
-				}
-			]
-		},
 		"column": {
 			"presenceSources": [
 				{
@@ -60387,6 +60450,14 @@
 				"kind": "extracted",
 				"source": "mdn-data"
 			}
+		},
+		"navigation-source": {
+			"presenceSources": [
+				{
+					"kind": "extracted",
+					"source": "@mdn/browser-compat-data"
+				}
+			]
 		},
 		"nesting": {
 			"presenceSources": [

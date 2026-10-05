@@ -1,0 +1,3 @@
+# Unified diff context lines can legitimately contain a single leading space.
+# Validate patch payloads by applying them; do not treat patch syntax as source whitespace.
+patches/*.patch -whitespace
